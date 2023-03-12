@@ -1,2 +1,2 @@
 # dating-app
-Tinder-like dating app created as a project for university assignment
+Tinder-like dating app created for university assignment

@@ -1,6 +1,6 @@
 # Database model
 
-account
+user
 
 * phone_no string max 15 chars
 * name     string max 15 chars
@@ -8,6 +8,8 @@ account
 * sex      string K/M
 * bio      string max 400 chars
 * hidden   bool
+* lat      decimal
+* lon      decimal
 * display_sex string max 2 chars
 * display_min_age integer 0-100
 * display_max_age integer 0-100, > display_min_age
@@ -22,25 +24,25 @@ sms_code
 
 photo
 
-* account   account
-* is_main   bool
+* user      user
+* ordinal   integer
 * file_path string max 255 chars
 
 like
 
-* liked_by   account
-* liked_who  account
+* liked_by   user
+* liked_who  user
 * created_at timestamp
 
-pair
+match
 
-* account1   account
-* account2   account
+* user1      user
+* user2      user
 * created_at timestamp
 
 chat
 
-* send_from  account
-* send_to    account
-* message    string 100 chars
+* send_from  user
+* send_to    user
+* message    string max 255 chars
 * created_at timestamp

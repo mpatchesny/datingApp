@@ -35,9 +35,6 @@ namespace datingApp.Core.Entities
         public IEnumerable<Match> Matches => _matches;
         private readonly HashSet<Match> _matches = new();
 
-        public IEnumerable<Like> Likes => _likes;
-        private readonly HashSet<Like> _likes = new();
-
         public User(long id, string phoneNo, string name, int age, string sex, string job, string bio)
         {
             Id = id;
@@ -61,15 +58,6 @@ namespace datingApp.Core.Entities
         public void RemoveMatch(long matchId)
         {
             _matches.RemoveWhere(x => x.Id == matchId);
-        }
-
-        public void AddLike(Like like)
-        {
-            if (_likes.Any(x => x.Id == like.Id))
-            {
-                throw new Exception("like already added to the user");
-            }
-            _likes.Add(like);
         }
     }
 }

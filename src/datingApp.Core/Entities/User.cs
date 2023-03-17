@@ -48,7 +48,7 @@ namespace datingApp.Core.Entities
             Bio = bio;
         }
 
-        public IsVisible()
+        public bool IsVisible()
         {
             return _photos.Any(x => x.Oridinal == 1);
         }
@@ -66,6 +66,7 @@ namespace datingApp.Core.Entities
         {
             _matches.RemoveWhere(x => x.Id == matchId);
         }
+        
         public void AddPhoto(Photo photo)
         {
             if (_photos.Any(x => x.Id == photo.Id))
@@ -78,6 +79,11 @@ namespace datingApp.Core.Entities
                 throw new Exception("photo with that oridinal already exists");
             }
             _photos.Add(photo);
+        }
+
+        public void RemovePhoto(long photoId)
+        {
+            _photos.RemoveWhere(x => x.Id == photoId);
         }
     }
 }

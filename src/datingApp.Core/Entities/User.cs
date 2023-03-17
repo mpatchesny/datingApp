@@ -24,8 +24,8 @@ namespace datingApp.Core.Entities
         public int Age { get; private set; }
 
         [Required(ErrorMessage = "sex is required")]
-        [RegularExpression(@"[K|M]", ErrorMessage = "sex must be K or M")]
-        public string Sex { get; private set; }
+        [Range(0, 1, ErrorMessage = "age must be between 18 and 100")]
+        public int Sex { get; private set; }
 
         [StringLength(30, ErrorMessage = "job must be maximum 30 characters long")]
         public string Job { get; private set; }
@@ -38,7 +38,7 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(long id, string phoneNo, string name, int age, string sex, string job, string bio)
+        public User(long id, string phoneNo, string name, int age, int sex, string job, string bio)
         {
             Id = id;
             PhoneNo = phoneNo;

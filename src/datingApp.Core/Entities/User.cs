@@ -32,6 +32,7 @@ namespace datingApp.Core.Entities
 
         [StringLength(400, ErrorMessage = "bio must be maximum 400 characters long")]
         public string Bio { get; private set; }
+
         public IEnumerable<Match> Matches => _matches;
         private readonly HashSet<Match> _matches = new();
 

@@ -16,13 +16,16 @@ namespace datingApp.Core.Entities
         [Required]
         public User User2 { get; private set; }
 
+        public Message? LastMessage { get; private set; }
+
         [Required]
         public DateTime CreatedAt { get; private set; }
 
-        public Match(User user1, User user2, DateTime createdAt)
+        public Match(User user1, User user2, Message? lastMessage, DateTime createdAt)
         {
             User1 = user1;
             User2 = user2;
+            LastMessage = lastMessage;
             CreatedAt = createdAt;
         }
     }

@@ -10,17 +10,17 @@ namespace datingApp.Core.Entities
     {
         public long Id { get; }
         
-        [Required]
+        [Required(ErrorMessage = "send from required")]
         public User SendFrom { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "send to required")]
         public User SendTo { get; private set; }
 
         [Required]
         [StringLength(280, ErrorMessage = "message must be maximum 280 characters long")]
         public string Text {get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "created at is required")]
         public DateTime CreatedAt { get; private set; }
 
         public Message(User sendFrom, User sendTo, string text, DateTime createdAt)

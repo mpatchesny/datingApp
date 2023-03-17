@@ -10,13 +10,13 @@ namespace datingApp.Core.Entities
     {
         public long Id { get; }
         
-        [Required]
+        [Required(ErrorMessage = "user is required")]
         public User User { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "path is required")]
         public string Path { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "ordinal is required")]
         public int Oridinal { get; private set; }
 
         public Photo(User user, string path, int Oridinal)

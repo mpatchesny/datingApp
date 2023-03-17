@@ -34,6 +34,8 @@ namespace datingApp.Core.Entities
         public string Bio { get; private set; }
         public IEnumerable<Match> Matches => _matches;
         private readonly HashSet<Match> _matches = new();
+        public IEnumerable<Photo> Photos => _photos;
+        private readonly HashSet<Photo> _photos = new();
 
         public User(long id, string phoneNo, string name, int age, string sex, string job, string bio)
         {
@@ -44,6 +46,11 @@ namespace datingApp.Core.Entities
             Sex = sex;
             Job = job;
             Bio = bio;
+        }
+
+        public IsVisible()
+        {
+            return _photos.Any(x => x.Oridinal == 1);
         }
 
         public void AddMatch(Match match)
@@ -58,6 +65,19 @@ namespace datingApp.Core.Entities
         public void RemoveMatch(long matchId)
         {
             _matches.RemoveWhere(x => x.Id == matchId);
+        }
+        public void AddPhoto(Photo photo)
+        {
+            if (_photos.Any(x => x.Id == photo.Id))
+            {
+                throw new Exception("photo already added to the user");
+            }
+
+            if (_photos.Any(x => x.Oridinal == photo.Oridinal))
+            {
+                throw new Exception("photo with that oridinal already exists");
+            }
+            _photos.Add(photo);
         }
     }
 }

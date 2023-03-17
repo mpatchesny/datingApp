@@ -34,6 +34,7 @@ namespace datingApp.Core.Entities
         public string Bio { get; private set; }
         public IEnumerable<Match> Matches => _matches;
         private readonly HashSet<Match> _matches = new();
+
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
@@ -51,6 +52,19 @@ namespace datingApp.Core.Entities
         public bool IsVisible()
         {
             return _photos.Any(x => x.Oridinal == 1);
+        }
+
+        public void ChangeAge(int age)
+        {
+            Age = age;
+        }
+        public void ChangeBio(string bio)
+        {
+            Bio = bio;
+        }
+        public void ChangeJob(string job)
+        {
+            Job = job;
         }
 
         public void AddMatch(Match match)

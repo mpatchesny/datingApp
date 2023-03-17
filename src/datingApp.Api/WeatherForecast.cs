@@ -1,4 +1,4 @@
-namespace src;
+namespace datingApp.Api;
 
 public class WeatherForecast
 {

@@ -43,6 +43,22 @@ namespace datingApp.Core.Entities
             Lon = lon;
         }
 
+        public void ChangeDiscoverSex(int sex)
+        {
+            Sex = sex;
+        }
+
+        public void ChangeDiscoverAge(int minAge, int maxAge)
+        {
+            DiscoverMinAge = minAge;
+            DiscoverMaxAge = maxAge;
+        }
+
+        public void ChangeDiscoverRange(int range)
+        {
+            DiscoverRange = range;
+        }
+
         public void ChangeLocation(double lat, double lon)
         {
             Lat = lat;

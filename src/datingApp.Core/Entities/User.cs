@@ -27,8 +27,8 @@ namespace datingApp.Core.Entities
         [RegularExpression(@"[K|M]", ErrorMessage = "sex must be K or M")]
         public string Sex { get; private set; }
         public string Bio { get; private set; }
-        public IEnumerable<Object> Matches => _matches;
-        private readonly HashSet<Object> _matches = new();
+        public IEnumerable<Match> Matches => _matches;
+        private readonly HashSet<Match> _matches = new();
 
         public User(long id, string phoneNo, string name, int age, string sex, string bio)
         {
@@ -40,15 +40,14 @@ namespace datingApp.Core.Entities
             Bio = bio;
         }
 
-        public void AddMatch(Object match) 
+        public void AddMatch(Match match)
         {
             _matches.Add(match);
         }
 
         public void RemoveMatch(long matchId)
         {
-            // TODO
-            // _matches.RemoveWhere(x => x.Id == matchId);
+            _matches.RemoveWhere(x => x.Id == matchId);
         }
     }
 }

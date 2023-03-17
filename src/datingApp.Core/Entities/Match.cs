@@ -8,7 +8,7 @@ namespace datingApp.Core.Entities
 {
     public class Match
     {
-        public Long Id { get; }
+        public long Id { get; }
         
         [Required]
         public User User1 { get; private set; }

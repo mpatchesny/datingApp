@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace datingApp.Core.Entities
 {
     public class Like
     {
-        public Long Id { get; }
+        public long Id { get; }
         
         [Required]
         public User LikedBy { get; private set; }

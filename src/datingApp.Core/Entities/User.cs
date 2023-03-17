@@ -44,7 +44,7 @@ namespace datingApp.Core.Entities
         {
             if (_matches.Any(x => x.Id == match.Id))
             {
-                throw Exception("match already added to user");
+                throw new Exception("match already added to user");
             }
             _matches.Add(match);
         }

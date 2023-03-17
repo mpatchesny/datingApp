@@ -10,13 +10,13 @@ namespace datingApp.Core.Entities
     {
         public long Id { get; }
         
-        [Required]
+        [Required(ErrorMessage = "liked by is required")]
         public User LikedBy { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "liked who is required")]
         public User LikedWho { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "created at is required")]
         public DateTime CreatedAt { get; private set; }
 
         public Like(User likedBy, User likedWho, DateTime createdAt)

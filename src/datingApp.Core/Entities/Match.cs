@@ -10,15 +10,15 @@ namespace datingApp.Core.Entities
     {
         public long Id { get; }
         
-        [Required]
+        [Required(ErrorMessage = "user1 is required")]
         public User User1 { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "user2 is required")]
         public User User2 { get; private set; }
 
         public Message? LastMessage { get; private set; }
 
-        [Required]
+        [Required(ErrorMessage = "created at is required")]
         public DateTime CreatedAt { get; private set; }
 
         public Match(User user1, User user2, Message? lastMessage, DateTime createdAt)

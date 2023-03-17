@@ -26,17 +26,26 @@ namespace datingApp.Core.Entities
         [Required(ErrorMessage = "sex is required")]
         [RegularExpression(@"[K|M]", ErrorMessage = "sex must be K or M")]
         public string Sex { get; private set; }
+
+        [StringLength(30, ErrorMessage = "job must be maximum 30 characters long")]
+        public string Job { get; private set; }
+
+        [StringLength(200, ErrorMessage = "bio must be maximum 200 characters long")]
         public string Bio { get; private set; }
         public IEnumerable<Match> Matches => _matches;
         private readonly HashSet<Match> _matches = new();
 
-        public User(long id, string phoneNo, string name, int age, string sex, string bio)
+        public IEnumerable<Like> Likes => _likes;
+        private readonly HashSet<Like> _likes = new();
+
+        public User(long id, string phoneNo, string name, int age, string sex, string job, string bio)
         {
             Id = id;
             PhoneNo = phoneNo;
             Name = name;
             Age = age;
             Sex = sex;
+            Job = job;
             Bio = bio;
         }
 
@@ -44,7 +53,7 @@ namespace datingApp.Core.Entities
         {
             if (_matches.Any(x => x.Id == match.Id))
             {
-                throw new Exception("match already added to user");
+                throw new Exception("match already added to the user");
             }
             _matches.Add(match);
         }
@@ -52,6 +61,15 @@ namespace datingApp.Core.Entities
         public void RemoveMatch(long matchId)
         {
             _matches.RemoveWhere(x => x.Id == matchId);
+        }
+
+        public void AddLike(Like like)
+        {
+            if (_likes.Any(x => x.Id == like.Id))
+            {
+                throw new Exception("like already added to the user");
+            }
+            _likes.Add(like);
         }
     }
 }

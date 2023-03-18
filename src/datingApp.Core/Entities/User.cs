@@ -6,11 +6,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace datingApp.Core.Entities
 {
-    public class @int
+    public class User
     {
         public int Id { get; }
         
         [Required(ErrorMessage = "phone no is required")]
+        [RegularExpression(@"^[0-9]{1,15}$", ErrorMessage = "phone no can have only numbers")]
         [StringLength(15, ErrorMessage = "phone no must be maximum 15 characters long")]
         public string PhoneNo { get; private set; }
         
@@ -39,7 +40,7 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public @int(int id, string phoneNo, string name, int age, int sex, string job, string bio)
+        public User(int id, string phoneNo, string name, int age, int sex, string job, string bio)
         {
             Id = id;
             PhoneNo = phoneNo;

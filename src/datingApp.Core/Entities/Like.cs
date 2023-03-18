@@ -8,7 +8,7 @@ namespace datingApp.Core.Entities
 {
     public class Like
     {
-        public long Id { get; }
+        public int Id { get; }
         
         [Required(ErrorMessage = "liked by is required")]
         public User LikedBy { get; private set; }
@@ -19,8 +19,9 @@ namespace datingApp.Core.Entities
         [Required(ErrorMessage = "created at is required")]
         public DateTime CreatedAt { get; private set; }
 
-        public Like(User likedBy, User likedWho, DateTime createdAt)
+        public Like(int id, User likedBy, User likedWho, DateTime createdAt)
         {
+            Id = id;
             LikedBy = likedBy;
             LikedWho = likedWho;
             CreatedAt = createdAt;

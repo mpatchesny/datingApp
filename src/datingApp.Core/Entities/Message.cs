@@ -33,11 +33,11 @@ namespace datingApp.Core.Entities
         {
             if (text.Length == 0)
             {
-                throw new Exception("message can't be empty");
+                throw new Exception("message cannot be empty");
             }
             if (text.Length > 255)
             {
-                throw new Exception("message must be maximum 255 characters long");
+                throw new Exception("message cannot exceed 255 characters in length");
             }
             if (Text == text) return;
             Text = text;

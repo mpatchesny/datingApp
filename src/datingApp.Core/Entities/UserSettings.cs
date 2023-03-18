@@ -7,13 +7,15 @@ namespace datingApp.Core.Entities
 {
     public class UserSettings
     {
+        public record LatLon(double Lat, double Lon);
+
         public int UserId { get; private set; }
         public Sex DiscoverSex { get; private set; }
         public Tuple<int, int> DiscoverAgeRange { get; private set; }
         public int DiscoverRange { get; private set; }
-        public Tuple<double, double> Location { get; private set; }
+        public LatLon Location { get; private set; }
 
-        public UserSettings(int userId, Sex discoverSex, Tuple<int,int> discoverAgeRange, int discoverRange, Tuple<double, double> location)
+        public UserSettings(int userId, Sex discoverSex, Tuple<int,int> discoverAgeRange, int discoverRange, LatLon location)
         {
             UserId = userId;
             DiscoverSex = discoverSex;
@@ -37,7 +39,7 @@ namespace datingApp.Core.Entities
             SetDiscoverRange(discoverRange);
         }
 
-        public void ChangeLocation(Tuple<double, double> location)
+        public void ChangeLocation(LatLon location)
         {
             SetLocation(location);
         }
@@ -63,10 +65,10 @@ namespace datingApp.Core.Entities
             DiscoverRange = discoverRange;
         }
 
-        private void SetLocation(Tuple<double, double> location)
+        private void SetLocation(LatLon location)
         {
-            if (location.Item1 > 90 | location.Item1 < -90 |
-                location.Item2 > 180 | location.Item2 < -180)
+            if (location.Lat > 90 | location.Lat < -90 |
+                location.Lon > 180 | location.Lon < -180)
             {
                 throw new Exception($"invalid location {location.ToString()}");
             }

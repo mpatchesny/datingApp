@@ -10,7 +10,7 @@ namespace datingApp.Core.Entities
     {
         public int User { get; private set; }
         [Range(0, 2)]
-        public int DiscoverSex { get; private set; }
+        public Sex DiscoverSex { get; private set; }
         [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
         public int DiscoverMinAge { get; private set; }
         [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
@@ -20,7 +20,7 @@ namespace datingApp.Core.Entities
         public double Lat { get; private set; }
         public double Lon { get; private set; }
 
-        public UserSettings(int user, int discoverSex, int discoverMinAge, int discoverMaxAge, int discoverRange, double lat, double lon)
+        public UserSettings(int user, Sex discoverSex, int discoverMinAge, int discoverMaxAge, int discoverRange, double lat, double lon)
         {
             User = user;
             DiscoverSex = discoverSex;
@@ -31,7 +31,7 @@ namespace datingApp.Core.Entities
             Lon = lon;
         }
 
-        public void ChangeDiscoverSex(int sex)
+        public void ChangeDiscoverSex(Sex sex)
         {
             DiscoverSex = sex;
         }

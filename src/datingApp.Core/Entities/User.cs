@@ -25,7 +25,7 @@ namespace datingApp.Core.Entities
         public int Age { get; private set; }
 
         [Range(0, 1, ErrorMessage = "age must be between 18 and 100")]
-        public int Sex { get; private set; }
+        public Sex Sex { get; private set; }
 
         [StringLength(30, ErrorMessage = "job must be maximum 30 characters long")]
         public string? Job { get; private set; }
@@ -39,7 +39,7 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(int id, string phoneNo, string email, string name, int age, int sex, string? job="", string? bio="")
+        public User(int id, string phoneNo, string email, string name, int age, Sex sex, string? job="", string? bio="")
         {
             Id = id;
             PhoneNo = phoneNo;

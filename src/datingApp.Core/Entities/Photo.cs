@@ -16,8 +16,18 @@ namespace datingApp.Core.Entities
         {
             Id = id;
             UserId = userId;
-            Path = path;
+            SetPath(path);
             Oridinal = oridinal;
+        }
+
+        private void SetPath(string path)
+        {
+            if (path.Length == 0)
+            {
+                throw new Exception("path cannot be empty");
+            }
+            if (Path == path) return;
+            Path = path;
         }
     }
 }

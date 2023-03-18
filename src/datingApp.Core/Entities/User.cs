@@ -29,10 +29,10 @@ namespace datingApp.Core.Entities
         public int Sex { get; private set; }
 
         [StringLength(30, ErrorMessage = "job must be maximum 30 characters long")]
-        public string Job { get; private set; }
+        public string? Job { get; private set; }
 
         [StringLength(400, ErrorMessage = "bio must be maximum 400 characters long")]
-        public string Bio { get; private set; }
+        public string? Bio { get; private set; }
 
         public IEnumerable<Match> Matches => _matches;
         private readonly HashSet<Match> _matches = new();
@@ -40,7 +40,7 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(int id, string phoneNo, string name, int age, int sex, string job, string bio)
+        public User(int id, string phoneNo, string name, int age, int sex, string? job="", string? bio="")
         {
             Id = id;
             PhoneNo = phoneNo;

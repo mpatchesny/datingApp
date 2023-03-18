@@ -2,9 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -23,10 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/datingApp.Api/datingApp.Api.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="../../src/datingApp.Core/datingApp.Core.csproj" />
   </ItemGroup>
 
 </Project>

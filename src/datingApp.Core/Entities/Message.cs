@@ -25,7 +25,7 @@ namespace datingApp.Core.Entities
             CreatedAt = createdAt;
         }
 
-        public void SetAsDisplayed()
+        public void SetDisplayed()
         {
             IsDisplayed = true;
         }

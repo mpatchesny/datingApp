@@ -2,20 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 
 namespace datingApp.Core.Entities
 {
     public class UserSettings
     {
         public int User { get; private set; }
-        [Range(0, 2)]
         public Sex DiscoverSex { get; private set; }
-        [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
+        // [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
         public int DiscoverMinAge { get; private set; }
-        [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
+        // [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
         public int DiscoverMaxAge { get; private set; }
-        [Range(1, 100, ErrorMessage = "discover range must be between 1 and 100")]
+        // [Range(1, 100, ErrorMessage = "discover range must be between 1 and 100")]
         public int DiscoverRange { get; private set; }
         public double Lat { get; private set; }
         public double Lon { get; private set; }

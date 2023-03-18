@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 
 namespace datingApp.Core.Entities
 {
@@ -11,7 +10,7 @@ namespace datingApp.Core.Entities
         public int Id { get; }
         public int SendFrom { get; private set; }
         public int SendTo { get; private set; }
-        [StringLength(280, ErrorMessage = "message must be maximum 280 characters long")]
+        // [StringLength(280, ErrorMessage = "message must be maximum 280 characters long")]
         public string Text { get; private set; }
         public bool IsDisplayed { get; private set; }
         public DateTime CreatedAt { get; private set; }

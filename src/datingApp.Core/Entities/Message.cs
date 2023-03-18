@@ -10,7 +10,6 @@ namespace datingApp.Core.Entities
         public int Id { get; }
         public int SendFromId { get; private set; }
         public int SendToId { get; private set; }
-        // [StringLength(280, ErrorMessage = "message must be maximum 280 characters long")]
         public string Text { get; private set; }
         public bool IsDisplayed { get; private set; }
         public DateTime CreatedAt { get; private set; }
@@ -20,7 +19,7 @@ namespace datingApp.Core.Entities
             Id = id;
             SendFromId = sendFromId;
             SendToId = sendToId;
-            Text = text;
+            SetText(text);
             IsDisplayed = IsDisplayed;
             CreatedAt = createdAt;
         }
@@ -28,6 +27,20 @@ namespace datingApp.Core.Entities
         public void SetDisplayed()
         {
             IsDisplayed = true;
+        }
+
+        private void SetText(string text)
+        {
+            if (text.Length == 0)
+            {
+                throw new Exception("message can't be empty");
+            }
+            if (text.Length > 255)
+            {
+                throw new Exception("message must be maximum 255 characters long");
+            }
+            if (Text == text) return;
+            Text = text;
         }
     }
 }

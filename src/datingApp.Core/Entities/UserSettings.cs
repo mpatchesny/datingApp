@@ -9,7 +9,7 @@ namespace datingApp.Core.Entities
     public class UserSettings
     {
         [Required(ErrorMessage = "user is required")]
-        public User User { get; private set; }
+        public int User { get; private set; }
 
         [Required(ErrorMessage = "discover sex is required")]
         [Range(0, 2)]
@@ -33,7 +33,7 @@ namespace datingApp.Core.Entities
         [Required(ErrorMessage = "longtitude range is required")]
         public double Lon { get; private set; }
 
-        public UserSettings(User user, int discoverSex, int discoverMinAge, int discoverMaxAge, int discoverRange, double lat, double lon)
+        public UserSettings(int user, int discoverSex, int discoverMinAge, int discoverMaxAge, int discoverRange, double lat, double lon)
         {
             User = user;
             DiscoverSex = discoverSex;

@@ -11,7 +11,7 @@ namespace datingApp.Core.Entities
         public int Id { get; }
         
         [Required(ErrorMessage = "user is required")]
-        public User User { get; private set; }
+        public int User { get; private set; }
 
         [Required(ErrorMessage = "path is required")]
         public string Path { get; private set; }
@@ -19,7 +19,7 @@ namespace datingApp.Core.Entities
         [Required(ErrorMessage = "ordinal is required")]
         public int Oridinal { get; private set; }
 
-        public Photo(int id, User user, string path, int oridinal)
+        public Photo(int id, int user, string path, int oridinal)
         {
             Id = id;
             User = user;

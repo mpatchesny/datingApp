@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace datingApp.Core.Entities
 {
-    public class User
+    public class @int
     {
         public int Id { get; }
         
@@ -39,7 +39,7 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(int id, string phoneNo, string name, int age, int sex, string job, string bio)
+        public @int(int id, string phoneNo, string name, int age, int sex, string job, string bio)
         {
             Id = id;
             PhoneNo = phoneNo;

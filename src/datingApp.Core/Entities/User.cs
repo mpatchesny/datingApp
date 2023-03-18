@@ -8,7 +8,7 @@ namespace datingApp.Core.Entities
 {
     public class User
     {
-        public long Id { get; }
+        public int Id { get; }
         
         [Required(ErrorMessage = "phone no is required")]
         [StringLength(15, ErrorMessage = "phone no must be maximum 15 characters long")]
@@ -39,7 +39,7 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(long id, string phoneNo, string name, int age, int sex, string job, string bio)
+        public User(int id, string phoneNo, string name, int age, int sex, string job, string bio)
         {
             Id = id;
             PhoneNo = phoneNo;

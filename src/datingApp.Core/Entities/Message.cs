@@ -8,7 +8,7 @@ namespace datingApp.Core.Entities
 {
     public class Message
     {
-        public long Id { get; }
+        public int Id { get; }
         
         [Required(ErrorMessage = "send from required")]
         public User SendFrom { get; private set; }
@@ -25,8 +25,9 @@ namespace datingApp.Core.Entities
         [Required(ErrorMessage = "created at is required")]
         public DateTime CreatedAt { get; private set; }
 
-        public Message(User sendFrom, User sendTo, string text, bool isDisplayed, DateTime createdAt)
+        public Message(int id, User sendFrom, User sendTo, string text, bool isDisplayed, DateTime createdAt)
         {
+            Id = id;
             SendFrom = sendFrom;
             SendTo = sendTo;
             Text = text;

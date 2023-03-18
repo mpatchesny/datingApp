@@ -11,8 +11,6 @@ namespace datingApp.Core.Entities
         public int Id { get; }
         public int SendFrom { get; private set; }
         public int SendTo { get; private set; }
-
-        [Required(ErrorMessage = "message is required")]
         [StringLength(280, ErrorMessage = "message must be maximum 280 characters long")]
         public string Text { get; private set; }
         public bool IsDisplayed { get; private set; }

@@ -39,9 +39,9 @@ namespace datingApp.Core.Entities
             SetEmail(email);
             SetName(name);
             Sex = sex;
-            ChangeAge(age);
-            ChangeBio(bio);
-            ChangeJob(job);
+            SetAge(age);
+            SetBio(bio);
+            SetJob(job);
         }
 
         public bool IsVisible()

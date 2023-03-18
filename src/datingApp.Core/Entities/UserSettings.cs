@@ -9,24 +9,17 @@ namespace datingApp.Core.Entities
     {
         public int UserId { get; private set; }
         public Sex DiscoverSex { get; private set; }
-        // [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
-        public int DiscoverMinAge { get; private set; }
-        // [Range(18, 100, ErrorMessage = "discover max age must be between 18 and 100")]
-        public int DiscoverMaxAge { get; private set; }
-        // [Range(1, 100, ErrorMessage = "discover range must be between 1 and 100")]
+        public Tuple<int, int> DiscoverAgeRange { get; private set; }
         public int DiscoverRange { get; private set; }
-        public double Lat { get; private set; }
-        public double Lon { get; private set; }
+        public Tuple<double, double> Location { get; private set; }
 
-        public UserSettings(int userId, Sex discoverSex, int discoverMinAge, int discoverMaxAge, int discoverRange, double lat, double lon)
+        public UserSettings(int userId, Sex discoverSex, Tuple<int,int> discoverAgeRange, int discoverRange, Tuple<double, double> location)
         {
             UserId = userId;
             DiscoverSex = discoverSex;
-            DiscoverMaxAge = discoverMaxAge;
-            DiscoverMinAge = discoverMinAge;
-            DiscoverRange = discoverRange;
-            Lat = lat;
-            Lon = lon;
+            SetDiscoverAge(discoverAgeRange);
+            SetDiscoverRange(discoverRange);
+            SetLocation(location);
         }
 
         public void ChangeDiscoverSex(Sex sex)
@@ -34,21 +27,51 @@ namespace datingApp.Core.Entities
             DiscoverSex = sex;
         }
 
-        public void ChangeDiscoverAge(int minAge, int maxAge)
+        public void ChangeDiscoverAge(Tuple<int,int> discoverAgeRange)
         {
-            DiscoverMinAge = minAge;
-            DiscoverMaxAge = maxAge;
+            SetDiscoverAge(discoverAgeRange);
         }
 
-        public void ChangeDiscoverRange(int range)
+        public void ChangeDiscoverRange(int discoverRange)
         {
-            DiscoverRange = range;
+            SetDiscoverRange(discoverRange);
         }
 
-        public void ChangeLocation(double lat, double lon)
+        public void ChangeLocation(Tuple<double, double> location)
         {
-            Lat = lat;
-            Lon = lon;
+            SetLocation(location);
+        }
+
+        private void SetDiscoverAge(Tuple<int, int> discoverAgeRange)
+        {
+            if (discoverAgeRange.Item1 < 18 | discoverAgeRange.Item1 > 100 |
+                discoverAgeRange.Item2 < 18 | discoverAgeRange.Item2 > 100)
+            {
+                throw new Exception("discover max age must be between 18 and 100");
+            }
+            if (DiscoverAgeRange == discoverAgeRange) return;
+            DiscoverAgeRange = discoverAgeRange;
+        }
+
+        private void SetDiscoverRange(int discoverRange)
+        {
+            if (discoverRange < 1 | discoverRange > 100)
+            {
+                throw new Exception("discover range must be between 1 and 100");
+            }
+            if (DiscoverRange == discoverRange) return;
+            DiscoverRange = discoverRange;
+        }
+
+        private void SetLocation(Tuple<double, double> location)
+        {
+            if (location.Item1 > 90 | location.Item1 < -90 |
+                location.Item2 > 180 | location.Item2 < -180)
+            {
+                throw new Exception($"invalid location {location.ToString()}");
+            }
+            if (Location == location) return;
+            Location = location;
         }
     }
 }

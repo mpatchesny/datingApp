@@ -24,7 +24,7 @@ namespace datingApp.Core.Entities
         {
             if (path.Length == 0)
             {
-                throw new Exception("path can't be empty");
+                throw new Exception("path cannot be empty");
             }
             if (Path == path) return;
             Path = path;

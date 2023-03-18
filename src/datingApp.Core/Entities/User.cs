@@ -116,11 +116,11 @@ namespace datingApp.Core.Entities
         {       
             if (phone.Length == 0)
             {
-                throw new Exception("phone number must be set");
+                throw new Exception("phone number cannot be empty");
             }
             if (phone.Length > 9)
             {
-                throw new Exception("phone number must be maximum 9 characters long");
+                throw new Exception("phone number cannot exceed 9 characters in length");
             }
             if (!PhoneRegex.IsMatch(phone))
             {
@@ -133,7 +133,7 @@ namespace datingApp.Core.Entities
         {
             if (email.Length == 0)
             {
-                throw new Exception("email must be set");
+                throw new Exception("email address cannot be empty");
             }
             if (!EmailRegex.IsMatch(email))
             {
@@ -144,19 +144,19 @@ namespace datingApp.Core.Entities
         }
         private void SetAge(int age)
         {
-            if (age<18 | age >100) throw new Exception("age must be between 18 and 100");
+            if (age < 18 | age > 100) throw new Exception("age must be between 18 and 100");
             if (Age == age) return;
             Age = age;
         }
         private void SetJob(string job)
         {
-            if (job.Length > 30) throw new Exception("job must be maximum 30 characters long");
+            if (job.Length > 30) throw new Exception("job cannot exceed 30 characters in length");
             if (Job == job) return;
             Job = job;
         }
         private void SetBio(string bio)
         {
-            if (bio.Length > 400) throw new Exception("bio must be maximum 400 characters long");
+            if (bio.Length > 400) throw new Exception("bio cannot exceed 400 characters in length");
             if (Bio == bio) return;
             Bio = bio;
         }

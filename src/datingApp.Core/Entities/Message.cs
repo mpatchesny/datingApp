@@ -8,18 +8,18 @@ namespace datingApp.Core.Entities
     public class Message
     {
         public int Id { get; }
-        public int SendFrom { get; private set; }
-        public int SendTo { get; private set; }
+        public int SendFromId { get; private set; }
+        public int SendToId { get; private set; }
         // [StringLength(280, ErrorMessage = "message must be maximum 280 characters long")]
         public string Text { get; private set; }
         public bool IsDisplayed { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
-        public Message(int id, int sendFrom, int sendTo, string text, bool isDisplayed, DateTime createdAt)
+        public Message(int id, int sendFromId, int sendToId, string text, bool isDisplayed, DateTime createdAt)
         {
             Id = id;
-            SendFrom = sendFrom;
-            SendTo = sendTo;
+            SendFromId = sendFromId;
+            SendToId = sendToId;
             Text = text;
             IsDisplayed = IsDisplayed;
             CreatedAt = createdAt;

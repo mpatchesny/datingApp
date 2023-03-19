@@ -15,4 +15,9 @@ public sealed record Location
         Lat = lat;
         Lon = lon;
     }
+
+    public override string ToString()
+    {
+        return $"{Lat}, {Lon}";
+    }
 }

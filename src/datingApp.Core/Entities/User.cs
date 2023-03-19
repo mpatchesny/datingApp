@@ -181,7 +181,7 @@ public class User
     {
         if (sex == (Sex.Male & Sex.Female))
         {
-            throw new Exception("user can have only one sex");
+            throw new InvalidUserSexException();
         }
         if (Sex == sex) return;
         Sex = sex;

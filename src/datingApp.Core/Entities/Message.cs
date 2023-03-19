@@ -33,11 +33,11 @@ public class Message
     {
         if (text.Length == 0)
         {
-            throw new Exception("message cannot be empty");
+            throw new InvalidMessageException("message cannot be empty");
         }
         if (text.Length > 255)
         {
-            throw new Exception("message cannot exceed 255 characters in length");
+            throw new InvalidMessageException("message cannot exceed 255 characters in length");
         }
         if (Text == text) return;
         Text = text;

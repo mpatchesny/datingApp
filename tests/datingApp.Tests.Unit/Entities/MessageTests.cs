@@ -13,6 +13,7 @@ namespace datingApp.Tests.Unit.Entities
         {
             var exception = Record.Exception(() =>new Message(1, 1, 1, "", false, DateTime.UtcNow));
             Assert.NotNull(exception);
+            Assert.IsType<InvalidMessageException>(exception);
         }
 
         [Fact]
@@ -25,6 +26,7 @@ namespace datingApp.Tests.Unit.Entities
             }
             var exception = Record.Exception(() =>new Message(1, 1, 1, message, false, DateTime.UtcNow));
             Assert.NotNull(exception);
+            Assert.IsType<InvalidMessageException>(exception);
         }
 
         [Fact]

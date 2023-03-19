@@ -153,6 +153,7 @@ public class UserTests
         var sex = Sex.Male & Sex.Female;
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), sex));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidUserSexException>(exception);
     }
 
     [Fact]

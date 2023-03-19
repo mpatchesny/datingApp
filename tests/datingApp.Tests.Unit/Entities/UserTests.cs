@@ -1,5 +1,6 @@
 using System;
 using datingApp.Core.Entities;
+using datingApp.Core.Exceptions;
 
 namespace datingApp.Tests.Unit;
 
@@ -66,6 +67,8 @@ public class UserTests
     public void user_name_should_not_be_emptystring()
     {
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "", new System.DateOnly(1999,1,1), Sex.Male));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
     }
 
     [Theory]
@@ -78,6 +81,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
     }
 
     [Fact]
@@ -86,6 +90,7 @@ public class UserTests
         string username = "Janusz ma kota a";
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
     }
 
     [Theory]

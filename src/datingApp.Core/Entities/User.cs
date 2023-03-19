@@ -23,14 +23,13 @@ public class User
     public Sex Sex { get; private set; }
     public string Job { get; private set; }
     public string Bio { get; private set; }
+    public IEnumerable<Photo> Photos { get; private set; }
+    public IEnumerable<Like> Likes { get; private set; }
+    public IEnumerable<Match> Matches { get; private set; }
 
-    public IEnumerable<Match> Matches => _matches;
-    private readonly HashSet<Match> _matches = new();
-
-    public IEnumerable<Photo> Photos => _photos;
-    private readonly HashSet<Photo> _photos = new();
-
-    public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex, string job="", string bio="")
+    public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
+                IEnumerable<Photo> photos, IEnumerable<Like> likes, IEnumerable<Match> matches,
+                string job="", string bio="")
     {
         Id = id;
         SetPhone(phone);
@@ -38,14 +37,13 @@ public class User
         SetName(name);
         SetSex(sex);
         SetDateOfBirth(dateOfBirth);
+        if (photos == null) Photos = new List<Photo>();
+        if (likes == null) Likes = new List<Like>();
+        if (matches == null) Matches = new List<Match>();
         SetJob(job);
         SetBio(bio);
     }
 
-    public bool IsVisible()
-    {
-        return _photos.Any(x => x.Oridinal == 1);
-    }
     public int GetAge()
     {
         DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
@@ -64,39 +62,6 @@ public class User
     public void ChangeJob(string job)
     {
         SetJob(job);
-    }
-
-    public void AddMatch(Match match)
-    {
-        if (_matches.Any(x => x.Id == match.Id))
-        {
-            throw new Exception("match already added to the user");
-        }
-        _matches.Add(match);
-    }
-
-    public void RemoveMatch(long matchId)
-    {
-        _matches.RemoveWhere(x => x.Id == matchId);
-    }
-    
-    public void AddPhoto(Photo photo)
-    {
-        if (_photos.Any(x => x.Id == photo.Id))
-        {
-            throw new Exception("photo already added to the user");
-        }
-
-        if (_photos.Any(x => x.Oridinal == photo.Oridinal))
-        {
-            throw new Exception("photo with that oridinal already exists");
-        }
-        _photos.Add(photo);
-    }
-
-    public void RemovePhoto(long photoId)
-    {
-        _photos.RemoveWhere(x => x.Id == photoId);
     }
 
     #region Setters

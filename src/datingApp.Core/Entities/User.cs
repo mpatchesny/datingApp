@@ -48,9 +48,11 @@ namespace datingApp.Core.Entities
         {
             return _photos.Any(x => x.Oridinal == 1);
         }
-        public int Age()
+        public int GetAge()
         {
-            return 0;
+            DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var age = ComputeAge(currDate, DateOfBirth);
+            return age;
         }
 
         public void ChangeDateOfBirth(DateOnly dateOfBirth)
@@ -150,19 +152,7 @@ namespace datingApp.Core.Entities
         private void SetDateOfBirth(DateOnly dateOfBirth)
         {
             DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
-            var age = currDate.Year - dateOfBirth.Year;
-            switch (currDate.Month - dateOfBirth.Month)
-            {
-                case < 0:
-                    age -= 1;
-                    break;
-                case 0:
-                    if ((currDate.Day - dateOfBirth.Day) < 0)
-                    {
-                        age -= 1;
-                    }
-                    break;
-            }
+            var age = ComputeAge(currDate, dateOfBirth);
             if (age < 18 | age > 100) throw new Exception("invalid date of birth; user age must be between 18 and 100");
             if (DateOfBirth == dateOfBirth) return;
             DateOfBirth = dateOfBirth;
@@ -180,5 +170,23 @@ namespace datingApp.Core.Entities
             Bio = bio;
         }
         #endregion
+
+        private int ComputeAge(DateOnly newerDate, DateOnly olderDate)
+        {
+            var age = newerDate.Year - olderDate.Year;
+            switch (newerDate.Month - olderDate.Month)
+            {
+                case < 0:
+                    age -= 1;
+                    break;
+                case 0:
+                    if ((newerDate.Day - olderDate.Day) < 0)
+                    {
+                        age -= 1;
+                    }
+                    break;
+            }
+            return age;
+        }
     }
 }

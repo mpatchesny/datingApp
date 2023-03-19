@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.ValueObjects;
+using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;
 
@@ -62,7 +63,7 @@ public class UserSettings
     {
         if (discoverRange < 1 | discoverRange > 100)
         {
-            throw new Exception("discover range must be between 1 and 100");
+            throw new InvalidDiscoveryRangeException();
         }
         if (DiscoverRange == discoverRange) return;
         DiscoverRange = discoverRange;

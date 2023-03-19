@@ -1,11 +1,10 @@
 using System.Runtime.Serialization;
 
-namespace datingApp.Core.Exceptions
+namespace datingApp.Core.Exceptions;
+
+public sealed class InvalidPhoneException : CustomException
 {
-    public sealed class InvalidPhoneException : CustomException
+    public InvalidPhoneException(string details) : base($"Phone number is invalid: {details}")
     {
-        public InvalidPhoneException(string details) : base($"Phone number is invalid: {details}")
-        {
-        }
     }
 }

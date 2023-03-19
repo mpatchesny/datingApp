@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;
 
@@ -103,15 +104,15 @@ public class User
     {
         if (name.Length == 0)
         {
-            throw new Exception("name must be set");
+            throw new InvalidUsernameException("user name can't be empty");
         }
         if (name.Length > 15)
         {
-            throw new Exception("name cannot exceed 15 characters in length");
+            throw new InvalidUsernameException("user name too long");
         }
         if (BadNameRegex.IsMatch(name))
         {
-            throw new Exception($"name has invalid characters {name}");
+            throw new InvalidUsernameException($"contains forbidden characters {name}");
         }
         if (Name == name) return;
         Name = name;

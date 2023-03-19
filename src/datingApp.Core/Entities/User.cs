@@ -103,7 +103,7 @@ namespace datingApp.Core.Entities
             }
             if (name.Length > 15)
             {
-                throw new Exception("name must be maximum 15 characters long");
+                throw new Exception("name cannot exceed 15 characters in length");
             }
             if (!NameRegex.IsMatch(name))
             {

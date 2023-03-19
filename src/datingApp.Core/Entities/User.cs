@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -8,20 +9,16 @@ namespace datingApp.Core.Entities
 {
     public class User
     {
-        private static readonly Regex EmailRegex = new Regex(
-            @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-            @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
+        private static readonly Regex BadPhoneRegex = new Regex(@"[^0-9]",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
-        private static readonly Regex PhoneRegex = new Regex(@"^[0-9]$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
-        private static readonly Regex NameRegex = new Regex(@"^[a-zA-Z''-'\s]$",
+        private static readonly Regex BadNameRegex = new Regex(@"[^a-zA-Z\s]",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         public int Id { get; }
         public string Phone { get; private set; }
         public string Email { get; private set; }
         public string Name { get; private set; }
-        public int Age { get; private set; }
+        public DateOnly DateOfBirth { get; private set; }
         public Sex Sex { get; private set; }
         public string Job { get; private set; }
         public string Bio { get; private set; }
@@ -32,25 +29,32 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(int id, string phone, string email, string name, int age, Sex sex, string job="", string bio="")
+        public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex, string job="", string bio="")
         {
             Id = id;
             SetPhone(phone);
             SetEmail(email);
             SetName(name);
-            Sex = sex;
-            SetAge(age);
-            SetBio(bio);
+            SetSex(sex);
+            SetDateOfBirth(dateOfBirth);
             SetJob(job);
+            SetBio(bio);
         }
 
         public bool IsVisible()
         {
             return _photos.Any(x => x.Oridinal == 1);
         }
-        public void ChangeAge(int age)
+        public int GetAge()
         {
-            SetAge(age);
+            DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var age = CalculateAge(DateOfBirth, currDate);
+            return age;
+        }
+
+        public void ChangeDateOfBirth(DateOnly dateOfBirth)
+        {
+            SetDateOfBirth(dateOfBirth);
         }
         public void ChangeBio(string bio)
         {
@@ -103,9 +107,9 @@ namespace datingApp.Core.Entities
             }
             if (name.Length > 15)
             {
-                throw new Exception("name must be maximum 15 characters long");
+                throw new Exception("name cannot exceed 15 characters in length");
             }
-            if (!NameRegex.IsMatch(name))
+            if (BadNameRegex.IsMatch(name))
             {
                 throw new Exception($"name has invalid characters {name}");
             }
@@ -122,7 +126,7 @@ namespace datingApp.Core.Entities
             {
                 throw new Exception("phone number cannot exceed 9 characters in length");
             }
-            if (!PhoneRegex.IsMatch(phone))
+            if (BadPhoneRegex.IsMatch(phone))
             {
                 throw new Exception($"phone number must be only numbers");
             }
@@ -135,18 +139,27 @@ namespace datingApp.Core.Entities
             {
                 throw new Exception("email address cannot be empty");
             }
-            if (!EmailRegex.IsMatch(email))
+            if (email.Length > 256)
+            {
+                throw new Exception("email cannot exceed 256 characters in length");
+            }
+            
+            email = email.Trim().ToLowerInvariant();
+            var emailAttrib = new EmailAddressAttribute();
+            if (!emailAttrib.IsValid(email))
             {
                 throw new Exception($"invalid email address {email}");
             }
             if (Email == email) return;
-            Email = email.Trim().ToLowerInvariant();
+            Email = email;
         }
-        private void SetAge(int age)
+        private void SetDateOfBirth(DateOnly dateOfBirth)
         {
-            if (age < 18 | age > 100) throw new Exception("age must be between 18 and 100");
-            if (Age == age) return;
-            Age = age;
+            DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var age = CalculateAge(dateOfBirth, currDate);
+            if (age < 18 | age > 100) throw new Exception($"invalid date of birth; user age must be between 18 and 100 {age}");
+            if (DateOfBirth == dateOfBirth) return;
+            DateOfBirth = dateOfBirth;
         }
         private void SetJob(string job)
         {
@@ -160,6 +173,32 @@ namespace datingApp.Core.Entities
             if (Bio == bio) return;
             Bio = bio;
         }
+        private void SetSex(Sex sex)
+        {
+            if (sex == (Sex.Male & Sex.Female))
+            {
+                throw new Exception("user can have only one sex");
+            }
+            if (Sex == sex) return;
+            Sex = sex;
+        }
         #endregion
+        private static int CalculateAge(DateOnly olderDate, DateOnly newerDate)
+        {
+            var age = newerDate.Year - olderDate.Year;
+            switch (newerDate.Month - olderDate.Month)
+            {
+                case < 0:
+                    age -= 1;
+                    break;
+                case 0:
+                    if (newerDate.Day < olderDate.Day)
+                    {
+                        age -= 1;
+                    }
+                    break;
+            }
+            return age;
+        }
     }
 }

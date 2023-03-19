@@ -5,16 +5,16 @@ namespace datingApp.Tests.Unit;
 public class UsersTests
 {
     [Fact]
-    public void user_phone_no_has_valid_length()
+    public void user_phone_has_valid_length()
     {
-        var user = new User(1, "123456789123456789", "xddd", "janusz", 21, Sex.Male, "nmo job", "no bio");
+        var user = new User(1, "123456789123456789", "xddd", "janusz", new System.DateOnly(1999,1,1), Sex.Male, "nmo job", "no bio");
     }
 
-    public void user_phone_no_has_only_numbers()
+    public void user_phone_has_only_numbers()
     {
     }
 
-    public void user_email_is_proper_email_address()
+    public void user_email_is_proper_email()
     {
     }
 
@@ -43,6 +43,10 @@ public class UsersTests
     }
 
     public void user_job_should_not_exceed_30_chars()
+    {
+    }
+
+    public void user_get_age_returns_proper_age()
     {
     }
 }

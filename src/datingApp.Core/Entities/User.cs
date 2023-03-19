@@ -121,15 +121,15 @@ public class User
     {       
         if (phone.Length == 0)
         {
-            throw new Exception("phone number cannot be empty");
+            throw new InvalidPhoneException("phone number cannot be empty");
         }
         if (phone.Length > 9)
         {
-            throw new Exception("phone number cannot exceed 9 characters in length");
+            throw new InvalidPhoneException("phone number cannot exceed 9 characters in length");
         }
         if (BadPhoneRegex.IsMatch(phone))
         {
-            throw new Exception($"phone number must be only numbers");
+            throw new InvalidPhoneException("phone number must be only numbers");
         }
         if (Phone == phone) return;
         Phone = phone;
@@ -138,18 +138,18 @@ public class User
     {
         if (email.Length == 0)
         {
-            throw new Exception("email address cannot be empty");
+            throw new InvalidEmailException("email address cannot be empty");
         }
         if (email.Length > 256)
         {
-            throw new Exception("email cannot exceed 256 characters in length");
+            throw new InvalidEmailException("email cannot exceed 256 characters in length");
         }
         
         email = email.Trim().ToLowerInvariant();
         var emailAttrib = new EmailAddressAttribute();
         if (!emailAttrib.IsValid(email))
         {
-            throw new Exception($"invalid email address {email}");
+            throw new InvalidEmailException($"invalid email address {email}");
         }
         if (Email == email) return;
         Email = email;

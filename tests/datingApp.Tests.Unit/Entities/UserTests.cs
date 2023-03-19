@@ -11,6 +11,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidPhoneException>(exception);
     }
     
     [Fact]
@@ -18,6 +19,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "0123456789", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidPhoneException>(exception);
     }
 
     [Theory]
@@ -29,6 +31,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidPhoneException>(exception);
     }
 
     [Theory]
@@ -41,6 +44,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
     }
 
     [Fact]
@@ -54,6 +58,7 @@ public class UserTests
         badEmail += "test@gmail.com";
         var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
     }
 
     [Fact]
@@ -61,6 +66,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "012345678", "", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
     }
 
     [Fact]

@@ -1,8 +1,7 @@
-namespace datingApp.Core.Entities
+namespace datingApp.Core.Entities;
+
+public enum Like
 {
-    public enum Like
-    {
-        Pass = 1,
-        Like = 2
-    }
+    Pass = 1,
+    Like = 2
 }

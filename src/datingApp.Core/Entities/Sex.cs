@@ -1,9 +1,8 @@
-namespace datingApp.Core.Entities
+namespace datingApp.Core.Entities;
+
+[Flags]
+public enum Sex
 {
-    [Flags]
-    public enum Sex
-    {
-        Male = 1,
-        Female = 2
-    }
+    Male = 1,
+    Female = 2
 }

@@ -140,4 +140,46 @@ public class UserTests
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), sex));
         Assert.NotNull(exception);
     }
+
+    [Fact]
+    public void user_adding_two_matches_with_same_id_should_fail()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male);
+        var match1 = new Match(1, 1, 1, null, DateTime.UtcNow);
+        var match2 = new Match(1, 1, 1, null, DateTime.UtcNow);
+        user.AddMatch(match1);
+        var exception = Record.Exception(() => user.AddMatch(match2));
+        Assert.NotNull(exception);
+    }
+
+    [Fact]
+    public void user_adding_two_photos_with_same_id_should_fail()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male);
+        var photo1 = new Photo(1, 1, "abc", 1);
+        var photo2 = new Photo(1, 1, "abc", 2);
+        user.AddPhoto(photo1);
+        var exception = Record.Exception(() => user.AddPhoto(photo2));
+        Assert.NotNull(exception);
+    }
+
+    [Fact]
+    public void user_should_not_accept_two_photos_with_same_oridinal()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male);
+        var photo1 = new Photo(1, 1, "abc", 1);
+        var photo2 = new Photo(2, 1, "abc", 1);
+        user.AddPhoto(photo1);
+        var exception = Record.Exception(() => user.AddPhoto(photo2));
+        Assert.NotNull(exception);
+    }
+
+    [Fact]
+    public void user_with_main_photo_isvisible_should_return_true()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male);
+        var photo1 = new Photo(1, 1, "abc", 1);
+        user.AddPhoto(photo1);
+        Assert.Equal(true, user.IsVisible());
+    }
 }

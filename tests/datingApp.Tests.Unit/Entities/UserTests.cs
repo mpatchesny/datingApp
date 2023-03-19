@@ -109,6 +109,7 @@ public class UserTests
         var invalidDob2 = new DateOnly(invalidDob.Year, invalidDob.Month, invalidDob.Day);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", invalidDob2, Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidDateOfBirthException>(exception);
     }
 
     [Fact]
@@ -121,6 +122,7 @@ public class UserTests
         }
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, "", bio));
         Assert.NotNull(exception);
+        Assert.IsType<BioTooLongException>(exception);
     }
 
     [Fact]
@@ -133,6 +135,7 @@ public class UserTests
         }
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, job));
         Assert.NotNull(exception);
+        Assert.IsType<JobTooLongException>(exception);
     }
 
     [Fact]

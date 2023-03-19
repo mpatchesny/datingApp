@@ -4,7 +4,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class InvalidDiscoveryRangeException : CustomException
 {
-    public InvalidDiscoveryRangeException() : base("discover range must be between 1 and 100")
+    public InvalidDiscoveryRangeException() : base("discovery range must be between 1 and 100")
     {
     }
 }

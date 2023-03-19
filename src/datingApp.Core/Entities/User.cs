@@ -125,7 +125,7 @@ public class User
         }
         if (phone.Length > 9)
         {
-            throw new InvalidPhoneException("phone number cannot exceed 9 characters in length");
+            throw new InvalidPhoneException("phone number too long");
         }
         if (BadPhoneRegex.IsMatch(phone))
         {
@@ -142,7 +142,7 @@ public class User
         }
         if (email.Length > 256)
         {
-            throw new InvalidEmailException("email cannot exceed 256 characters in length");
+            throw new InvalidEmailException("email too long");
         }
         
         email = email.Trim().ToLowerInvariant();
@@ -160,7 +160,7 @@ public class User
         var age = CalculateAge(dateOfBirth, currDate);
         if (age < 18 | age > 100) 
         {
-            throw new InvalidDateOfBirthException($"user cannot be younger than 18 or older than 100");
+            throw new InvalidDateOfBirthException($"user cannot be younger than 18 or older than 100 years");
         }
         if (DateOfBirth == dateOfBirth) return;
         DateOfBirth = dateOfBirth;

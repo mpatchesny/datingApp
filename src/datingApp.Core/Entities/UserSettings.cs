@@ -70,11 +70,6 @@ public class UserSettings
 
     private void SetLocation(Location location)
     {
-        if (location.Lat > 90 | location.Lat < -90 |
-            location.Lon > 180 | location.Lon < -180)
-        {
-            throw new Exception($"invalid location {location.ToString()}");
-        }
         if (Location == location) return;
         Location = location;
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
 
 namespace datingApp.Tests.Unit.Entities
@@ -71,10 +72,9 @@ namespace datingApp.Tests.Unit.Entities
         [InlineData(-90.1, 0.0)]
         public void user_settings_location_should_be_proper_location(double lat, double lon)
         {
-            var location = new Location(lat, lon);
-            var ageRange = new Tuple<int, int>(20, 25);
-            var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 15, location));
+            var exception = Record.Exception(() => new Location(lat, lon));
             Assert.NotNull(exception);
+            Assert.IsType<InvalidLocationException>(exception);
         }
     }
 }

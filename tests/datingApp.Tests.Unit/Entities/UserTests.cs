@@ -11,6 +11,7 @@ public class UserTests
         var exception = Record.Exception(() =>new User(1, "", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
     }
+    
     [Fact]
     public void user_phone_should_not_be_longer_than_9_chars()
     {

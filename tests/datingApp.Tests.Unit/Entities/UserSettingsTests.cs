@@ -33,22 +33,14 @@ namespace datingApp.Tests.Unit.Entities
             Assert.IsType<InvalidDiscoveryAgeException>(exception);
         }
 
-        [Fact]
-        public void user_settings_discovery_range_should_not_be_above_100()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(101)]
+        public void user_settings_discovery_range_should_be_between_1_and_100(int range)
         {
             var location = new Location(36.5, 36.5);
             var ageRange = new Tuple<int, int>(20, 25);
-            var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 101, location));
-            Assert.NotNull(exception);
-            Assert.IsType<InvalidDiscoveryRangeException>(exception);
-        }
-
-        [Fact]
-        public void user_settings_discovery_range_should_be_above_1()
-        {
-            var location = new Location(36.5, 36.5);
-            var ageRange = new Tuple<int, int>(20, 25);
-            var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 0, location));
+            var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, range, location));
             Assert.NotNull(exception);
             Assert.IsType<InvalidDiscoveryRangeException>(exception);
         }

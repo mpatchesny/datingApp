@@ -10,10 +10,10 @@ namespace datingApp.Core.Entities
         public int Id { get; }
         public int SwappedById { get; private set; }
         public int SwappedWhoId { get; private set; }
-        public bool Like { get; private set; }
+        public Like Like { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
-        public Swap(int id, int swappedById, int swappedWhoId, bool like, DateTime createdAt)
+        public Swap(int id, int swappedById, int swappedWhoId, Like like, DateTime createdAt)
         {
             Id = id;
             SwappedById = swappedById;

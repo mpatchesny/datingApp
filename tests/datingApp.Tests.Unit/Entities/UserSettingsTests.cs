@@ -54,6 +54,7 @@ namespace datingApp.Tests.Unit.Entities
             var ageRange = new Tuple<int, int>(20, 25);
             var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 101, location));
             Assert.NotNull(exception);
+            Assert.IsType<InvalidDiscoveryRangeException>(exception);
         }
 
         [Fact]
@@ -63,6 +64,7 @@ namespace datingApp.Tests.Unit.Entities
             var ageRange = new Tuple<int, int>(20, 25);
             var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 0, location));
             Assert.NotNull(exception);
+            Assert.IsType<InvalidDiscoveryRangeException>(exception);
         }
 
         [Theory]

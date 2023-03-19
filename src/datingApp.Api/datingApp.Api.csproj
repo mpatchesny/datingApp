@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../datingApp.Core/datingApp.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../datingApp.Core/datingApp.Core.csproj" />
   </ItemGroup>
 

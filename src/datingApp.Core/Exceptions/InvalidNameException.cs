@@ -7,7 +7,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class InvalidUsernameException : CustomException
 {
-    public InvalidUsernameException() : base("User name is invalid.")
+    public InvalidUsernameException(string details) : base($"User name is invalid: {details}")
     {
     }
 }

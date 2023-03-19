@@ -21,7 +21,7 @@ namespace datingApp.Core.Entities
         public string Phone { get; private set; }
         public string Email { get; private set; }
         public string Name { get; private set; }
-        public int Age { get; private set; }
+        public DateOnly DateOfBirth { get; private set; }
         public Sex Sex { get; private set; }
         public string Job { get; private set; }
         public string Bio { get; private set; }
@@ -32,14 +32,14 @@ namespace datingApp.Core.Entities
         public IEnumerable<Photo> Photos => _photos;
         private readonly HashSet<Photo> _photos = new();
 
-        public User(int id, string phone, string email, string name, int age, Sex sex, string job="", string bio="")
+        public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex, string job="", string bio="")
         {
             Id = id;
             SetPhone(phone);
             SetEmail(email);
             SetName(name);
             Sex = sex;
-            SetAge(age);
+            SetDateOfBirth(dateOfBirth);
             SetBio(bio);
             SetJob(job);
         }
@@ -48,9 +48,14 @@ namespace datingApp.Core.Entities
         {
             return _photos.Any(x => x.Oridinal == 1);
         }
-        public void ChangeAge(int age)
+        public int Age()
         {
-            SetAge(age);
+            return 0;
+        }
+
+        public void ChangeDateOfBirth(DateOnly dateOfBirth)
+        {
+            SetDateOfBirth(dateOfBirth);
         }
         public void ChangeBio(string bio)
         {
@@ -142,11 +147,25 @@ namespace datingApp.Core.Entities
             if (Email == email) return;
             Email = email.Trim().ToLowerInvariant();
         }
-        private void SetAge(int age)
+        private void SetDateOfBirth(DateOnly dateOfBirth)
         {
-            if (age < 18 | age > 100) throw new Exception("age must be between 18 and 100");
-            if (Age == age) return;
-            Age = age;
+            DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            var age = currDate.Year - dateOfBirth.Year;
+            switch (currDate.Month - dateOfBirth.Month)
+            {
+                case < 0:
+                    age -= 1;
+                    break;
+                case 0:
+                    if ((currDate.Day - dateOfBirth.Day) < 0)
+                    {
+                        age -= 1;
+                    }
+                    break;
+            }
+            if (age < 18 | age > 100) throw new Exception("invalid date of birth; user age must be between 18 and 100");
+            if (DateOfBirth == dateOfBirth) return;
+            DateOfBirth = dateOfBirth;
         }
         private void SetJob(string job)
         {

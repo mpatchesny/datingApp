@@ -3,7 +3,7 @@ using datingApp.Core.Entities;
 
 namespace datingApp.Tests.Unit;
 
-public class UsersTests
+public class UserTests
 {
     [Fact]
     public void user_phone_should_not_be_emptystring()
@@ -49,7 +49,7 @@ public class UsersTests
         {
             email += "a";
         }
-        email = "test@gmail.com";
+        email += "test@gmail.com";
         var exception = Record.Exception(() =>new User(1, "012345678", email, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
     }
@@ -123,7 +123,12 @@ public class UsersTests
         Assert.NotNull(exception);
     }
 
+    [Fact]
     public void user_get_age_returns_proper_age()
     {
+        var actualYear = DateTime.UtcNow.Year;
+        var dob = new DateOnly(actualYear - 18, 1, 1);
+        var user = new User(1, "012345678", "test@test.com", "janusz", dob, Sex.Male);
+        Assert.Equal(18, user.GetAge());
     }
 }

@@ -7,7 +7,13 @@ namespace datingApp.Core.ValueObjects
 {
     public record Location
     {
-         public double Lat { get; set; }
-         public double Lon { get; set; }
+        public double Lat { get; }
+        public double Lon { get; }
+
+        public Location(double lat, double lon)
+        {
+            Lat = lat;
+            Lon = lon;
+        }
     }
 }

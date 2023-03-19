@@ -167,13 +167,19 @@ public class User
     }
     private void SetJob(string job)
     {
-        if (job.Length > 30) throw new JobTooLongException();
+        if (job.Length > 30)
+        {
+            throw new JobTooLongException();
+        }
         if (Job == job) return;
         Job = job;
     }
     private void SetBio(string bio)
     {
-        if (bio.Length > 400) throw new BioTooLongException();
+        if (bio.Length > 400)
+        {
+            throw new BioTooLongException();
+        }
         if (Bio == bio) return;
         Bio = bio;
     }

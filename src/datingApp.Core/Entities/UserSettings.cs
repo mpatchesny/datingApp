@@ -49,11 +49,11 @@ public class UserSettings
         if (discoverAgeRange.Item1 < 18 | discoverAgeRange.Item1 > 100 |
             discoverAgeRange.Item2 < 18 | discoverAgeRange.Item2 > 100)
         {
-            throw new Exception("discover max age must be between 18 and 100");
+            throw new InvalidDiscoveryAgeException("discover max age must be between 18 and 100");
         }
         if (discoverAgeRange.Item1 > discoverAgeRange.Item2)
         {
-            throw new Exception("discover min age must be lower or equal to max age");
+            throw new InvalidDiscoveryAgeException("discover min age can't be larger than max age");
         }
         if (DiscoverAgeRange == discoverAgeRange) return;
         DiscoverAgeRange = discoverAgeRange;

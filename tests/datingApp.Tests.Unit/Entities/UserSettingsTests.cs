@@ -20,31 +20,17 @@ namespace datingApp.Tests.Unit.Entities
             Assert.Null(exception);
         }
 
-        [Fact]
-        public void user_settings_age_range_should_be_below_18()
+        [Theory]
+        [InlineData(17, 18)]
+        [InlineData(18, 101)]
+        [InlineData(21, 20)]
+        public void user_settings_age_range_should_be_between_18_and_100_and_min_not_larger_than_max(int minAge, int maxAge)
         {
             var location = new Location(36.5, 36.5);
-            var ageRange = new Tuple<int, int>(17, 20);
+            var ageRange = new Tuple<int, int>(minAge, maxAge);
             var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 20, location));
             Assert.NotNull(exception);
-        }
-
-        [Fact]
-        public void user_settings_age_range_should_not_be_above_100()
-        {
-            var location = new Location(36.5, 36.5);
-            var ageRange = new Tuple<int, int>(18, 101);
-            var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 20, location));
-            Assert.NotNull(exception);
-        }
-
-        [Fact]
-        public void user_settings_age_range_first_value_should_be_lower_or_equal_to_second_value()
-        {
-            var location = new Location(36.5, 36.5);
-            var ageRange = new Tuple<int, int>(44, 43);
-            var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, ageRange, 20, location));
-            Assert.NotNull(exception);
+            Assert.IsType<InvalidDiscoveryAgeException>(exception);
         }
 
         [Fact]

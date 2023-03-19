@@ -37,7 +37,7 @@ public class Message
         }
         if (text.Length > 255)
         {
-            throw new InvalidMessageException("message cannot exceed 255 characters in length");
+            throw new InvalidMessageException("message too long");
         }
         if (Text == text) return;
         Text = text;

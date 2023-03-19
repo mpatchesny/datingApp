@@ -36,22 +36,22 @@ public class UserTests
     [InlineData("user@@example.com")]
     // [InlineData("user@exam_ple.com")]
     // [InlineData("user@ex ample.com")]
-    public void user_email_should_be_proper_email(string email)
+    public void user_email_should_be_proper_email(string badEmail)
     {
-        var exception = Record.Exception(() =>new User(1, "012345678", email, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
+        var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
     }
 
     [Fact]
     public void user_email_should_not_exceed_257_chars()
     {
-        string email = "";
+        string badEmail = "";
         for (int i=1; i<=257; i++)
         {
-            email += "a";
+            badEmail += "a";
         }
-        email += "test@gmail.com";
-        var exception = Record.Exception(() =>new User(1, "012345678", email, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
+        badEmail += "test@gmail.com";
+        var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
     }
 
@@ -181,5 +181,29 @@ public class UserTests
         var photo1 = new Photo(1, 1, "abc", 1);
         user.AddPhoto(photo1);
         Assert.Equal(true, user.IsVisible());
+    }
+
+    [Fact]
+    public void change_user_date_of_birth_should_take_effect()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male);
+        user.ChangeDateOfBirth(new DateOnly(1999,1,2));
+        Assert.Equal(new DateOnly(1999,1,1), user.DateOfBirth);
+    }
+
+    [Fact]
+    public void change_user_bio_should_take_effect()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, "", "bio");
+        user.ChangeBio("new bio");
+        Assert.Equal("new bio", user.Bio);
+    }
+
+    [Fact]
+    public void change_user_job_should_take_effect()
+    {
+        var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, "job");
+        user.ChangeJob("new job");
+        Assert.Equal("new job", user.Job);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using datingApp.Core.Entities;
+using datingApp.Core.Exceptions;
 
 namespace datingApp.Tests.Unit;
 
@@ -10,6 +11,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidPhoneException>(exception);
     }
     
     [Fact]
@@ -17,6 +19,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "0123456789", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidPhoneException>(exception);
     }
 
     [Theory]
@@ -28,6 +31,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidPhoneException>(exception);
     }
 
     [Theory]
@@ -40,6 +44,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
     }
 
     [Fact]
@@ -53,6 +58,7 @@ public class UserTests
         badEmail += "test@gmail.com";
         var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
     }
 
     [Fact]
@@ -60,12 +66,15 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "012345678", "", "janusz", new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
     }
 
     [Fact]
     public void user_name_should_not_be_emptystring()
     {
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "", new System.DateOnly(1999,1,1), Sex.Male));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
     }
 
     [Theory]
@@ -78,6 +87,7 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
     }
 
     [Fact]
@@ -86,6 +96,7 @@ public class UserTests
         string username = "Janusz ma kota a";
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
     }
 
     [Theory]
@@ -98,6 +109,7 @@ public class UserTests
         var invalidDob2 = new DateOnly(invalidDob.Year, invalidDob.Month, invalidDob.Day);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", invalidDob2, Sex.Male));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidDateOfBirthException>(exception);
     }
 
     [Fact]
@@ -110,6 +122,7 @@ public class UserTests
         }
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, "", bio));
         Assert.NotNull(exception);
+        Assert.IsType<BioTooLongException>(exception);
     }
 
     [Fact]
@@ -122,6 +135,7 @@ public class UserTests
         }
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, job));
         Assert.NotNull(exception);
+        Assert.IsType<JobTooLongException>(exception);
     }
 
     [Fact]
@@ -139,6 +153,7 @@ public class UserTests
         var sex = Sex.Male & Sex.Female;
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), sex));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidUserSexException>(exception);
     }
 
     [Fact]

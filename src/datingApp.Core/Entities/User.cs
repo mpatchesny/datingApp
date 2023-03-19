@@ -158,19 +158,22 @@ public class User
     {
         DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
         var age = CalculateAge(dateOfBirth, currDate);
-        if (age < 18 | age > 100) throw new Exception($"invalid date of birth; user age must be between 18 and 100 {age}");
+        if (age < 18 | age > 100) 
+        {
+            throw new InvalidDateOfBirthException($"user cannot be younger than 18 or older than 100");
+        }
         if (DateOfBirth == dateOfBirth) return;
         DateOfBirth = dateOfBirth;
     }
     private void SetJob(string job)
     {
-        if (job.Length > 30) throw new Exception("job cannot exceed 30 characters in length");
+        if (job.Length > 30) throw new JobTooLongException();
         if (Job == job) return;
         Job = job;
     }
     private void SetBio(string bio)
     {
-        if (bio.Length > 400) throw new Exception("bio cannot exceed 400 characters in length");
+        if (bio.Length > 400) throw new BioTooLongException();
         if (Bio == bio) return;
         Bio = bio;
     }

@@ -132,4 +132,12 @@ public class UserTests
         var user = new User(1, "012345678", "test@test.com", "janusz", dob, Sex.Male);
         Assert.Equal(18, user.GetAge());
     }
+
+    [Fact]
+    public void user_should_not_accept_two_sexes()
+    {
+        var sex = Sex.Male & Sex.Female;
+        var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), sex));
+        Assert.NotNull(exception);
+    }
 }

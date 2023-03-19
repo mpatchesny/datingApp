@@ -51,7 +51,7 @@ namespace datingApp.Core.Entities
         public int GetAge()
         {
             DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
-            var age = ComputeAge(currDate, DateOfBirth);
+            var age = DateOfBirth.ComputeAge(currDate);
             return age;
         }
 
@@ -152,7 +152,7 @@ namespace datingApp.Core.Entities
         private void SetDateOfBirth(DateOnly dateOfBirth)
         {
             DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
-            var age = ComputeAge(currDate, dateOfBirth);
+            var age = DateOfBirth.ComputeAge(currDate);
             if (age < 18 | age > 100) throw new Exception("invalid date of birth; user age must be between 18 and 100");
             if (DateOfBirth == dateOfBirth) return;
             DateOfBirth = dateOfBirth;
@@ -170,23 +170,5 @@ namespace datingApp.Core.Entities
             Bio = bio;
         }
         #endregion
-
-        private int ComputeAge(DateOnly newerDate, DateOnly olderDate)
-        {
-            var age = newerDate.Year - olderDate.Year;
-            switch (newerDate.Month - olderDate.Month)
-            {
-                case < 0:
-                    age -= 1;
-                    break;
-                case 0:
-                    if ((newerDate.Day - olderDate.Day) < 0)
-                    {
-                        age -= 1;
-                    }
-                    break;
-            }
-            return age;
-        }
     }
 }

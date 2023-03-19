@@ -38,7 +38,7 @@ namespace datingApp.Core.Entities
             SetPhone(phone);
             SetEmail(email);
             SetName(name);
-            Sex = sex;
+            SetSex(sex);
             SetDateOfBirth(dateOfBirth);
             SetJob(job);
             SetBio(bio);
@@ -172,6 +172,15 @@ namespace datingApp.Core.Entities
             if (bio.Length > 400) throw new Exception("bio cannot exceed 400 characters in length");
             if (Bio == bio) return;
             Bio = bio;
+        }
+        private void SetSex(Sex sex)
+        {
+            if (sex == (Sex.Male & Sex.Female))
+            {
+                throw new Exception("user can have only one sex");
+            }
+            if (Sex == sex) return;
+            Sex = sex;
         }
         #endregion
         private static int CalculateAge(DateOnly olderDate, DateOnly newerDate)

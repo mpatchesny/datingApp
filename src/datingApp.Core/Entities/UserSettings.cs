@@ -50,6 +50,10 @@ namespace datingApp.Core.Entities
             {
                 throw new Exception("discover max age must be between 18 and 100");
             }
+            if (discoverAgeRange.Item1 > discoverAgeRange.Item2)
+            {
+                throw new Exception("discover min age must be lower or equal to max age");
+            }
             if (DiscoverAgeRange == discoverAgeRange) return;
             DiscoverAgeRange = discoverAgeRange;
         }

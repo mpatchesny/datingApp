@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -8,10 +9,6 @@ namespace datingApp.Core.Entities
 {
     public class User
     {
-        private static readonly Regex EmailRegex = new Regex(
-            @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-            @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
         private static readonly Regex BadPhoneRegex = new Regex(@"[^0-9]",
             RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
         private static readonly Regex BadNameRegex = new Regex(@"[^a-zA-Z\s]",
@@ -142,16 +139,19 @@ namespace datingApp.Core.Entities
             {
                 throw new Exception("email address cannot be empty");
             }
-            if (email.Length > 320)
+            if (email.Length > 256)
             {
-                throw new Exception("email cannot exceed 320 characters in length");
+                throw new Exception("email cannot exceed 256 characters in length");
             }
-            if (!EmailRegex.IsMatch(email))
+            
+            email = email.Trim().ToLowerInvariant();
+            var emailAttrib = new EmailAddressAttribute();
+            if (!emailAttrib.IsValid(email))
             {
                 throw new Exception($"invalid email address {email}");
             }
             if (Email == email) return;
-            Email = email.Trim().ToLowerInvariant();
+            Email = email;
         }
         private void SetDateOfBirth(DateOnly dateOfBirth)
         {

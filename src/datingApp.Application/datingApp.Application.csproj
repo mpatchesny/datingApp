@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
-<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../datingApp.Core/datingApp.Core.csproj" />
   </ItemGroup>
 

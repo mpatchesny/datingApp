@@ -11,10 +11,10 @@ public class UserSettings
 {
     public int UserId { get; private set; }
     public Sex DiscoverSex { get; private set; }
-    public Tuple<int, int> DiscoverAgeRange { get; private set; }
+    public AgeRange DiscoverAgeRange { get; private set; }
     public int DiscoverRange { get; private set; }
 
-    public UserSettings(int userId, Sex discoverSex, Tuple<int,int> discoverAgeRange, int discoverRange)
+    public UserSettings(int userId, Sex discoverSex, AgeRange discoverAgeRange, int discoverRange)
     {
         UserId = userId;
         SetDiscoverSex(discoverSex);
@@ -27,7 +27,7 @@ public class UserSettings
         SetDiscoverSex(sex);
     }
 
-    public void ChangeDiscoverAge(Tuple<int,int> discoverAgeRange)
+    public void ChangeDiscoverAge(AgeRange discoverAgeRange)
     {
         SetDiscoverAge(discoverAgeRange);
     }
@@ -43,17 +43,8 @@ public class UserSettings
         DiscoverSex = sex;
     }
 
-    private void SetDiscoverAge(Tuple<int, int> discoverAgeRange)
+    private void SetDiscoverAge(AgeRange discoverAgeRange)
     {
-        if (discoverAgeRange.Item1 < 18 | discoverAgeRange.Item1 > 100 |
-            discoverAgeRange.Item2 < 18 | discoverAgeRange.Item2 > 100)
-        {
-            throw new InvalidDiscoveryAgeException("discover max age must be between 18 and 100");
-        }
-        if (discoverAgeRange.Item1 > discoverAgeRange.Item2)
-        {
-            throw new InvalidDiscoveryAgeException("discover min age can't be larger than max age");
-        }
         if (DiscoverAgeRange == discoverAgeRange) return;
         DiscoverAgeRange = discoverAgeRange;
     }

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace datingApp.Core
+namespace datingApp.Application
 {
     public static class Extensions
     {
-        public static IServiceCollection AddCore(this IServiceCollection services)
+        public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             return services;
         }

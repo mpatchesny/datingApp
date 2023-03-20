@@ -37,11 +37,6 @@ public class UserSettings
         SetDiscoverRange(discoverRange);
     }
 
-    public void ChangeLocation(Location location)
-    {
-        SetLocation(location);
-    }
-
     private void SetDiscoverSex(Sex sex)
     {
         if (DiscoverSex == sex) return;

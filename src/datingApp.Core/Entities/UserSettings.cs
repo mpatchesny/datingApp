@@ -13,15 +13,13 @@ public class UserSettings
     public Sex DiscoverSex { get; private set; }
     public Tuple<int, int> DiscoverAgeRange { get; private set; }
     public int DiscoverRange { get; private set; }
-    public Location Location { get; private set; }
 
-    public UserSettings(int userId, Sex discoverSex, Tuple<int,int> discoverAgeRange, int discoverRange, Location location)
+    public UserSettings(int userId, Sex discoverSex, Tuple<int,int> discoverAgeRange, int discoverRange)
     {
         UserId = userId;
         SetDiscoverSex(discoverSex);
         SetDiscoverAge(discoverAgeRange);
         SetDiscoverRange(discoverRange);
-        SetLocation(location);
     }
 
     public void ChangeDiscoverSex(Sex sex)
@@ -73,11 +71,5 @@ public class UserSettings
         }
         if (DiscoverRange == discoverRange) return;
         DiscoverRange = discoverRange;
-    }
-
-    private void SetLocation(Location location)
-    {
-        if (Location == location) return;
-        Location = location;
     }
 }

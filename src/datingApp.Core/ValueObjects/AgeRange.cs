@@ -13,11 +13,15 @@ public sealed record AgeRange
 
     public AgeRange(int ageFrom, int ageTo)
     {
-        if (ageFrom < 18 | ageTo > 100 | ageTo < 18 | ageFrom > 100)
+        if (ageFrom < 18 | ageFrom > 100)
+        {
+            throw new InvalidDiscoveryAgeException("discover min age must be between 18 and 100");
+        }
+        else if (ageTo < 18 | ageTo > 100)
         {
             throw new InvalidDiscoveryAgeException("discover max age must be between 18 and 100");
         }
-        if (ageFrom > ageTo)
+        else if (ageFrom > ageTo)
         {
             throw new InvalidDiscoveryAgeException("discover min age cannot be larger than max age");
         }

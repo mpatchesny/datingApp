@@ -14,7 +14,7 @@ public class UserLocation
     public UserLocation(int userId, Location location)
     {
         UserId = userId;
-        Location = location;
+        SetLocation(location);
     }
     public void ChangeLocation(Location location)
     {

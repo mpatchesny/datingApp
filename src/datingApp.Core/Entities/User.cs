@@ -24,11 +24,11 @@ public class User
     public string Job { get; private set; }
     public string Bio { get; private set; }
     public IEnumerable<Photo> Photos { get; private set; }
-    public IEnumerable<Like> Likes { get; private set; }
     public IEnumerable<Match> Matches { get; private set; }
+    public UserSettings Settings { get; private set; }
 
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
-                IEnumerable<Photo> photos, IEnumerable<Like> likes, IEnumerable<Match> matches,
+                IEnumerable<Photo> photos, IEnumerable<Match> matches, UserSettings settings,
                 string job="", string bio="")
     {
         Id = id;
@@ -38,8 +38,8 @@ public class User
         SetSex(sex);
         SetDateOfBirth(dateOfBirth);
         if (photos == null) Photos = new List<Photo>();
-        if (likes == null) Likes = new List<Like>();
         if (matches == null) Matches = new List<Match>();
+        SetSettings(settings);
         SetJob(job);
         SetBio(bio);
     }
@@ -129,6 +129,15 @@ public class User
         }
         if (DateOfBirth == dateOfBirth) return;
         DateOfBirth = dateOfBirth;
+    }
+    private void SetSettings(UserSettings settings)
+    {
+        if (settings == null)
+        {
+            throw new UserSettingsIsNullException();
+        }
+        if (Settings == settings) return;
+        Settings = settings;
     }
     private void SetJob(string job)
     {

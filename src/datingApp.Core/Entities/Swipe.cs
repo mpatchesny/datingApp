@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 
 namespace datingApp.Core.Entities;
 
-public class Swap
+public class Swipe
 {
     public int Id { get; }
-    public int SwappedById { get; private set; }
-    public int SwappedWhoId { get; private set; }
+    public int SwippedById { get; private set; }
+    public int SwippedWhoId { get; private set; }
     public Like Like { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public Swap(int id, int swappedById, int swappedWhoId, Like like, DateTime createdAt)
+    public Swipe(int id, int swippedById, int swippedWhoId, Like like, DateTime createdAt)
     {
         Id = id;
-        SwappedById = swappedById;
-        SwappedWhoId = swappedWhoId;
+        SwippedById = swippedById;
+        SwippedWhoId = swippedWhoId;
         Like = like;
         CreatedAt = createdAt;
     }

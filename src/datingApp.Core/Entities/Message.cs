@@ -8,15 +8,17 @@ namespace datingApp.Core.Entities;
 public class Message
 {
     public int Id { get; }
+    public int MatchId { get; private set; }
     public int SendFromId { get; private set; }
     public int SendToId { get; private set; }
     public string Text { get; private set; }
     public bool IsDisplayed { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public Message(int id, int sendFromId, int sendToId, string text, bool isDisplayed, DateTime createdAt)
+    public Message(int id, int matchId, int sendFromId, int sendToId, string text, bool isDisplayed, DateTime createdAt)
     {
         Id = id;
+        MatchId = matchId;
         SendFromId = sendFromId;
         SendToId = sendToId;
         SetText(text);

@@ -26,10 +26,12 @@ public class User
     public IEnumerable<Photo> Photos { get; private set; }
     public IEnumerable<Like> Likes { get; private set; }
     public IEnumerable<Match> Matches { get; private set; }
+    public UserSettings Settings { get; private set; }
+    public UserLocation Location { get; private set; }
 
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
                 IEnumerable<Photo> photos, IEnumerable<Like> likes, IEnumerable<Match> matches,
-                string job="", string bio="")
+                UserSettings settings, UserLocation location, string job="", string bio="")
     {
         Id = id;
         SetPhone(phone);
@@ -40,6 +42,8 @@ public class User
         if (photos == null) Photos = new List<Photo>();
         if (likes == null) Likes = new List<Like>();
         if (matches == null) Matches = new List<Match>();
+        SetSettings(settings);
+        SetLocation(location);
         SetJob(job);
         SetBio(bio);
     }
@@ -129,6 +133,16 @@ public class User
         }
         if (DateOfBirth == dateOfBirth) return;
         DateOfBirth = dateOfBirth;
+    }
+    private void SetSettings(UserSettings settings)
+    {
+        if (Settings == settings) return;
+        Settings = settings;
+    }
+    private void SetLocation(UserLocation location)
+    {
+        if (Location == location) return;
+        Location = location;
     }
     private void SetJob(string job)
     {

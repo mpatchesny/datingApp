@@ -7,4 +7,4 @@ using datingApp.Core.Entities;
 
 namespace datingApp.Application.Commands;
 
-public sealed record ChangeDiscoverySex(int userId, Sex sex) : ICommand;
+public sealed record ChangeDiscoverySex(int userId, int sex) : ICommand;

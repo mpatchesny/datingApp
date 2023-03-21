@@ -14,5 +14,5 @@ public class PublicUserDto
     public int Distance { get; set; }
     public string Job { get; set; }
     public string Bio { get; set; }
-    public IEnumerable<Object> Photos { get; set; }
+    public IEnumerable<PhotoDto> Photos { get; set; }
 }

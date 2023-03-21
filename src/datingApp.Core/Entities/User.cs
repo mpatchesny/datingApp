@@ -38,7 +38,9 @@ public class User
         SetSex(sex);
         SetDateOfBirth(dateOfBirth);
         if (photos == null) Photos = new List<Photo>();
+        Photos = photos;
         if (matches == null) Matches = new List<Match>();
+        Matches = matches;
         SetSettings(settings);
         SetJob(job);
         SetBio(bio);

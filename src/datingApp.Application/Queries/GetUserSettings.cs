@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetMessages : IQuery<IEnumerable<MessageDto>>
+public class GetUserSettings : IQuery<UserSettingsDto>
 {
-    public int MatchId { get; set; }
+    public int UserId { get; set; }
 }

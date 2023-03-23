@@ -9,33 +9,36 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class InMemoryUserRepository : IUserRepository
 {
-    public Task AddAsync(User user)
+    private readonly List<User> _users;
+    public InMemoryUserRepository(List<User> users)
     {
-        throw new NotImplementedException();
+        _users = users;
     }
 
-    public Task DeleteAsync(User user)
+    public async Task<User> GetByIdAsync(int userId)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return _users.SingleOrDefault(x => x.Id == userId);
     }
-
-    public Task<User> GetByEmailAsync(string email)
+    public async Task<User> GetByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return _users.SingleOrDefault(x => x.Email == email);
     }
-
-    public Task<User> GetByIdAsync(int userId)
+    public async Task<User> GetByPhoneAsync(string phone)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        return _users.SingleOrDefault(x => x.Phone == phone);
     }
-
-    public Task<User> GetByPhoneAsync(string phone)
+    public async Task AddAsync(User user)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        _users.Add(user);
     }
-
-    public Task UpdateAsync(User user)
+    public Task UpdateAsync(User user) => Task.CompletedTask;
+    public async Task DeleteAsync(User user)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+        _users.Remove(user);
     }
 }

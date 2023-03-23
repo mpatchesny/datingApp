@@ -7,7 +7,7 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class InMemoryUserRepository : IUserRepository
+public sealed class InMemoryUserRepository : IUserRepository
 {
     private readonly List<User> _users;
     public InMemoryUserRepository(List<User> users)

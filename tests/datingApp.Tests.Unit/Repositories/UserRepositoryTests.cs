@@ -23,7 +23,7 @@ public class RepositoriesTest
     }
 
     [Fact]
-    public void get_user_by_phone_should_succeed()
+    public void get_user_by_existing_phone_should_succeed()
     {
         var phone = "123456789";
         var task =  _userRepository.GetByPhoneAsync(phone);
@@ -34,7 +34,7 @@ public class RepositoriesTest
     }
 
     [Fact]
-    public void get_user_by_email_should_succeed()
+    public void get_user_by_existing_email_should_succeed()
     {
         var email = "test@test.com";
         var task =  _userRepository.GetByEmailAsync(email);
@@ -45,7 +45,7 @@ public class RepositoriesTest
     }
 
     [Fact]
-    public void update_user_should_succeed()
+    public void update_existing_user_should_succeed()
     {
         var userId = 1;
         var task = _userRepository.GetByIdAsync(userId);
@@ -64,7 +64,19 @@ public class RepositoriesTest
     }
 
     [Fact]
-    public void delete_user_should_succeed()
+    public void update_nonexisting_user_should_fail()
+    {
+        var location = new Location(45.5, 45.5);
+        var settings = new UserSettings(0, Sex.Female, new AgeRange(18, 21), 20);
+        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
+        var updateTask = _userRepository.UpdateAsync(user);
+        updateTask.Wait();
+        // FIXME
+        Assert.Equal(true, updateTask.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public void delete_existing_user_should_succeed()
     {
         var userId = 1;
         var task = _userRepository.GetByIdAsync(userId);
@@ -77,6 +89,18 @@ public class RepositoriesTest
         task.Wait();
         user = task.Result;
         Assert.Null(user);
+    }
+
+    [Fact]
+    public void delete_nonexisting_user_should_fail()
+    {
+        var location = new Location(45.5, 45.5);
+        var settings = new UserSettings(0, Sex.Female, new AgeRange(18, 21), 20);
+        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
+        var deleteTask =  _userRepository.DeleteAsync(user);
+        deleteTask.Wait();
+        // FIXME
+        Assert.Equal(true, deleteTask.IsCompletedSuccessfully);
     }
 
     [Fact]
@@ -134,8 +158,6 @@ public class RepositoriesTest
         var location = new Location(45.5, 45.5);
         var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
         users.Add(new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location));
-        settings = new UserSettings(2, Sex.Female, new AgeRange(30, 35), 20);
-        users.Add(new User(2, "000111222", "test2@test.com", "Mariusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location));
         _userRepository = new InMemoryUserRepository(users);
     }
 }

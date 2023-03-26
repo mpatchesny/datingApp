@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 
@@ -26,10 +27,11 @@ public class User
     public IEnumerable<Photo> Photos { get; private set; }
     public IEnumerable<Match> Matches { get; private set; }
     public UserSettings Settings { get; private set; }
+    public Location UserLocation { get; private set; }
 
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
                 IEnumerable<Photo> photos, IEnumerable<Match> matches, UserSettings settings,
-                string job="", string bio="")
+                Location userLocation, string job="", string bio="")
     {
         Id = id;
         SetPhone(phone);
@@ -41,6 +43,7 @@ public class User
         Photos = photos;
         if (matches == null) Matches = new List<Match>();
         Matches = matches;
+        SetLocation(userLocation);
         SetSettings(settings);
         SetJob(job);
         SetBio(bio);
@@ -64,6 +67,10 @@ public class User
     public void ChangeJob(string job)
     {
         SetJob(job);
+    }
+    public void ChangeLocation(Location location)
+    {
+        SetLocation(location);
     }
 
     #region Setters
@@ -134,10 +141,7 @@ public class User
     }
     private void SetSettings(UserSettings settings)
     {
-        if (settings == null)
-        {
-            throw new UserSettingsIsNullException();
-        }
+        if (settings == null) throw new UserSettingsIsNullException();
         if (Settings == settings) return;
         Settings = settings;
     }
@@ -167,6 +171,12 @@ public class User
         }
         if (Sex == sex) return;
         Sex = sex;
+    }
+    private void SetLocation(Location location)
+    {
+        if (location == null) throw new UserLocationIsNullException();
+        if (UserLocation == location) return;
+        UserLocation = location;
     }
     #endregion
     private static int CalculateAge(DateOnly olderDate, DateOnly newerDate)

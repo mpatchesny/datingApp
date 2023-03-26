@@ -14,8 +14,9 @@ internal sealed class PostgresSwipeRepository : ISwipeRepository
     {
         _dbContext = dbContext;
     }
-    public Task AddAsync(Swipe swipe)
+
+    public async Task AddAsync(Swipe swipe)
     {
-        throw new NotImplementedException();
+        await _dbContext.Swipes.AddAsync(swipe);
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
@@ -14,18 +15,20 @@ internal sealed class PostgresMessageRepository : IMessageRepository
     {
         _dbContext = dbContext;
     }
-    public Task AddAsync(Message message)
+    
+    public async Task AddAsync(Message message)
     {
-        throw new NotImplementedException();
+        await _dbContext.Messages.AddAsync(message);
     }
 
     public Task DeleteAsync(Message message)
     {
-        throw new NotImplementedException();
+        _dbContext.Messages.Remove(message);
+        return Task.CompletedTask;
     }
 
-    public Task<IEnumerable<Message>> GetByMatchIdAsync(int matchId)
+    public async Task<IEnumerable<Message>> GetByMatchIdAsync(int matchId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
     }
 }

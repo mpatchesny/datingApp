@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
@@ -14,33 +15,36 @@ internal sealed class PostgresUserRepository : IUserRepository
     {
         _dbContext = dbContext;
     }
-    public Task AddAsync(User user)
+    
+    public async Task AddAsync(User user)
     {
-        throw new NotImplementedException();
+        await _dbContext.Users.AddAsync(user);
     }
 
     public Task DeleteAsync(User user)
     {
-        throw new NotImplementedException();
+        _dbContext.Users.Remove(user);
+        return Task.CompletedTask;
     }
 
-    public Task<User> GetByEmailAsync(string email)
+    public async Task<User> GetByEmailAsync(string email)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users.FirstOrDefaultAsync(x=> x.Email == email);
     }
 
-    public Task<User> GetByIdAsync(int userId)
+    public async Task<User> GetByIdAsync(int userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users.FirstOrDefaultAsync(x=> x.Id == userId);
     }
 
-    public Task<User> GetByPhoneAsync(string phone)
+    public async Task<User> GetByPhoneAsync(string phone)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users.FirstOrDefaultAsync(x=> x.Phone == phone);
     }
 
     public Task UpdateAsync(User user)
     {
-        throw new NotImplementedException();
+        _dbContext.Users.Update(user);
+        return Task.CompletedTask;
     }
 }

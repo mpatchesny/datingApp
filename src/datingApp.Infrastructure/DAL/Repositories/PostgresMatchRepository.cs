@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
@@ -14,18 +15,20 @@ internal sealed class PostgresMatchRepository : IMatchRepository
     {
         _dbContext = dbContext;
     }
-    public Task AddAsync(Match match)
+
+    public async Task AddAsync(Match match)
     {
-        throw new NotImplementedException();
+        await _dbContext.Matches.AddAsync(match);
     }
 
     public Task DeleteAsync(Match match)
     {
-        throw new NotImplementedException();
+        _dbContext.Matches.Remove(match);
+        return Task.CompletedTask;
     }
 
-    public Task<IEnumerable<Match>> GetByUserIdAsync(int userId)
+    public async Task<IEnumerable<Match>> GetByUserIdAsync(int userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId).ToListAsync();
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
@@ -14,18 +15,20 @@ internal sealed class PostgresPhotoRepository : IPhotoRepository
     {
         _dbContext = dbContext;
     }
-    public Task AddAsync(Photo photo)
+    
+    public async Task AddAsync(Photo photo)
     {
-        throw new NotImplementedException();
+        await _dbContext.Photos.AddAsync(photo);
     }
 
     public Task DeleteAsync(Photo photo)
     {
-        throw new NotImplementedException();
+        _dbContext.Photos.Remove(photo);
+        return Task.CompletedTask;
     }
 
-    public Task<IEnumerable<Photo>> GetByUserIdAsync(int userId)
+    public async Task<IEnumerable<Photo>> GetByUserIdAsync(int userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Photos.Where(x=> x.UserId == userId).ToListAsync();
     }
 }

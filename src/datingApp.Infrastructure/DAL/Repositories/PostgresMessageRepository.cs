@@ -9,9 +9,10 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresMessageRepository : IMessageRepository
 {
-    public PostgresMessageRepository()
+    private readonly object _dbContext;
+    public PostgresMessageRepository(object dbContext)
     {
-        // todo
+        _dbContext = dbContext;
     }
     public Task AddAsync(Message message)
     {

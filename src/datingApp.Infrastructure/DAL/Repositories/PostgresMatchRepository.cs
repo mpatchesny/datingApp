@@ -9,9 +9,10 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresMatchRepository : IMatchRepository
 {
-    public PostgresMatchRepository()
+    private readonly object _dbContext;
+    public PostgresMatchRepository(object dbContext)
     {
-        // TODO
+        _dbContext = dbContext;
     }
     public Task AddAsync(Match match)
     {

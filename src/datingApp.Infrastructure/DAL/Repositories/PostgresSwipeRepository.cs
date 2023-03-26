@@ -9,9 +9,10 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresSwipeRepository : ISwipeRepository
 {
-    public PostgresSwipeRepository()
+    private readonly object _dbContext;
+    public PostgresSwipeRepository(object dbContext)
     {
-        // todo
+        _dbContext = dbContext;
     }
     public Task AddAsync(Swipe swipe)
     {

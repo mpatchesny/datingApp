@@ -9,9 +9,10 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresPhotoRepository : IPhotoRepository
 {
-    public PostgresPhotoRepository()
+    private readonly object _dbContext;
+    public PostgresPhotoRepository(object dbContext)
     {
-        // todo
+        _dbContext = dbContext;
     }
     public Task AddAsync(Photo photo)
     {

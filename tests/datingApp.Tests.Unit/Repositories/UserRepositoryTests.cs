@@ -95,6 +95,36 @@ public class RepositoriesTest
         Assert.Equal(newId, user.Id);
     }
 
+    [Fact]
+    public void get_nonexistsing_user_by_id_should_return_null()
+    {
+        var userId = 0;
+        var task = _userRepository.GetByIdAsync(userId);
+        task.Wait();
+        var user = task.Result;
+        Assert.Null(user);
+    }
+
+    [Fact]
+    public void get_nonexistsing_user_by_phone_should_return_null()
+    {
+        var phone = "000555000";
+        var task = _userRepository.GetByPhoneAsync(phone);
+        task.Wait();
+        var user = task.Result;
+        Assert.Null(user);
+    }
+
+    [Fact]
+    public void get_nonexistsing_user_by_email_should_return_null()
+    {
+        var email = "nonexistingemail@test.com";
+        var task = _userRepository.GetByEmailAsync(email);
+        task.Wait();
+        var user = task.Result;
+        Assert.Null(user);
+    }
+
     // Arrange
     private readonly IUserRepository _userRepository;
     public RepositoriesTest()
@@ -102,8 +132,8 @@ public class RepositoriesTest
         var users = new List<User>();
         var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
         users.Add(new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings));
-        settings = new UserSettings(1, Sex.Female, new AgeRange(30, 35), 20);
-        users.Add(new User(2, "000555888", "test2@test.com", "Mariusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings));
+        settings = new UserSettings(2, Sex.Female, new AgeRange(30, 35), 20);
+        users.Add(new User(2, "000111222", "test2@test.com", "Mariusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings));
         _userRepository = new InMemoryUserRepository(users);
     }
 }

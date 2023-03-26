@@ -84,7 +84,8 @@ public class RepositoriesTest
     {
         var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
         var newId = 5;
-        var user = new User(newId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings);
+        var location = new Location(45.5, 45.5);
+        var user = new User(newId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
         var addTask =  _userRepository.AddAsync(user);
         addTask.Wait();
 
@@ -130,10 +131,11 @@ public class RepositoriesTest
     public RepositoriesTest()
     {
         var users = new List<User>();
+        var location = new Location(45.5, 45.5);
         var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
-        users.Add(new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings));
+        users.Add(new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location));
         settings = new UserSettings(2, Sex.Female, new AgeRange(30, 35), 20);
-        users.Add(new User(2, "000111222", "test2@test.com", "Mariusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings));
+        users.Add(new User(2, "000111222", "test2@test.com", "Mariusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location));
         _userRepository = new InMemoryUserRepository(users);
     }
 }

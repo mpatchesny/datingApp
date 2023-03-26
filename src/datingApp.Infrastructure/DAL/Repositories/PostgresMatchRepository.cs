@@ -9,8 +9,8 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresMatchRepository : IMatchRepository
 {
-    private readonly object _dbContext;
-    public PostgresMatchRepository(object dbContext)
+    private readonly DatingAppDbContext _dbContext;
+    public PostgresMatchRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

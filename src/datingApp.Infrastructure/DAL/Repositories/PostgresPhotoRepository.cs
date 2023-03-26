@@ -9,8 +9,8 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresPhotoRepository : IPhotoRepository
 {
-    private readonly object _dbContext;
-    public PostgresPhotoRepository(object dbContext)
+    private readonly DatingAppDbContext _dbContext;
+    public PostgresPhotoRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

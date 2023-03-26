@@ -1,0 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using datingApp.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace datingApp.Infrastructure;
+
+internal sealed class DatingAppDbContext : DbContext
+{
+    public DbSet<User> Users { get; set; }
+    public DbSet<Match> Matches { get; set; }
+    public DbSet<Message> Messages { get; set; }
+    public DbSet<Swipe> Swipes { get; set; }
+    public DbSet<Photo> Photos { get; set; }
+
+    public DatingAppDbContext(DbContextOptions<DatingAppDbContext> options) : base(options)
+    {
+    }
+}

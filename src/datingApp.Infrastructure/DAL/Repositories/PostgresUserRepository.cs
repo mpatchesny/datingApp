@@ -9,8 +9,8 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class PostgresUserRepository : IUserRepository
 {
-    private readonly object _dbContext;
-    public PostgresUserRepository(object dbContext)
+    private readonly DatingAppDbContext _dbContext;
+    public PostgresUserRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

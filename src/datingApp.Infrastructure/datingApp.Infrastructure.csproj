@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="datingApp.Tests.Unit" />
+    <InternalsVisibleTo Include="datingApp.Tests.Integration" />
   </ItemGroup>
 
 </Project>

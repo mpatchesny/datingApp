@@ -10,10 +10,12 @@ internal static class Extensions
 {
     private const string OptionsSectionName = "postgres";
     
-    public static IServiceCollection AddPostgres(this IServiceCollection services)
+    public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
     {
-        var ConnectionString = "Host=localhost;Database=datingapp;Username=postgres;Password=";
-        services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(ConnectionString));
+        services.Configure<PostgresOptions>(configuration.GetRequiredSection(OptionsSectionName));
+        var postgresOptions = configuration.GetOptions<PostgresOptions>(OptionsSectionName);
+        services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(postgresOptions.ConnectionString));
+        // IoC
         // services.AddScoped<IWeeklyParkingSpotRepository, PostgresWeeklyParkingSpotRepository>();
         // services.AddScoped<IUserRepository, PostgresUserRepository>();
         // services.AddHostedService<DatabaseInitializer>();

@@ -25,13 +25,12 @@ public class User
     public string Job { get; private set; }
     public string Bio { get; private set; }
     public IEnumerable<Photo> Photos { get; private set; }
-    public IEnumerable<Match> Matches { get; private set; }
     public UserSettings Settings { get; private set; }
     public Location UserLocation { get; private set; }
 
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
-                IEnumerable<Photo> photos, IEnumerable<Match> matches, UserSettings settings,
-                Location userLocation, string job="", string bio="")
+                IEnumerable<Photo> photos, UserSettings settings, Location userLocation, 
+                string job="", string bio="")
     {
         Id = id;
         SetPhone(phone);
@@ -41,8 +40,6 @@ public class User
         SetDateOfBirth(dateOfBirth);
         if (photos == null) Photos = new List<Photo>();
         Photos = photos;
-        if (matches == null) Matches = new List<Match>();
-        Matches = matches;
         SetLocation(userLocation);
         SetSettings(settings);
         SetJob(job);

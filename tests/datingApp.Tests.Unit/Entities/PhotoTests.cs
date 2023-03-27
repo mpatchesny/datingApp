@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using Xunit;
 
 namespace datingApp.Tests.Unit.Entities;
 

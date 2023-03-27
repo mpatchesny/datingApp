@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
+using Xunit;
 
 namespace datingApp.Tests.Unit.Entities;
 

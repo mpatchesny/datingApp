@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Tests.Integration;
 
-public class UserRepositoryTests
+public class UserRepositoryTests : IDisposable
 {
-  [Fact]
+    [Fact]
     public void get_user_by_id_should_succeed()
     {
         var task =  _userRepository.GetByIdAsync(1);
@@ -148,16 +148,24 @@ public class UserRepositoryTests
         Assert.Null(user);
     }
 
+
     // Arrange
     private readonly IUserRepository _userRepository;
+    private readonly TestDatabase _testDb;
+
     public UserRepositoryTests()
     {
-        var connectionString = "Host=localhost;Database=datingapp-test;Username=postgres;Password=";
-        var dbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(connectionString).Options);
         var location = new Location(45.5, 45.5);
         var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
         var user = new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
-        dbContext.Users.Add(user);
-        _userRepository = new PostgresUserRepository(dbContext);
+        var _testDb = new TestDatabase();
+        _testDb.DbContext.Users.Add(user);
+        _userRepository = new PostgresUserRepository(_testDb.DbContext);
+    }
+
+    // Teardown
+    public void Dispose()
+    {
+        _testDb.Dispose();
     }
 }

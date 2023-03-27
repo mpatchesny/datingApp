@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Application", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Infrastructure", "src\datingApp.Infrastructure\datingApp.Infrastructure.csproj", "{12B5BD11-83F2-43D0-B8F3-346ED38BC7F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Tests.EndToEnd", "tests\datingApp.Tests.EndToEnd\datingApp.Tests.EndToEnd.csproj", "{C7DFF7BD-1A7F-42AE-8A6E-A8788927DFC3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

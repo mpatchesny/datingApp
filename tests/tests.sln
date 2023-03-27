@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datingApp.Tests.Unit", "datingApp.Tests.Unit\datingApp.Tests.Unit.csproj", "{12F83086-8A81-417B-962E-61A5DEB67203}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "datingApp.Tests.EndToEnd", "datingApp.Tests.EndToEnd\datingApp.Tests.EndToEnd.csproj", "{7DAB3B54-E861-4A47-9656-088920B3ED73}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,7 +1,7 @@
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Core.ValueObjects;
-using datingApp.Infrastructure
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;

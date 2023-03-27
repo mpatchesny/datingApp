@@ -18,4 +18,9 @@ internal sealed class DatingAppDbContext : DbContext
     public DatingAppDbContext(DbContextOptions<DatingAppDbContext> options) : base(options)
     {
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+    }
 }

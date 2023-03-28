@@ -34,8 +34,5 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         builder.Property(x => x.Sex)
             .IsRequired();
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(p => p.Id);
     }
 }

@@ -28,6 +28,10 @@ public class User
     public UserSettings Settings { get; private set; }
     public Location UserLocation { get; private set; }
 
+    private User()
+    {
+        // EF
+    }
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
                 IEnumerable<Photo> photos, UserSettings settings, Location userLocation, 
                 string job="", string bio="")

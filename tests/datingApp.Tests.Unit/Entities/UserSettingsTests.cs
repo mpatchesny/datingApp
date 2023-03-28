@@ -51,4 +51,30 @@ public class UserSettingsTests
         Assert.NotNull(exception);
         Assert.IsType<InvalidLocationException>(exception);
     }
+
+    [Fact]
+    public void user_settings_location_change_should_take_effect()
+    {
+        var settings = new UserSettings(1, Sex.Male, 20, 25, 20, 40.5, 40.5);
+        settings.ChangeLocation(45.5, 46.5);
+        Assert.Equal(settings.Lat, 45.5);
+        Assert.Equal(settings.Lon, 46.5);
+    }
+
+    [Fact]
+    public void user_settings_discovery_age_range_change_should_take_effect()
+    {
+        var settings = new UserSettings(1, Sex.Male, 20, 25, 20, 40.5, 40.5);
+        settings.ChangeDiscoverAge(18, 60);
+        Assert.Equal(settings.DiscoverAgeFrom, 18);
+        Assert.Equal(settings.DiscoverAgeTo, 60);
+    }
+
+    [Fact]
+    public void user_settings_change_range_should_take_effect()
+    {
+        var settings = new UserSettings(1, Sex.Male, 20, 25, 20, 40.5, 40.5);
+        settings.ChangeDiscoverRange(40);
+        Assert.Equal(settings.DiscoverRange, 40);
+    }
 }

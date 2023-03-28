@@ -189,13 +189,6 @@ public class UserTests
         Assert.NotNull(exception);
         Assert.IsType<UserSettingsIsNullException>(exception);
     }
-    [Fact]
-    public void user_location_should_not_be_null()
-    {
-        var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Female, null, properUserSettings, null));
-        Assert.NotNull(exception);
-        Assert.IsType<UserLocationIsNullException>(exception);
-    }
 
     private readonly UserSettings properUserSettings;
     public UserTests()

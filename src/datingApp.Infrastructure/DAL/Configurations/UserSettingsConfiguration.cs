@@ -24,5 +24,9 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
             .IsRequired();
         builder.Property(x => x.DiscoverSex)
             .IsRequired();
+        builder.Property(x => x.Lat)
+            .IsRequired();
+        builder.Property(x => x.Lon)
+            .IsRequired();
     }
 }

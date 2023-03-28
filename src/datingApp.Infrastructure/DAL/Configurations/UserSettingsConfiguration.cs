@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,6 +17,10 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
         builder.Property(x => x.UserId)
             .IsRequired();
         builder.Property(x => x.DiscoverRange)
+            .IsRequired();
+        builder.Property(x => x.DiscoverAgeFrom)
+            .IsRequired();
+        builder.Property(x => x.DiscoverAgeTo)
             .IsRequired();
         builder.Property(x => x.DiscoverSex)
             .IsRequired();

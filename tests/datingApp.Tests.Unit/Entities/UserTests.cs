@@ -12,7 +12,7 @@ public class UserTests
     public void user_phone_should_not_be_emptystring()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
@@ -22,7 +22,7 @@ public class UserTests
     public void user_phone_should_not_be_longer_than_9_chars()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "0123456789", "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
@@ -36,7 +36,7 @@ public class UserTests
     public void user_phone_should_not_containt_not_numbers(string phone)
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
@@ -51,7 +51,7 @@ public class UserTests
     public void user_email_should_be_proper_email(string badEmail)
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
@@ -67,7 +67,7 @@ public class UserTests
         }
         badEmail += "test@gmail.com";
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), Sex.Male,null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
@@ -77,7 +77,7 @@ public class UserTests
     public void user_email_should_not_be_emptystring()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "", "janusz", new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
@@ -87,7 +87,7 @@ public class UserTests
     public void user_name_should_not_be_emptystring()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "", new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
@@ -102,7 +102,7 @@ public class UserTests
     public void user_name_should_not_contain_invalid_chars(string username)
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
@@ -112,7 +112,7 @@ public class UserTests
     public void user_name_should_not_exceed_15_chars()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         string username = "Janusz ma kota a";
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), Sex.Male, null, settings, location));
         Assert.NotNull(exception);
@@ -126,7 +126,7 @@ public class UserTests
     public void user_age_should_be_between_18_and_100(string dateString)
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var invalidDob = DateTime.Parse(dateString);
         var invalidDob2 = new DateOnly(invalidDob.Year, invalidDob.Month, invalidDob.Day);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", invalidDob2, Sex.Male, null, settings, location));
@@ -143,7 +143,7 @@ public class UserTests
             bio += "a";
         }
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings, location, "", bio));
         Assert.NotNull(exception);
         Assert.IsType<BioTooLongException>(exception);
@@ -158,7 +158,7 @@ public class UserTests
             job += "a";
         }
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings, location, job));
         Assert.NotNull(exception);
         Assert.IsType<JobTooLongException>(exception);
@@ -169,7 +169,7 @@ public class UserTests
     {
         var location = new Location(45.5, 45.5);
         var actualYear = DateTime.UtcNow.Year;
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var dob = new DateOnly(actualYear - 18, 1, 1);
         var user = new User(1, "012345678", "test@test.com", "janusz", dob, Sex.Male, null, settings, location);
         Assert.Equal(18, user.GetAge());
@@ -180,7 +180,7 @@ public class UserTests
     {
         var location = new Location(45.5, 45.5);
         var sex = Sex.Male & Sex.Female;
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), sex, null, settings, location));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUserSexException>(exception);
@@ -190,7 +190,7 @@ public class UserTests
     public void change_user_date_of_birth_should_take_effect()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings, location);
         user.ChangeDateOfBirth(new DateOnly(1999,1,2));
         Assert.Equal(new DateOnly(1999,1,2), user.DateOfBirth);
@@ -200,7 +200,7 @@ public class UserTests
     public void change_user_bio_should_take_effect()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings, location, "", "bio");
         user.ChangeBio("new bio");
         Assert.Equal("new bio", user.Bio);
@@ -210,7 +210,7 @@ public class UserTests
     public void change_user_job_should_take_effect()
     {
         var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var user = new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings, location, "job");
         user.ChangeJob("new job");
         Assert.Equal("new job", user.Job);
@@ -227,7 +227,7 @@ public class UserTests
     [Fact]
     public void user_location_should_not_be_null()
     {
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18,20), 20);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 20);
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Female, null, settings, null));
         Assert.NotNull(exception);
         Assert.IsType<UserLocationIsNullException>(exception);

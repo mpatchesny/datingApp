@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
-using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 

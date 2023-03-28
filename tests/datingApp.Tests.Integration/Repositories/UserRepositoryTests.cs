@@ -66,7 +66,7 @@ public class UserRepositoryTests : IDisposable
     {
         var location = new Location(45.5, 45.5);
         var settings = new UserSettings(0, Sex.Female, new AgeRange(18, 21), 20);
-        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
+        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
         var updateTask = _userRepository.UpdateAsync(user);
         updateTask.Wait();
         // FIXME
@@ -94,7 +94,7 @@ public class UserRepositoryTests : IDisposable
     {
         var location = new Location(45.5, 45.5);
         var settings = new UserSettings(0, Sex.Female, new AgeRange(18, 21), 20);
-        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
+        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
         var deleteTask =  _userRepository.DeleteAsync(user);
         deleteTask.Wait();
         // FIXME
@@ -107,7 +107,7 @@ public class UserRepositoryTests : IDisposable
         var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
         var newId = 5;
         var location = new Location(45.5, 45.5);
-        var user = new User(newId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, null, settings, location);
+        var user = new User(newId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
         var addTask =  _userRepository.AddAsync(user);
         addTask.Wait();
 

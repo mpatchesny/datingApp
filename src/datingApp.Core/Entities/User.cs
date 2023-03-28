@@ -26,15 +26,13 @@ public class User
     public string Bio { get; private set; }
     public IEnumerable<Photo> Photos { get; private set; }
     public UserSettings Settings { get; private set; }
-    public Location UserLocation { get; private set; }
 
     private User()
     {
         // EF
     }
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
-                IEnumerable<Photo> photos, UserSettings settings, Location userLocation, 
-                string job="", string bio="")
+                IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
     {
         Id = id;
         SetPhone(phone);
@@ -44,7 +42,6 @@ public class User
         SetDateOfBirth(dateOfBirth);
         if (photos == null) Photos = new List<Photo>();
         Photos = photos;
-        SetLocation(userLocation);
         SetSettings(settings);
         SetJob(job);
         SetBio(bio);
@@ -68,10 +65,6 @@ public class User
     public void ChangeJob(string job)
     {
         SetJob(job);
-    }
-    public void ChangeLocation(Location location)
-    {
-        SetLocation(location);
     }
 
     #region Setters
@@ -172,12 +165,6 @@ public class User
         }
         if (Sex == sex) return;
         Sex = sex;
-    }
-    private void SetLocation(Location location)
-    {
-        if (location == null) throw new UserLocationIsNullException();
-        if (UserLocation == location) return;
-        UserLocation = location;
     }
     #endregion
     private static int CalculateAge(DateOnly olderDate, DateOnly newerDate)

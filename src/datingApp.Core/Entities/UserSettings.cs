@@ -14,18 +14,16 @@ public class UserSettings
     public int DiscoverAgeFrom { get; private set; }
     public int DiscoverAgeTo { get; private set; }
     public int DiscoverRange { get; private set; }
+    public double Lat { get; private set; }
+    public double Lon { get; private set; }
 
-    private UserSettings()
-    {
-        // EF
-    }
-
-    public UserSettings(int userId, Sex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange)
+    public UserSettings(int userId, Sex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
     {
         UserId = userId;
         SetDiscoverSex(discoverSex);
         SetDiscoverAge(discoverAgeFrom, discoverAgeTo);
         SetDiscoverRange(discoverRange);
+        SetLocation(lat, lon);
     }
 
     public void ChangeDiscoverSex(Sex sex)
@@ -41,6 +39,11 @@ public class UserSettings
     public void ChangeDiscoverRange(int discoverRange)
     {
         SetDiscoverRange(discoverRange);
+    }
+
+    public void ChangeLocation(double lat, double lon)
+    {
+        SetLocation(lat, lon);
     }
 
     private void SetDiscoverSex(Sex sex)
@@ -65,6 +68,17 @@ public class UserSettings
         }
         DiscoverAgeFrom = discoverAgeFrom;
         DiscoverAgeTo = discoverAgeTo;
+    }
+
+    private void SetLocation(double lat, double lon)
+    {
+        if (lat > 90 | lat < -90 |
+            lon > 180 | lon < -180)
+        {
+            throw new InvalidLocationException();
+        }
+        Lat = lat;
+        Lon = lon;
     }
 
     private void SetDiscoverRange(int discoverRange)

@@ -29,5 +29,11 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
             .HasMaxLength(255);
         builder.Property(x => x.CreatedAt)
             .IsRequired();
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.SendFromId);
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.SendToId);
     }
 }

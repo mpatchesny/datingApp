@@ -21,5 +21,11 @@ internal sealed class SwipeConfiguration : IEntityTypeConfiguration<Swipe>
             .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.SwippedById);
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.SwippedWhoId);
     }
 }

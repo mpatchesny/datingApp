@@ -1,6 +1,5 @@
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
-using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Repositories;
@@ -13,7 +12,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public void get_user_by_id_should_succeed()
     {
-        var task =  _userRepository.GetByIdAsync(1);
+        var task = _userRepository.GetByIdAsync(1);
         task.Wait();
         var user = task.Result;
         Assert.NotNull(user);
@@ -24,7 +23,7 @@ public class UserRepositoryTests : IDisposable
     public void get_user_by_existing_phone_should_succeed()
     {
         var phone = "123456789";
-        var task =  _userRepository.GetByPhoneAsync(phone);
+        var task = _userRepository.GetByPhoneAsync(phone);
         task.Wait();
         var user = task.Result;
         Assert.NotNull(user);
@@ -35,7 +34,7 @@ public class UserRepositoryTests : IDisposable
     public void get_user_by_existing_email_should_succeed()
     {
         var email = "test@test.com";
-        var task =  _userRepository.GetByEmailAsync(email);
+        var task = _userRepository.GetByEmailAsync(email);
         task.Wait();
         var user = task.Result;
         Assert.NotNull(user);
@@ -64,9 +63,8 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public void update_nonexisting_user_should_fail()
     {
-        var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(0, Sex.Female, new AgeRange(18, 21), 20);
-        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
+        var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var updateTask = _userRepository.UpdateAsync(user);
         updateTask.Wait();
         // FIXME
@@ -92,9 +90,8 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public void delete_nonexisting_user_should_fail()
     {
-        var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(0, Sex.Female, new AgeRange(18, 21), 20);
-        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
+        var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var deleteTask =  _userRepository.DeleteAsync(user);
         deleteTask.Wait();
         // FIXME
@@ -104,18 +101,15 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public void add_user_should_succeed()
     {
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
-        var newId = 5;
-        var location = new Location(45.5, 45.5);
-        var user = new User(newId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(0, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var addTask =  _userRepository.AddAsync(user);
         addTask.Wait();
 
-        var task = _userRepository.GetByIdAsync(newId);
+        var task = _userRepository.GetByIdAsync(user.Id);
         task.Wait();
         user = task.Result;
         Assert.NotNull(user);
-        Assert.Equal(newId, user.Id);
     }
 
     [Fact]
@@ -148,16 +142,14 @@ public class UserRepositoryTests : IDisposable
         Assert.Null(user);
     }
 
-
     // Arrange
     private readonly IUserRepository _userRepository;
     private readonly TestDatabase _testDb;
 
     public UserRepositoryTests()
     {
-        var location = new Location(45.5, 45.5);
-        var settings = new UserSettings(1, Sex.Female, new AgeRange(18, 21), 20);
-        var user = new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings, location);
+        var settings = new UserSettings(1, Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _userRepository = new PostgresUserRepository(_testDb.DbContext);

@@ -21,10 +21,10 @@ internal sealed class PostgresUserRepository : IUserRepository
         await _dbContext.Users.AddAsync(user);
     }
 
-    public Task DeleteAsync(User user)
+    public async Task DeleteAsync(int userId)
     {
+        var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
         _dbContext.Users.Remove(user);
-        return Task.CompletedTask;
     }
 
     public async Task<User> GetByEmailAsync(string email)

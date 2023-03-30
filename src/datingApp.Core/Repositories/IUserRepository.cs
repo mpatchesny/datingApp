@@ -13,5 +13,5 @@ public interface IUserRepository : IRepository
     Task<User> GetByPhoneAsync(string phone);
     Task AddAsync(User user);
     Task UpdateAsync(User user);
-    Task DeleteAsync(User user);
+    Task DeleteAsync(int userId);
 }

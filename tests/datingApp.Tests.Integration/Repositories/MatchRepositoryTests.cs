@@ -19,7 +19,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void get_nonexisting_match_by_user_id_should_return_empty_collection()
+    public async void get_match_by_nonexisting_user_id_should_return_empty_collection()
     {
         var matches = await _repository.GetByUserIdAsync(0);
         Assert.Equal(0, matches.Count());
@@ -33,6 +33,13 @@ public class MatchRepositoryTests : IDisposable
         _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(1);
         Assert.Equal(0, matches.Count());
+    }
+
+    [Fact]
+    public async void delete_nonexisting_match_by_id_should_fail()
+    {
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
+        Assert.NotNull(exception);
     }
 
     [Fact]

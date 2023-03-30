@@ -12,7 +12,7 @@ namespace datingApp.Tests.Integration.Repositories;
 public class MessageRepositoryTests : IDisposable
 {
     [Fact]
-    public async void get_existing_messages_by_match_id_should_succeed()
+    public async void get_existing_messages_by_match_id_should_return_nonempty_collection()
     {
         var messages = await _repository.GetByMatchIdAsync(1);
         Assert.Equal(1, messages.Count());
@@ -33,6 +33,13 @@ public class MessageRepositoryTests : IDisposable
         _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByMatchIdAsync(1);
         Assert.Equal(0, matches.Count());
+    }
+
+    [Fact]
+    public async void delete_nonexisting_message_by_id_should_fail()
+    {
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
+        Assert.NotNull(exception);
     }
 
     [Fact]

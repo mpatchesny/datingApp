@@ -12,12 +12,12 @@ namespace datingApp.Tests.Integration.Repositories;
 public class SwipeRepositoryTests : IDisposable
 {
     [Fact]
-    public void add_swipe_should_succeed()
+    public async Task add_swipe_should_succeed()
     {
         var swipe = new Swipe(0, 1, 1, Like.Like, DateTime.UtcNow);
-        var exception = Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
         _testDb.DbContext.SaveChanges();
-        Assert.NotNull(exception);
+        Assert.Null(exception);
     }
 
     // Arrange

@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record AddPhoto(int userId, int oridinal, byte[] bytes) : ICommand;
+public sealed record SendMessage(int sendToId, string text) : ICommand;

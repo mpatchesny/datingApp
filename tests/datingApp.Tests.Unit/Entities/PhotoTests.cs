@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using Xunit;
 
-namespace datingApp.Tests.Unit.Entities
+namespace datingApp.Tests.Unit.Entities;
+
+public class PhotoTests
 {
-    public class PhotoTests
+    [Fact]
+    public void photo_path_should_not_be_emptystring()
     {
-        [Fact]
-        public void photo_path_should_not_be_emptystring()
-        {
-            var exception = Record.Exception(() =>new Photo(1, 1, "", 1));
-            Assert.NotNull(exception);
-        }
+        var exception = Record.Exception(() =>new Photo(1, 1, "", 1));
+        Assert.NotNull(exception);
     }
 }

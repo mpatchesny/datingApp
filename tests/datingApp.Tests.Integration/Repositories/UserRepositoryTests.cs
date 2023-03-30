@@ -11,7 +11,7 @@ namespace datingApp.Tests.Integration;
 public class UserRepositoryTests : IDisposable
 {
     [Fact]
-    public async Task get_user_by_id_should_succeedAsync()
+    public async Task get_user_by_id_should_succeed()
     {
         var user = await _userRepository.GetByIdAsync(1);
         Assert.NotNull(user);
@@ -19,7 +19,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_user_by_existing_phone_should_succeedAsync()
+    public async Task get_user_by_existing_phone_should_succeed()
     {
         var phone = "123456789";
         var user = await _userRepository.GetByPhoneAsync(phone);
@@ -28,7 +28,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_user_by_existing_email_should_succeedAsync()
+    public async Task get_user_by_existing_email_should_succeed()
     {
         var email = "test@test.com";
         var user = await _userRepository.GetByEmailAsync(email);
@@ -37,7 +37,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task update_existing_user_should_succeedAsync()
+    public async Task update_existing_user_should_succeed()
     {
         var userId = 1;
         var user = await _userRepository.GetByIdAsync(userId);
@@ -50,7 +50,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task update_nonexisting_user_should_failAsync()
+    public async Task update_nonexisting_user_should_fail()
     {
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
@@ -61,7 +61,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_existing_user_should_succeedAsync()
+    public async Task delete_existing_user_should_succeed()
     {
         var userId = 1;
         var user = await _userRepository.GetByIdAsync(userId);
@@ -72,7 +72,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_nonexisting_user_should_failAsync()
+    public async Task delete_nonexisting_user_should_fail()
     {
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
@@ -82,7 +82,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task add_user_should_succeedAsync()
+    public async Task add_user_should_succeed()
     {
         var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 45.5, 45.5);
         var user = new User(0, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
@@ -94,7 +94,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_nonexistsing_user_by_id_should_return_nullAsync()
+    public async Task get_nonexistsing_user_by_id_should_return_null()
     {
         var userId = 0;
         var user = await _userRepository.GetByIdAsync(userId);
@@ -102,7 +102,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_nonexistsing_user_by_phone_should_return_nullAsync()
+    public async Task get_nonexistsing_user_by_phone_should_return_null()
     {
         var phone = "000555000";
         var user = await _userRepository.GetByPhoneAsync(phone);
@@ -110,7 +110,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_nonexistsing_user_by_email_should_return_nullAsync()
+    public async Task get_nonexistsing_user_by_email_should_return_null()
     {
         var email = "nonexistingemail@test.com";
         var user = await _userRepository.GetByEmailAsync(email);

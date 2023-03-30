@@ -21,10 +21,10 @@ internal sealed class PostgresMatchRepository : IMatchRepository
         await _dbContext.Matches.AddAsync(match);
     }
 
-    public Task DeleteAsync(Match match)
+    public async Task DeleteAsync(int matchId)
     {
+        var match = await _dbContext.Matches.FirstAsync(x => x.Id == matchId);
         _dbContext.Matches.Remove(match);
-        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<Match>> GetByUserIdAsync(int userId)

@@ -18,12 +18,9 @@ namespace datingApp.Infrastructure
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using (var scope = _serviceProdivder.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
-                dbContext.Database.Migrate();
-                // tutaj moze byc seed
-            }
+            using var scope = _serviceProdivder.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
+            await dbContext.Database.MigrateAsync(cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

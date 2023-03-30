@@ -4,6 +4,7 @@ using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace datingApp.Tests.Integration;
 

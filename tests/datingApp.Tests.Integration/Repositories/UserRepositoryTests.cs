@@ -71,9 +71,9 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_nonexisting_user_should_fail()
+    public async Task delete_nonexisting_user_should_failAsync()
     {
-        var exception = Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(999));
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(999));
         Assert.NotNull(exception);
     }
 

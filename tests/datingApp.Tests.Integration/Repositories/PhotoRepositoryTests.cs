@@ -47,7 +47,7 @@ public class PhotoRepositoryTests : IDisposable
     [Fact]
     public async Task delete_nonexisting_photo_should_fail()
     {
-        var exception = Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
         Assert.NotNull(exception);
     }
 

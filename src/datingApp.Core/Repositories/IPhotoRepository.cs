@@ -10,5 +10,5 @@ public interface IPhotoRepository : IRepository
 {
     Task<IEnumerable<Photo>> GetByUserIdAsync(int userId);
     Task AddAsync(Photo photo);
-    Task DeleteAsync(Photo photo);
+    Task DeleteAsync(int photoId);
 }

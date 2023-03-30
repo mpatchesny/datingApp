@@ -102,7 +102,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public void add_user_should_succeed()
     {
-        var settings = new UserSettings(1, Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 45.5, 45.5);
         var user = new User(0, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var addTask =  _userRepository.AddAsync(user);
         addTask.Wait();
@@ -149,10 +149,11 @@ public class UserRepositoryTests : IDisposable
 
     public UserRepositoryTests()
     {
-        var settings = new UserSettings(1, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(1, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var _testDb = new TestDatabase();
+        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.SaveChanges();
         _userRepository = new PostgresUserRepository(_testDb.DbContext);
     }
 

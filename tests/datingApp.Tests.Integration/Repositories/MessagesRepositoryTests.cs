@@ -21,7 +21,7 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void get_nonexisting_message_by_match_id_should_return_empty_collection()
     {
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(2);
         Assert.Equal(0, messages.Count());
     }
 

@@ -66,6 +66,7 @@ public class UserRepositoryTests : IDisposable
         var userId = 1;
         var user = await _userRepository.GetByIdAsync(userId);
         await _userRepository.DeleteAsync(user);
+        _testDb.DbContext.SaveChanges();
         var user2 = await _userRepository.GetByIdAsync(userId);
         Assert.Null(user2);
     }
@@ -75,9 +76,9 @@ public class UserRepositoryTests : IDisposable
     {
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        await _userRepository.DeleteAsync(user);
-        // FIXME
-        // Assert.Equal(true, deleteTask.IsCompletedSuccessfully);
+        var exception = Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
+        _testDb.DbContext.SaveChanges();
+        Assert.NotNull(exception);
     }
 
     [Fact]

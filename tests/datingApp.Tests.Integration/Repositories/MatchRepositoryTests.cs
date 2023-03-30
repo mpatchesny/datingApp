@@ -15,7 +15,7 @@ public class MatchRepositoryTests : IDisposable
     public async void get_existing_match_by_user_id_should_succeed()
     {
         var matches = await _repository.GetByUserIdAsync(1);
-        Assert.NotNull(matches);
+        Assert.Equal(1, matches.Count());
     }
 
     [Fact]

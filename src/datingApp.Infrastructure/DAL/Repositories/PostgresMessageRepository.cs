@@ -21,10 +21,10 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         await _dbContext.Messages.AddAsync(message);
     }
 
-    public Task DeleteAsync(Message message)
+    public async Task DeleteAsync(int messageId)
     {
+        var message = await _dbContext.Messages.FirstAsync(x => x.Id == messageId);
         _dbContext.Messages.Remove(message);
-        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<Message>> GetByMatchIdAsync(int matchId)

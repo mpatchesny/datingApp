@@ -12,7 +12,7 @@ using Xunit;
 
 namespace datingApp.Tests.Unit.QueryHandlers;
 
-public class GetUserHanlderTests
+public class GetPublicUserHanlderTests
 {
     [Fact]
     public async Task query_existing_user_should_return_public_user_dto()
@@ -35,7 +35,7 @@ public class GetUserHanlderTests
 
     // Arrange
     private readonly GetPublicUserHandler _handler;
-    public GetUserHanlderTests()
+    public GetPublicUserHanlderTests()
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);

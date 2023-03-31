@@ -7,7 +7,7 @@ namespace datingApp.Application.DTO;
 
 public class MessageDto
 {
-    public int Id { get; }
+    public int Id { get; set; }
     public int MatchId { get; set; }
     public int SendFromId { get; set; }
     public int SendToId { get; set; }

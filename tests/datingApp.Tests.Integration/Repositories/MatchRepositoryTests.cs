@@ -46,10 +46,16 @@ public class MatchRepositoryTests : IDisposable
     public async void add_match_should_succeed()
     {
         var match = new Match(0, 1, 1, null, DateTime.UtcNow);
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async void after_add_match_get_matches_should_return_plus_one_elements()
+    {
+        var match = new Match(0, 1, 1, null, DateTime.UtcNow);
         await _repository.AddAsync(match);
-        _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(1);
-        Assert.NotNull(matches);
         Assert.Equal(2, matches.Count());
     }
 

@@ -9,15 +9,15 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetUserHandler : IQueryHandler<GetUser, PublicUserDto>
+internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, PublicUserDto>
 {
     private readonly IUserRepository _userRepository;
-    public GetUserHandler(IUserRepository userRepository)
+    public GetPublicUserHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
 
-    public async Task<PublicUserDto> HandleAsync(GetUser query)
+    public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
         var user = await _userRepository.GetByIdAsync(query.UserId);
         return user?.AsDto();

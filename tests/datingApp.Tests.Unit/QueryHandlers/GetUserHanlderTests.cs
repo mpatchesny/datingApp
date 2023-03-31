@@ -17,7 +17,7 @@ public class GetUserHanlderTests
     [Fact]
     public async Task query_existing_user_should_return_public_user_dto()
     {
-        var query = new GetUser();
+        var query = new GetPublicUser();
         query.UserId = 1;
         var user = await _handler.HandleAsync(query);
         Assert.NotNull(user);
@@ -27,14 +27,14 @@ public class GetUserHanlderTests
     [Fact]
     public async Task query_nonexisting_user_should_return_null()
     {
-        var query = new GetUser();
+        var query = new GetPublicUser();
         query.UserId = 2;
         var user = await _handler.HandleAsync(query);
         Assert.Null(user);
     }
 
     // Arrange
-    private readonly GetUserHandler _handler;
+    private readonly GetPublicUserHandler _handler;
     public GetUserHanlderTests()
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
@@ -44,6 +44,6 @@ public class GetUserHanlderTests
         mockUserRepository
             .Setup(x => x.GetByIdAsync(1))
             .ReturnsAsync(user);
-        _handler = new GetUserHandler(mockUserRepository.Object);
+        _handler = new GetPublicUserHandler(mockUserRepository.Object);
     }
 }

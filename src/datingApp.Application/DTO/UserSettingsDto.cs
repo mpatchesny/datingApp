@@ -9,7 +9,7 @@ public class UserSettingsDto
 {
     public int UserId { get; set; }
     public int DiscoverSex { get; set; }
-    public int DiscoverAgeRangeFrom { get; set; }
-    public int DiscoverAgeRangeTo { get; set; }
+    public int DiscoverAgeFrom { get; set; }
+    public int DiscoverAgeTo { get; set; }
     public int DiscoverRange { get; set; }
 }

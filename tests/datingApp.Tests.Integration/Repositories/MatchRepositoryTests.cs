@@ -36,7 +36,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void delete_nonexisting_match_by_id_should_fail()
+    public async void delete_nonexisting_match_by_id_should_throw_exception()
     {
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
         Assert.NotNull(exception);

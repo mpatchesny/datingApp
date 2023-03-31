@@ -49,7 +49,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_email_should_not_exceed_257_chars()
+    public void user_email_should_not_exceed_256_chars()
     {
         string badEmail = "";
         for (int i=1; i<=257; i++)

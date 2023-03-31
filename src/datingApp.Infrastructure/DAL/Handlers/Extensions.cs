@@ -20,7 +20,7 @@ public static class Extensions
             Job = entity.Job,
             Name = entity.Name,
             Sex = (int) entity.Sex,
-            Photos = entity.Photos.Select(photo => photo.AsDto()).ToList()
+            Photos = entity.Photos.Select(x => x.AsDto()).ToList()
         };
     }
 
@@ -32,6 +32,44 @@ public static class Extensions
             Oridinal = entity.Oridinal,
             Path = entity.Path,
             UserId = entity.UserId
+        };
+    }
+
+    public static MessageDto AsDto(this Message entity)
+    {
+        return new()
+        {
+            Id = entity.Id,
+            MatchId = entity.MatchId,
+            SendFromId = entity.SendFromId,
+            SendToId = entity.SendToId,
+            Text = entity.Text,
+            IsDisplayed = entity.IsDisplayed,
+            CreatedAt = entity.CreatedAt
+        };
+    }
+
+    public static MatchDto AsDto(this Match entity)
+    {
+        return new()
+        {
+            Id = entity.Id,
+            UserId1 = entity.UserId1,
+            UserId2 = entity.UserId2,
+            CreatedAt = entity.CreatedAt,
+            Messages = entity.Messages.Select(x => x.AsDto()).ToList()
+        };
+    }
+
+    public static UserSettingsDto AsDto(this UserSettings entity)
+    {
+        return new()
+        {
+            UserId = entity.UserId,
+            DiscoverAgeFrom = entity.DiscoverAgeFrom,
+            DiscoverAgeTo = entity.DiscoverAgeTo,
+            DiscoverRange = entity.DiscoverRange,
+            DiscoverSex = (int) entity.DiscoverSex
         };
     }
 }

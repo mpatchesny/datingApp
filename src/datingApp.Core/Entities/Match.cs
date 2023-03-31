@@ -22,8 +22,8 @@ public class Match
         Id = id;
         UserId1 = userId1;
         UserId2 = userId2;
-        if (messages == null) messages =  new List<Message>();
         Messages = messages;
+        if (messages == null) messages =  new List<Message>();
         CreatedAt = createdAt;
     }
 }

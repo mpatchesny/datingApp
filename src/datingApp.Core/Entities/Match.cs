@@ -13,6 +13,11 @@ public class Match
     public IEnumerable<Message> Messages { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
+    private Match()
+    {
+        // EF
+    }
+
     public Match(int id, int userId1, int userId2, IEnumerable<Message> messages, DateTime createdAt)
     {
         Id = id;

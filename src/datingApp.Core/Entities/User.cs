@@ -26,6 +26,10 @@ public class User
     public IEnumerable<Photo> Photos { get; private set; }
     public UserSettings Settings { get; private set; }
 
+    private User()
+    {
+        // EF
+    }
     public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
                 IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
     {

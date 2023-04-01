@@ -5,21 +5,24 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
-using datingApp.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, IEnumerable<MessageDto>>
 {
-    private readonly IMessageRepository _messageRepository;
-    public GetMessagesHandler(IMessageRepository messageRepository)
+    private readonly DatingAppDbContext _dbContext;
+    public GetMessagesHandler(DatingAppDbContext dbContext)
     {
-        _messageRepository = messageRepository;
+        _dbContext = dbContext;
     }
 
     public async Task<IEnumerable<MessageDto>> HandleAsync(GetMessages query)
     {
-        var messages = await _messageRepository.GetByMatchIdAsync(query.MatchId);
-        return messages.Select(x => x.AsDto()).ToList();
+        return await _dbContext.Messages
+                            .AsNoTracking()
+                            .Where(x => x.MatchId == query.MatchId)
+                            .Select(x => x.AsDto())
+                            .ToListAsync();
     }
 }

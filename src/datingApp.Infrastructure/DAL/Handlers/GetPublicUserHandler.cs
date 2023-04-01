@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
-using datingApp.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, PublicUserDto>
 {
-    private readonly IUserRepository _userRepository;
-    public GetPublicUserHandler(IUserRepository userRepository)
+    private readonly DatingAppDbContext _dbContext;
+    public GetPublicUserHandler(DatingAppDbContext dbContext)
     {
-        _userRepository = userRepository;
+        _dbContext = dbContext;
     }
 
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
-        var user = await _userRepository.GetByIdAsync(query.UserId);
+        var user= await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == query.UserId);
         return user?.AsPublicDto();
     }
 }

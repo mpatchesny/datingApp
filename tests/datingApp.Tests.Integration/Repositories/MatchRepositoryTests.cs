@@ -55,6 +55,7 @@ public class MatchRepositoryTests : IDisposable
     {
         var match = new Match(0, 1, 1, null, DateTime.UtcNow);
         await _repository.AddAsync(match);
+        _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(1);
         Assert.Equal(2, matches.Count());
     }

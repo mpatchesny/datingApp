@@ -9,7 +9,7 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-public class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<MatchDto>>
+internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<MatchDto>>
 {
     private readonly IMatchRepository _matchRepository;
     public GetMatchesHandler(IMatchRepository matchRepository)

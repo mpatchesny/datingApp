@@ -7,10 +7,9 @@ using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;
-using Moq;
 using Xunit;
 
-namespace datingApp.Tests.Unit.QueryHandlers;
+namespace datingApp.Tests.Integration.QueryHandlers;
 
 public class GetMatchesHandlerTests
 {
@@ -35,11 +34,15 @@ public class GetMatchesHandlerTests
     
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly GetMatchesHandler _handler;
     public GetMatchesHandlerTests()
     {
-        var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var match = new Core.Entities.Match(1, 1, 1, null, DateTime.UtcNow);
+        var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var match = new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow);
+        _testDb = new TestDatabase();
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.SaveChanges();
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
         _handler = new GetMatchesHandler(_testDb.DbContext);

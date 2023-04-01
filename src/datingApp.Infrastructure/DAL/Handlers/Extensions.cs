@@ -30,6 +30,7 @@ public static class Extensions
         {
             Id = entity.Id,
             Age = entity.GetAge(),
+            DateOfBirth = entity.DateOfBirth,
             Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,

@@ -7,7 +7,7 @@ using datingApp.Core.Entities;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-public static class Extensions
+internal static class Extensions
 {
     public static PublicUserDto AsPublicDto(this User entity)
     {

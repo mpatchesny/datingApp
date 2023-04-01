@@ -15,8 +15,8 @@ internal static class Extensions
         {
             Id = entity.Id,
             Age = entity.GetAge(),
-            Bio = entity.Bio,
             Distance = 0, // FIXME
+            Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,
             Sex = (int) entity.Sex,
@@ -31,6 +31,7 @@ internal static class Extensions
             Id = entity.Id,
             Age = entity.GetAge(),
             DateOfBirth = entity.DateOfBirth,
+            Distance = 0, // FIXME
             Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,

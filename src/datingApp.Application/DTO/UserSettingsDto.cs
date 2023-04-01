@@ -12,4 +12,6 @@ public class UserSettingsDto
     public int DiscoverAgeFrom { get; set; }
     public int DiscoverAgeTo { get; set; }
     public int DiscoverRange { get; set; }
+    public double Lat { get; set; }
+    public double Lon { get; set; }
 }

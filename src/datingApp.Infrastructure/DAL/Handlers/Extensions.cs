@@ -66,10 +66,12 @@ public static class Extensions
         return new()
         {
             UserId = entity.UserId,
+            DiscoverSex = (int) entity.DiscoverSex,
             DiscoverAgeFrom = entity.DiscoverAgeFrom,
             DiscoverAgeTo = entity.DiscoverAgeTo,
             DiscoverRange = entity.DiscoverRange,
-            DiscoverSex = (int) entity.DiscoverSex
+            Lat = entity.Lat,
+            Lon = entity.Lon
         };
     }
 }

@@ -8,7 +8,7 @@ namespace datingApp.Core.Repositories;
 
 public interface IUserRepository : IRepository
 {
-    Task<IQueryable<User>> GetAllAsync();
+    IQueryable<User> GetAll();
     Task<User> GetByIdAsync(int userId);
     Task<User> GetByEmailAsync(string email);
     Task<User> GetByPhoneAsync(string phone);

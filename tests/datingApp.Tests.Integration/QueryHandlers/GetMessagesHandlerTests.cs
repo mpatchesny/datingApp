@@ -34,18 +34,22 @@ public class GetMessagesHandlerTests
     }
 
     // Arrange
-    private readonly GetMessagesHandler _handler;
+    private readonly TestDatabase _testDb;
     public GetMessagesHandlerTests()
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var match = new Core.Entities.Match(1, 1, 1, null, DateTime.UtcNow);
         var message = new Message(1, 1, 1, 1, "hello", false, DateTime.UtcNow);
-
-        var mockMessageRepository = new Mock<IMessageRepository>();
-        mockMessageRepository
-            .Setup(x => x.GetByMatchIdAsync(1))
-            .ReturnsAsync(new List<Core.Entities.Message> { message } );
-        _handler = new GetMessagesHandler(mockMessageRepository.Object);
+        _testDb.DbContext.Messages.Add(message);
+        _testDb.DbContext.SaveChanges();
+        _handler = new GetMessagesHandler(_testDb.DbContext);
     }
+
+    // Teardown
+    public void Dispose()
+    {
+        _testDb.Dispose();
+    }
+
 }

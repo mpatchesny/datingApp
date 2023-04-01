@@ -34,17 +34,20 @@ public class GetMatchesHandlerTests
     }
     
     // Arrange
-    private readonly GetMatchesHandler _handler;
+    private readonly TestDatabase _testDb;
     public GetMatchesHandlerTests()
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var match = new Core.Entities.Match(1, 1, 1, null, DateTime.UtcNow);
+        _testDb.DbContext.Matches.Add(match);
+        _testDb.DbContext.SaveChanges();
+        _handler = new GetMatchesHandler(_testDb.DbContext);
+    }
 
-        var mockMatchRepository = new Mock<IMatchRepository>();
-        mockMatchRepository
-            .Setup(x => x.GetByUserIdAsync(1))
-            .ReturnsAsync(new List<Core.Entities.Match> { match } );
-        _handler = new GetMatchesHandler(mockMatchRepository.Object);
+    // Teardown
+    public void Dispose()
+    {
+        _testDb.Dispose();
     }
 }

@@ -12,38 +12,41 @@ using Xunit;
 
 namespace datingApp.Tests.Unit.QueryHandlers;
 
-public class GetPublicUserHanlderTests
+public class GetPrivateUserHandlerTests
 {
     [Fact]
     public async Task query_existing_user_should_return_public_user_dto()
     {
-        var query = new GetPublicUser();
+        var query = new GetPrivateUser();
         query.UserId = 1;
         var user = await _handler.HandleAsync(query);
         Assert.NotNull(user);
-        Assert.IsType<PublicUserDto>(user);
+        Assert.IsType<PrivateUserDto>(user);
     }
 
     [Fact]
     public async Task query_nonexisting_user_should_return_null()
     {
-        var query = new GetPublicUser();
+        var query = new GetPrivateUser();
         query.UserId = 2;
         var user = await _handler.HandleAsync(query);
         Assert.Null(user);
     }
 
     // Arrange
-    private readonly GetPublicUserHandler _handler;
-    public GetPublicUserHanlderTests()
+    private readonly TestDatabase _testDb;
+    public GetPrivateUserHandlerTests()
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.SaveChanges();
+        _handler = new GetPrivateUserHandler(_testDb.DbContext);
+    }
 
-        var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository
-            .Setup(x => x.GetByIdAsync(1))
-            .ReturnsAsync(user);
-        _handler = new GetPublicUserHandler(mockUserRepository.Object);
+    // Teardown
+    public void Dispose()
+    {
+        _testDb.Dispose();
     }
 }

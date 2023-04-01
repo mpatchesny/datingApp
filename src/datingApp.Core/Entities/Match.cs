@@ -19,7 +19,7 @@ public class Match
         UserId1 = userId1;
         UserId2 = userId2;
         Messages = messages;
-        if (messages == null) messages =  new List<Message>();
+        if (messages == null) Messages = new List<Message>();
         CreatedAt = createdAt;
     }
 }

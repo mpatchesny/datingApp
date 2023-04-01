@@ -16,15 +16,9 @@ internal sealed class PostgresUserRepository : IUserRepository
         _dbContext = dbContext;
     }
     
-    public async Task AddAsync(User user)
+    public async Task<IQueryable<User>> GetAllAsync()
     {
-        await _dbContext.Users.AddAsync(user);
-    }
-
-    public async Task DeleteAsync(int userId)
-    {
-        var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
-        _dbContext.Users.Remove(user);
+        return _dbContext.Users.AsQueryable<User>();
     }
 
     public async Task<User> GetByEmailAsync(string email)
@@ -41,10 +35,18 @@ internal sealed class PostgresUserRepository : IUserRepository
     {
         return await _dbContext.Users.FirstOrDefaultAsync(x=> x.Phone == phone);
     }
-
+    public async Task AddAsync(User user)
+    {
+        await _dbContext.Users.AddAsync(user);
+    }
     public Task UpdateAsync(User user)
     {
         _dbContext.Users.Update(user);
         return Task.CompletedTask;
+    }
+    public async Task DeleteAsync(int userId)
+    {
+        var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
+        _dbContext.Users.Remove(user);
     }
 }

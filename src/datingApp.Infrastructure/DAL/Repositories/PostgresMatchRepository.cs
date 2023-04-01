@@ -30,9 +30,7 @@ internal sealed class PostgresMatchRepository : IMatchRepository
     public async Task<IEnumerable<Match>> GetByUserIdAsync(int userId)
     {
         return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId)
-                        .Include(
-                            match => match.Messages
-                                .Where(message => message.MatchId == match.Id)
+                        .Include(match => match.Messages
                                 .OrderByDescending(message => message.CreatedAt)
                                 .Take(1))
                         .ToListAsync();

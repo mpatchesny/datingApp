@@ -20,6 +20,6 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
         var user = await _userRepository.GetByIdAsync(query.UserId);
-        return user?.AsDto();
+        return user?.AsPublicDto();
     }
 }

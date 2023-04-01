@@ -9,7 +9,7 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 public static class Extensions
 {
-    public static PublicUserDto AsDto(this User entity)
+    public static PublicUserDto AsPublicDto(this User entity)
     {
         return new()
         {
@@ -20,6 +20,21 @@ public static class Extensions
             Job = entity.Job,
             Name = entity.Name,
             Sex = (int) entity.Sex,
+            Photos = entity.Photos.Select(x => x.AsDto()).ToList()
+        };
+    }
+
+    public static PrivateUserDto AsPrivateDto(this User entity)
+    {
+        return new()
+        {
+            Id = entity.Id,
+            Age = entity.GetAge(),
+            Bio = entity.Bio,
+            Job = entity.Job,
+            Name = entity.Name,
+            Sex = (int) entity.Sex,
+            Settings = entity.Settings.AsDto(),
             Photos = entity.Photos.Select(x => x.AsDto()).ToList()
         };
     }

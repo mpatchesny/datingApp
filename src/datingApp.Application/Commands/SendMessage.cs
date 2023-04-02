@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record SendMessage(int sendToId, string text) : ICommand;
+public sealed record SendMessage(int MatchId, int SendToId, string Text) : ICommand;

@@ -19,7 +19,7 @@ public class GetMessagesHandlerTests
         var query = new GetMessages();
         query.MatchId = 1;
         var messages = await _handler.HandleAsync(query);
-        Assert.Equal(1, messages.Count());
+        Assert.Single(messages);
         Assert.IsType<MessageDto>(messages.First());
     }
 
@@ -29,7 +29,7 @@ public class GetMessagesHandlerTests
         var query = new GetMessages();
         query.MatchId = 0;
         var messages = await _handler.HandleAsync(query);
-        Assert.Equal(0, messages.Count());
+        Assert.Empty(messages);
     }
 
     // Arrange

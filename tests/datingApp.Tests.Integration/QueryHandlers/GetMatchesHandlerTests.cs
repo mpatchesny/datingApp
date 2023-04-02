@@ -19,7 +19,7 @@ public class GetMatchesHandlerTests
         var query = new GetMatches();
         query.UserId = 1;
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(1, matches.Count());
+        Assert.Single(matches);
         Assert.IsType<MatchDto>(matches.First());
     }
 
@@ -29,7 +29,7 @@ public class GetMatchesHandlerTests
         var query = new GetMatches();
         query.UserId = 0;
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(0, matches.Count());
+        Assert.Empty(matches);
     }
     
     // Arrange

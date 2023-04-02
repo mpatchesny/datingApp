@@ -36,6 +36,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         query.Lat = 45.5;
         query.Lon = 45.5;
         query.Sex = (int) userLookingForSex;
+        query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
         Assert.Single(candidates);
@@ -64,6 +65,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         query.Lat = 45.5;
         query.Lon = 45.5;
         query.Sex = (int) userLookingForSex;
+        query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
         Assert.Empty(candidates);

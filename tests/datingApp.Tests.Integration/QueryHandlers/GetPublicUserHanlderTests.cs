@@ -7,6 +7,8 @@ using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;
+using datingApp.Infrastructure.Spatial;
+using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
@@ -42,7 +44,10 @@ public class GetPublicUserHanlderTests : IDisposable
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
-        _handler = new GetPublicUserHandler(_testDb.DbContext);
+        
+        var mockedSpatial = new Mock<ISpatial>();
+        mockedSpatial.Setup(m => m.CalculateDistance(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        _handler = new GetPublicUserHandler(_testDb.DbContext, mockedSpatial.Object);
     }
 
     // Teardown

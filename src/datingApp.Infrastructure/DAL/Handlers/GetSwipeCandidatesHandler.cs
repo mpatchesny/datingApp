@@ -19,17 +19,26 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
-        // Chcemy użytkowników, którzy:
-        // - TODO są w odpowiedniej odległości
         // FIXME: async
-        var candidatesQuery = from u in _dbContext.Users
-            from s in _dbContext.Swipes.Where(s => s.SwippedById != u.Id).DefaultIfEmpty()
-            select new { u, s };
-        var candidates = candidatesQuery
-                        .Where(x => x.u.GetAge() >= query.AgeFrom && x.u.GetAge() <= query.AgeTo)
-                        .Where(x => (int) x.u.Sex == query.Sex)
-                        .Include(x => x.u.Photos)
+        // Chcemy użytkowników, którzy:
+        // - są w odpowiedniej odległości
+        // - sortowanie malejąco wg popularności (liczby like)
+
+        var now = DateTime.UtcNow;
+        DateOnly minDob = new DateOnly(now.Year - query.AgeTo, now.Month, now.Day);
+        DateOnly maxDob = new DateOnly(now.Year - query.AgeFrom, now.Month, now.Day);
+
+        var candidatesQuery = from u in _dbContext.Users.Where(x => x.Id != query.UserId)
+            from s in _dbContext.Swipes.Where(s => s.SwippedById != query.UserId).DefaultIfEmpty()
+            select new { u.Id };
+
+        var candidates = _dbContext.Users
+                        .Where(x => candidatesQuery.Select(u => u.Id).Contains(x.Id))
+                        .Where(x => ((int) x.Sex & query.Sex) != 0)
+                        .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
+                        .Include(x => x.Photos)
                         .AsNoTracking();
-        return candidates.Select(x => x.u.AsPublicDto()).ToList();
+
+        return candidates.Select(x => x.AsPublicDto()).ToList();
     }
 }

@@ -50,17 +50,19 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Settings.Lat >= square[2].lat)
                     .Where(x => x.Settings.Lat >= square[3].lat)
                     .Where(x => x.Settings.Lon <= square[0].lon)
-                    .Where(x => x.Settings.Lon <= square[1].lon)
-                    .Where(x => x.Settings.Lon >= square[2].lon)
+                    .Where(x => x.Settings.Lon >= square[1].lon)
+                    .Where(x => x.Settings.Lon <= square[2].lon)
                     .Where(x => x.Settings.Lon >= square[3].lon)
                     .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
                     .Take(query.HowMany)
+                    .Include(x => x.Settings)
                     .Include(x => x.Photos)
                     .AsNoTracking()
                     .ToList();
 
         var candidatesList = candidates
                             .Select(u => u.AsPublicDto(_spatial.CalculateDistance(query.Lat, query.Lon, u.Settings.Lat, u.Settings.Lon)))
+                            .Where(u => u.Distance <= query.Range)
                             .ToList();
 
         return candidatesList;

@@ -9,7 +9,7 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class SingUpHandler : ICommandHandler<SingUp>
+public sealed class SingUpHandler : ICommandHandler<SingUp>
 {
     private readonly IUserRepository _userRepository;
     public SingUpHandler(IUserRepository userRepository)

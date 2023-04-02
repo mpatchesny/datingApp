@@ -9,13 +9,13 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal static class Extensions
 {
-    public static PublicUserDto AsPublicDto(this User entity)
+    public static PublicUserDto AsPublicDto(this User entity, int distance)
     {
         return new()
         {
             Id = entity.Id,
             Age = entity.GetAge(),
-            Distance = 0, // FIXME
+            Distance = distance,
             Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,

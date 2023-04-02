@@ -22,7 +22,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
@@ -50,7 +50,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
@@ -83,7 +83,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(2, Sex.Male, 18, 21, 20, 45.5, 45.5);
         var now = DateTime.UtcNow;
         var dob = new DateOnly(now.Year - candidateAge, now.Month, now.Day);
-        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings2);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
@@ -97,6 +97,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         query.Lat = 45.5;
         query.Lon = 45.5;
         query.Sex = (int) Sex.Male;
+        query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
         Assert.Single(candidates);
@@ -116,7 +117,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(2, Sex.Male, 18, 21, 20, 45.5, 45.5);
         var now = DateTime.UtcNow;
         var dob = new DateOnly(now.Year - candidateAge, now.Month, now.Day);
-        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings2);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
@@ -130,6 +131,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         query.Lat = 45.5;
         query.Lon = 45.5;
         query.Sex = (int) Sex.Male;
+        query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
         Assert.Empty(candidates);
@@ -160,10 +162,10 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
 
         var settings3 = new UserSettings(3, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user3 = new User(3, "333333333", "test3@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var user3 = new User(3, "333333333", "test3@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings3);
 
         var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
 
@@ -181,9 +183,52 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         query.Lat = 45.5;
         query.Lon = 45.5;
         query.Sex = 1;
+        query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
         Assert.Single(candidates);
+    }
+
+    [Fact]
+    public async Task candidates_returned_count_equals_how_many_from_query()
+    {
+        var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
+
+        var settings3 = new UserSettings(3, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user3 = new User(3, "333333333", "test3@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings3);
+
+        var settings4 = new UserSettings(4, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user4 = new User(4, "444444444", "test4@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings4);
+
+        var settings5 = new UserSettings(5, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user5 = new User(5, "555555555", "test5@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings5);
+
+        var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.Users.Add(user3);
+        _testDb.DbContext.Users.Add(user4);
+        _testDb.DbContext.Users.Add(user5);
+        _testDb.DbContext.Swipes.Add(swipe);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = 18;
+        query.AgeTo = 100;
+        query.Range = 100;
+        query.Lat = 45.5;
+        query.Lon = 45.5;
+        query.Sex = 1;
+        query.HowMany = 2;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.Equal(query.HowMany, candidates.Count());
     }
 
     // Arrange

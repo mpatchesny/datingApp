@@ -28,7 +28,7 @@ public class SwipeUserHandlerTests : IDisposable
         var command = new SwipeUser(1, 3, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
-        Assert.IsType<UserNotExists>(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     // Arrange

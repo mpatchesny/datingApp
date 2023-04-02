@@ -13,7 +13,7 @@ public class UserSettingsTests
     [Fact]
     public void user_settings_should_accept_male_female_discovery_sex()
     {
-        var discoverySex = Sex.Male & Sex.Female;
+        var discoverySex = Sex.Male | Sex.Female;
         var exception = Record.Exception(() =>new UserSettings(1, discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.Null(exception);
     }

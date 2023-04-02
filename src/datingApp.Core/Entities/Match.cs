@@ -15,15 +15,16 @@ public class Match
 
     private Match()
     {
-        // empty constructor for EF
+        // EF
     }
+
     public Match(int id, int userId1, int userId2, IEnumerable<Message> messages, DateTime createdAt)
     {
         Id = id;
         UserId1 = userId1;
         UserId2 = userId2;
-        if (messages == null) messages =  new List<Message>();
         Messages = messages;
+        if (messages == null) Messages = new List<Message>();
         CreatedAt = createdAt;
     }
 }

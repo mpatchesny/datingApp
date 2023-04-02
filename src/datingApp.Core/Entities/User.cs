@@ -39,8 +39,8 @@ public class User
         SetName(name);
         SetSex(sex);
         SetDateOfBirth(dateOfBirth);
-        if (photos == null) Photos = new List<Photo>();
         Photos = photos;
+        if (photos == null) Photos = new List<Photo>();
         SetSettings(settings);
         SetJob(job);
         SetBio(bio);
@@ -158,7 +158,7 @@ public class User
     }
     private void SetSex(Sex sex)
     {
-        if (sex == (Sex.Male & Sex.Female))
+        if (((sex & Sex.Male) == Sex.Male) & ((sex & Sex.Female) == Sex.Female))
         {
             throw new InvalidUserSexException();
         }

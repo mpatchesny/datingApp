@@ -49,7 +49,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_email_should_not_exceed_257_chars()
+    public void user_email_should_not_exceed_256_chars()
     {
         string badEmail = "";
         for (int i=1; i<=257; i++)
@@ -151,7 +151,7 @@ public class UserTests
     [Fact]
     public void user_should_not_accept_two_sexes()
     {
-        var sex = Sex.Male & Sex.Female;
+        var sex = Sex.Male | Sex.Female;
         var exception = Record.Exception(() =>new User(1, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), sex, null, properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUserSexException>(exception);

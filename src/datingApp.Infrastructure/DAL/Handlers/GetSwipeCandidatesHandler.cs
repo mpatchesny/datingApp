@@ -23,8 +23,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
         // FIXME: async
-        // Chcemy użytkowników, którzy:
-        // - sortowanie malejąco wg popularności (liczby like)
+        // - sortowanie malejąco wg popularności
 
         var now = DateTime.UtcNow;
         DateOnly minDob = new DateOnly(now.Year - query.AgeTo, now.Month, now.Day);
@@ -36,7 +35,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var swippedCandidates = 
             _dbContext.Swipes.Where(s => s.SwippedById == query.UserId).Select(x => x.SwippedWhoId);
 
-        // we want candidates that matches sex, age and approx range of user who requested
+        // we want candidates that matches sex, age and within approx range of user who requested
         // we want only number of candidates equals to HowMany
         // we want candidates that are different from user who requested
         // we want candidates sorted by number of likes descending
@@ -59,7 +58,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .AsNoTracking()
                     .ToList();
 
-        // we want candidates that matches range of user who requested
+        // we want candidates within range of user who requested
         var candidatesList = candidates
                             .Select(u => u.AsPublicDto(_spatial.CalculateDistance(query.Lat, query.Lon, u.Settings.Lat, u.Settings.Lon)))
                             .Where(u => u.Distance <= query.Range)

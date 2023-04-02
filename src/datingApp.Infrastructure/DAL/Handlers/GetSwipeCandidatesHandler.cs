@@ -22,7 +22,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
-        // FIXME: async
         // - sortowanie malejąco wg popularności
 
         var now = DateTime.UtcNow;
@@ -39,7 +38,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want only number of candidates equals to HowMany
         // we want candidates that are different from user who requested
         // we want candidates sorted by number of likes descending
-        var candidates = _dbContext.Users
+        var candidates = await _dbContext.Users
                     .Where(x => x.Id != query.UserId)
                     .Where(x => !swippedCandidates.Contains(x.Id))
                     .Where(x => ((int) x.Sex & query.Sex) > 0)
@@ -56,7 +55,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Include(x => x.Settings)
                     .Include(x => x.Photos)
                     .AsNoTracking()
-                    .ToList();
+                    .ToListAsync();
 
         // we want candidates within range of user who requested
         var candidatesList = candidates

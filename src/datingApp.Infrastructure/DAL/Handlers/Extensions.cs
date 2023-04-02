@@ -58,7 +58,6 @@ internal static class Extensions
             Id = entity.Id,
             MatchId = entity.MatchId,
             SendFromId = entity.SendFromId,
-            SendToId = entity.SendToId,
             Text = entity.Text,
             IsDisplayed = entity.IsDisplayed,
             CreatedAt = entity.CreatedAt

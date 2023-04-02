@@ -19,8 +19,6 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
             .IsRequired();
         builder.Property(x => x.SendFromId)
             .IsRequired();
-        builder.Property(x => x.SendToId)
-            .IsRequired();
         builder.Property(x => x.IsDisplayed)
             .IsRequired()
             .HasDefaultValue(false);
@@ -32,8 +30,5 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(x => x.SendFromId);
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.SendToId);
     }
 }

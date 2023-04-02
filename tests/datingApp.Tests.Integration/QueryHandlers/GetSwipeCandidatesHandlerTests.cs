@@ -16,7 +16,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(Sex.Female, Sex.Female)]
     [InlineData(Sex.Male | Sex.Female, Sex.Female)]
     [InlineData(Sex.Male | Sex.Female, Sex.Male)]
-    public async Task when_candidates_with_proper_sex_returns_nonempty_list(Sex userLookingForSex, Sex candidateSex)
+    public async Task when_candidates_with_proper_sex_exist_returns_nonempty_list(Sex userLookingForSex, Sex candidateSex)
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
@@ -75,7 +75,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(18, 25, 18)]
     [InlineData(18, 25, 25)]
     [InlineData(18, 100, 45)]
-    public async Task when_candidates_with_proper_age_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
+    public async Task when_candidates_with_proper_age_exists_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
         var settings = new UserSettings(1, Sex.Male, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
@@ -136,7 +136,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public void when_candidates_within_range_returns_nonempty_list()
+    public void when_candidates_within_range_exist_returns_nonempty_list()
     {
         Assert.True(true);
     }
@@ -148,7 +148,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public void users_returned_are_sorted_by_likes_descending()
+    public void candidates_returned_are_sorted_by_number_of_likes_descending()
     {
         Assert.True(true);
     }

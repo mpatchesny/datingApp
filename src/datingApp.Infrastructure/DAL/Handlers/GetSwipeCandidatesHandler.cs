@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using datingApp.Infrastructure.Spatial;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -12,9 +13,11 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetSwipeCandidatesHandler(DatingAppDbContext dbContext)
+    private readonly ISpatial _spatial;
+    public GetSwipeCandidatesHandler(DatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
+        _spatial = spatial;
     }
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
@@ -28,17 +31,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         DateOnly minDob = new DateOnly(now.Year - query.AgeTo, now.Month, now.Day);
         DateOnly maxDob = new DateOnly(now.Year - query.AgeFrom, now.Month, now.Day);
 
-        double xne = query.Lat + query.Range * 0.009;
-        double yne = query.Lon + query.Range * 0.009;
-
-        double xnw = query.Lat - query.Range * 0.009;
-        double ynw = query.Lon + query.Range * 0.009;
-
-        double xse = query.Lat + query.Range * 0.009;
-        double yse = query.Lon - query.Range * 0.009;
-
-        double xsw = query.Lat - query.Range * 0.009;
-        double ysw = query.Lon - query.Range * 0.009;
+        var square = _spatial.GetApproxSquareAroundPoint(query.Lat, query.Lon, query.Range);
 
         // we want only candidates who haven't been swiped by user who requests
         // and are different from user who requests candidates
@@ -52,19 +45,24 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Id != query.UserId)
                     .Where(x => !swippedCandidates.Contains(x.Id))
                     .Where(x => ((int) x.Sex & query.Sex) > 0)
-                    .Where(x => x.Settings.Lat <= yne)
-                    .Where(x => x.Settings.Lat <= ynw)
-                    .Where(x => x.Settings.Lat >= ysw)
-                    .Where(x => x.Settings.Lat >= yse)
-                    .Where(x => x.Settings.Lon <= xne)
-                    .Where(x => x.Settings.Lon <= xse)
-                    .Where(x => x.Settings.Lon >= xnw)
-                    .Where(x => x.Settings.Lon >= xsw)
+                    .Where(x => x.Settings.Lat <= square[0].lat)
+                    .Where(x => x.Settings.Lat <= square[1].lat)
+                    .Where(x => x.Settings.Lat >= square[2].lat)
+                    .Where(x => x.Settings.Lat >= square[3].lat)
+                    .Where(x => x.Settings.Lon <= square[0].lon)
+                    .Where(x => x.Settings.Lon <= square[1].lon)
+                    .Where(x => x.Settings.Lon >= square[2].lon)
+                    .Where(x => x.Settings.Lon >= square[3].lon)
                     .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
                     .Take(query.HowMany)
                     .Include(x => x.Photos)
-                    .AsNoTracking();
+                    .AsNoTracking()
+                    .ToList();
 
-        return candidates.Select(x => x.AsPublicDto()).ToList();
+        var candidatesList = candidates
+                            .Select(u => u.AsPublicDto(_spatial.CalculateDistance(query.Lat, query.Lon, u.Settings.Lat, u.Settings.Lon)))
+                            .ToList();
+
+        return candidatesList;
     }
 }

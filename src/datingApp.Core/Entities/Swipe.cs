@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;
 
@@ -16,6 +17,9 @@ public class Swipe
     public Swipe(int id, int swippedById, int swippedWhoId, Like like, DateTime createdAt)
     {
         Id = id;
+
+        if (swippedById == swippedWhoId) throw new InvalidSwipeException();
+
         SwippedById = swippedById;
         SwippedWhoId = swippedWhoId;
         Like = like;

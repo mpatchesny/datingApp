@@ -9,6 +9,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
 
+[Collection("Integration tests")]
 public class MessageRepositoryTests : IDisposable
 {
     [Fact]
@@ -45,7 +46,7 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void add_message_should_succeed()
     {
-        var message = new Message(0, 1, 1, 1, "ahoj", false, DateTime.UtcNow);
+        var message = new Message(0, 1, 1, "ahoj", false, DateTime.UtcNow);
         await _repository.AddAsync(message);
         _testDb.DbContext.SaveChanges();
         var messages = await _repository.GetByMatchIdAsync(1);
@@ -68,7 +69,7 @@ public class MessageRepositoryTests : IDisposable
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 
-        var message = new Message(0, 1, 1, 1, "ahoj", false, DateTime.UtcNow);
+        var message = new Message(0, 1, 1, "ahoj", false, DateTime.UtcNow);
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 

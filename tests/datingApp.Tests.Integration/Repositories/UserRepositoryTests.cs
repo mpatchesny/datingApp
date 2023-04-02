@@ -8,6 +8,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration;
 
+[Collection("Integration tests")]
 public class UserRepositoryTests : IDisposable
 {
     [Fact]

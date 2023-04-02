@@ -10,7 +10,6 @@ public class MessageDto
     public int Id { get; set; }
     public int MatchId { get; set; }
     public int SendFromId { get; set; }
-    public int SendToId { get; set; }
     public string Text { get; set; }
     public bool IsDisplayed { get; set; }
     public DateTime CreatedAt { get; set; }

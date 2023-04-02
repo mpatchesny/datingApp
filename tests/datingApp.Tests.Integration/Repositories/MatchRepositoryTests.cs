@@ -9,6 +9,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
 
+[Collection("Integration tests")]
 public class MatchRepositoryTests : IDisposable
 {
     [Fact]
@@ -40,7 +41,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void delete_nonexisting_match_by_id_should_throw_exception()
     {
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(999));
         Assert.NotNull(exception);
     }
 
@@ -77,8 +78,8 @@ public class MatchRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, 1, 1, new List<Message>{ new Message(0, 1, 1, 1, "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
-        var match2 = new Match(0, 2, 2, new List<Message>{ new Message(0, 2, 2, 2, "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match = new Match(0, 1, 1, new List<Message>{ new Message(0, 1, 1, "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match2 = new Match(0, 2, 2, new List<Message>{ new Message(0, 2, 2, "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.Matches.Add(match2);
         _testDb.DbContext.SaveChanges();

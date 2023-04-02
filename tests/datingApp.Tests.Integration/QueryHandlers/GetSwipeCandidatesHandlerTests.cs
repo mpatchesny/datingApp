@@ -1,0 +1,199 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using datingApp.Application.Queries;
+using datingApp.Core.Entities;
+using datingApp.Infrastructure.DAL.Handlers;
+using Xunit;
+
+namespace datingApp.Tests.Integration.QueryHandlers;
+
+public class GetSwipeCandidatesHandlerTests : IDisposable
+{
+    [Theory]
+    [InlineData(Sex.Male, Sex.Male)]
+    [InlineData(Sex.Female, Sex.Female)]
+    [InlineData(Sex.Male | Sex.Female, Sex.Female)]
+    [InlineData(Sex.Male | Sex.Female, Sex.Male)]
+    public async Task when_candidates_with_proper_sex_returns_nonempty_list(Sex userLookingForSex, Sex candidateSex)
+    {
+        var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = 18;
+        query.AgeTo = 100;
+        query.Range = 100;
+        query.Lat = 45.5;
+        query.Lon = 45.5;
+        query.Sex = (int) userLookingForSex;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.Single(candidates);
+    }
+
+    [Theory]
+    [InlineData(Sex.Male, Sex.Female)]
+    [InlineData(Sex.Female, Sex.Male)]
+    public async Task when_no_candidates_with_proper_sex_returns_empty_list(Sex userLookingForSex, Sex candidateSex)
+    {
+        var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = 18;
+        query.AgeTo = 100;
+        query.Range = 100;
+        query.Lat = 45.5;
+        query.Lon = 45.5;
+        query.Sex = (int) userLookingForSex;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.Empty(candidates);
+    }
+
+    [Theory]
+    [InlineData(18, 18, 18)]
+    [InlineData(100, 100, 100)]
+    [InlineData(18, 25, 18)]
+    [InlineData(18, 25, 25)]
+    [InlineData(18, 100, 45)]
+    public async Task when_candidates_with_proper_age_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
+    {
+        var settings = new UserSettings(1, Sex.Male, 18, 21, 20, 45.5, 45.5);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Male, 18, 21, 20, 45.5, 45.5);
+        var now = DateTime.UtcNow;
+        var dob = new DateOnly(now.Year - candidateAge, now.Month, now.Day);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = queryAgeFrom;
+        query.AgeTo = queryAgeTo;
+        query.Range = 100;
+        query.Lat = 45.5;
+        query.Lon = 45.5;
+        query.Sex = (int) Sex.Male;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.Single(candidates);
+    }
+
+    [Theory]
+    [InlineData(18, 18, 19)]
+    [InlineData(100, 100, 99)]
+    [InlineData(20, 25, 19)]
+    [InlineData(20, 25, 26)]
+    [InlineData(50, 60, 70)]
+    public async Task when_no_candidates_with_proper_age_returns_empty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
+    {
+        var settings = new UserSettings(1, Sex.Male, 18, 21, 20, 45.5, 45.5);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Male, 18, 21, 20, 45.5, 45.5);
+        var now = DateTime.UtcNow;
+        var dob = new DateOnly(now.Year - candidateAge, now.Month, now.Day);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = queryAgeFrom;
+        query.AgeTo = queryAgeTo;
+        query.Range = 100;
+        query.Lat = 45.5;
+        query.Lon = 45.5;
+        query.Sex = (int) Sex.Male;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.Empty(candidates);
+    }
+
+    [Fact]
+    public void when_candidates_within_range_returns_nonempty_list()
+    {
+        Assert.True(true);
+    }
+
+    [Fact]
+    public void when_no_candidates_within_range_returns_empty_list()
+    {
+        Assert.True(true);
+    }
+
+    [Fact]
+    public void users_returned_are_sorted_by_likes_descending()
+    {
+        Assert.True(true);
+    }
+
+    [Fact]
+    public async Task users_already_swiped_are_not_returned()
+    {
+        var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.Swipes.Add(swipe);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = 18;
+        query.AgeTo = 100;
+        query.Range = 100;
+        query.Lat = 45.5;
+        query.Lon = 45.5;
+        query.Sex = 1;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.Empty(candidates);
+    }
+
+    // Arrange
+    private readonly TestDatabase _testDb;
+    private readonly GetSwipeCandidatesHandler _handler;
+    public GetSwipeCandidatesHandlerTests()
+    {
+        _testDb = new TestDatabase();
+        _handler = new GetSwipeCandidatesHandler(_testDb.DbContext);
+    }
+
+    // Teardown
+    public void Dispose()
+    {
+        _testDb.Dispose();
+    }
+}

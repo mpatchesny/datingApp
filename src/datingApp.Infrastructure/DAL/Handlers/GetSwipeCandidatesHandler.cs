@@ -28,12 +28,17 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         DateOnly minDob = new DateOnly(now.Year - query.AgeTo, now.Month, now.Day);
         DateOnly maxDob = new DateOnly(now.Year - query.AgeFrom, now.Month, now.Day);
 
-        var candidatesQuery = from u in _dbContext.Users.Where(x => x.Id != query.UserId)
+        // we want only candidates who haven't been swiped
+        // and are different from user who requests candidates
+        var notSwippedCandidates = 
+            from u in _dbContext.Users.Where(x => x.Id != query.UserId)
             from s in _dbContext.Swipes.Where(s => s.SwippedById != query.UserId).DefaultIfEmpty()
             select new { u.Id };
 
+        // we want candidates who matches sex, age and range
+        // we want candidates sorted by number of likes descending
         var candidates = _dbContext.Users
-                        .Where(x => candidatesQuery.Select(u => u.Id).Contains(x.Id))
+                        .Where(x => notSwippedCandidates.Select(u => u.Id).Contains(x.Id))
                         .Where(x => ((int) x.Sex & query.Sex) != 0)
                         .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
                         .Include(x => x.Photos)

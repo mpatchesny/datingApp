@@ -46,6 +46,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
             _dbContext.Swipes.Where(s => s.SwippedById == query.UserId).Select(x => x.SwippedWhoId);
 
         // we want candidates that matches sex, age and range of user who requests
+        // we want only a number of candidates as in query
         // we want candidates sorted by number of likes descending
         var candidates = _dbContext.Users
                     .Where(x => x.Id != query.UserId)
@@ -60,6 +61,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Settings.Lon >= xnw)
                     .Where(x => x.Settings.Lon >= xsw)
                     .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
+                    .Take(query.HowMany)
                     .Include(x => x.Photos)
                     .AsNoTracking();
 

@@ -13,6 +13,7 @@ public class GetSwipeCandidates : IQuery<IEnumerable<PublicUserDto>>
     public int AgeFrom { get; set; }
     public int AgeTo { get; set; }
     public int Range { get; set; }
+    public int HowMany { get; set; }
     public int Sex { get; set; }
     public double Lat { get; set; }
     public double Lon { get; set; }

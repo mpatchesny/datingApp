@@ -24,7 +24,7 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
         var user = await _userRepository.GetByIdAsync(command.SwipedWhoId);
         if (user == null)
         {
-            throw new UserNotExists(command.SwipedWhoId);
+            throw new UserNotExistsException(command.SwipedWhoId);
         }
 
         var swipe = new Swipe(0, command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);

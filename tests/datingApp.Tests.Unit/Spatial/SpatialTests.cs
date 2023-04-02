@@ -20,7 +20,7 @@ public class SpatialTests
     }
 
     [Fact]
-    public void given_two_points_and_distance_in_kilometers_spatial_returns_proper_apporximation_of_square_around_point()
+    public void given_two_points_and_distance_in_kilometers_spatial_returns_proper_approximation_of_square_around_point()
     {
         Assert.True(true);
     }

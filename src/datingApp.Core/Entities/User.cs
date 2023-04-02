@@ -158,7 +158,7 @@ public class User
     }
     private void SetSex(Sex sex)
     {
-        if (sex == (Sex.Male & Sex.Female))
+        if (((sex & Sex.Male) == Sex.Male) & ((sex & Sex.Female) == Sex.Female))
         {
             throw new InvalidUserSexException();
         }

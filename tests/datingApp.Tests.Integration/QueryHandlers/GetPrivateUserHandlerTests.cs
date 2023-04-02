@@ -38,7 +38,7 @@ public class GetPrivateUserHandlerTests
     public GetPrivateUserHandlerTests()
     {
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

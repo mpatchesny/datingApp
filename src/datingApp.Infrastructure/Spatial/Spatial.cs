@@ -7,9 +7,21 @@ namespace datingApp.Infrastructure.Spatial;
 
 public class Spatial : ISpatial
 {
-    public int CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+    private const double r = 6371.009; // kilometers
+    private const double toRadMultiplier = Math.PI/180;
+    public int CalculateDistance(double fromLat, double fromLon, double toLat, double toLon)
     {
-        throw new NotImplementedException();
+        var fromLatRad = fromLat * toRadMultiplier;
+        var fromLonRad = fromLon * toRadMultiplier;
+        var toLatRad = toLat * toRadMultiplier;
+        var toLonRad = toLon * toRadMultiplier;
+
+        // https://stackoverflow.com/questions/41621957/a-more-efficient-haversine-function
+        var sdlat = Math.Sin((toLatRad - fromLatRad) / 2);
+        var sdlon = Math.Sin((toLonRad - fromLonRad) / 2);
+        var q = sdlat * sdlat + Math.Cos(fromLatRad) * Math.Cos(toLatRad) * sdlon * sdlon;
+        var d = 2 * r * Math.Asin(Math.Sqrt(q));
+        return (int) Math.Round(d);
     }
 
     public List<(double lat, double lon)> GetApproxSquareAroundPoint(double lat, double lon, int distance)

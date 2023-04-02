@@ -9,6 +9,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
 
+[Collection("Integration tests")]
 public class MatchRepositoryTests : IDisposable
 {
     [Fact]
@@ -40,7 +41,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void delete_nonexisting_match_by_id_should_throw_exception()
     {
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(999));
         Assert.NotNull(exception);
     }
 

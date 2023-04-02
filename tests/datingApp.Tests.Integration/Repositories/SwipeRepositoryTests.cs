@@ -15,7 +15,7 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task add_swipe_should_succeed()
     {
-        var swipe = new Swipe(0, 1, 1, Like.Like, DateTime.UtcNow);
+        var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
         _testDb.DbContext.SaveChanges();
         Assert.Null(exception);
@@ -29,14 +29,14 @@ public class SwipeRepositoryTests : IDisposable
     {
         var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user2 = new User(0, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
+        
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
-
-        var swipe = new Swipe(0, 1, 1, Like.Like, DateTime.UtcNow);
-        _testDb.DbContext.Swipes.Add(swipe);
-        _testDb.DbContext.SaveChanges();
-
         _repository = new PostgresSwipeRepository(_testDb.DbContext);
     }
 

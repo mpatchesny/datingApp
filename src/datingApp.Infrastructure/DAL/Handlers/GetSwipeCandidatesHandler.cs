@@ -24,7 +24,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     {
         // FIXME: async
         // Chcemy użytkowników, którzy:
-        // - są w odpowiedniej odległości
         // - sortowanie malejąco wg popularności (liczby like)
 
         var now = DateTime.UtcNow;
@@ -33,13 +32,13 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
         var square = _spatial.GetApproxSquareAroundPoint(query.Lat, query.Lon, query.Range);
 
-        // we want only candidates who haven't been swiped by user who requests
-        // and are different from user who requests candidates
+        // we want only candidates who haven't been swiped by user who requested
         var swippedCandidates = 
             _dbContext.Swipes.Where(s => s.SwippedById == query.UserId).Select(x => x.SwippedWhoId);
 
-        // we want candidates that matches sex, age and range of user who requests
-        // we want only a number of candidates as in query
+        // we want candidates that matches sex, age and approx range of user who requested
+        // we want only number of candidates equals to HowMany
+        // we want candidates that are different from user who requested
         // we want candidates sorted by number of likes descending
         var candidates = _dbContext.Users
                     .Where(x => x.Id != query.UserId)
@@ -60,6 +59,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .AsNoTracking()
                     .ToList();
 
+        // we want candidates that matches range of user who requested
         var candidatesList = candidates
                             .Select(u => u.AsPublicDto(_spatial.CalculateDistance(query.Lat, query.Lon, u.Settings.Lat, u.Settings.Lon)))
                             .Where(u => u.Distance <= query.Range)

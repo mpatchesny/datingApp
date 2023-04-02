@@ -154,7 +154,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task users_already_swiped_are_not_returned()
+    public async Task users_already_swipped_are_not_returned()
     {
         var settings = new UserSettings(1, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
@@ -162,10 +162,14 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(2, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
+        var settings3 = new UserSettings(3, Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user3 = new User(3, "333333333", "test3@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
         var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.Users.Add(user3);
         _testDb.DbContext.Swipes.Add(swipe);
         _testDb.DbContext.SaveChanges();
 
@@ -179,7 +183,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         query.Sex = 1;
 
         var candidates = await _handler.HandleAsync(query);
-        Assert.Empty(candidates);
+        Assert.Single(candidates);
     }
 
     // Arrange

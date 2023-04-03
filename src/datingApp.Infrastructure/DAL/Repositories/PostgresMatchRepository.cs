@@ -33,9 +33,8 @@ internal sealed class PostgresMatchRepository : IMatchRepository
         await _dbContext.Matches.AddAsync(match);
     }
 
-    public async Task DeleteAsync(int matchId)
+    public async Task DeleteAsync(Match match)
     {
-        var match = await _dbContext.Matches.FirstAsync(x => x.Id == matchId);
         _dbContext.Matches.Remove(match);
     }
 }

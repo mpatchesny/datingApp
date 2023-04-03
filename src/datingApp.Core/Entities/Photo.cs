@@ -20,6 +20,12 @@ public class Photo
         Oridinal = oridinal;
     }
 
+    public void ChangeOridinal(int oridinal)
+    {
+        if (Oridinal == oridinal) return;
+        Oridinal = oridinal;
+    }
+
     private void SetPath(string path)
     {
         if (path.Length == 0)
@@ -29,4 +35,5 @@ public class Photo
         if (Path == path) return;
         Path = path;
     }
+
 }

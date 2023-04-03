@@ -35,6 +35,15 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task update_photo_should_succeed()
+    {
+        var photo = await _repository.GetByIdAsync(1);
+        photo.ChangeOridinal(3);
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(photo));
+        Assert.Null(exception);
+    }
+
+    [Fact]
     public async Task delete_existing_photo_should_succeed()
     {
         var photo = await _repository.GetByIdAsync(1);

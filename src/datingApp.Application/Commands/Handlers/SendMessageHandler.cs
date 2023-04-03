@@ -21,7 +21,7 @@ public sealed class SendMessageHandler : ICommandHandler<SendMessage>
 
     public async Task HandleAsync(SendMessage command)
     {
-        Match match = null;
+        Match match = await _matchRepository.GetByIdAsync(command.MatchId);
         if (match == null)
         {
             throw new MatchNotExistsException(command.MatchId);

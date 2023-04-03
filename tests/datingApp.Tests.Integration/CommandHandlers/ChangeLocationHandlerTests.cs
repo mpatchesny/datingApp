@@ -38,12 +38,8 @@ public class ChangeLocationHandlerTests : IDisposable
         var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
-        var photo = new Photo(0, 1, "abc", 1);
-
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
 
         var userRepository = new PostgresUserRepository(_testDb.DbContext);

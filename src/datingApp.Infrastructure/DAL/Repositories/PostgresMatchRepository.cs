@@ -15,6 +15,18 @@ internal sealed class PostgresMatchRepository : IMatchRepository
     {
         _dbContext = dbContext;
     }
+    public async Task<IEnumerable<Match>> GetByUserIdAsync(int userId)
+    {
+        return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId)
+                        .Include(match => match.Messages
+                                .OrderByDescending(message => message.CreatedAt)
+                                .Take(1))
+                        .ToListAsync();
+    }
+    public async Task<Match> GetByIdAsync(int matchId)
+    {
+        return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id == matchId);
+    }
 
     public async Task AddAsync(Match match)
     {
@@ -25,14 +37,5 @@ internal sealed class PostgresMatchRepository : IMatchRepository
     {
         var match = await _dbContext.Matches.FirstAsync(x => x.Id == matchId);
         _dbContext.Matches.Remove(match);
-    }
-
-    public async Task<IEnumerable<Match>> GetByUserIdAsync(int userId)
-    {
-        return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId)
-                        .Include(match => match.Messages
-                                .OrderByDescending(message => message.CreatedAt)
-                                .Take(1))
-                        .ToListAsync();
     }
 }

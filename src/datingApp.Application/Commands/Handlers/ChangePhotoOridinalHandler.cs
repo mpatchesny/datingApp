@@ -29,7 +29,7 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
             {
                 thisPhoto = photo;
             }
-            else if (photo.Oridinal == command.Oridinal)
+            else if (photo.Oridinal == command.NewOridinal)
             {
                 otherPhoto = photo;
             }
@@ -39,17 +39,17 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
-        else if (thisPhoto.Oridinal == command.Oridinal)
+        else if (thisPhoto.Oridinal == command.NewOridinal)
         {
              return;
         }
 
-        thisPhoto.ChangeOridinal(command.Oridinal);
-        _photoRepository.UpdateAsync(thisPhoto);
+        thisPhoto.ChangeOridinal(command.NewOridinal);
+        await _photoRepository.UpdateAsync(thisPhoto);
         if (otherPhoto != null)
         {
             otherPhoto.ChangeOridinal(thisPhoto.Oridinal);
-            _photoRepository.UpdateAsync(otherPhoto);
+            await _photoRepository.UpdateAsync(otherPhoto);
         }
     }
 }

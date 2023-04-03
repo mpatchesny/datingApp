@@ -17,12 +17,11 @@ public class DeleteMatchHandler : ICommandHandler<DeleteMatch>
     }
     public async Task HandleAsync(DeleteMatch command)
     {
-        var match = _matchRepository.GetByIdAsync(command.MatchId);
+        var match = await _matchRepository.GetByIdAsync(command.MatchId);
         if (match == null)
         {
             throw new MatchNotExistsException(command.MatchId);
         }
-
-        await _matchRepository.DeleteAsync(command.MatchId);
+        await _matchRepository.DeleteAsync(match);
     }
 }

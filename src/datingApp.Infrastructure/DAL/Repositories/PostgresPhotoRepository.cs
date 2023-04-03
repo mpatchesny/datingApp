@@ -31,7 +31,7 @@ internal sealed class PostgresPhotoRepository : IPhotoRepository
         await _dbContext.Photos.AddAsync(photo);
     }
 
-    public async void UpdateAsync(Photo photo)
+    public async Task UpdateAsync(Photo photo)
     {
         _dbContext.Photos.Update(photo);
     }

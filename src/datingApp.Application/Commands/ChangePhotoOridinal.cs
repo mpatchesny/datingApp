@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record ChangePhotoOridinal(int photoId, int oridinal) : ICommand;
+public sealed record ChangePhotoOridinal(int PhotoId, int Oridinal) : ICommand;

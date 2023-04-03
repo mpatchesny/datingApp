@@ -18,10 +18,10 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 
     public async Task HandleAsync(DeletePhoto command)
     {
-        var photo = await _photoRepository.GetByIdAsync(command.photoId);
+        var photo = await _photoRepository.GetByIdAsync(command.PhotoId);
         if (photo == null)
         {
-            throw new PhotoNotExistsException(command.photoId);
+            throw new PhotoNotExistsException(command.PhotoId);
         }
         await _photoRepository.DeleteAsync(photo);
     }

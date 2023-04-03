@@ -25,7 +25,7 @@ public class SendMessageHandlerTests : IDisposable
     [Fact]
     public async Task send_message_within_nonexistsing_match_should_throw_error()
     {
-        var command = new SendMessage(1, 1, "hello");
+        var command = new SendMessage(2, 1, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);

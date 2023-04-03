@@ -8,7 +8,7 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class DeleteMatchHandler : ICommandHandler<DeleteMatch>
+public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
 {
     private readonly IMatchRepository _matchRepository;
     public DeleteMatchHandler(IMatchRepository matchRepository)

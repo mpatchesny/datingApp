@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record ChangeUser(int UserId, string Bio="", string Job="") : ICommand;
+public sealed record ChangeUser(int UserId, DateOnly DateOfBirth, string Bio="", string Job="") : ICommand;

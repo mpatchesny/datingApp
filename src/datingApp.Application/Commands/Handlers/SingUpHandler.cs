@@ -18,20 +18,20 @@ public sealed class SingUpHandler : ICommandHandler<SingUp>
     }
     public async Task HandleAsync(SingUp command)
     {
-        var existingUser = await _userRepository.GetByEmailAsync(command.email);
+        var existingUser = await _userRepository.GetByEmailAsync(command.Email);
         if (existingUser != null)
         {
-            throw new EmailAlreadyInUseException(command.email);
+            throw new EmailAlreadyInUseException(command.Email);
         }
         
-        existingUser = await _userRepository.GetByPhoneAsync(command.phone);
+        existingUser = await _userRepository.GetByPhoneAsync(command.Phone);
         if (existingUser != null)
         {
-            throw new PhoneAlreadyInUseException(command.phone);
+            throw new PhoneAlreadyInUseException(command.Phone);
         }
 
-        var settings = new UserSettings(0, (Sex) command.discoverSex, 18, 35, 30, 0.0, 0.0);
-        var user = new User(0, command.phone, command.email, command.name, command.dateOfBirth, (Sex) command.sex, null, settings, command.job, command.bio);
+        var settings = new UserSettings(0, (Sex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
+        var user = new User(0, command.Phone, command.Email, command.Name, command.DateOfBirth, (Sex) command.Sex, null, settings, command.Job, command.Bio);
 
         await _userRepository.AddAsync(user);
     }

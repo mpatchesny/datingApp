@@ -44,12 +44,13 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        if (user.Photos.Count() == 6)
+        if (user.Photos.Count() >= 6)
         {
             throw new UserPhotoLimitException();
         }
 
         var photoPath = _photoService.SavePhoto(command.Bytes);
         var photo = new Photo(0, command.UserId, photoPath, command.Oridinal);
+        // TODO: if photo with that oridinal exists, then change its oridinal
     }
 }

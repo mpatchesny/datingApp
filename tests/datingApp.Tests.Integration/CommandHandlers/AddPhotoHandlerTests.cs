@@ -8,6 +8,7 @@ using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
@@ -79,8 +80,10 @@ public class AddPhotoHandlerTests
 
         var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
         var userRepository = new PostgresUserRepository(_testDb.DbContext);
-        IPhotoService photoService = null;
-        _handler = new AddPhotoHandler(photoRepository, userRepository, photoService);
+
+        var mockedPhotoService = new Mock<IPhotoService>();
+        mockedPhotoService.Setup(m => m.SavePhoto(new byte[101*1024])).Returns("abc");
+        _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object);
     }
 
     // Teardown

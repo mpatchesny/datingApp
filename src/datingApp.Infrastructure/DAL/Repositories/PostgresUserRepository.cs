@@ -23,7 +23,7 @@ internal sealed class PostgresUserRepository : IUserRepository
 
     public async Task<User> GetByEmailAsync(string email)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(x=> x.Email == email);
+        return await _dbContext.Users.FirstOrDefaultAsync(x=> x.Email == email.ToLowerInvariant().Trim());
     }
 
     public async Task<User> GetByIdAsync(int userId)

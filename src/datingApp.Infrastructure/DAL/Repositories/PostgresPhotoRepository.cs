@@ -15,20 +15,30 @@ internal sealed class PostgresPhotoRepository : IPhotoRepository
     {
         _dbContext = dbContext;
     }
-    
-    public async Task AddAsync(Photo photo)
-    {
-        await _dbContext.Photos.AddAsync(photo);
-    }
 
-    public async Task DeleteAsync(int photoId)
+    public async Task<Photo> GetByIdAsync(int photoId)
     {
-        var photo = await _dbContext.Photos.FirstAsync(x => x.Id == photoId);
-        _dbContext.Photos.Remove(photo);
+        return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
     }
 
     public async Task<IEnumerable<Photo>> GetByUserIdAsync(int userId)
     {
         return await _dbContext.Photos.Where(x=> x.UserId == userId).ToListAsync();
     }
+    
+    public async Task AddAsync(Photo photo)
+    {
+        await _dbContext.Photos.AddAsync(photo);
+    }
+
+    public async Task UpdateAsync(Photo photo)
+    {
+        _dbContext.Photos.Update(photo);
+    }
+
+    public async Task DeleteAsync(Photo photo)
+    {
+        _dbContext.Photos.Remove(photo);
+    }
+
 }

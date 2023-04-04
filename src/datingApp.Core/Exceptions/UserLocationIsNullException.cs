@@ -4,7 +4,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class UserLocationIsNullException : CustomException
 {
-    public UserLocationIsNullException() : base("user location must be set")
+    public UserLocationIsNullException() : base("User location must be set.")
     {
     }
 }

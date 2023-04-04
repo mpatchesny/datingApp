@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record ChangeBio(int userId, string bio) : ICommand;
+public sealed record ChangeUserSettings(int UserId, int DiscoverAgeFrom, int DiscoverAgeTo, int DiscoverRange, int DiscoverSex) : ICommand;

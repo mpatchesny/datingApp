@@ -7,4 +7,4 @@ using datingApp.Core.Entities;
 
 namespace datingApp.Application.Commands;
 
-public sealed record SingUp(string phone, string email, string name, DateOnly dateOfBirth, int sex, int discoverSex, string job="", string bio="") : ICommand;
+public sealed record SingUp(string Phone, string Email, string Name, DateOnly DateOfBirth, int Sex, int DiscoverSex, string Job="", string Bio="") : ICommand;

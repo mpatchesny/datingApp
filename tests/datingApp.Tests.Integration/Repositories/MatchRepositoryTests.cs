@@ -29,20 +29,28 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void delete_existing_match_by_id_should_succeed()
+    public async void get_existing_match_by_id_should_return_succeed()
     {
-        var matchId = 1;
-        await _repository.DeleteAsync(matchId);
-        _testDb.DbContext.SaveChanges();
-        var matches = await _repository.GetByUserIdAsync(1);
-        Assert.Equal(0, matches.Count());
+        var match = await _repository.GetByIdAsync(1);
+        Assert.NotNull(match);
     }
 
     [Fact]
-    public async void delete_nonexisting_match_by_id_should_throw_exception()
+    public async void get_nonexisting_match_by_id_should_return_null()
     {
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(999));
-        Assert.NotNull(exception);
+        var match = await _repository.GetByIdAsync(999);
+        Assert.Null(match);
+    }
+
+    [Fact]
+    public async void delete_existing_match_by_id_should_succeed()
+    {
+        var matchId = 1;
+        var match = await _repository.GetByIdAsync(matchId);
+        await _repository.DeleteAsync(match);
+        _testDb.DbContext.SaveChanges();
+        var matches = await _repository.GetByUserIdAsync(1);
+        Assert.Equal(0, matches.Count());
     }
 
     [Fact]

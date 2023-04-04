@@ -4,7 +4,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class InvalidSwipeException : CustomException
 {
-    public InvalidSwipeException() : base("User cannot swipe himself/herself")
+    public InvalidSwipeException() : base("User cannot swipe himself/herself.")
     {
     }
 }

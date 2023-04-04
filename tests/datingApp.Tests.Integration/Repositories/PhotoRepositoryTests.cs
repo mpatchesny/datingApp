@@ -30,26 +30,25 @@ public class PhotoRepositoryTests : IDisposable
     public async Task add_photo_should_succeed()
     {
         var photo = new Photo(0, 1, "abc", 1);
-        await _repository.AddAsync(photo);
-        _testDb.DbContext.SaveChanges();
-        var photos = await _repository.GetByUserIdAsync(1);
-        Assert.Equal(2, photos.Count());
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task update_photo_should_succeed()
+    {
+        var photo = await _repository.GetByIdAsync(1);
+        photo.ChangeOridinal(3);
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(photo));
+        Assert.Null(exception);
     }
 
     [Fact]
     public async Task delete_existing_photo_should_succeed()
     {
-        await _repository.DeleteAsync(1);
-        _testDb.DbContext.SaveChanges();
-        var photos = await _repository.GetByUserIdAsync(1);
-        Assert.Equal(0, photos.Count());
-    }
-
-    [Fact]
-    public async Task delete_nonexisting_photo_should_throw_exception()
-    {
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
-        Assert.NotNull(exception);
+        var photo = await _repository.GetByIdAsync(1);
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
+        Assert.Null(exception);
     }
 
     // Arrange

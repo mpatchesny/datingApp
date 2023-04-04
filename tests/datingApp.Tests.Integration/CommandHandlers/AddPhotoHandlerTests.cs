@@ -18,7 +18,7 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_to_existing_user_should_succeed()
     {
-        var command = new AddPhoto(1, 1, new byte[101*1024]);
+        var command = new AddPhoto(1, new byte[101*1024]);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -26,7 +26,7 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_to_nonexisting_user_should_throw_exception()
     {
-        var command = new AddPhoto(2, 1, new byte[101*1024]);
+        var command = new AddPhoto(2, new byte[101*1024]);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -37,7 +37,7 @@ public class AddPhotoHandlerTests
     [InlineData((100*1024) - 1)]
     public async Task add_too_large_photo_should_throw_exception(int invalidPhotoSizeBytes)
     {
-        var command = new AddPhoto(1, 1, new byte[invalidPhotoSizeBytes]);
+        var command = new AddPhoto(1, new byte[invalidPhotoSizeBytes]);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoSizeException>(exception);
@@ -56,7 +56,7 @@ public class AddPhotoHandlerTests
         };
         await _testDb.DbContext.Photos.AddRangeAsync(photos);
         await _testDb.DbContext.SaveChangesAsync();
-        var command = new AddPhoto(1, 1, new byte[101*1024]);
+        var command = new AddPhoto(1, new byte[101*1024]);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
@@ -69,9 +69,7 @@ public class AddPhotoHandlerTests
     {
         var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-
         var photo = new Photo(0, 1, "abc", 1);
-
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

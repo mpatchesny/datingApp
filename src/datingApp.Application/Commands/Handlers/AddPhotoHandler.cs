@@ -50,7 +50,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         }
 
         var photoPath = _photoService.SavePhoto(command.Bytes);
-        var photo = new Photo(0, command.UserId, photoPath, command.Oridinal);
-        // TODO: if photo with that oridinal exists, then change its oridinal
+        var photo = new Photo(0, command.UserId, photoPath, 0);
+        await _photoRepository.AddAsync(photo);
     }
 }

@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class UserNotExistsException : CustomException
 {
-    public UserNotExistsException(int userId) : base($"User with id {userId} does not exist")
+    public UserNotExistsException(int userId) : base($"User with id {userId} does not exist.")
     {
     }
 }

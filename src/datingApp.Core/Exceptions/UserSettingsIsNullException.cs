@@ -4,7 +4,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class UserSettingsIsNullException : CustomException
 {
-    public UserSettingsIsNullException() : base("user settings cannot be null")
+    public UserSettingsIsNullException() : base("User settings cannot be null.")
     {
     }
 }

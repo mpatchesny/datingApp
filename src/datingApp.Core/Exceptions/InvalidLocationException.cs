@@ -4,7 +4,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class InvalidLocationException : CustomException
 {
-    public InvalidLocationException() : base("Location is invalid")
+    public InvalidLocationException() : base("Location is invalid.")
     {
     }
 }

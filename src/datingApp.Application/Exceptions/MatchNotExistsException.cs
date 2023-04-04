@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions
 {
     public class MatchNotExistsException : CustomException
     {
-        public MatchNotExistsException(int matchId) : base($"Match with id {matchId} does not exist")
+        public MatchNotExistsException(int matchId) : base($"Match with id {matchId} does not exist.")
         {
         }
     }

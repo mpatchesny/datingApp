@@ -4,7 +4,7 @@ namespace datingApp.Core.Exceptions;
 
 public sealed class JobTooLongException : CustomException
 {
-    public JobTooLongException() : base("Job title too long")
+    public JobTooLongException() : base("Job title too long.")
     {
     }
 }

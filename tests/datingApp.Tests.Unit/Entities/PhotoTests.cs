@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.Exceptions;
 using Xunit;
 
 namespace datingApp.Tests.Unit.Entities;
@@ -14,5 +15,6 @@ public class PhotoTests
     {
         var exception = Record.Exception(() =>new Photo(1, 1, "", 1));
         Assert.NotNull(exception);
+        Assert.IsType<PhotoEmptyPathException>(exception);
     }
 }

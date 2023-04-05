@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using datingApp.Core.Entities;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,8 +23,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
-        // - sortowanie malejąco wg popularności
-
         var now = DateTime.UtcNow;
         DateOnly minDob = new DateOnly(now.Year - query.AgeTo, now.Month, now.Day);
         DateOnly maxDob = new DateOnly(now.Year - query.AgeFrom, now.Month, now.Day);
@@ -42,6 +41,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Id != query.UserId)
                     .Where(x => !swippedCandidates.Contains(x.Id))
                     .Where(x => ((int) x.Sex & query.Sex) > 0)
+                    .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
                     .Where(x => x.Settings.Lat <= square[0].lat)
                     .Where(x => x.Settings.Lat <= square[1].lat)
                     .Where(x => x.Settings.Lat >= square[2].lat)
@@ -50,7 +50,13 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Settings.Lon >= square[1].lon)
                     .Where(x => x.Settings.Lon <= square[2].lon)
                     .Where(x => x.Settings.Lon >= square[3].lon)
-                    .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
+                    .Select(x => new 
+                        {
+                            User = x,
+                            LikesCount = _dbContext.Swipes.Where(s => s.SwippedWhoId == x.Id && s.Like == Like.Like).Count()
+                        })
+                    .OrderByDescending(x => x.LikesCount)
+                    .Select(x => x.User)
                     .Take(query.HowMany)
                     .Include(x => x.Settings)
                     .Include(x => x.Photos)

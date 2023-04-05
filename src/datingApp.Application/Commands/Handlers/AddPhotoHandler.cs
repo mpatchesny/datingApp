@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -49,8 +50,9 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
+        int oridinal = user.Photos.Count();
         var photoPath = _photoService.SavePhoto(command.Bytes);
-        var photo = new Photo(0, command.UserId, photoPath, 0);
+        var photo = new Photo(0, command.UserId, photoPath, oridinal);
         await _photoRepository.AddAsync(photo);
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -12,44 +13,32 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOridinal>
 {
     private readonly IPhotoRepository _photoRepository;
-    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository)
+    private readonly IPhotoOrderer _photoOrderer;
+    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, IPhotoOrderer photoOrderer)
     {
         _photoRepository = photoRepository;
+        _photoOrderer = photoOrderer;
     }
 
     public async Task HandleAsync(ChangePhotoOridinal command)
     {
         var photos = await _photoRepository.GetByUserIdAsync(command.UserId);
-        
-        Photo thisPhoto = null;
-        Photo otherPhoto = null;
-        foreach (var photo in photos)
-        {
-            if (photo.Id == command.PhotoId)
-            {
-                thisPhoto = photo;
-            }
-            else if (photo.Oridinal == command.NewOridinal)
-            {
-                otherPhoto = photo;
-            }
-        }
-
+        var thisPhoto = photos.FirstOrDefault(x => x.Id == command.PhotoId);
         if (thisPhoto == null)
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
-        else if (thisPhoto.Oridinal == command.NewOridinal)
+
+        if (thisPhoto.Oridinal == command.NewOridinal)
         {
-             return;
+            return;
         }
 
-        thisPhoto.ChangeOridinal(command.NewOridinal);
-        await _photoRepository.UpdateAsync(thisPhoto);
-        if (otherPhoto != null)
+        var photoList = _photoOrderer.OrderPhotos(photos.ToList<Photo>(), thisPhoto.Id, command.NewOridinal);
+        for (int i = 0; i < photoList.Count(); i++)
         {
-            otherPhoto.ChangeOridinal(thisPhoto.Oridinal);
-            await _photoRepository.UpdateAsync(otherPhoto);
+            photoList[i].ChangeOridinal(i);
+            await _photoRepository.UpdateAsync(photoList[i]);
         }
     }
 }

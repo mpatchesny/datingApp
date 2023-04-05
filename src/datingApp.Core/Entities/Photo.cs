@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;
 
@@ -22,6 +23,10 @@ public class Photo
 
     public void ChangeOridinal(int oridinal)
     {
+        if (oridinal < -1)
+        {
+            oridinal = 0;
+        }
         if (Oridinal == oridinal) return;
         Oridinal = oridinal;
     }
@@ -30,7 +35,7 @@ public class Photo
     {
         if (path.Length == 0)
         {
-            throw new Exception("path cannot be empty");
+            throw new PhotoEmptyPathException();
         }
         if (Path == path) return;
         Path = path;

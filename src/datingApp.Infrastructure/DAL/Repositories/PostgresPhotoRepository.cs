@@ -28,13 +28,9 @@ internal sealed class PostgresPhotoRepository : IPhotoRepository
                     .OrderBy(p => p.Oridinal)
                     .ToListAsync();
     }
-    
+
     public async Task AddAsync(Photo photo)
     {
-        var lastOridinal =  await _dbContext.Photos
-            .Where(p => p.UserId == photo.UserId)
-            .CountAsync() + 1;
-        photo.ChangeOridinal(lastOridinal);
         await _dbContext.Photos.AddAsync(photo);
     }
 

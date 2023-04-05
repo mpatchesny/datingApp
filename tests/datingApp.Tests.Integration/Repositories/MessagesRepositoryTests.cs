@@ -16,14 +16,14 @@ public class MessageRepositoryTests : IDisposable
     public async void get_existing_messages_by_match_id_should_return_nonempty_collection()
     {
         var messages = await _repository.GetByMatchIdAsync(1);
-        Assert.Equal(1, messages.Count());
+        Assert.Single(messages);
     }
 
     [Fact]
     public async void get_nonexisting_message_by_match_id_should_return_empty_collection()
     {
         var messages = await _repository.GetByMatchIdAsync(2);
-        Assert.Equal(0, messages.Count());
+        Assert.Empty(messages);
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public class MessageRepositoryTests : IDisposable
         var messageId = 1;
         await _repository.DeleteAsync(messageId);
         _testDb.DbContext.SaveChanges();
-        var matches = await _repository.GetByMatchIdAsync(1);
-        Assert.Equal(0, matches.Count());
+        var messages = await _repository.GetByMatchIdAsync(1);
+        Assert.Empty(messages);
     }
 
     [Fact]

@@ -20,36 +20,41 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
     public async Task HandleAsync(ChangePhotoOridinal command)
     {
         var photos = await _photoRepository.GetByUserIdAsync(command.UserId);
-        
-        Photo thisPhoto = null;
-        Photo otherPhoto = null;
-        foreach (var photo in photos)
-        {
-            if (photo.Id == command.PhotoId)
-            {
-                thisPhoto = photo;
-            }
-            else if (photo.Oridinal == command.NewOridinal)
-            {
-                otherPhoto = photo;
-            }
-        }
-
+        var thisPhoto = photos.FirstOrDefault(x => x.Id == command.PhotoId);
         if (thisPhoto == null)
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
-        else if (thisPhoto.Oridinal == command.NewOridinal)
+
+        if (thisPhoto.Oridinal == command.NewOridinal)
         {
-             return;
+            return;
         }
 
-        thisPhoto.ChangeOridinal(command.NewOridinal);
-        await _photoRepository.UpdateAsync(thisPhoto);
-        if (otherPhoto != null)
+        var photoList = photos.ToList<Photo>();
+        if (command.NewOridinal > photoList.Count()-1)
         {
-            otherPhoto.ChangeOridinal(thisPhoto.Oridinal);
-            await _photoRepository.UpdateAsync(otherPhoto);
+            photoList.RemoveAt(thisPhoto.Oridinal);
+            photoList.Add(thisPhoto);
+        }
+        else if (command.NewOridinal < 0)
+        {
+            photoList.RemoveAt(thisPhoto.Oridinal);
+            photoList.Insert(0, thisPhoto);
+        }
+        else
+        {
+            var newOridinal = command.NewOridinal;
+            if (newOridinal > thisPhoto.Oridinal) newOridinal++;
+            photoList.Insert(newOridinal, thisPhoto);
+            int shift = (thisPhoto.Oridinal > newOridinal) ? 1 : 0;
+            photoList.RemoveAt(thisPhoto.Oridinal + shift);
+        }
+
+        for (int i = 0; i < photoList.Count; i++)
+        {
+            photoList[i].ChangeOridinal(i);
+            await _photoRepository.UpdateAsync(photoList[i]);
         }
     }
 }

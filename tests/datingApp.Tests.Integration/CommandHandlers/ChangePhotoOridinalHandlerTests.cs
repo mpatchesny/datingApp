@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
+using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
@@ -58,8 +60,12 @@ public class ChangePhotoOridinalHandlerTests
         _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
 
+        var mockedPhotoOrderer = new Mock<IPhotoOrderer>();
+        mockedPhotoOrderer.Setup(m => m.OrderPhotos(It.IsAny<List<Photo>>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((List<Photo> x, int y, int z) => x);
+
         var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
-        _handler = new ChangePhotoOridinalHandler(photoRepository);
+        _handler = new ChangePhotoOridinalHandler(photoRepository, mockedPhotoOrderer.Object);
     }
 
     // Teardown

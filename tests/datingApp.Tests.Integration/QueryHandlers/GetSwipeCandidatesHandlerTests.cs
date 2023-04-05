@@ -204,33 +204,47 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var settings2 = new UserSettings(2, Sex.Male, 18, 21, 20, 1.0, 1.0);
         var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings2);
+        
+        var settings3 = new UserSettings(3, Sex.Male, 18, 21, 20, 1.0, 1.0);
+        var user3 = new User(3, "333333333", "test3@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings3);
+
+        var settings4 = new UserSettings(4, Sex.Male, 18, 21, 20, 1.0, 1.0);
+        var user4 = new User(4, "444444444", "test4@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings4);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.Users.Add(user3);
+        _testDb.DbContext.Users.Add(user4);
         _testDb.DbContext.SaveChanges();
 
         var swipes = new List<Swipe>{
-            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
-            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
-            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
-            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
-            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow)
+            new Swipe(0, 3, 4, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 3, 4, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 3, 4, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 3, 4, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 3, 4, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 4, 2, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 4, 3, Like.Pass, DateTime.UtcNow),
+            new Swipe(0, 4, 3, Like.Pass, DateTime.UtcNow)
         };
         _testDb.DbContext.Swipes.AddRange(swipes);
         _testDb.DbContext.SaveChanges();
 
         var query = new GetSwipeCandidates();
         query.UserId = 1;
-        query.AgeFrom = 18;
+        query.AgeFrom = 1;
         query.AgeTo = 100;
-        query.Range = 26;
+        query.Range = 100;
         query.Lat = 0.0;
         query.Lon = 0.0;
-        query.Sex = (int) Sex.Male;
-        query.HowMany = 2;
+        query.Sex = 3;
+        query.HowMany = 999;
 
         var candidates = await _handler.HandleAsync(query);
         Assert.NotEmpty(candidates);
+        Assert.Equal(candidates.ToList()[0].Id, user4.Id);
+        Assert.Equal(candidates.ToList()[1].Id, user2.Id);
+        Assert.Equal(candidates.ToList()[2].Id, user3.Id);
     }
 
     [Fact]

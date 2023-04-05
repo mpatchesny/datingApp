@@ -25,7 +25,9 @@ public class ChangePhotoOridinalHandlerTests
     [Fact]
     public async Task change_oridinal_of_existing_photo_when_other_photo_with_that_oridinal_exists_should_succeed()
     {
-        var photo = new Photo(0, 1, "abc", 2);
+        var photo = new Photo(0, 1, "abc", 1);
+        _testDb.DbContext.Photos.Add(photo);
+        _testDb.DbContext.SaveChanges();
         var command = new ChangePhotoOridinal(1, 1, 2);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
@@ -48,7 +50,7 @@ public class ChangePhotoOridinalHandlerTests
         var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
-        var photo = new Photo(0, 1, "abc", 1);
+        var photo = new Photo(0, 1, "abc", 0);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

@@ -197,9 +197,40 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public void candidates_returned_are_sorted_by_number_of_likes_descending()
+    public async Task candidates_returned_are_sorted_by_number_of_likes_descending()
     {
-        Assert.True(true);
+        var settings = new UserSettings(1, Sex.Male, 18, 21, 20, 1.0, 1.0);
+        var user = new User(1, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+
+        var settings2 = new UserSettings(2, Sex.Male, 18, 21, 20, 1.0, 1.0);
+        var user2 = new User(2, "222222222", "test2@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings2);
+
+        _testDb.DbContext.Users.Add(user);
+        _testDb.DbContext.Users.Add(user2);
+        _testDb.DbContext.SaveChanges();
+
+        var swipes = new List<Swipe>{
+            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow),
+            new Swipe(0, 2, 1, Like.Like, DateTime.UtcNow)
+        };
+        _testDb.DbContext.Swipes.AddRange(swipes);
+        _testDb.DbContext.SaveChanges();
+
+        var query = new GetSwipeCandidates();
+        query.UserId = 1;
+        query.AgeFrom = 18;
+        query.AgeTo = 100;
+        query.Range = 26;
+        query.Lat = 0.0;
+        query.Lon = 0.0;
+        query.Sex = (int) Sex.Male;
+        query.HowMany = 2;
+
+        var candidates = await _handler.HandleAsync(query);
+        Assert.NotEmpty(candidates);
     }
 
     [Fact]
@@ -298,9 +329,8 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         list.Add(se);
         list.Add(sw);
 
-        mockedSpatial.Setup(m => m.GetApproxSquareAroundPoint(0.0, 0.0, 25)).Returns(list);
-        mockedSpatial.Setup(m => m.GetApproxSquareAroundPoint(0.0, 0.0, 100)).Returns(list);
-        mockedSpatial.Setup(m => m.GetApproxSquareAroundPoint(1.0, 1.0, 25)).Returns(list);
+        mockedSpatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
+            .Returns((double x, double y, int z) => list);
         _handler = new GetSwipeCandidatesHandler(_testDb.DbContext, mockedSpatial.Object);
     }
 

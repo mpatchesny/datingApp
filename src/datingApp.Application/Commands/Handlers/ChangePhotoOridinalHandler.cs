@@ -12,9 +12,11 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOridinal>
 {
     private readonly IPhotoRepository _photoRepository;
-    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository)
+    private readonly IPhotoOrderer _photoOrderer;
+    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, IPhotoOrderer photoOrderer)
     {
         _photoRepository = photoRepository;
+        _photoOrderer = photoOrderer;
     }
 
     public async Task HandleAsync(ChangePhotoOridinal command)
@@ -31,27 +33,8 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
             return;
         }
 
-        var photoList = photos.ToList<Photo>();
-        if (command.NewOridinal > photoList.Count()-1)
-        {
-            photoList.RemoveAt(thisPhoto.Oridinal);
-            photoList.Add(thisPhoto);
-        }
-        else if (command.NewOridinal < 0)
-        {
-            photoList.RemoveAt(thisPhoto.Oridinal);
-            photoList.Insert(0, thisPhoto);
-        }
-        else
-        {
-            var newOridinal = command.NewOridinal;
-            if (newOridinal > thisPhoto.Oridinal) newOridinal++;
-            photoList.Insert(newOridinal, thisPhoto);
-            int shift = (thisPhoto.Oridinal > newOridinal) ? 1 : 0;
-            photoList.RemoveAt(thisPhoto.Oridinal + shift);
-        }
-
-        for (int i = 0; i < photoList.Count; i++)
+        var photoList = _photoOrderer.OrderPhotos(photos.ToList<Photo>(), thisPhoto.Id, command.NewOridinal);
+        for (int i = 0; i < photoList.Count(); i++)
         {
             photoList[i].ChangeOridinal(i);
             await _photoRepository.UpdateAsync(photoList[i]);

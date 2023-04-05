@@ -23,7 +23,7 @@ public class ChangePhotoOridinalHandlerTests
     }
 
     [Fact]
-    public async Task change_oridinal_of_existing_photo_when_other_photo_with_that_oridinal_exists_should_succeedAsync()
+    public async Task change_oridinal_of_existing_photo_when_other_photo_with_that_oridinal_exists_should_succeed()
     {
         var photo = new Photo(0, 1, "abc", 2);
         var command = new ChangePhotoOridinal(1, 1, 2);
@@ -32,7 +32,7 @@ public class ChangePhotoOridinalHandlerTests
     }
 
     [Fact]
-    public async Task change_oridinal_of_nonexisting_photo_should_throw_exceptionAsync()
+    public async Task change_oridinal_of_nonexisting_photo_should_throw_exception()
     {
         var command = new ChangePhotoOridinal(1, 2, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));

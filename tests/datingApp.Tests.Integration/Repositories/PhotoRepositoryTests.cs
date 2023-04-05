@@ -16,14 +16,14 @@ public class PhotoRepositoryTests : IDisposable
     public async Task get_existing_photo_by_user_id_should_return_nonempty_collection()
     {
         var photos = await _repository.GetByUserIdAsync(1);
-        Assert.Equal(1, photos.Count());
+        Assert.Single(photos);
     }
 
     [Fact]
     public async Task get_existing_photo_by_nonexisting_user_id_should_return_empty_collection()
     {
         var photos = await _repository.GetByUserIdAsync(2);
-        Assert.Equal(0, photos.Count());
+        Assert.Empty(photos);
     }
 
     [Fact]

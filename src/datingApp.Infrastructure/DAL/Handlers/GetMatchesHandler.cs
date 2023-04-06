@@ -25,6 +25,8 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
                         .Include(match => match.Messages
                                 .OrderByDescending(message => message.CreatedAt)
                                 .Take(1))
+                        .Skip((query.Page - 1) * query.PageSize)
+                        .Take(query.PageSize)
                         .Select(x => x.AsDto())
                         .ToListAsync();
     }

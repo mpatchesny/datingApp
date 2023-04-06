@@ -23,6 +23,8 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, IEnumerabl
                             .AsNoTracking()
                             .Where(x => x.MatchId == query.MatchId)
                             .Select(x => x.AsDto())
+                            .Skip((query.Page - 1) * query.PageSize)
+                            .Take(query.PageSize)
                             .ToListAsync();
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
-using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetMessages : PaginatedQuery, IQuery<IEnumerable<MessageDto>>
+public class PaginatedQuery
 {
-    public int MatchId { get; set; }
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 15;
 }

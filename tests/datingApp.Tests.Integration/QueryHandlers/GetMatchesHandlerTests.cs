@@ -20,7 +20,7 @@ public class GetMatchesHandlerTests
         var query = new GetMatches();
         query.UserId = 1;
         var matches = await _handler.HandleAsync(query);
-        Assert.Single(matches);
+        Assert.NotEmpty(matches);
         Assert.IsType<MatchDto>(matches.First());
     }
 
@@ -32,6 +32,28 @@ public class GetMatchesHandlerTests
         var matches = await _handler.HandleAsync(query);
         Assert.Empty(matches);
     }
+
+    [Fact]
+    public async Task returned_matches_count_is_lower_or_equal_to_page_size()
+    {
+        var query = new GetMatches();
+        query.UserId = 1;
+        query.PageSize = 5;
+        var matches = await _handler.HandleAsync(query);
+        Assert.InRange(matches.Count(), 0, query.PageSize);
+    }
+
+    [Fact]
+    public async Task returns_proper_number_of_messages_when_page_above_1()
+    {
+        var query = new GetMatches();
+        query.UserId = 1;
+        query.PageSize = 5;
+        query.Page = 2;
+        var matches = await _handler.HandleAsync(query);
+        Assert.NotEmpty(matches);
+        Assert.Equal(4, matches.Count());
+    }
     
     // Arrange
     private readonly TestDatabase _testDb;
@@ -40,11 +62,23 @@ public class GetMatchesHandlerTests
     {
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var match = new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow);
+        var matches = new List<Core.Entities.Match>
+        {
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow)
+        };
+        
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Matches.Add(match);
+        _testDb.DbContext.Matches.AddRange(matches);
         _testDb.DbContext.SaveChanges();
         _handler = new GetMatchesHandler(_testDb.DbContext);
     }

@@ -13,17 +13,17 @@ namespace datingApp.Api.Controllers;
 [Route("users")]
 public class UserController : ControllerBase
 {
-    private readonly IQueryHandler<GetPublicUser, PublicUserDto> _getUserHandler;
+    private readonly IQueryHandler<GetPrivateUser, PrivateUserDto> _getUserHandler;
 
-    public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler)
+    public UserController(IQueryHandler<GetPrivateUser, PrivateUserDto> getUserHandler)
     {
         _getUserHandler = getUserHandler;
     }
 
     [HttpGet("{userId:int}")]
-    public async Task<ActionResult<PublicUserDto>> Get(int userId)
+    public async Task<ActionResult<PrivateUserDto>> Get(int userId)
     {
-        var user = await _getUserHandler.HandleAsync(new GetPublicUser { UserId = userId });
+        var user = await _getUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         if (user is null)
         {
             return NotFound();

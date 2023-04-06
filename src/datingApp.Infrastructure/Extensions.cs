@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using datingApp.Application.Abstractions;
+using datingApp.Application.DTO;
+using datingApp.Application.Queries;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
@@ -18,11 +21,11 @@ public static class Extensions
     {
         services.AddPostgres(configuration);
         services.AddSingleton<ISpatial, Spatial.Spatial>();
-        services.AddScoped<GetMatchesHandler>();
-        services.AddScoped<GetMessagesHandler>();
-        services.AddScoped<GetPublicUserHandler>();
-        services.AddScoped<GetPublicUserHandler>();
-        services.AddScoped<GetSwipeCandidatesHandler>();
+        services.AddScoped<IQueryHandler<GetMatches, IEnumerable<MatchDto>>, GetMatchesHandler >();
+        services.AddScoped<IQueryHandler<GetMessages, IEnumerable<MessageDto>>, GetMessagesHandler >();
+        services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler >();
+        services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler >();
+        services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler >();
         return services;
     }
 

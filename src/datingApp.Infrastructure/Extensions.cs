@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Spatial;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: InternalsVisibleTo("MySpot.Tests.Integration")]
@@ -16,7 +17,7 @@ public static class Extensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPostgres(configuration);
-        services.AddSingleton<Spatial.Spatial>();
+        services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<GetMatchesHandler>();
         services.AddScoped<GetMessagesHandler>();
         services.AddScoped<GetPublicUserHandler>();

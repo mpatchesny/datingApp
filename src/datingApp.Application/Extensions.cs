@@ -14,8 +14,8 @@ namespace datingApp.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
-            services.AddSingleton<PhotoOrderer>();
-            services.AddSingleton<StubPhotoService>();
+            services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
+            services.AddSingleton<IPhotoService, StubPhotoService>();
             services.AddScoped<AddPhotoHandler>();
             services.AddScoped<ChangeLocationHandler>();
             services.AddScoped<ChangePhotoOridinalHandler>();

@@ -20,7 +20,7 @@ public class GetMessagesHandlerTests
         var query = new GetMessages();
         query.MatchId = 1;
         var messages = await _handler.HandleAsync(query);
-        Assert.Single(messages);
+        Assert.NotEmpty(messages);
         Assert.IsType<MessageDto>(messages.First());
     }
 
@@ -33,6 +33,28 @@ public class GetMessagesHandlerTests
         Assert.Empty(messages);
     }
 
+    [Fact]
+    public async Task returned_messages_count_is_lower_or_equal_to_page_size()
+    {
+        var query = new GetMessages();
+        query.MatchId = 1;
+        query.PageSize = 5;
+        var matches = await _handler.HandleAsync(query);
+        Assert.InRange(matches.Count(), 0, query.PageSize);
+    }
+
+    [Fact]
+    public async Task returns_proper_number_of_messages_when_page_above_1()
+    {
+        var query = new GetMessages();
+        query.MatchId = 1;
+        query.PageSize = 5;
+        query.Page = 2;
+        var matches = await _handler.HandleAsync(query);
+        Assert.NotEmpty(matches);
+        Assert.Equal(4, matches.Count());
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetMessagesHandler _handler;
@@ -41,13 +63,25 @@ public class GetMessagesHandlerTests
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var match = new Core.Entities.Match(1, 1, 1, null, DateTime.UtcNow);
-        var message = new Message(1, 1, 1, "hello", false, DateTime.UtcNow);
+        
+        var messages = new List<Message>{
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow),
+            new Message(0, 1, 1, "hello", false, DateTime.UtcNow)
+        };
+        
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Messages.Add(message);
+        _testDb.DbContext.Messages.AddRange(messages);
         _testDb.DbContext.SaveChanges();
         _handler = new GetMessagesHandler(_testDb.DbContext);
     }

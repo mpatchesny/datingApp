@@ -17,11 +17,6 @@ public static class Extensions
     {
         services.AddPostgres(configuration);
         services.AddSingleton<Spatial.Spatial>();
-        services.AddScoped<PostgresUserRepository>();
-        services.AddScoped<PostgresPhotoRepository>();
-        services.AddScoped<PostgresSwipeRepository>();
-        services.AddScoped<PostgresMatchRepository>();
-        services.AddScoped<PostgresMessageRepository>();
         services.AddScoped<GetMatchesHandler>();
         services.AddScoped<GetMessagesHandler>();
         services.AddScoped<GetPublicUserHandler>();

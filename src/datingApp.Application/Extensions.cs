@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
+using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.PhotoManagement;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,16 +17,16 @@ namespace datingApp.Application
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
             services.AddSingleton<IPhotoService, StubPhotoService>();
-            services.AddScoped<AddPhotoHandler>();
-            services.AddScoped<ChangeLocationHandler>();
-            services.AddScoped<ChangePhotoOridinalHandler>();
-            services.AddScoped<ChangeUserHandler>();
-            services.AddScoped<ChangeUserSettingsHandler>();
-            services.AddScoped<DeleteMatchHandler>();
-            services.AddScoped<DeletePhotoHandler>();
-            services.AddScoped<SendMessageHandler>();
-            services.AddScoped<SingUpHandler>();
-            services.AddScoped<SwipeUserHandler>();
+            services.AddScoped<ICommandHandler<SignUp>, SignUpHandler>();
+            services.AddScoped<ICommandHandler<ChangeUser>, ChangeUserHandler>();
+            services.AddScoped<ICommandHandler<ChangeUserSettings>, ChangeUserSettingsHandler>();
+            services.AddScoped<ICommandHandler<ChangeLocation>, ChangeLocationHandler>();
+            services.AddScoped<ICommandHandler<AddPhoto>, AddPhotoHandler>();
+            services.AddScoped<ICommandHandler<ChangePhotoOridinal>, ChangePhotoOridinalHandler>();
+            services.AddScoped<ICommandHandler<DeletePhoto>, DeletePhotoHandler>();
+            services.AddScoped<ICommandHandler<DeleteMatch>, DeleteMatchHandler>();
+            services.AddScoped<ICommandHandler<SwipeUser>, SwipeUserHandler>();
+            services.AddScoped<ICommandHandler<SendMessage>, SendMessageHandler>();
             return services;
         }
     }

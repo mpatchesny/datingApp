@@ -18,7 +18,7 @@ public class SingUpHandlerTests : IDisposable
     [Fact]
     public async Task signup_user_with_existing_email_should_throw_exception()
     {
-        var command = new SignUp("111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), 1, 1);
+        var command = new SignUp("111111111", "test@test.com", "Janusz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<EmailAlreadyInUseException>(exception);
@@ -27,7 +27,7 @@ public class SingUpHandlerTests : IDisposable
     [Fact]
     public async Task signup_user_with_existing_phone_should_throw_exception()
     {
-        var command = new SignUp("123456789", "freeemail@test.com", "Janusz", new DateOnly(2000,1,1), 1, 1);
+        var command = new SignUp("123456789", "freeemail@test.com", "Janusz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<PhoneAlreadyInUseException>(exception);
@@ -36,9 +36,18 @@ public class SingUpHandlerTests : IDisposable
     [Fact]
     public async Task signup_user_with_free_phone_and_free_email_should_succeed()
     {
-        var command = new SignUp("111111111", "freeemail@test.com", "Januesz", new DateOnly(2000,1,1), 1, 1);
+        var command = new SignUp("111111111", "freeemail@test.com", "Januesz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task given_invalid_date_of_birth_singup_should_throw_exception()
+    {
+        var command = new SignUp("111111111", "freeemail@test.com", "Januesz", "01.01.2000", 1, 1);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidDateOfBirthFormatException>(exception);
     }
 
     // Arrange

@@ -18,7 +18,10 @@ internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, Priv
     }
     public async Task<PrivateUserDto> HandleAsync(GetPrivateUser query)
     {
-        var user= await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == query.UserId);
+        var user = await _dbContext.Users
+            .Include(x => x.Settings)
+            .Include(x => x.Photos)
+            .FirstOrDefaultAsync(x => x.Id == query.UserId);
         return user?.AsPrivateDto();
     }
 }

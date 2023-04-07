@@ -17,4 +17,12 @@ public class PhotoTests
         Assert.NotNull(exception);
         Assert.IsType<PhotoEmptyPathException>(exception);
     }
+
+    [Fact]
+    public void photo_path_should_not_be_null()
+    {
+        var exception = Record.Exception(() =>new Photo(1, 1, "", 1));
+        Assert.NotNull(exception);
+        Assert.IsType<PhotoEmptyPathException>(exception);
+    }
 }

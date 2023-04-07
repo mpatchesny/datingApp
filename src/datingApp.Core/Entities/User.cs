@@ -23,7 +23,7 @@ public class User
     public Sex Sex { get; private set; }
     public string Job { get; private set; }
     public string Bio { get; private set; }
-    public IEnumerable<Photo> Photos { get; private set; }
+    public IEnumerable<Photo> Photos { get; private set; } = new List<Photo>();
     public UserSettings Settings { get; private set; }
 
     private User()
@@ -40,7 +40,6 @@ public class User
         SetSex(sex);
         SetDateOfBirth(dateOfBirth);
         Photos = photos;
-        if (photos == null) Photos = new List<Photo>();
         SetSettings(settings);
         SetJob(job);
         SetBio(bio);

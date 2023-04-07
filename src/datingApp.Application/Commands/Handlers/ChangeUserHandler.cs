@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
@@ -29,18 +30,27 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
             return;
         }
 
-        if (command.Bio != null)
-        {
-            user.ChangeBio(command.Bio);
-        }
-        if (command.Job != null)
-        {
-            user.ChangeBio(command.Job);
-        }
+        if (command.Bio != null) user.ChangeBio(command.Bio);
+        if (command.Job != null) user.ChangeBio(command.Job);
         if (command.DateOfBirth != null)
         {
-            user.ChangeDateOfBirth((DateOnly) command.DateOfBirth);
+            if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
+            {
+                throw new InvalidDateOfBirthFormatException(command.DateOfBirth);
+            }
+            user.ChangeDateOfBirth(dob);
         }
+        if (command.DiscoverAgeFrom != null && command.DiscoverAgeTo != null)
+        {
+            user.Settings.ChangeDiscoverAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
+        }
+        if (command.DiscoverRange != null) user.Settings.ChangeDiscoverRange((int) command.DiscoverRange);
+        if (command.DiscoverSex != null) user.Settings.ChangeDiscoverSex((Sex) command.DiscoverSex);
+        if (command.Lat != null && command.Lon != null)
+        {
+            user.Settings.ChangeLocation((double) command.Lat, (double) command.Lon);
+        }
+
         await _userRepository.UpdateAsync(user);
     }
 }

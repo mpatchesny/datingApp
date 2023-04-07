@@ -19,9 +19,12 @@ public class SpatialTests
         Assert.Equal(expectedDistance, spatial.CalculateDistance(lat1, lon1, lat2, lon2));
     }
 
-    [Fact]
-    public void given_two_points_and_distance_in_kilometers_spatial_returns_proper_approximation_of_square_around_point()
+    [Theory]
+    [InlineData(0.0, 0.0, 50)]
+    public void given_two_points_and_distance_in_kilometers_spatial_returns_proper_approximation_of_square_around_point(double lat, double lon, int distance)
     {
+        var spatial = new Infrastructure.Spatial.Spatial();
+        var square = spatial.GetApproxSquareAroundPoint(lat, lon, distance);
         Assert.True(true);
     }
 }

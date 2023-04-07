@@ -17,7 +17,7 @@ public class ChangeUserHandlerTests : IDisposable
     [Fact]
     public async Task change_existing_user_should_succeed()
     {
-        var command = new ChangeUser(1, new DateOnly(1998, 1, 1));
+        var command = new ChangeUser(1, "1998-01-01");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -41,10 +41,19 @@ public class ChangeUserHandlerTests : IDisposable
     [Fact]
     public async Task change_nonexisting_user_should_throw_exception()
     {
-        var command = new ChangeUser(2, new DateOnly(1998, 1, 1));
+        var command = new ChangeUser(2, "1998-01-01");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
+    }
+
+    [Fact]
+    public async Task given_invalid_date_change_user_should_throw_exception()
+    {
+        var command = new ChangeUser(1, "01.01.1998");
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidDateOfBirthFormatException>(exception);
     }
 
     // Arrange

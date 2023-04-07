@@ -39,7 +39,11 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         }
         if (command.DateOfBirth != null)
         {
-            user.ChangeDateOfBirth((DateOnly) command.DateOfBirth);
+            if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
+            {
+                throw new InvalidDateOfBirthFormatException(command.DateOfBirth);
+            }
+            user.ChangeDateOfBirth(dob);
         }
         await _userRepository.UpdateAsync(user);
     }

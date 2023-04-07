@@ -55,9 +55,9 @@ public class PhotosController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<ActionResult> Delete(DeletePhoto command)
+    public async Task<ActionResult> Delete(int photoId)
     {
-        await _deletePhotoHandler.HandleAsync(command);
+        await _deletePhotoHandler.HandleAsync(new DeletePhoto(photoId));
         return Ok();
     }
 }

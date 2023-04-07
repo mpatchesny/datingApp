@@ -44,14 +44,14 @@ public class PhotosController : ControllerBase
     public async Task<ActionResult> Post(AddPhoto command)
     {
         await _addPhotoHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(Get), new { id = 1 });
+        return CreatedAtAction(nameof(Get), new { photoId = 1 });
     }
 
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
         await _changePhotoOridinalHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(Get), new { id = 1 });
+        return CreatedAtAction(nameof(Get), new { photoId = 1 });
     }
 
     [HttpDelete]

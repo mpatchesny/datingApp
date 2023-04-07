@@ -9,14 +9,14 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public sealed class SingUpHandler : ICommandHandler<SingUp>
+public sealed class SignUpHandler : ICommandHandler<SignUp>
 {
     private readonly IUserRepository _userRepository;
-    public SingUpHandler(IUserRepository userRepository)
+    public SignUpHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
-    public async Task HandleAsync(SingUp command)
+    public async Task HandleAsync(SignUp command)
     {
         var existingUser = await _userRepository.GetByEmailAsync(command.Email);
         if (existingUser != null)

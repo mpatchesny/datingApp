@@ -56,6 +56,14 @@ public class ChangeUserHandlerTests : IDisposable
         Assert.IsType<InvalidDateOfBirthFormatException>(exception);
     }
 
+    [Fact]
+    public async Task change_existing_user_settings_should_succeed()
+    {
+        var command = new ChangeUser(1, DiscoverAgeFrom: 18, DiscoverAgeTo: 20, DiscoverRange: 20, DiscoverSex: 1);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.Null(exception);
+    }
+
     // Arrange
     private readonly ChangeUserHandler _handler;
     private readonly TestDatabase _testDb;

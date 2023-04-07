@@ -33,7 +33,7 @@ public class Photo
 
     private void SetPath(string path)
     {
-        if (path.Length == 0)
+        if (string.IsNullOrEmpty(path))
         {
             throw new PhotoEmptyPathException();
         }

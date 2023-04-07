@@ -64,6 +64,14 @@ public class ChangeUserHandlerTests : IDisposable
         Assert.Null(exception);
     }
 
+    [Fact]
+    public async Task change_location_of_existing_user_should_succeed()
+    {
+        var command = new ChangeUser(1, Lat: 40.0, Lon: 40.0);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.Null(exception);
+    }
+
     // Arrange
     private readonly ChangeUserHandler _handler;
     private readonly TestDatabase _testDb;

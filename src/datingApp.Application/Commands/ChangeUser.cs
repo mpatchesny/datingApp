@@ -13,4 +13,6 @@ public sealed record ChangeUser(int UserId,
                                 int? DiscoverAgeFrom=null,
                                 int? DiscoverAgeTo=null,
                                 int? DiscoverRange=null,
-                                int? DiscoverSex=null) : ICommand;
+                                int? DiscoverSex=null,
+                                double? Lat=null,
+                                double? Lon=null) : ICommand;

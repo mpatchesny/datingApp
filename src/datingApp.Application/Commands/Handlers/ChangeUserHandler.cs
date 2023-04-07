@@ -46,6 +46,10 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         }
         if (command.DiscoverRange != null) user.Settings.ChangeDiscoverRange((int) command.DiscoverRange);
         if (command.DiscoverSex != null) user.Settings.ChangeDiscoverSex((Sex) command.DiscoverSex);
+        if (command.Lat != null && command.Lon != null)
+        {
+            user.Settings.ChangeLocation((double) command.Lat, (double) command.Lon);
+        }
 
         await _userRepository.UpdateAsync(user);
     }

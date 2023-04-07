@@ -19,7 +19,6 @@ namespace datingApp.Application
             services.AddSingleton<IPhotoService, StubPhotoService>();
             services.AddScoped<ICommandHandler<SignUp>, SignUpHandler>();
             services.AddScoped<ICommandHandler<ChangeUser>, ChangeUserHandler>();
-            services.AddScoped<ICommandHandler<ChangeUserSettings>, ChangeUserSettingsHandler>();
             services.AddScoped<ICommandHandler<ChangeLocation>, ChangeLocationHandler>();
             services.AddScoped<ICommandHandler<AddPhoto>, AddPhotoHandler>();
             services.AddScoped<ICommandHandler<ChangePhotoOridinal>, ChangePhotoOridinalHandler>();

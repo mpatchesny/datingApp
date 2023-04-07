@@ -16,11 +16,17 @@ public class PhotosController : ControllerBase
 {
     private readonly IQueryHandler<GetPhoto, PhotoDto> _getPhotoHandler;
     private readonly ICommandHandler<AddPhoto> _addPhotoHandler;
+    private readonly ICommandHandler<ChangePhotoOridinal> _changePhotoOridinalHandler;
+    private readonly ICommandHandler<DeletePhoto> _deletePhotoHandler;
     public PhotosController(ICommandHandler<AddPhoto> addPhotoHandler,
-                            IQueryHandler<GetPhoto, PhotoDto> getPhotoHandler)
+                            IQueryHandler<GetPhoto, PhotoDto> getPhotoHandler,
+                            ICommandHandler<ChangePhotoOridinal> changePhotoOridinalHandler,
+                            ICommandHandler<DeletePhoto> deletePhotoHandler)
     {
         _addPhotoHandler = addPhotoHandler;
         _getPhotoHandler = getPhotoHandler;
+        _changePhotoOridinalHandler = changePhotoOridinalHandler;
+        _deletePhotoHandler = deletePhotoHandler;
     }
 
     [HttpGet("{photoId:int}")]
@@ -39,5 +45,19 @@ public class PhotosController : ControllerBase
     {
         await _addPhotoHandler.HandleAsync(command);
         return CreatedAtAction(nameof(Get), new { id = 1 });
+    }
+
+    [HttpPatch]
+    public async Task<ActionResult> Patch(ChangePhotoOridinal command)
+    {
+        await _changePhotoOridinalHandler.HandleAsync(command);
+        return CreatedAtAction(nameof(Get), new { id = 1 });
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> Delete(DeletePhoto command)
+    {
+        await _deletePhotoHandler.HandleAsync(command);
+        return Ok();
     }
 }

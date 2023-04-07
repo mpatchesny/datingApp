@@ -20,7 +20,7 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_to_existing_user_should_succeed()
     {
-        var command = new AddPhoto(1, new byte[101*1024]);
+        var command = new AddPhoto(1, "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -28,21 +28,19 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_to_nonexisting_user_should_throw_exception()
     {
-        var command = new AddPhoto(2, new byte[101*1024]);
+        var command = new AddPhoto(2, "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
    
-    [Theory]
-    [InlineData((2*1024*1024) + 1)]
-    [InlineData((100*1024) - 1)]
-    public async Task add_too_large_photo_should_throw_exception(int invalidPhotoSizeBytes)
+    [Fact]
+    public async Task add_photo_with_wrong_base64_string_should_throw_exception()
     {
-        var command = new AddPhoto(1, new byte[invalidPhotoSizeBytes]);
+        var command = new AddPhoto(1, "1");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
-        Assert.IsType<InvalidPhotoSizeException>(exception);
+        Assert.IsType<FailToConvertBase64StringToArrayOfBytes>(exception);
     }
 
     [Fact]
@@ -58,7 +56,7 @@ public class AddPhotoHandlerTests
         };
         await _testDb.DbContext.Photos.AddRangeAsync(photos);
         await _testDb.DbContext.SaveChangesAsync();
-        var command = new AddPhoto(1, new byte[101*1024]);
+        var command = new AddPhoto(1, "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
@@ -82,7 +80,7 @@ public class AddPhotoHandlerTests
         var userRepository = new PostgresUserRepository(_testDb.DbContext);
 
         var mockedPhotoService = new Mock<IPhotoService>();
-        mockedPhotoService.Setup(m => m.SavePhoto(new byte[101*1024])).Returns("abc");
+        mockedPhotoService.Setup(m => m.SavePhoto(It.IsAny<byte[]>())).Returns("abc");
         _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object);
     }
 

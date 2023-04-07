@@ -18,12 +18,17 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
     }
     public async Task HandleAsync(SignUp command)
     {
+        if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
+        {
+            throw new InvalidDateOfBirthFormatException(command.DateOfBirth);
+        }
+
         var existingUser = await _userRepository.GetByEmailAsync(command.Email);
         if (existingUser != null)
         {
             throw new EmailAlreadyInUseException(command.Email);
         }
-        
+
         existingUser = await _userRepository.GetByPhoneAsync(command.Phone);
         if (existingUser != null)
         {
@@ -31,8 +36,7 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
         }
 
         var settings = new UserSettings(0, (Sex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
-        var user = new User(0, command.Phone, command.Email, command.Name, command.DateOfBirth, (Sex) command.Sex, null, settings, command.Job, command.Bio);
-
+        var user = new User(0, command.Phone, command.Email, command.Name, dob, (Sex) command.Sex, null, settings, command.Job, command.Bio);
         await _userRepository.AddAsync(user);
     }
 }

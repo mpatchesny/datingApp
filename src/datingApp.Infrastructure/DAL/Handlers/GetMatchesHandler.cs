@@ -22,12 +22,29 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
         return await _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId)
-                        .Include(match => match.Messages
+                        .Include(x => x.Messages
                                 .OrderByDescending(message => message.CreatedAt)
                                 .Take(1))
+                        .Select(x => new
+                            {
+                                Match = x,
+                                User = _dbContext.Users.Where(u => u.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2)).FirstOrDefault(),
+                                Photo = _dbContext.Photos.Where(p => p.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2))
+                                            .FirstOrDefault(p => p.Oridinal == 0)
+                            })
+                        .Select(x =>
+                            new MatchDto()
+                            {
+                                Id = x.Match.Id,
+                                UserId = x.User.Id,
+                                Name = x.User.Name,
+                                IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
+                                ProfilePicture = (x.Photo != null) ? x.Photo.AsDto() : null,
+                                Messages = x.Match.Messages.Select(x => x.AsDto()).ToList(),
+                                CreatedAt = DateTime.UtcNow
+                            })
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)
-                        .Select(x => x.AsDto())
                         .ToListAsync();
     }
 }

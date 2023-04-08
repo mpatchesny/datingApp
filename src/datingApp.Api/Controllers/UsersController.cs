@@ -75,7 +75,7 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetPrivateUser), new { userId = 1 });
     }
 
-    [HttpDelete]
+    [HttpDelete("{userId:int}")]
     public async Task<ActionResult> Delete(int userId)
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));

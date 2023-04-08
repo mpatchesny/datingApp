@@ -1,6 +1,9 @@
 @url = http://localhost:5000
+
 ###
-GET {{url}}/WeatherForecast
+GET {{url}}/users/me
 ###
 GET {{url}}/users/1
+###
+DELETE {{url}}/users/1
 ###

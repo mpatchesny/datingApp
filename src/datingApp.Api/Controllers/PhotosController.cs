@@ -54,7 +54,7 @@ public class PhotosController : ControllerBase
         return CreatedAtAction(nameof(Get), new { photoId = 1 });
     }
 
-    [HttpDelete]
+    [HttpDelete("{photoId:int}")]
     public async Task<ActionResult> Delete(int photoId)
     {
         await _deletePhotoHandler.HandleAsync(new DeletePhoto(photoId));

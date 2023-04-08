@@ -62,7 +62,7 @@ public class GetMessagesHandlerTests
     {
         var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var match = new Core.Entities.Match(1, 1, 1, null, DateTime.UtcNow);
+        var match = new Core.Entities.Match(1, 1, 1, false, false, null, DateTime.UtcNow);
         
         var messages = new List<Message>{
             new Message(0, 1, 1, "hello", false, DateTime.UtcNow),

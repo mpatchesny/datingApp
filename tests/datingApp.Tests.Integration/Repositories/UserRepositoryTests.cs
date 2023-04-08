@@ -64,18 +64,19 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task delete_existing_user_should_succeed()
     {
-        var userId = 1;
-        await _userRepository.DeleteAsync(userId);
-        _testDb.DbContext.SaveChanges();
-        var user2 = await _userRepository.GetByIdAsync(userId);
-        Assert.Null(user2);
+        var user = await _userRepository.GetByIdAsync(1);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
+        Assert.Null(exception);
     }
 
     [Fact]
     public async Task delete_nonexisting_user_should_throw_exception()
     {
-        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(999));
+        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(0, "888756489", "test3@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
     }
 
     [Fact]

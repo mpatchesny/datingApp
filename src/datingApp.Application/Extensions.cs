@@ -26,6 +26,7 @@ namespace datingApp.Application
             services.AddScoped<ICommandHandler<DeleteMatch>, DeleteMatchHandler>();
             services.AddScoped<ICommandHandler<SwipeUser>, SwipeUserHandler>();
             services.AddScoped<ICommandHandler<SendMessage>, SendMessageHandler>();
+            services.AddScoped<ICommandHandler<DeleteUser>, DeleteUserHandler>();
             return services;
         }
     }

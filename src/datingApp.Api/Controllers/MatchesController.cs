@@ -38,7 +38,7 @@ public class MatchesController : ControllerBase
         return Ok(await _getMessagesHandler.HandleAsync(new GetMessages { MatchId = matchId }));
     }
 
-    [HttpDelete]
+    [HttpDelete("{matchId:int}")]
     public async Task<ActionResult> Delete(int matchId)
     {
         await _deleteMatchHandler.HandleAsync(new DeleteMatch(matchId));

@@ -44,9 +44,8 @@ internal sealed class PostgresUserRepository : IUserRepository
         _dbContext.Users.Update(user);
         return Task.CompletedTask;
     }
-    public async Task DeleteAsync(int userId)
+    public async Task DeleteAsync(User user)
     {
-        var user = await _dbContext.Users.FirstAsync(x => x.Id == userId);
         _dbContext.Users.Remove(user);
     }
 }

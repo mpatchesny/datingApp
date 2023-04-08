@@ -15,7 +15,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPrivateUserHandlerTests
 {
     [Fact]
-    public async Task query_existing_user_should_return_public_user_dto()
+    public async Task query_existing_user_should_return_private_user_dto()
     {
         var query = new GetPrivateUser();
         query.UserId = 1;

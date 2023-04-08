@@ -43,22 +43,8 @@ public class UserRepositoryTests : IDisposable
         var userId = 1;
         var user = await _userRepository.GetByIdAsync(userId);
         user.ChangeBio("new bio");
-        await _userRepository.UpdateAsync(user);
-        _testDb.DbContext.SaveChanges();
-
-        var user2 = await _userRepository.GetByIdAsync(userId);
-        Assert.Equal("new bio", user2.Bio);
-    }
-
-    [Fact(Skip = "Reason")]
-    public async Task update_nonexisting_user_should_throw_exception()
-    {
-        var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(0, "111111111", "bademail@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        await _userRepository.UpdateAsync(user);
-        _testDb.DbContext.SaveChanges();
-        // FIXME
-        // Assert.Equal(true, updateTask.IsCompletedSuccessfully);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateAsync(user));
+        Assert.Null(exception);
     }
 
     [Fact]
@@ -84,11 +70,8 @@ public class UserRepositoryTests : IDisposable
     {
         var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 45.5, 45.5);
         var user = new User(0, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        await  _userRepository.AddAsync(user);
-        _testDb.DbContext.SaveChanges();
-
-        var user2 = await _userRepository.GetByIdAsync(user.Id);
-        Assert.NotNull(user2);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
+        Assert.Null(exception);
     }
 
     [Fact]

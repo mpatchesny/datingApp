@@ -47,6 +47,14 @@ public class UserSettings
 
     private void SetDiscoverSex(Sex sex)
     {
+        if (!(sex == Sex.Male || sex == Sex.Female))
+        {
+            throw new InvalidUserSexException();
+        }
+        if ((int) sex > (int) Sex.Female + (int) Sex.Male)
+        {
+            throw new InvalidUserSexException();
+        }
         if (DiscoverSex == sex) return;
         DiscoverSex = sex;
     }

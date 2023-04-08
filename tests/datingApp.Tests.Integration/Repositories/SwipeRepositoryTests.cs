@@ -17,7 +17,6 @@ public class SwipeRepositoryTests : IDisposable
     {
         var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
-        _testDb.DbContext.SaveChanges();
         Assert.Null(exception);
     }
 

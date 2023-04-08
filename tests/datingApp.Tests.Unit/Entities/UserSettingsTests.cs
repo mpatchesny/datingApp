@@ -19,10 +19,27 @@ public class UserSettingsTests
     }
 
     [Theory]
+    [InlineData(0)]
+    [InlineData(7)]
+    public void invalid_user_settings_discovery_sex_should_throw_exception(int discoverySex)
+    {
+        var exception = Record.Exception(() =>new UserSettings(1, (Sex) discoverySex, 20, 21, 20, 45.5, 45.5));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidUserSexException>(exception);
+    }
+
+    [Theory]
     [InlineData(17, 18)]
     [InlineData(18, 101)]
+    public void user_settings_age_range_below_18_or_above_100_should_throw_exception(int minAge, int maxAge)
+    {
+        var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidDiscoveryAgeException>(exception);
+    }
+    [Theory]
     [InlineData(21, 20)]
-    public void user_settings_age_range_should_be_between_18_and_100_and_min_not_larger_than_max(int minAge, int maxAge)
+    public void user_settings_age_range_where_age_to_is_below_age_from_should_throw_exception(int minAge, int maxAge)
     {
         var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
         Assert.NotNull(exception);
@@ -32,7 +49,7 @@ public class UserSettingsTests
     [Theory]
     [InlineData(0)]
     [InlineData(101)]
-    public void user_settings_discovery_range_should_be_between_1_and_100(int range)
+    public void user_settings_discovery_range_below_1_or_above_100_should_throw_exception(int range)
     {
         var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, 20, 25, range, 45.5, 45.5));
         Assert.NotNull(exception);
@@ -44,7 +61,7 @@ public class UserSettingsTests
     [InlineData(0.0, 180.1)]
     [InlineData(90.1, 0.0)]
     [InlineData(-90.1, 0.0)]
-    public void user_location_should_be_proper_location(double lat, double lon)
+    public void user_location_invalid_location_should_throw_exception(double lat, double lon)
     {
         var exception = Record.Exception(() =>new UserSettings(1, Sex.Male, 20, 25, 20, lat, lon));
         Assert.NotNull(exception);

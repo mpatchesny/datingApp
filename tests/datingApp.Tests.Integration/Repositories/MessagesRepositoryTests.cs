@@ -29,6 +29,13 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void delete_existing_message_by_id_should_succeed()
     {
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(1));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async void after_delete_message_get_messages_should_return_minus_one_elements()
+    {
         var messageId = 1;
         await _repository.DeleteAsync(messageId);
         _testDb.DbContext.SaveChanges();

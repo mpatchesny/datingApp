@@ -29,7 +29,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void get_existing_match_by_id_should_return_succeed()
+    public async void get_existing_match_by_id_should_succeed()
     {
         var match = await _repository.GetByIdAsync(1);
         Assert.NotNull(match);
@@ -44,6 +44,14 @@ public class MatchRepositoryTests : IDisposable
 
     [Fact]
     public async void delete_existing_match_by_id_should_succeed()
+    {
+        var matchId = 1;
+        var exception = await Record.ExceptionAsync(async () => await _repository.GetByIdAsync(matchId));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async void after_delete_match_get_matches_should_return_minus_one_elements()
     {
         var matchId = 1;
         var match = await _repository.GetByIdAsync(matchId);

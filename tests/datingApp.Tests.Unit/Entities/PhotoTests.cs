@@ -10,18 +10,12 @@ namespace datingApp.Tests.Unit.Entities;
 
 public class PhotoTests
 {
-    [Fact]
-    public void photo_path_should_not_be_emptystring()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void empty_or_null_photo_path_should_throw_exception(string path)
     {
-        var exception = Record.Exception(() =>new Photo(1, 1, "", 1));
-        Assert.NotNull(exception);
-        Assert.IsType<PhotoEmptyPathException>(exception);
-    }
-
-    [Fact]
-    public void photo_path_should_not_be_null()
-    {
-        var exception = Record.Exception(() =>new Photo(1, 1, "", 1));
+        var exception = Record.Exception(() =>new Photo(1, 1, path, 1));
         Assert.NotNull(exception);
         Assert.IsType<PhotoEmptyPathException>(exception);
     }

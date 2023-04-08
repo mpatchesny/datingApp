@@ -9,8 +9,10 @@ namespace datingApp.Tests.Unit.Entities;
 
 public class MessageTests
 {
-    [Fact]
-    public void message_should_not_be_emptystring()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void empty_message_string_should_throw_exception(string message)
     {
         var exception = Record.Exception(() =>new Message(1, 1, 1, "", false, DateTime.UtcNow));
         Assert.NotNull(exception);
@@ -18,7 +20,7 @@ public class MessageTests
     }
 
     [Fact]
-    public void message_length_should_not_be_above_255()
+    public void message_length_above_255_should_throw_exception()
     {
         string message = "";
         for (int i=1; i <= 256; i++)

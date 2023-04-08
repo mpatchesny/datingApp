@@ -64,18 +64,6 @@ internal static class Extensions
         };
     }
 
-    public static MatchDto AsDto(this Match entity)
-    {
-        return new()
-        {
-            Id = entity.Id,
-            UserId1 = entity.UserId1,
-            UserId2 = entity.UserId2,
-            CreatedAt = entity.CreatedAt,
-            Messages = entity.Messages.Select(x => x.AsDto()).ToList()
-        };
-    }
-
     public static UserSettingsDto AsDto(this UserSettings entity)
     {
         return new()

@@ -56,7 +56,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void add_match_should_succeed()
     {
-        var match = new Match(0, 1, 1, null, DateTime.UtcNow);
+        var match = new Match(0, 1, 1, false, false, null, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
     }
@@ -64,7 +64,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void after_add_match_get_matches_should_return_plus_one_elements()
     {
-        var match = new Match(0, 1, 1, null, DateTime.UtcNow);
+        var match = new Match(0, 1, 1, false, false, null, DateTime.UtcNow);
         await _repository.AddAsync(match);
         _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(1);
@@ -86,8 +86,8 @@ public class MatchRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, 1, 1, new List<Message>{ new Message(0, 1, 1, "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
-        var match2 = new Match(0, 2, 2, new List<Message>{ new Message(0, 2, 2, "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match = new Match(0, 1, 1, false, false, new List<Message>{ new Message(0, 1, 1, "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match2 = new Match(0, 2, 2, false, false, new List<Message>{ new Message(0, 2, 2, "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.Matches.Add(match2);
         _testDb.DbContext.SaveChanges();

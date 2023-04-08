@@ -46,7 +46,7 @@ namespace datingApp.Infrastructure.DAL
 
             if (dbContext.Matches.Count() == 0)
             {
-                var match = new Match(0, 1, 2, null, DateTime.UtcNow);
+                var match = new Match(0, 1, 2, false, false, null, DateTime.UtcNow);
                 dbContext.Matches.Add(match);
                 await dbContext.SaveChangesAsync();
             };

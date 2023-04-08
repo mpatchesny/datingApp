@@ -40,7 +40,7 @@ public class DeleteMatchHandlerTests
         var settings2 = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user2 = new User(0, "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
 
-        var match = new Match(0, 1, 2, null, DateTime.UtcNow);
+        var match = new Match(0, 1, 2, false, false, null, DateTime.UtcNow);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

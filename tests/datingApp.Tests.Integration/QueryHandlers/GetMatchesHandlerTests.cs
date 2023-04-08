@@ -64,15 +64,15 @@ public class GetMatchesHandlerTests
         var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var matches = new List<Core.Entities.Match>
         {
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow),
-            new Core.Entities.Match(0, 1, 1, null, DateTime.UtcNow)
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow),
+            new Core.Entities.Match(0, 1, 1, false, false, null, DateTime.UtcNow)
         };
         
         _testDb = new TestDatabase();

@@ -65,7 +65,7 @@ public class MessageRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, 1, 1, null, DateTime.UtcNow);
+        var match = new Match(0, 1, 1, false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 

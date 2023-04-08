@@ -31,7 +31,7 @@ public class Message
 
     private void SetText(string text)
     {
-        if (text.Length == 0)
+        if (string.IsNullOrEmpty(text))
         {
             throw new InvalidMessageException("message cannot be empty");
         }

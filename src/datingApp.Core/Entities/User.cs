@@ -68,7 +68,7 @@ public class User
     #region Setters
     private void SetName(string name)
     {
-        if (name.Length == 0)
+        if (string.IsNullOrEmpty(name))
         {
             throw new InvalidUsernameException("user name can't be empty");
         }
@@ -85,7 +85,7 @@ public class User
     }
     private void SetPhone(string phone)
     {       
-        if (phone.Length == 0)
+        if (string.IsNullOrEmpty(phone))
         {
             throw new InvalidPhoneException("phone number cannot be empty");
         }
@@ -102,7 +102,7 @@ public class User
     }
     private void SetEmail(string email)
     {
-        if (email.Length == 0)
+        if (string.IsNullOrEmpty(email))
         {
             throw new InvalidEmailException("email address cannot be empty");
         }
@@ -157,7 +157,7 @@ public class User
     }
     private void SetSex(Sex sex)
     {
-        if (((sex & Sex.Male) == Sex.Male) & ((sex & Sex.Female) == Sex.Female))
+        if (!(sex == Sex.Male || sex == Sex.Female))
         {
             throw new InvalidUserSexException();
         }

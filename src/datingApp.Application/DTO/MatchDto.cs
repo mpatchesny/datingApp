@@ -8,8 +8,10 @@ namespace datingApp.Application.DTO;
 public class MatchDto
 {
     public int Id { get; set; }
-    public int UserId1 { get; set; }
-    public int UserId2 { get; set; }
+    public int UserId { get; set; }
+    public string Name { get; set; }
+    public bool IsDisplayed { get; set; }
+    public PhotoDto ProfilePicture { get; set; }
     public IEnumerable<MessageDto> Messages { get; set; }
     public DateTime CreatedAt { get; set; }
 }

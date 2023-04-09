@@ -10,6 +10,7 @@ public class Spatial : ISpatial
     private const double r = 6371.009; // kilometers
     private const double equator = 40075; // kilometers
     private const double toRadMultiplier = Math.PI/180;
+    private const double latDegrees = 0.008983;
     public int CalculateDistance(double fromLat, double fromLon, double toLat, double toLon)
     {
         var fromLatRad = fromLat * toRadMultiplier;
@@ -30,10 +31,10 @@ public class Spatial : ISpatial
         var list = new List<(double lat, double lon)>();
         // https://stackoverflow.com/questions/4000886/gps-coordinates-1km-square-around-a-point
         double lonDegrees = 360 / (Math.Cos(lat * toRadMultiplier) * equator);
-        (double lat, double lon) ne = (lat + distance * 0.009, lon + distance * lonDegrees);
-        (double lat, double lon) nw = (lat + distance * 0.009, lon - distance * lonDegrees);
-        (double lat, double lon) se = (lat - distance * 0.009, lon + distance * lonDegrees);
-        (double lat, double lon) sw = (lat - distance * 0.009, lon - distance * lonDegrees);
+        (double lat, double lon) ne = (lat + distance * latDegrees, lon + distance * lonDegrees);
+        (double lat, double lon) nw = (lat + distance * latDegrees, lon - distance * lonDegrees);
+        (double lat, double lon) se = (lat - distance * latDegrees, lon + distance * lonDegrees);
+        (double lat, double lon) sw = (lat - distance * latDegrees, lon - distance * lonDegrees);
         list.Add(ne);
         list.Add(nw);
         list.Add(se);

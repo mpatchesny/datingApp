@@ -28,8 +28,8 @@ public class Spatial : ISpatial
     {
         var list = new List<(double lat, double lon)>();
         (double lat, double lon) ne = (lat + distance * 0.009, lon + distance * 0.009);
-        (double lat, double lon) nw = (lat - distance * 0.009, lon + distance * 0.009);
-        (double lat, double lon) se = (lat + distance * 0.009, lon - distance * 0.009);
+        (double lat, double lon) nw = (lat + distance * 0.009, lon - distance * 0.009);
+        (double lat, double lon) se = (lat - distance * 0.009, lon + distance * 0.009);
         (double lat, double lon) sw = (lat - distance * 0.009, lon - distance * 0.009);
         list.Add(ne);
         list.Add(nw);

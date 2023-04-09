@@ -8,6 +8,7 @@ namespace datingApp.Infrastructure.Spatial;
 public class Spatial : ISpatial
 {
     private const double r = 6371.009; // kilometers
+    private const double equator = 40075; // kilometers
     private const double toRadMultiplier = Math.PI/180;
     public int CalculateDistance(double fromLat, double fromLon, double toLat, double toLon)
     {
@@ -27,10 +28,12 @@ public class Spatial : ISpatial
     public List<(double lat, double lon)> GetApproxSquareAroundPoint(double lat, double lon, int distance)
     {
         var list = new List<(double lat, double lon)>();
-        (double lat, double lon) ne = (lat + distance * 0.009, lon + distance * 0.009);
-        (double lat, double lon) nw = (lat + distance * 0.009, lon - distance * 0.009);
-        (double lat, double lon) se = (lat - distance * 0.009, lon + distance * 0.009);
-        (double lat, double lon) sw = (lat - distance * 0.009, lon - distance * 0.009);
+        // https://stackoverflow.com/questions/4000886/gps-coordinates-1km-square-around-a-point
+        double lonDegrees = 360 / (Math.Cos(lat * toRadMultiplier) * equator);
+        (double lat, double lon) ne = (lat + distance * 0.009, lon + distance * lonDegrees);
+        (double lat, double lon) nw = (lat + distance * 0.009, lon - distance * lonDegrees);
+        (double lat, double lon) se = (lat - distance * 0.009, lon + distance * lonDegrees);
+        (double lat, double lon) sw = (lat - distance * 0.009, lon - distance * lonDegrees);
         list.Add(ne);
         list.Add(nw);
         list.Add(se);

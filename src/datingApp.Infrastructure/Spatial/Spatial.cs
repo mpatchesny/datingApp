@@ -26,19 +26,19 @@ public class Spatial : ISpatial
         return (int) Math.Round(d);
     }
 
-    public List<(double lat, double lon)> GetApproxSquareAroundPoint(double lat, double lon, int distance)
+    public List<double> GetApproxSquareAroundPoint(double lat, double lon, int distance)
     {
-        var list = new List<(double lat, double lon)>();
+        var list = new List<double>();
         // https://stackoverflow.com/questions/4000886/gps-coordinates-1km-square-around-a-point
         double lonDegrees = 360 / (Math.Cos(lat * toRadMultiplier) * equator);
-        (double lat, double lon) ne = (lat + distance * latDegrees, lon + distance * lonDegrees);
-        (double lat, double lon) nw = (lat + distance * latDegrees, lon - distance * lonDegrees);
-        (double lat, double lon) se = (lat - distance * latDegrees, lon + distance * lonDegrees);
-        (double lat, double lon) sw = (lat - distance * latDegrees, lon - distance * lonDegrees);
-        list.Add(ne);
-        list.Add(nw);
-        list.Add(se);
-        list.Add(sw);
+        double northLat = lat + distance * latDegrees;
+        double southLat = lat + distance * latDegrees;
+        double eastLon = lon + distance * lonDegrees;
+        double westLon = lon - distance * lonDegrees;
+        list.Add(northLat);
+        list.Add(southLat);
+        list.Add(eastLon);
+        list.Add(westLon);
         return list;
     }
 }

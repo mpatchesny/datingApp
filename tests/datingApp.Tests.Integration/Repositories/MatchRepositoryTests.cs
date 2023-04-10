@@ -46,7 +46,8 @@ public class MatchRepositoryTests : IDisposable
     public async void delete_existing_match_by_id_should_succeed()
     {
         var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var exception = await Record.ExceptionAsync(async () => await _repository.GetByIdAsync(matchId));
+        var match = await _repository.GetByIdAsync(matchId);
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(match));
         Assert.Null(exception);
     }
 

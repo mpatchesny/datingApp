@@ -60,8 +60,9 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Post(SignUp command)
     {
+        command = command with {UserId = Guid.NewGuid()};
         await _signUpHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPrivateUser), new { userId = command.UserId });
+        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
     }
 
     [HttpPatch]
@@ -70,7 +71,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Patch(ChangeUser command)
     {
         await _changeUserHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPrivateUser), new { userId = command.UserId });
+        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
     }
 
     [HttpDelete("{userId:int}")]

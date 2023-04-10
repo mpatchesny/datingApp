@@ -333,18 +333,14 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         mockedSpatial.Setup(m => m.CalculateDistance(0.0, 0.0, 0.0, 0.0)).Returns(25);
         mockedSpatial.Setup(m => m.CalculateDistance(1.0, 1.0, 1.0, 1.0)).Returns(26);
 
-        var list = new List<double>();
         double north = (2.0);
         double south = (-1.0);
         double east = ( 2.0);
         double west = (-1.0);
-        list.Add(north);
-        list.Add(south);
-        list.Add(east);
-        list.Add(west);
+        var mockedCoordsResult = new Coords(north, south, east, west);
 
         mockedSpatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
-            .Returns((double x, double y, int z) => list);
+            .Returns((double x, double y, int z) => mockedCoordsResult);
         _handler = new GetSwipeCandidatesHandler(_testDb.DbContext, mockedSpatial.Object);
     }
 

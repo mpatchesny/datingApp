@@ -31,7 +31,7 @@ public class Spatial : ISpatial
         // https://stackoverflow.com/questions/4000886/gps-coordinates-1km-square-around-a-point
         double lonDegrees = 360 / (Math.Cos(lat * toRadMultiplier) * equator);
         double northLat = lat + distance * latDegrees;
-        double southLat = lat + distance * latDegrees;
+        double southLat = lat - distance * latDegrees;
         double eastLon = lon + distance * lonDegrees;
         double westLon = lon - distance * lonDegrees;
         return new Coords(northLat, southLat, eastLon, westLon);

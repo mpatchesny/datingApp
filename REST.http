@@ -1,9 +1,63 @@
 @url = http://localhost:5000
 
-###
+### USERS ###
+
 GET {{url}}/users/me
 ###
-GET {{url}}/users/1
+GET {{url}}/users/00000000-0000-0000-0000-000000000001
 ###
-DELETE {{url}}/users/1
+POST {{url}}/users
+Content-Type: application/json
+
+{
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "phone": "123456",
+    "email": "test11@test.com",
+    "name": "Maciej",
+    "dateOfBirth": "1987-03-10",
+    "sex": 1,
+    "discoverSex": 2,
+    "job": "McDonald's",
+    "bio": ""
+}
+###
+DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
+
+### PHOTOS ###
+
+GET {{url}}/photos/00000000-0000-0000-0000-000000000001
+###
+POST {{url}}/photos
+Content-Type: application/json
+
+{
+    "photoId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "userId": "00000000-0000-0000-0000-000000000001",
+    "base64Bytes": "4pyTIMOgIGxhIG1vZGU="
+}
+###
+PATCH {{url}}/photos
+Content-Type: application/json
+
+{
+    "userId": "00000000-0000-0000-0000-000000000001",
+    "photoId": "00000000-0000-0000-0000-000000000001",
+    "newOridinal": 2
+}
+###
+DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
+
+### Swipes ###
+
+GET {{url}}/swipes/candidates
+###
+POST {{url}}/swipes
+Content-Type: application/json
+
+{
+    "swipeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "swipedById": "00000000-0000-0000-0000-000000000001",
+    "swipedWhoId": "00000000-0000-0000-0000-000000000003",
+    "like": 2
+}
 ###

@@ -26,19 +26,19 @@ public class MatchesController : ControllerBase
         _getMessagesHandler = getMessagesHandler;
     }
 
-    [HttpGet("{userId:int}")]
+    [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IEnumerable<MatchDto>>> Get(Guid userId)
     {
         return Ok(await _getMatchesHandler.HandleAsync(new GetMatches { UserId = userId }));
     }
 
-    [HttpGet("{matchId:int}/messages")]
+    [HttpGet("{matchId:guid}/messages")]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages(Guid matchId)
     {
         return Ok(await _getMessagesHandler.HandleAsync(new GetMessages { MatchId = matchId }));
     }
 
-    [HttpDelete("{matchId:int}")]
+    [HttpDelete("{matchId:guid}")]
     public async Task<ActionResult> Delete(Guid matchId)
     {
         await _deleteMatchHandler.HandleAsync(new DeleteMatch(matchId));

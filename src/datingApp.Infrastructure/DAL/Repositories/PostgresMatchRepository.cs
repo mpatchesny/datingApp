@@ -23,7 +23,7 @@ internal sealed class PostgresMatchRepository : IMatchRepository
                                 .Take(1))
                         .ToListAsync();
     }
-    public async Task<Match> GetByIdAsync(int matchId)
+    public async Task<Match> GetByIdAsync(Guid matchId)
     {
         return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id == matchId);
     }

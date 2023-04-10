@@ -46,14 +46,14 @@ namespace datingApp.Infrastructure.DAL
 
             if (dbContext.Matches.Count() == 0)
             {
-                var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
+                var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
                 dbContext.Matches.Add(match);
                 await dbContext.SaveChangesAsync();
             };
 
             if (dbContext.Messages.Count() == 0)
             {
-                var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hej :)", false, DateTime.UtcNow);
+                var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hej :)", false, DateTime.UtcNow);
                 dbContext.Messages.Add(message);
                 await dbContext.SaveChangesAsync();
             };

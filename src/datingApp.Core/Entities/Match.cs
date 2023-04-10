@@ -7,7 +7,7 @@ namespace datingApp.Core.Entities;
 
 public class Match
 {
-    public int Id { get; }
+    public Guid Id { get; }
     public Guid UserId1 { get; private set; }
     public Guid UserId2 { get; private set; }
     public bool IsDisplayedByUser1 { get; private set; }
@@ -20,7 +20,7 @@ public class Match
         // EF
     }
 
-    public Match(int id, Guid userId1, Guid userId2, bool isDisplayedByUser1, bool isDisplayedByUser2, IEnumerable<Message> messages, DateTime createdAt)
+    public Match(Guid id, Guid userId1, Guid userId2, bool isDisplayedByUser1, bool isDisplayedByUser2, IEnumerable<Message> messages, DateTime createdAt)
     {
         Id = id;
         UserId1 = userId1;

@@ -8,7 +8,7 @@ namespace datingApp.Core.Repositories;
 
 public interface IMessageRepository
 {
-    Task<IEnumerable<Message>> GetByMatchIdAsync(int matchId);
+    Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId);
     Task AddAsync(Message message);
     Task DeleteAsync(Guid messageId);
 }

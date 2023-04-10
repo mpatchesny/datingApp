@@ -9,5 +9,5 @@ namespace datingApp.Application.Queries;
 
 public class GetMessages : PaginatedQuery, IQuery<IEnumerable<MessageDto>>
 {
-    public int MatchId { get; set; }
+    public Guid MatchId { get; set; }
 }

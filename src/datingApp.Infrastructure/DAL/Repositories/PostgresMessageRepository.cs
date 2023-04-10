@@ -27,7 +27,7 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         _dbContext.Messages.Remove(message);
     }
 
-    public async Task<IEnumerable<Message>> GetByMatchIdAsync(int matchId)
+    public async Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId)
     {
         return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
     }

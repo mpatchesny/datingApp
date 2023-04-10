@@ -36,7 +36,7 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = Guid.Parse("") });
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = Guid.Parse("00000000-0000-0000-0000-000000000001") });
         if (user is null)
         {
             return NotFound();
@@ -61,8 +61,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Post(SignUp command)
     {
         await _signUpHandler.HandleAsync(command);
-        // var user = await _getPublicUserHandler.HandleAsync(new GetPrivateUser { UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new { userId = 1 });
+        return CreatedAtAction(nameof(GetPrivateUser), new { userId = command.UserId });
     }
 
     [HttpPatch]
@@ -71,8 +70,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Patch(ChangeUser command)
     {
         await _changeUserHandler.HandleAsync(command);
-        // var user = await _getPublicUserHandler.HandleAsync(new GetPrivateUser { UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new { userId = 1 });
+        return CreatedAtAction(nameof(GetPrivateUser), new { userId = command.UserId });
     }
 
     [HttpDelete("{userId:int}")]

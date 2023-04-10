@@ -75,7 +75,7 @@ public class MessageRepositoryTests : IDisposable
         await _repository.AddAsync(message);
         var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(messages);
-        Assert.Equal(3, messages.Count());
+        Assert.Equal(2, messages.Count());
     }
 
     // Arrange

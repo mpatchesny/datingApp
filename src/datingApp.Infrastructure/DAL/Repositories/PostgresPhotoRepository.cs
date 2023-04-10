@@ -32,16 +32,19 @@ internal sealed class PostgresPhotoRepository : IPhotoRepository
     public async Task AddAsync(Photo photo)
     {
         await _dbContext.Photos.AddAsync(photo);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Photo photo)
     {
         _dbContext.Photos.Update(photo);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Photo photo)
     {
         _dbContext.Photos.Remove(photo);
+        await _dbContext.SaveChangesAsync();
     }
 
 }

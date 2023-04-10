@@ -20,7 +20,7 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_to_existing_user_should_succeed()
     {
-        var command = new AddPhoto(1, "dGVzdA==");
+        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -28,7 +28,7 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_to_nonexisting_user_should_throw_exception()
     {
-        var command = new AddPhoto(2, "dGVzdA==");
+        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000002"), "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -37,7 +37,7 @@ public class AddPhotoHandlerTests
     [Fact]
     public async Task add_photo_with_wrong_base64_string_should_throw_exception()
     {
-        var command = new AddPhoto(1, "1");
+        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), "1");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<FailToConvertBase64StringToArrayOfBytes>(exception);
@@ -48,15 +48,15 @@ public class AddPhotoHandlerTests
     {
         var photos = new List<Photo>
         {
-            new Photo(0, 1, "abc", 2),
-            new Photo(0, 1, "abc", 3),
-            new Photo(0, 1, "abc", 4),
-            new Photo(0, 1, "abc", 5),
-            new Photo(0, 1, "abc", 6)
+            new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 2),
+            new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 3),
+            new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 4),
+            new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 5),
+            new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 6)
         };
         await _testDb.DbContext.Photos.AddRangeAsync(photos);
         await _testDb.DbContext.SaveChangesAsync();
-        var command = new AddPhoto(1, "dGVzdA==");
+        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
@@ -67,9 +67,9 @@ public class AddPhotoHandlerTests
     private readonly TestDatabase _testDb;
     public AddPhotoHandlerTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var photo = new Photo(0, 1, "abc", 1);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var photo = new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

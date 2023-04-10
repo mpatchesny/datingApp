@@ -20,6 +20,17 @@ public class SwipeRepositoryTests : IDisposable
         Assert.Null(exception);
     }
 
+    [Fact]
+    public async Task add_swipe_with_existing_id_should_throw_exception()
+    {
+        var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
+        await _repository.AddAsync(swipe);
+        var swipe2 = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe2));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+
     // Arrange
     private readonly ISwipeRepository _repository;
     private readonly TestDatabase _testDb;

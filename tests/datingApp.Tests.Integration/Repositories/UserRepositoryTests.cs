@@ -75,6 +75,16 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task add_user_with_existing_id_should_throw_exception()
+    {
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+
+    [Fact]
     public async Task get_nonexistsing_user_by_id_should_return_null()
     {
         var userId = Guid.Parse("00000000-0000-0000-0000-000000000000");

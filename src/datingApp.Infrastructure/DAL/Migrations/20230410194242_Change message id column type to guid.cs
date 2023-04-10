@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class changeswipeidtoguid : Migration
+    public partial class Changemessageidcolumntypetoguid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -133,8 +133,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     MatchId = table.Column<int>(type: "integer", nullable: false),
                     SendFromId = table.Column<Guid>(type: "uuid", nullable: false),
                     Text = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),

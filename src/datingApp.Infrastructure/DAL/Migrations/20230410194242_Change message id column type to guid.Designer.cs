@@ -12,8 +12,8 @@ using datingApp.Infrastructure;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20230410163908_change swipe id to guid")]
-    partial class changeswipeidtoguid
+    [Migration("20230410194242_Change message id column type to guid")]
+    partial class Changemessageidcolumntypetoguid
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,11 +59,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Message", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");

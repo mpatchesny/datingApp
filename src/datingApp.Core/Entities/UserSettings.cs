@@ -47,7 +47,7 @@ public class UserSettings
 
     private void SetDiscoverSex(Sex sex)
     {
-        if (!(sex == Sex.Male || sex == Sex.Female))
+        if (!(((sex & Sex.Male) == Sex.Male) || ((sex & Sex.Female) == Sex.Female)))
         {
             throw new InvalidUserSexException();
         }

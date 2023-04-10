@@ -7,4 +7,4 @@ using datingApp.Core.Entities;
 
 namespace datingApp.Application.Commands;
 
-public sealed record SignUp(string Phone, string Email, string Name, string DateOfBirth, int Sex, int DiscoverSex, string Job="", string Bio="") : ICommand;
+public sealed record SignUp(Guid UserId, string Phone, string Email, string Name, string DateOfBirth, int Sex, int DiscoverSex, string Job="", string Bio="") : ICommand;

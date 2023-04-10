@@ -21,7 +21,7 @@ internal sealed class PostgresPhotoRepository : IPhotoRepository
         return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
     }
 
-    public async Task<IEnumerable<Photo>> GetByUserIdAsync(int userId)
+    public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)
     {
         return await _dbContext.Photos
                     .Where(x=> x.UserId == userId)

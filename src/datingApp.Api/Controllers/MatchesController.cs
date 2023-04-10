@@ -27,7 +27,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("{userId:int}")]
-    public async Task<ActionResult<IEnumerable<MatchDto>>> Get(int userId)
+    public async Task<ActionResult<IEnumerable<MatchDto>>> Get(Guid userId)
     {
         return Ok(await _getMatchesHandler.HandleAsync(new GetMatches { UserId = userId }));
     }

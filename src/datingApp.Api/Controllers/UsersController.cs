@@ -36,7 +36,7 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = 1 });
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = Guid.Parse("") });
         if (user is null)
         {
             return NotFound();
@@ -45,7 +45,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId:int}")]
-    public async Task<ActionResult<PublicUserDto>> GetPublicUser(int userId)
+    public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
         var user = await _getPublicUserHandler.HandleAsync(new GetPublicUser { UserId = userId });
         if (user is null)
@@ -76,7 +76,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{userId:int}")]
-    public async Task<ActionResult> Delete(int userId)
+    public async Task<ActionResult> Delete(Guid userId)
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
         return Ok();

@@ -15,7 +15,7 @@ public class User
     private static readonly Regex BadNameRegex = new Regex(@"[^a-zA-Z\s]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    public int Id { get; }
+    public Guid Id { get; }
     public string Phone { get; private set; }
     public string Email { get; private set; }
     public string Name { get; private set; }
@@ -30,7 +30,7 @@ public class User
     {
         // EF
     }
-    public User(int id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
+    public User(Guid id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
                 IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
     {
         Id = id;

@@ -15,7 +15,7 @@ internal sealed class PostgresMatchRepository : IMatchRepository
     {
         _dbContext = dbContext;
     }
-    public async Task<IEnumerable<Match>> GetByUserIdAsync(int userId)
+    public async Task<IEnumerable<Match>> GetByUserIdAsync(Guid userId)
     {
         return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId)
                         .Include(match => match.Messages

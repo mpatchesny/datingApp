@@ -7,7 +7,7 @@ namespace datingApp.Application.DTO;
 
 public class UserSettingsDto
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public int DiscoverSex { get; set; }
     public int DiscoverAgeFrom { get; set; }
     public int DiscoverAgeTo { get; set; }

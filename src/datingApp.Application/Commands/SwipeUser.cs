@@ -7,4 +7,4 @@ using datingApp.Core.Entities;
 
 namespace datingApp.Application.Commands;
 
-public sealed record SwipeUser(int SwipedById, int SwipedWhoId, int Like) : ICommand;
+public sealed record SwipeUser(Guid SwipedById, Guid SwipedWhoId, int Like) : ICommand;

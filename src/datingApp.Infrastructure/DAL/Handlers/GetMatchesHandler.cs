@@ -29,7 +29,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
                             {
                                 Match = x,
                                 User = _dbContext.Users.Where(u => u.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2)).FirstOrDefault(),
-                                Photo = _dbContext.Photos.Where(p => p.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2))
+                                Photo = _dbContext.Photos.Where(p => p.UserId == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2))
                                             .FirstOrDefault(p => p.Oridinal == 0)
                             })
                         .Select(x =>

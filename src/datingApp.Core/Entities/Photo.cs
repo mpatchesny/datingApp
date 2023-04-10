@@ -9,11 +9,11 @@ namespace datingApp.Core.Entities;
 public class Photo
 {
     public int Id { get; }
-    public int UserId { get; private set; }
+    public Guid UserId { get; private set; }
     public string Path { get; private set; }
     public int Oridinal { get; private set; }
 
-    public Photo(int id, int userId, string path, int oridinal)
+    public Photo(int id, Guid userId, string path, int oridinal)
     {
         Id = id;
         UserId = userId;

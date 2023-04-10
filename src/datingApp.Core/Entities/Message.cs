@@ -9,12 +9,12 @@ public class Message
 {
     public int Id { get; }
     public int MatchId { get; private set; }
-    public int SendFromId { get; private set; }
+    public Guid SendFromId { get; private set; }
     public string Text { get; private set; }
     public bool IsDisplayed { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public Message(int id, int matchId, int sendFromId, string text, bool isDisplayed, DateTime createdAt)
+    public Message(int id, int matchId, Guid sendFromId, string text, bool isDisplayed, DateTime createdAt)
     {
         Id = id;
         MatchId = matchId;

@@ -9,5 +9,5 @@ namespace datingApp.Application.Queries;
 
 public class GetPhoto : IQuery<PhotoDto>
 {
-    public int PhotoId { get; set; }
+    public Guid PhotoId { get; set; }
 }

@@ -8,7 +8,7 @@ namespace datingApp.Core.Repositories;
 
 public interface IPhotoRepository : IRepository
 {
-    Task<Photo> GetByIdAsync(int photoId);
+    Task<Photo> GetByIdAsync(Guid photoId);
     Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId);
     Task AddAsync(Photo photo);
     Task DeleteAsync(Photo photo);

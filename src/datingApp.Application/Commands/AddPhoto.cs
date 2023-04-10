@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record AddPhoto(Guid UserId, string Base64Bytes) : ICommand;
+public sealed record AddPhoto(Guid PhotoId, Guid UserId, string Base64Bytes) : ICommand;

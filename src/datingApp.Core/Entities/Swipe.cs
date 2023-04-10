@@ -17,11 +17,10 @@ public class Swipe
     public Swipe(int id, Guid swippedById, Guid swippedWhoId, Like like, DateTime createdAt)
     {
         Id = id;
-
         if (swippedById == swippedWhoId) throw new InvalidSwipeException();
-
         SwippedById = swippedById;
         SwippedWhoId = swippedWhoId;
+        if (!Like.IsDefined(like)) throw new LikeValueNotDefinedException((int) like);
         Like = like;
         CreatedAt = createdAt;
     }

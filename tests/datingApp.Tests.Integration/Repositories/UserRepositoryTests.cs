@@ -14,9 +14,9 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task get_user_by_id_should_succeed()
     {
-        var user = await _userRepository.GetByIdAsync(1);
+        var user = await _userRepository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(user);
-        Assert.Equal(1, user.Id);
+        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000001"), user.Id);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task update_existing_user_should_succeed()
     {
-        var userId = 1;
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var user = await _userRepository.GetByIdAsync(userId);
         user.ChangeBio("new bio");
         var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateAsync(user));
@@ -50,7 +50,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task delete_existing_user_should_succeed()
     {
-        var user = await _userRepository.GetByIdAsync(1);
+        var user = await _userRepository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.Null(exception);
     }
@@ -58,8 +58,8 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task delete_nonexisting_user_should_throw_exception()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 45.5, 45.5);
-        var user = new User(0, "888756489", "test3@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "888756489", "test3@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.NotNull(exception);
         Assert.IsType<InvalidOperationException>(exception);
@@ -68,8 +68,8 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task add_user_should_succeed()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 45.5, 45.5);
-        var user = new User(0, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
         Assert.Null(exception);
     }
@@ -77,7 +77,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task get_nonexistsing_user_by_id_should_return_null()
     {
-        var userId = 0;
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000000");
         var user = await _userRepository.GetByIdAsync(userId);
         Assert.Null(user);
     }
@@ -104,8 +104,8 @@ public class UserRepositoryTests : IDisposable
 
     public UserRepositoryTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

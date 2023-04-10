@@ -53,7 +53,7 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void add_message_should_succeed()
     {
-        var message = new Message(0, 1, 1, "ahoj", false, DateTime.UtcNow);
+        var message = new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         await _repository.AddAsync(message);
         _testDb.DbContext.SaveChanges();
         var messages = await _repository.GetByMatchIdAsync(1);
@@ -66,17 +66,17 @@ public class MessageRepositoryTests : IDisposable
     private readonly TestDatabase _testDb;
     public MessageRepositoryTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, 1, 1, false, false, null, DateTime.UtcNow);
+        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 
-        var message = new Message(0, 1, 1, "ahoj", false, DateTime.UtcNow);
+        var message = new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 

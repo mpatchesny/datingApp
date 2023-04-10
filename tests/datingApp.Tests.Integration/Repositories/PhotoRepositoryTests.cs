@@ -15,21 +15,21 @@ public class PhotoRepositoryTests : IDisposable
     [Fact]
     public async Task get_existing_photo_by_user_id_should_return_nonempty_collection()
     {
-        var photos = await _repository.GetByUserIdAsync(1);
+        var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Single(photos);
     }
 
     [Fact]
     public async Task get_existing_photo_by_nonexisting_user_id_should_return_empty_collection()
     {
-        var photos = await _repository.GetByUserIdAsync(2);
+        var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.Empty(photos);
     }
 
     [Fact]
     public async Task add_photo_should_succeed()
     {
-        var photo = new Photo(0, 1, "abc", 1);
+        var photo = new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.Null(exception);
     }
@@ -56,13 +56,13 @@ public class PhotoRepositoryTests : IDisposable
     private readonly TestDatabase _testDb;
     public PhotoRepositoryTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var photo = new Photo(0, 1, "abc", 1);
+        var photo = new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
         _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
         _repository = new PostgresPhotoRepository(_testDb.DbContext);

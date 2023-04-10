@@ -41,14 +41,10 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => !swippedCandidates.Contains(x.Id))
                     .Where(x => ((int) x.Sex & query.Sex) > 0)
                     .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
-                    .Where(x => x.Settings.Lat <= square[0].lat)
-                    .Where(x => x.Settings.Lat >= square[1].lat)
-                    .Where(x => x.Settings.Lat <= square[2].lat)
-                    .Where(x => x.Settings.Lat >= square[3].lat)
-                    .Where(x => x.Settings.Lon <= square[0].lon)
-                    .Where(x => x.Settings.Lon <= square[1].lon)
-                    .Where(x => x.Settings.Lon >= square[2].lon)
-                    .Where(x => x.Settings.Lon >= square[3].lon)
+                    .Where(x => x.Settings.Lat <= square.NorthLat)
+                    .Where(x => x.Settings.Lat >= square.SouthLat)
+                    .Where(x => x.Settings.Lon <= square.EastLon)
+                    .Where(x => x.Settings.Lon >= square.WestLon)
                     .Select(x => x.Id)
                     .ToListAsync();
 

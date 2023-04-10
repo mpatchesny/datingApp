@@ -20,11 +20,38 @@ public class SpatialTests
     }
 
     [Theory]
-    [InlineData(0.0, 0.0, 50)]
-    public void given_two_points_and_distance_in_kilometers_spatial_returns_proper_approximation_of_square_around_point(double lat, double lon, int distance)
+    [InlineData(54.366695479526186, 18.63460484458315, 5, 54.41165312664063)]
+    public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lat_north_of_given_point(double lat, double lon, int distance, double expectedResult)
     {
         var spatial = new Infrastructure.Spatial.Spatial();
         var square = spatial.GetApproxSquareAroundPoint(lat, lon, distance);
-        Assert.True(true);
+        Assert.InRange<double>(square.NorthLat, expectedResult - 0.01, expectedResult + 0.01);
+    }
+
+    [Theory]
+    [InlineData(54.366696858946625, 18.63460484458315, 5, 54.32173024559643)]
+    public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lat_south_of_given_point(double lat, double lon, int distance, double expectedResult)
+    {
+        var spatial = new Infrastructure.Spatial.Spatial();
+        var square = spatial.GetApproxSquareAroundPoint(lat, lon, distance);
+        Assert.InRange<double>(square.SouthLat, expectedResult - 0.01, expectedResult + 0.01);
+    }
+
+    [Theory]
+    [InlineData(54.36669417264167, 18.63460484458315, 5, 18.710897077720062)]
+    public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lon_east_of_given_point(double lat, double lon, int distance, double expectedResult)
+    {
+        var spatial = new Infrastructure.Spatial.Spatial();
+        var square = spatial.GetApproxSquareAroundPoint(lat, lon, distance);
+        Assert.InRange<double>(square.EastLon, expectedResult - 0.01, expectedResult + 0.01);
+    }
+
+    [Theory]
+    [InlineData(54.36669417264167, 18.63460484458315, 5, 18.55736143705559)]
+    public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lon_west_of_given_point(double lat, double lon, int distance, double expectedResult)
+    {
+        var spatial = new Infrastructure.Spatial.Spatial();
+        var square = spatial.GetApproxSquareAroundPoint(lat, lon, distance);
+        Assert.InRange<double>(square.WestLon, expectedResult - 0.01, expectedResult + 0.01);
     }
 }

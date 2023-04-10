@@ -45,6 +45,7 @@ public class SwipesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Post(SwipeUser command)
     {
+        command = command with {SwipeId = Guid.NewGuid()};
         await _swipeUserHandler.HandleAsync(command);
         return NoContent();
     }

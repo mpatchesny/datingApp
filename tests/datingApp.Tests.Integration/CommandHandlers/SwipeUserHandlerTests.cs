@@ -17,7 +17,7 @@ public class SwipeUserHandlerTests : IDisposable
     [Fact]
     public async Task add_swipe_should_succeed()
     {
-        var command = new SwipeUser(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), 1);
+        var command = new SwipeUser(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -25,7 +25,7 @@ public class SwipeUserHandlerTests : IDisposable
     [Fact]
     public async Task add_swipe_for_nonexistsing_user_should_throw_exception()
     {
-        var command = new SwipeUser(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"), 1);
+        var command = new SwipeUser(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"), 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);

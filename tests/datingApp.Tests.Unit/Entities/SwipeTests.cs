@@ -13,7 +13,7 @@ public class SwipeTests
     [Fact]
     public void when_swipped_by_equals_swipped_who_swipe_should_throw_exception()
     {
-        var exception = Record.Exception(() => new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow));
+        var exception = Record.Exception(() => new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow));
         Assert.NotNull(exception);
         Assert.IsType<InvalidSwipeException>(exception);
     }
@@ -24,7 +24,7 @@ public class SwipeTests
     [InlineData(7)]
     public void swipe_with_invalid_like_value_should_throw_exception(int like)
     {
-        var exception = Record.Exception(() => new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), (Like) like, DateTime.UtcNow));
+        var exception = Record.Exception(() => new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), (Like) like, DateTime.UtcNow));
         Assert.NotNull(exception);
         Assert.IsType<LikeValueNotDefinedException>(exception);
     }

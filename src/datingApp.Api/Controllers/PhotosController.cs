@@ -45,14 +45,14 @@ public class PhotosController : ControllerBase
     {
         command = command with {PhotoId = Guid.NewGuid()};
         await _addPhotoHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(Get), new { photoId = command.PhotoId });
+        return CreatedAtAction(nameof(Get), new { command.PhotoId });
     }
 
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
         await _changePhotoOridinalHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(Get), new { photoId = command.PhotoId });
+        return CreatedAtAction(nameof(Get), new { command.PhotoId });
     }
 
     [HttpDelete("{photoId:int}")]

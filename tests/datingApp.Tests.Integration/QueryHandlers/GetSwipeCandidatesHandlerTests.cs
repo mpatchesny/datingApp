@@ -218,14 +218,14 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var swipes = new List<Swipe>{
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Like.Pass, DateTime.UtcNow),
-            new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Like.Pass, DateTime.UtcNow)
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000006"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000007"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Like.Pass, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000008"), Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Like.Pass, DateTime.UtcNow)
         };
         _testDb.DbContext.Swipes.AddRange(swipes);
         _testDb.DbContext.SaveChanges();
@@ -259,7 +259,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings3 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000003"), Sex.Female, 18, 21, 20, 0.0, 0.0);
         var user3 = new User(Guid.Parse("00000000-0000-0000-0000-000000000003"), "333333333", "test3@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings3);
 
-        var swipe = new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
+        var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
@@ -299,7 +299,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings5 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000005"), Sex.Female, 18, 21, 20, 0.0, 0.0);
         var user5 = new User(Guid.Parse("00000000-0000-0000-0000-000000000005"), "555555555", "test5@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings5);
 
-        var swipe = new Swipe(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
+        var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
 
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);

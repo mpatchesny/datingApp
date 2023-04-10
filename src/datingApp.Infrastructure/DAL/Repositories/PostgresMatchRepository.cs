@@ -31,10 +31,12 @@ internal sealed class PostgresMatchRepository : IMatchRepository
     public async Task AddAsync(Match match)
     {
         await _dbContext.Matches.AddAsync(match);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Match match)
     {
         _dbContext.Matches.Remove(match);
+        await _dbContext.SaveChangesAsync();
     }
 }

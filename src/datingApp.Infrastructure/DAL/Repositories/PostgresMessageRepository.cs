@@ -16,19 +16,21 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         _dbContext = dbContext;
     }
     
+    public async Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId)
+    {
+        return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
+    }
+
     public async Task AddAsync(Message message)
     {
         await _dbContext.Messages.AddAsync(message);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Guid messageId)
     {
         var message = await _dbContext.Messages.FirstAsync(x => x.Id == messageId);
         _dbContext.Messages.Remove(message);
-    }
-
-    public async Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId)
-    {
-        return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
+        await _dbContext.SaveChangesAsync();
     }
 }

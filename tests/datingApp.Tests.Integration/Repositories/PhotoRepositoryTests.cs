@@ -35,6 +35,33 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task after_add_photo_get_photo_by_user_id_returns_plus_one_elements()
+    {
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
+        await _repository.AddAsync(photo);
+        var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Equal(2, photos.Count());
+    }
+
+    [Fact]
+    public async Task after_delete_photo_get_photo_by_user_id_returns_minus_one_elements()
+    {
+        var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        await _repository.DeleteAsync(photo);
+        var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Empty(photos);
+    }
+
+    [Fact]
+    public async Task add_photo_with_existing_id_should_throw_exception()
+    {
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+
+    [Fact]
     public async Task update_photo_should_succeed()
     {
         var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));

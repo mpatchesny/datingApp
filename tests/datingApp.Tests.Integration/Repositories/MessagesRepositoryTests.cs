@@ -34,11 +34,10 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void after_delete_message_get_messages_should_return_minus_one_elements()
+    public async void after_delete_message_get_messages_by_match_id_should_return_minus_one_elements()
     {
         var messageId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         await _repository.DeleteAsync(messageId);
-        _testDb.DbContext.SaveChanges();
         var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Empty(messages);
     }
@@ -55,10 +54,28 @@ public class MessageRepositoryTests : IDisposable
     {
         var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         await _repository.AddAsync(message);
-        _testDb.DbContext.SaveChanges();
         var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(messages);
         Assert.Equal(2, messages.Count());
+    }
+
+    [Fact]
+    public async void add_message_with_existing_id_should_throw_exception()
+    {
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(message));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+
+    [Fact]
+    public async void after_add_message_get_messages_by_match_id_should_return_plus_one_elements()
+    {
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
+        await _repository.AddAsync(message);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.NotNull(messages);
+        Assert.Equal(3, messages.Count());
     }
 
     // Arrange

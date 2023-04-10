@@ -44,7 +44,7 @@ public class UserController : ControllerBase
         return user;
     }
 
-    [HttpGet("{userId:int}")]
+    [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
         var user = await _getPublicUserHandler.HandleAsync(new GetPublicUser { UserId = userId });
@@ -74,7 +74,7 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
     }
 
-    [HttpDelete("{userId:int}")]
+    [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));

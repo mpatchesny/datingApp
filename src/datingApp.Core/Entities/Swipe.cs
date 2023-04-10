@@ -8,20 +8,19 @@ namespace datingApp.Core.Entities;
 
 public class Swipe
 {
-    public int Id { get; }
-    public int SwippedById { get; private set; }
-    public int SwippedWhoId { get; private set; }
+    public Guid Id { get; }
+    public Guid SwippedById { get; private set; }
+    public Guid SwippedWhoId { get; private set; }
     public Like Like { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public Swipe(int id, int swippedById, int swippedWhoId, Like like, DateTime createdAt)
+    public Swipe(Guid id, Guid swippedById, Guid swippedWhoId, Like like, DateTime createdAt)
     {
         Id = id;
-
         if (swippedById == swippedWhoId) throw new InvalidSwipeException();
-
         SwippedById = swippedById;
         SwippedWhoId = swippedWhoId;
+        if (!Like.IsDefined(like)) throw new LikeValueNotDefinedException((int) like);
         Like = like;
         CreatedAt = createdAt;
     }

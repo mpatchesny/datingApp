@@ -9,5 +9,5 @@ namespace datingApp.Application.Queries;
 
 public class GetPrivateUser : IQuery<PrivateUserDto>
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 }

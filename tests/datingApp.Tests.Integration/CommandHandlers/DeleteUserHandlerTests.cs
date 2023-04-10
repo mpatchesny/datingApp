@@ -11,19 +11,20 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
+[Collection("Integration tests")]
 public class DeleteUserHandlerTests : IDisposable
 {
     [Fact]
     public async void delete_existing_user_should_succeed()
     {
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(1)));
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(Guid.Parse("00000000-0000-0000-0000-000000000001"))));
         Assert.Null(exception);
     }
 
     [Fact]
     public async void delete_nonexisting_user_should_throw_exception()
     {
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(2)));
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(Guid.Parse("00000000-0000-0000-0000-000000000002"))));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
@@ -33,8 +34,8 @@ public class DeleteUserHandlerTests : IDisposable
     private readonly TestDatabase _testDb;
     public DeleteUserHandlerTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

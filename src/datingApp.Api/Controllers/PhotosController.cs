@@ -30,7 +30,7 @@ public class PhotosController : ControllerBase
     }
 
     [HttpGet("{photoId:int}")]
-    public async Task<ActionResult<PhotoDto>> Get(int photoId)
+    public async Task<ActionResult<PhotoDto>> Get(Guid photoId)
     {
         var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = photoId});
         if (photo == null)
@@ -43,19 +43,20 @@ public class PhotosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Post(AddPhoto command)
     {
+        command = command with {PhotoId = Guid.NewGuid()};
         await _addPhotoHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(Get), new { photoId = 1 });
+        return CreatedAtAction(nameof(Get), new { command.PhotoId });
     }
 
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
         await _changePhotoOridinalHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(Get), new { photoId = 1 });
+        return CreatedAtAction(nameof(Get), new { command.PhotoId });
     }
 
     [HttpDelete("{photoId:int}")]
-    public async Task<ActionResult> Delete(int photoId)
+    public async Task<ActionResult> Delete(Guid photoId)
     {
         await _deletePhotoHandler.HandleAsync(new DeletePhoto(photoId));
         return Ok();

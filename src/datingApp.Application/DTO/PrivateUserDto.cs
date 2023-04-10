@@ -7,7 +7,7 @@ namespace datingApp.Application.DTO;
 
 public class PrivateUserDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public int Age { get; set; }
     public DateOnly DateOfBirth { get; set; }

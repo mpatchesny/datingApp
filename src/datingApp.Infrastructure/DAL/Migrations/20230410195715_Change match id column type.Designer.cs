@@ -12,8 +12,8 @@ using datingApp.Infrastructure;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20230329213400_Add reference to Users table")]
-    partial class AddreferencetoUserstable
+    [Migration("20230410195715_Change match id column type")]
+    partial class Changematchidcolumntype
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,20 +27,24 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("UserId1")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsDisplayedByUser1")
+                        .HasColumnType("boolean");
 
-                    b.Property<int>("UserId2")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsDisplayedByUser2")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("UserId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId2")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -53,11 +57,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Message", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -67,14 +69,11 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("MatchId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MatchId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("SendFromId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SendToId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("SendFromId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -87,18 +86,14 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("SendFromId");
 
-                    b.HasIndex("SendToId");
-
                     b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Photo", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Oridinal")
                         .HasColumnType("integer");
@@ -107,8 +102,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -119,11 +114,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -131,11 +124,11 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<int>("Like")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SwippedById")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("SwippedById")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("SwippedWhoId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("SwippedWhoId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -148,11 +141,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Bio")
                         .HasMaxLength(400)
@@ -196,8 +187,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.UserSettings", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("DiscoverAgeFrom")
                         .HasColumnType("integer");
@@ -248,12 +239,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasOne("datingApp.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("SendFromId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("datingApp.Core.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("SendToId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

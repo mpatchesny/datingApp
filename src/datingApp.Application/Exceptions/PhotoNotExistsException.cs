@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class PhotoNotExistsException : CustomException
 {
-    public PhotoNotExistsException(int photoId) : base($"Photo with id {photoId} does not exist.")
+    public PhotoNotExistsException(Guid photoId) : base($"Photo with id {photoId} does not exist.")
     {
     }
 }

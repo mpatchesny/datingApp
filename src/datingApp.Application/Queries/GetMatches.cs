@@ -9,5 +9,5 @@ namespace datingApp.Application.Queries;
 
 public class GetMatches : PaginatedQuery, IQuery<IEnumerable<MatchDto>>
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 }

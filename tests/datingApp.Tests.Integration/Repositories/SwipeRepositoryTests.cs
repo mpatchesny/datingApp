@@ -15,7 +15,7 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task add_swipe_should_succeed()
     {
-        var swipe = new Swipe(0, 1, 2, Like.Like, DateTime.UtcNow);
+        var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
         Assert.Null(exception);
     }
@@ -26,11 +26,11 @@ public class SwipeRepositoryTests : IDisposable
     
     public SwipeRepositoryTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
-        var settings2 = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user2 = new User(0, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
+        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
         
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

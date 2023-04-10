@@ -8,7 +8,7 @@ namespace datingApp.Core.Entities;
 
 public class UserSettings
 {
-    public int UserId { get; private set; }
+    public Guid UserId { get; private set; }
     public Sex DiscoverSex { get; private set; }
     public int DiscoverAgeFrom { get; private set; }
     public int DiscoverAgeTo { get; private set; }
@@ -16,7 +16,7 @@ public class UserSettings
     public double Lat { get; private set; }
     public double Lon { get; private set; }
 
-    public UserSettings(int userId, Sex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
+    public UserSettings(Guid userId, Sex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
     {
         UserId = userId;
         SetDiscoverSex(discoverSex);
@@ -47,7 +47,7 @@ public class UserSettings
 
     private void SetDiscoverSex(Sex sex)
     {
-        if (!(sex == Sex.Male || sex == Sex.Female))
+        if (!(((sex & Sex.Male) == Sex.Male) || ((sex & Sex.Female) == Sex.Female)))
         {
             throw new InvalidUserSexException();
         }

@@ -8,7 +8,7 @@ namespace datingApp.Application.PhotoManagement;
 
 public class PhotoOrderer : IPhotoOrderer
 {
-    public List<Photo> OrderPhotos(List<Photo> photos, int photoToChangeId, int newOridinal)
+    public List<Photo> OrderPhotos(List<Photo> photos, Guid photoToChangeId, int newOridinal)
     {
         var thisPhoto = photos.FirstOrDefault(x => x.Id == photoToChangeId);
 

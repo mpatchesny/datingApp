@@ -35,8 +35,8 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
             throw new PhoneAlreadyInUseException(command.Phone);
         }
 
-        var settings = new UserSettings(0, (Sex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
-        var user = new User(0, command.Phone, command.Email, command.Name, dob, (Sex) command.Sex, null, settings, command.Job, command.Bio);
+        var settings = new UserSettings(command.UserId, (Sex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
+        var user = new User(command.UserId, command.Phone, command.Email, command.Name, dob, (Sex) command.Sex, null, settings, command.Job, command.Bio);
         await _userRepository.AddAsync(user);
     }
 }

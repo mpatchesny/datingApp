@@ -27,7 +27,7 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
             throw new UserNotExistsException(command.SwipedWhoId);
         }
 
-        var swipe = new Swipe(0, command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
+        var swipe = new Swipe(command.SwipeId, command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
         await _swipeRepository.AddAsync(swipe);
     }
 }

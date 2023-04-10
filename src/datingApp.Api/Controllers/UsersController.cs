@@ -36,7 +36,7 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = 1 });
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = Guid.Parse("00000000-0000-0000-0000-000000000001") });
         if (user is null)
         {
             return NotFound();
@@ -45,7 +45,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId:int}")]
-    public async Task<ActionResult<PublicUserDto>> GetPublicUser(int userId)
+    public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
         var user = await _getPublicUserHandler.HandleAsync(new GetPublicUser { UserId = userId });
         if (user is null)
@@ -60,9 +60,9 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Post(SignUp command)
     {
+        command = command with {UserId = Guid.NewGuid()};
         await _signUpHandler.HandleAsync(command);
-        // var user = await _getPublicUserHandler.HandleAsync(new GetPrivateUser { UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new { userId = 1 });
+        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
     }
 
     [HttpPatch]
@@ -71,12 +71,11 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Patch(ChangeUser command)
     {
         await _changeUserHandler.HandleAsync(command);
-        // var user = await _getPublicUserHandler.HandleAsync(new GetPrivateUser { UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new { userId = 1 });
+        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
     }
 
     [HttpDelete("{userId:int}")]
-    public async Task<ActionResult> Delete(int userId)
+    public async Task<ActionResult> Delete(Guid userId)
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
         return Ok();

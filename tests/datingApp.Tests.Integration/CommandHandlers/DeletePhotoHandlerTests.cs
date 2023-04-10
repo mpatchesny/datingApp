@@ -17,7 +17,7 @@ public class DeletePhotoHandlerTests : IDisposable
     [Fact]
     public async Task delete_existing_photo_should_succeed()
     {
-        var command = new DeletePhoto(1);
+        var command = new DeletePhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -25,7 +25,7 @@ public class DeletePhotoHandlerTests : IDisposable
     [Fact]
     public async Task delete_nonexisting_photo_should_throw_exception()
     {
-        var command = new DeletePhoto(2);
+        var command = new DeletePhoto(Guid.Parse("00000000-0000-0000-0000-000000000002"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<PhotoNotExistsException>(exception);
@@ -36,9 +36,9 @@ public class DeletePhotoHandlerTests : IDisposable
     private readonly TestDatabase _testDb;
     public DeletePhotoHandlerTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var photo = new Photo(0, 1, "abc", 1);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

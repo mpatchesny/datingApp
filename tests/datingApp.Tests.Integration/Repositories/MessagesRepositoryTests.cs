@@ -15,48 +15,48 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void get_existing_messages_by_match_id_should_return_nonempty_collection()
     {
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Single(messages);
     }
 
     [Fact]
     public async void get_nonexisting_message_by_match_id_should_return_empty_collection()
     {
-        var messages = await _repository.GetByMatchIdAsync(2);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.Empty(messages);
     }
 
     [Fact]
     public async void delete_existing_message_by_id_should_succeed()
     {
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(1));
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.Parse("00000000-0000-0000-0000-000000000001")));
         Assert.Null(exception);
     }
 
     [Fact]
     public async void after_delete_message_get_messages_should_return_minus_one_elements()
     {
-        var messageId = 1;
+        var messageId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         await _repository.DeleteAsync(messageId);
         _testDb.DbContext.SaveChanges();
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Empty(messages);
     }
 
     [Fact]
     public async void delete_nonexisting_message_by_id_should_throw_exception()
     {
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(2));
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.Parse("00000000-0000-0000-0000-000000000002")));
         Assert.NotNull(exception);
     }
 
     [Fact]
     public async void add_message_should_succeed()
     {
-        var message = new Message(0, 1, 1, "ahoj", false, DateTime.UtcNow);
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         await _repository.AddAsync(message);
         _testDb.DbContext.SaveChanges();
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(messages);
         Assert.Equal(2, messages.Count());
     }
@@ -66,17 +66,17 @@ public class MessageRepositoryTests : IDisposable
     private readonly TestDatabase _testDb;
     public MessageRepositoryTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(0, "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, 1, 1, false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 
-        var message = new Message(0, 1, 1, "ahoj", false, DateTime.UtcNow);
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 

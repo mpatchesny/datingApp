@@ -20,7 +20,7 @@ public class GetPublicUserHanlderTests : IDisposable
     public async Task query_existing_user_should_return_public_user_dto()
     {
         var query = new GetPublicUser();
-        query.UserId = 1;
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var user = await _handler.HandleAsync(query);
         Assert.NotNull(user);
         Assert.IsType<PublicUserDto>(user);
@@ -30,7 +30,7 @@ public class GetPublicUserHanlderTests : IDisposable
     public async Task query_nonexisting_user_should_return_null()
     {
         var query = new GetPublicUser();
-        query.UserId = 2;
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
         var user = await _handler.HandleAsync(query);
         Assert.Null(user);
     }
@@ -40,8 +40,8 @@ public class GetPublicUserHanlderTests : IDisposable
     private readonly GetPublicUserHandler _handler;
     public GetPublicUserHanlderTests()
     {
-        var settings = new UserSettings(0, Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(0, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

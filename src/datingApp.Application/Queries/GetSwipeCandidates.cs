@@ -9,7 +9,7 @@ namespace datingApp.Application.Queries;
 
 public class GetSwipeCandidates : IQuery<IEnumerable<PublicUserDto>>
 {
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public int AgeFrom { get; set; }
     public int AgeTo { get; set; }
     public int Range { get; set; }

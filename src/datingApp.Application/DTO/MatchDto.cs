@@ -7,8 +7,8 @@ namespace datingApp.Application.DTO;
 
 public class MatchDto
 {
-    public int Id { get; set; }
-    public int UserId { get; set; }
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
     public string Name { get; set; }
     public bool IsDisplayed { get; set; }
     public PhotoDto ProfilePicture { get; set; }

@@ -65,15 +65,15 @@ public class GetMessagesHandlerTests
         var match = new Core.Entities.Match(1, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         
         var messages = new List<Message>{
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow)
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000003"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000004"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000005"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000006"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000007"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000008"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000009"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow)
         };
         
         _testDb = new TestDatabase();

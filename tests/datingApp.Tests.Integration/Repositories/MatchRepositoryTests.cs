@@ -94,8 +94,8 @@ public class MatchRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, new List<Message>{ new Message(0, 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
-        var match2 = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, new List<Message>{ new Message(0, 2, Guid.Parse("00000000-0000-0000-0000-000000000002"), "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, new List<Message>{ new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match2 = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, new List<Message>{ new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), 2, Guid.Parse("00000000-0000-0000-0000-000000000002"), "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.Matches.Add(match2);
         _testDb.DbContext.SaveChanges();

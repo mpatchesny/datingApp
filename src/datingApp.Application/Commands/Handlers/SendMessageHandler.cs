@@ -27,7 +27,7 @@ public sealed class SendMessageHandler : ICommandHandler<SendMessage>
             throw new MatchNotExistsException(command.MatchId);
         }
 
-        var message = new Message(0, command.MatchId, command.SendToId, command.Text, false, DateTime.UtcNow);
+        var message = new Message(command.MessageId, command.MatchId, command.SendToId, command.Text, false, DateTime.UtcNow);
         await _messageRepository.AddAsync(message);
     }
 }

@@ -10,5 +10,5 @@ public interface IMessageRepository
 {
     Task<IEnumerable<Message>> GetByMatchIdAsync(int matchId);
     Task AddAsync(Message message);
-    Task DeleteAsync(int messageId);
+    Task DeleteAsync(Guid messageId);
 }

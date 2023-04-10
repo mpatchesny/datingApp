@@ -21,7 +21,7 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         await _dbContext.Messages.AddAsync(message);
     }
 
-    public async Task DeleteAsync(int messageId)
+    public async Task DeleteAsync(Guid messageId)
     {
         var message = await _dbContext.Messages.FirstAsync(x => x.Id == messageId);
         _dbContext.Messages.Remove(message);

@@ -24,11 +24,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -68,8 +66,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("MatchId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("MatchId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SendFromId")
                         .HasColumnType("uuid");

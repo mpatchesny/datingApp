@@ -15,14 +15,14 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void get_existing_messages_by_match_id_should_return_nonempty_collection()
     {
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Single(messages);
     }
 
     [Fact]
     public async void get_nonexisting_message_by_match_id_should_return_empty_collection()
     {
-        var messages = await _repository.GetByMatchIdAsync(2);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.Empty(messages);
     }
 
@@ -39,7 +39,7 @@ public class MessageRepositoryTests : IDisposable
         var messageId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         await _repository.DeleteAsync(messageId);
         _testDb.DbContext.SaveChanges();
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Empty(messages);
     }
 
@@ -53,10 +53,10 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void add_message_should_succeed()
     {
-        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         await _repository.AddAsync(message);
         _testDb.DbContext.SaveChanges();
-        var messages = await _repository.GetByMatchIdAsync(1);
+        var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(messages);
         Assert.Equal(2, messages.Count());
     }
@@ -72,11 +72,11 @@ public class MessageRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 
-        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow);
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 

@@ -17,7 +17,7 @@ public class SendMessageHandlerTests : IDisposable
     [Fact]
     public async Task send_message_within_existsing_match_should_succeed()
     {
-        var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
+        var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -25,7 +25,7 @@ public class SendMessageHandlerTests : IDisposable
     [Fact]
     public async Task send_message_within_nonexistsing_match_should_throw_error()
     {
-        var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), 2, Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
+        var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);
@@ -42,7 +42,7 @@ public class SendMessageHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
 
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

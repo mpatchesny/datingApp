@@ -31,21 +31,21 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void get_existing_match_by_id_should_succeed()
     {
-        var match = await _repository.GetByIdAsync(1);
+        var match = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(match);
     }
 
     [Fact]
     public async void get_nonexisting_match_by_id_should_return_null()
     {
-        var match = await _repository.GetByIdAsync(999);
+        var match = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000000"));
         Assert.Null(match);
     }
 
     [Fact]
     public async void delete_existing_match_by_id_should_succeed()
     {
-        var matchId = 1;
+        var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var exception = await Record.ExceptionAsync(async () => await _repository.GetByIdAsync(matchId));
         Assert.Null(exception);
     }
@@ -53,7 +53,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void after_delete_match_get_matches_should_return_minus_one_elements()
     {
-        var matchId = 1;
+        var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var match = await _repository.GetByIdAsync(matchId);
         await _repository.DeleteAsync(match);
         _testDb.DbContext.SaveChanges();
@@ -64,7 +64,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void add_match_should_succeed()
     {
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
     }
@@ -72,7 +72,7 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void after_add_match_get_matches_should_return_plus_one_elements()
     {
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         await _repository.AddAsync(match);
         _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
@@ -94,8 +94,8 @@ public class MatchRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
 
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, new List<Message>{ new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), 1, Guid.Parse("00000000-0000-0000-0000-000000000001"), "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
-        var match2 = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, new List<Message>{ new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), 2, Guid.Parse("00000000-0000-0000-0000-000000000002"), "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, new List<Message>{ new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "match 1", false, DateTime.UtcNow) }, DateTime.UtcNow);
+        var match2 = new Match(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, new List<Message>{ new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "match 2", false, DateTime.UtcNow) }, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.Matches.Add(match2);
         _testDb.DbContext.SaveChanges();

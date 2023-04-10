@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Changemessageidcolumntypetoguid : Migration
+    public partial class Changematchidcolumntype : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,8 +33,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 name: "Matches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId1 = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId2 = table.Column<Guid>(type: "uuid", nullable: false),
                     IsDisplayedByUser1 = table.Column<bool>(type: "boolean", nullable: false),
@@ -134,7 +132,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    MatchId = table.Column<int>(type: "integer", nullable: false),
+                    MatchId = table.Column<Guid>(type: "uuid", nullable: false),
                     SendFromId = table.Column<Guid>(type: "uuid", nullable: false),
                     Text = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     IsDisplayed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),

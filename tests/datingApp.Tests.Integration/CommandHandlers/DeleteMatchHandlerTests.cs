@@ -16,7 +16,7 @@ public class DeleteMatchHandlerTests
     [Fact]
     public async Task delete_existing_match_should_succeed()
     {
-        var command = new DeleteMatch(1);
+        var command = new DeleteMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -24,7 +24,7 @@ public class DeleteMatchHandlerTests
     [Fact]
     public async Task delete_nonexisting_match_should_throw_exception()
     {
-        var command = new DeleteMatch(1);
+        var command = new DeleteMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -40,7 +40,7 @@ public class DeleteMatchHandlerTests
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
 
-        var match = new Match(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

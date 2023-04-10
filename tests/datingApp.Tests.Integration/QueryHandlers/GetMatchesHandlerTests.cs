@@ -59,7 +59,7 @@ public class GetMatchesHandlerTests
     public async Task returned_match_dto_user_is_not_the_user_who_make_request()
     {
         var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000002");
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var matches = await _handler.HandleAsync(query);
         Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000002"), matches.First().UserId);
     }

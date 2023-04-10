@@ -7,7 +7,7 @@ namespace datingApp.Core.Exceptions;
 
 public class LikeValueNotDefinedException : CustomException
 {
-    public LikeValueNotDefinedException(int like) : base($"Value {like} is not defined.")
+    public LikeValueNotDefinedException(int like) : base($"Invalid Like value {like} provided.")
     {
     }
 }

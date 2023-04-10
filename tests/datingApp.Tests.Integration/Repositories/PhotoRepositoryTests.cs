@@ -29,7 +29,7 @@ public class PhotoRepositoryTests : IDisposable
     [Fact]
     public async Task add_photo_should_succeed()
     {
-        var photo = new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.Null(exception);
     }
@@ -37,7 +37,7 @@ public class PhotoRepositoryTests : IDisposable
     [Fact]
     public async Task update_photo_should_succeed()
     {
-        var photo = await _repository.GetByIdAsync(1);
+        var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         photo.ChangeOridinal(3);
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(photo));
         Assert.Null(exception);
@@ -46,7 +46,7 @@ public class PhotoRepositoryTests : IDisposable
     [Fact]
     public async Task delete_existing_photo_should_succeed()
     {
-        var photo = await _repository.GetByIdAsync(1);
+        var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
         Assert.Null(exception);
     }
@@ -62,7 +62,7 @@ public class PhotoRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var photo = new Photo(0, Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
         _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
         _repository = new PostgresPhotoRepository(_testDb.DbContext);

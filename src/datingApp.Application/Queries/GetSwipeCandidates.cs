@@ -18,6 +18,9 @@ public class GetSwipeCandidates : IQuery<IEnumerable<PublicUserDto>>
     public double Lat { get; set; }
     public double Lon { get; set; }
 
+    public GetSwipeCandidates()
+    {
+    }
     public GetSwipeCandidates(UserSettingsDto settings)
     {
         UserId = settings.UserId;

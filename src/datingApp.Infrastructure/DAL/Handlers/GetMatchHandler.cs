@@ -21,11 +21,10 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsMatchDto>
     {
         var swipes = await _dbContext.Swipes
                             .AsNoTracking()
-                            .Where(x => x.SwippedById == query.SwipedById)
-                            .Where(x => x.SwippedWhoId == query.SwipedWhoId)
-                            .Where(x => x.SwippedById == query.SwipedWhoId)
-                            .Where(x => x.SwippedWhoId == query.SwipedById)
+                            .Where(x => x.SwippedById == query.SwipedById || x.SwippedById == query.SwipedWhoId)
+                            .Where(x => x.SwippedWhoId == query.SwipedWhoId || x.SwippedWhoId == query.SwipedById)
                             .Where(x => x.Like == Core.Entities.Like.Like)
+                            .Select(x => new { x.SwippedById, x.SwippedWhoId })
                             .Distinct()
                             .ToListAsync();
         return new IsMatchDto {

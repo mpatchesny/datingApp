@@ -11,7 +11,7 @@ using Xunit;
 namespace datingApp.Tests.Integration.QueryHandlers;
 
 [Collection("Integration tests")]
-public class GetMessageHandlerTests
+public class GetMessageHandlerTests : IDisposable
 {
     [Fact]
     public async Task query_messages_by_existing_message_id_should_return_nonempty_message_dto()

@@ -17,4 +17,16 @@ public class GetSwipeCandidates : IQuery<IEnumerable<PublicUserDto>>
     public int Sex { get; set; }
     public double Lat { get; set; }
     public double Lon { get; set; }
+
+    public GetSwipeCandidates(UserSettingsDto settings)
+    {
+        UserId = settings.UserId;
+        AgeFrom = settings.DiscoverAgeFrom;
+        AgeTo = settings.DiscoverAgeTo;
+        Range = settings.DiscoverRange;
+        HowMany = 10;
+        Sex = settings.DiscoverSex;
+        Lat = settings.Lat; 
+        Lon = settings.Lon;
+    }
 }

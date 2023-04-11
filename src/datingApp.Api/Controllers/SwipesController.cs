@@ -15,14 +15,12 @@ namespace datingApp.Api.Controllers;
 public class SwipesController : ControllerBase
 {
     private readonly IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> _getSwipesCandidatesHandler;
-    private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
     private readonly IQueryHandler<GetPrivateUser, PrivateUserDto> _getPrivateUserHandler;
     public SwipesController(IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler,
                             ICommandHandler<SwipeUser> swipeUserHandler,
                             IQueryHandler<GetPrivateUser, PrivateUserDto> getPrivateUserHandler)
     {
         _getSwipesCandidatesHandler = getSwipesCandidatesHandler;
-        _swipeUserHandler = swipeUserHandler;
         _getPrivateUserHandler = getPrivateUserHandler;
     }
 
@@ -32,13 +30,5 @@ public class SwipesController : ControllerBase
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         var command = new GetSwipeCandidates(user.Settings);
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> Post(SwipeUser command)
-    {
-        command = command with {SwipeId = Guid.NewGuid()};
-        await _swipeUserHandler.HandleAsync(command);
-        return NoContent();
     }
 }

@@ -16,14 +16,17 @@ public class MatchesController : ControllerBase
 {
     private readonly IQueryHandler<GetMatches, IEnumerable<MatchDto>> _getMatchesHandler;
     private readonly IQueryHandler<GetMessages, IEnumerable<MessageDto>> _getMessagesHandler;
+    private readonly ICommandHandler<SendMessage> _sendMessageHandler;
     private readonly ICommandHandler<DeleteMatch> _deleteMatchHandler;
     public MatchesController(IQueryHandler<GetMatches, IEnumerable<MatchDto>> getMatchesHandler,
-                             ICommandHandler<DeleteMatch> deleteMatchHandler,
-                             IQueryHandler<GetMessages, IEnumerable<MessageDto>> getMessagesHandler)
+                            ICommandHandler<SendMessage> sendMessageHandler,
+                            ICommandHandler<DeleteMatch> deleteMatchHandler,
+                            IQueryHandler<GetMessages, IEnumerable<MessageDto>> getMessagesHandler)
     {
         _getMatchesHandler = getMatchesHandler;
         _deleteMatchHandler = deleteMatchHandler;
         _getMessagesHandler = getMessagesHandler;
+        _sendMessageHandler = sendMessageHandler;
     }
 
     [HttpGet("{userId:guid}")]
@@ -36,6 +39,16 @@ public class MatchesController : ControllerBase
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages(Guid matchId)
     {
         return Ok(await _getMessagesHandler.HandleAsync(new GetMessages { MatchId = matchId }));
+    }
+
+    [HttpPost("{matchId:guid}/messages")]
+    public async Task<ActionResult> SendMessage(SendMessage command)
+    {
+        command = command with {MessageId = Guid.NewGuid()};
+        await _sendMessageHandler.HandleAsync(command);
+        // FIXME:
+        // return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
+        return Ok();
     }
 
     [HttpDelete("{matchId:guid}")]

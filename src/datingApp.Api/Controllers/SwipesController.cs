@@ -30,15 +30,7 @@ public class SwipesController : ControllerBase
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> Get(Guid userId)
     {
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
-        var command = new GetSwipeCandidates 
-            { UserId = userId, 
-            AgeFrom = user.Settings.DiscoverAgeFrom,
-            AgeTo = user.Settings.DiscoverAgeTo,
-            Range = user.Settings.DiscoverRange,
-            HowMany = 10,
-            Sex = user.Settings.DiscoverSex,
-            Lat = user.Settings.Lat, 
-            Lon = user.Settings.Lon };
+        var command = new GetSwipeCandidates(user.Settings);
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 

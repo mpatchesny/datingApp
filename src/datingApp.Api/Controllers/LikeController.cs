@@ -23,12 +23,13 @@ public class LikeController : ControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
-    [HttpGet("{userId:guid}")]
-    public async Task<ActionResult> Get(Guid userId)
+    [HttpPost("{userId:guid}")]
+    public async Task<ActionResult> Post(Guid userId)
     {
         var swippedUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var command = new SwipeUser(Guid.NewGuid(), swippedUserId, userId, 2);
         await _swipeUserHandler.HandleAsync(command);
-        return Ok(await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId }));
+        var something = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId });
+        return CreatedAtAction(nameof(Post), something);
     }
 }

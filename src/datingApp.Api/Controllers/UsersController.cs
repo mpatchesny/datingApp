@@ -62,16 +62,18 @@ public class UserController : ControllerBase
     {
         command = command with {UserId = Guid.NewGuid()};
         await _signUpHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
+        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId }, user);
     }
 
     [HttpPatch]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Patch(ChangeUser command)
     {
         await _changeUserHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
+        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId }, user);
     }
 
     [HttpDelete("{userId:guid}")]

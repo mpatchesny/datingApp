@@ -46,7 +46,7 @@ public class PhotosController : ControllerBase
         command = command with {PhotoId = Guid.NewGuid()};
         await _addPhotoHandler.HandleAsync(command);
         var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = command.PhotoId});
-        return CreatedAtAction(nameof(GetPhoto), photo);
+        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
     [HttpPatch]
@@ -54,7 +54,7 @@ public class PhotosController : ControllerBase
     {
         await _changePhotoOridinalHandler.HandleAsync(command);
         var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = command.PhotoId});
-        return CreatedAtAction(nameof(GetPhoto), photo);
+        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
     [HttpDelete("{photoId:guid}")]

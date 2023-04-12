@@ -57,7 +57,7 @@ public class MatchesController : ControllerBase
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
         var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId });
-        return CreatedAtAction(nameof(GetMessage), message);
+        return CreatedAtAction(nameof(GetMessage), new { command.MatchId, command.MessageId }, message);
     }
 
     [HttpDelete("{matchId:guid}")]

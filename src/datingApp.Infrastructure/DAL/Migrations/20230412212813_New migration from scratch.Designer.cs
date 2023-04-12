@@ -12,8 +12,8 @@ using datingApp.Infrastructure;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20230412212446_Remove dafult val from message; add columns to match")]
-    partial class Removedafultvalfrommessageaddcolumnstomatch
+    [Migration("20230412212813_New migration from scratch")]
+    partial class Newmigrationfromscratch
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

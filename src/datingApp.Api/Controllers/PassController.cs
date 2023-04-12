@@ -24,13 +24,13 @@ public class PassController : ControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
-    [HttpPost("{userId:guid}")]
-    public async Task<ActionResult> Post(Guid userId)
+    [HttpGet("{userId:guid}")]
+    public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {
-        var swippedUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var command = new SwipeUser(Guid.NewGuid(), swippedUserId, userId, 1);
+        var swippedByUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var command = new SwipeUser(Guid.NewGuid(), swippedByUserId, userId, 1);
         await _swipeUserHandler.HandleAsync(command);
-        var something = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId });
-        return CreatedAtAction(nameof(Post), something);
+        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId });
+        return isMatch;
     }
 }

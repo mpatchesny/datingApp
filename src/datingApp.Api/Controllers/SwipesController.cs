@@ -25,8 +25,9 @@ public class SwipesController : ControllerBase
     }
 
     [HttpGet("candidates")]
-    public async Task<ActionResult<IEnumerable<PublicUserDto>>> Get(Guid userId)
+    public async Task<ActionResult<IEnumerable<PublicUserDto>>> Get()
     {
+        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         var command = new GetSwipeCandidates(user.Settings);
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));

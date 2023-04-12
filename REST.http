@@ -6,11 +6,12 @@ GET {{url}}/users/me
 ###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
 ###
+GET {{url}}/users/00000000-0000-0000-0000-000000000001
+###
 POST {{url}}/users
 Content-Type: application/json
 
 {
-    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "phone": "123456",
     "email": "test11@test.com",
     "name": "Maciej",
@@ -47,17 +48,33 @@ Content-Type: application/json
 ###
 DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 
-### Swipes ###
+### MATCHES ###
 
-GET {{url}}/swipes/candidates
+GET {{url}}/matches/00000000-0000-0000-0000-000000000001
 ###
-POST {{url}}/swipes
+GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+###
+POST {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
 Content-Type: application/json
 
 {
-    "swipeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "swipedById": "00000000-0000-0000-0000-000000000001",
-    "swipedWhoId": "00000000-0000-0000-0000-000000000003",
-    "like": 2
+    "sendFromId": "00000000-0000-0000-0000-000000000001",
+    "text": "hejka"
 }
+###
+POST {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
+Content-Type: application/json
+
+{
+    "sendFromId": "00000000-0000-0000-0000-000000000001",
+    "text": "hejka"
+}
+###
+DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001
+
+### SWIPES ###
+
+POST {{url}}/like/00000000-0000-0000-0000-000000000002
+###
+POST {{url}}/pass/00000000-0000-0000-0000-000000000003
 ###

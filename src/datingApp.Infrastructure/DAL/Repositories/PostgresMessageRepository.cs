@@ -21,9 +21,20 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
     }
 
+    public async Task<Message> GetByIdAsync(Guid messageId)
+    {
+        return await _dbContext.Messages.SingleOrDefaultAsync(x => x.Id == messageId);
+    }
+
     public async Task AddAsync(Message message)
     {
         await _dbContext.Messages.AddAsync(message);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Message message)
+    {
+        _dbContext.Messages.Update(message);
         await _dbContext.SaveChangesAsync();
     }
 
@@ -33,4 +44,5 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         _dbContext.Messages.Remove(message);
         await _dbContext.SaveChangesAsync();
     }
+
 }

@@ -34,6 +34,12 @@ internal sealed class PostgresMatchRepository : IMatchRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(Match match)
+    {
+        _dbContext.Matches.Update(match);
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(Match match)
     {
         _dbContext.Matches.Remove(match);

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace datingApp.Api.Controllers;
 
 [ApiController]
-[Route("like")]
+[Route("pass")]
 public class PassController : ControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;

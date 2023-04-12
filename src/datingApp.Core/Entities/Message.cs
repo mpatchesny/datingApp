@@ -20,7 +20,7 @@ public class Message
         MatchId = matchId;
         SendFromId = sendFromId;
         SetText(text);
-        IsDisplayed = IsDisplayed;
+        IsDisplayed = isDisplayed;
         CreatedAt = createdAt;
     }
 

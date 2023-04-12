@@ -38,6 +38,12 @@ public class MatchesController : ControllerBase
         return Ok(await _getMatchesHandler.HandleAsync(new GetMatches { UserId = userId }));
     }
 
+    [HttpGet("{matchId:guid}/messages/{messageId:guid}")]
+    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessage(Guid matchId, Guid messageId)
+    {
+        return Ok(await _getMessageHandler.HandleAsync(new GetMessage { MessageId = messageId }));
+    }
+
     [HttpGet("{matchId:guid}/messages")]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages(Guid matchId)
     {
@@ -45,19 +51,20 @@ public class MatchesController : ControllerBase
     }
 
     [HttpPost("{matchId:guid}/messages")]
-    public async Task<ActionResult> SendMessage([FromQuery] Guid matchId, [FromBody] SendMessage command)
+    public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
         command = command with {MessageId = Guid.NewGuid()};
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
-        return Ok(await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId }));
+        var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId });
+        return CreatedAtAction(nameof(GetMessage), message);
     }
 
     [HttpDelete("{matchId:guid}")]
     public async Task<ActionResult> Delete(Guid matchId)
     {
         await _deleteMatchHandler.HandleAsync(new DeleteMatch(matchId));
-        return Ok();
+        return NoContent();
     }
 
 }

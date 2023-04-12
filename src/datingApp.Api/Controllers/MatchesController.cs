@@ -18,18 +18,21 @@ public class MatchesController : ControllerBase
     private readonly IQueryHandler<GetMessages, IEnumerable<MessageDto>> _getMessagesHandler;
     private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
     private readonly ICommandHandler<SendMessage> _sendMessageHandler;
+    private readonly ICommandHandler<ChangeMessage> _changeMessageHandler;
     private readonly ICommandHandler<DeleteMatch> _deleteMatchHandler;
     public MatchesController(IQueryHandler<GetMatches, IEnumerable<MatchDto>> getMatchesHandler,
                             ICommandHandler<SendMessage> sendMessageHandler,
                             ICommandHandler<DeleteMatch> deleteMatchHandler,
                             IQueryHandler<GetMessages, IEnumerable<MessageDto>> getMessagesHandler,
-                            IQueryHandler<GetMessage, MessageDto> getMessageHandler)
+                            IQueryHandler<GetMessage, MessageDto> getMessageHandler,
+                            ICommandHandler<ChangeMessage> changeMessageHandler)
     {
         _getMatchesHandler = getMatchesHandler;
         _deleteMatchHandler = deleteMatchHandler;
         _getMessagesHandler = getMessagesHandler;
         _sendMessageHandler = sendMessageHandler;
         _getMessageHandler = getMessageHandler;
+        _changeMessageHandler = changeMessageHandler;
     }
 
     [HttpGet("{userId:guid}")]
@@ -58,6 +61,14 @@ public class MatchesController : ControllerBase
         await _sendMessageHandler.HandleAsync(command);
         var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId });
         return CreatedAtAction(nameof(GetMessage), new { command.MatchId, command.MessageId }, message);
+    }
+
+    [HttpPatch("{matchId:guid}/messages")]
+    public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] ChangeMessage command)
+    {
+        await _changeMessageHandler.HandleAsync(command);
+        var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId });
+        return CreatedAtAction(nameof(GetMessage), new { message.MatchId, command.MessageId }, message);
     }
 
     [HttpDelete("{matchId:guid}")]

@@ -20,8 +20,7 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(x => x.SendFromId)
             .IsRequired();
         builder.Property(x => x.IsDisplayed)
-            .IsRequired()
-            .HasDefaultValue(false);
+            .IsRequired();
         builder.Property(x => x.Text)
             .IsRequired()
             .HasMaxLength(255);

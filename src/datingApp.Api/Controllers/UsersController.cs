@@ -78,6 +78,6 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Delete(Guid userId)
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
-        return Ok();
+        return NoContent();
     }
 }

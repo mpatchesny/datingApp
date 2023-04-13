@@ -4,6 +4,8 @@
 
 GET {{url}}/users/me
 ###
+GET {{url}}/users/recommendations
+###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
 ###
 POST {{url}}/users

@@ -4,15 +4,16 @@
 
 GET {{url}}/users/me
 ###
+GET {{url}}/users/recommendations
+###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
 ###
 POST {{url}}/users
 Content-Type: application/json
 
 {
-    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "phone": "123456",
-    "email": "test11@test.com",
+    "phone": "12345629",
+    "email": "test5554@test.com",
     "name": "Maciej",
     "dateOfBirth": "1987-03-10",
     "sex": 1,
@@ -25,13 +26,12 @@ DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
 
 ### PHOTOS ###
 
-GET {{url}}/photos/00000000-0000-0000-0000-000000000001
+GET {{url}}/photos/d59bda90-7cc0-409b-b7d3-2e59ee237259
 ###
 POST {{url}}/photos
 Content-Type: application/json
 
 {
-    "photoId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "userId": "00000000-0000-0000-0000-000000000001",
     "base64Bytes": "4pyTIMOgIGxhIG1vZGU="
 }
@@ -40,24 +40,47 @@ PATCH {{url}}/photos
 Content-Type: application/json
 
 {
-    "userId": "00000000-0000-0000-0000-000000000001",
     "photoId": "00000000-0000-0000-0000-000000000001",
-    "newOridinal": 2
+    "newOridinal": 0
 }
 ###
 DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 
-### Swipes ###
+### MATCHES ###
 
-GET {{url}}/swipes/candidates
-###
-POST {{url}}/swipes
+PATCH {{url}}/matches
 Content-Type: application/json
 
 {
-    "swipeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "swipedById": "00000000-0000-0000-0000-000000000001",
-    "swipedWhoId": "00000000-0000-0000-0000-000000000003",
-    "like": 2
+    "matchId": "00000000-0000-0000-0000-000000000001"
 }
+###
+GET {{url}}/matches/00000000-0000-0000-0000-000000000001
+###
+GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+###
+GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
+###
+POST {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+Content-Type: application/json
+
+{
+    "sendFromId": "00000000-0000-0000-0000-000000000001",
+    "text": "hejka2"
+}
+###
+PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+Content-Type: application/json
+
+{
+    "messageId": "00000000-0000-0000-0000-000000000001"
+}
+###
+DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001
+
+### SWIPES ###
+
+GET {{url}}/like/00000000-0000-0000-0000-000000000002
+###
+GET {{url}}/pass/00000000-0000-0000-0000-000000000003
 ###

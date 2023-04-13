@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Changematchidcolumntype : Migration
+    public partial class Newmigrationfromscratch : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -135,7 +135,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     MatchId = table.Column<Guid>(type: "uuid", nullable: false),
                     SendFromId = table.Column<Guid>(type: "uuid", nullable: false),
                     Text = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    IsDisplayed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    IsDisplayed = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>

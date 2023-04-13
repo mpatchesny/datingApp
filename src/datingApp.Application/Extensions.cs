@@ -27,6 +27,8 @@ namespace datingApp.Application
             services.AddScoped<ICommandHandler<SwipeUser>, SwipeUserHandler>();
             services.AddScoped<ICommandHandler<SendMessage>, SendMessageHandler>();
             services.AddScoped<ICommandHandler<DeleteUser>, DeleteUserHandler>();
+            services.AddScoped<ICommandHandler<SetMessageAsDisplayed>, SetMessageAsDisplayedHandler>();
+            services.AddScoped<ICommandHandler<SetMatchAsDisplayed>, SetMatchAsDisplayedHandler>();
             return services;
         }
     }

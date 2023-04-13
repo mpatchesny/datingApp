@@ -62,9 +62,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("IsDisplayed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("MatchId")
                         .HasColumnType("uuid");

@@ -11,5 +11,6 @@ public interface IMatchRepository
     Task<IEnumerable<Match>> GetByUserIdAsync(Guid userId);
     Task<Match> GetByIdAsync(Guid matchId);
     Task AddAsync(Match match);
+    Task UpdateAsync(Match match);
     Task DeleteAsync(Match match);
 }

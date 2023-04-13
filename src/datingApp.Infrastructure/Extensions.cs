@@ -24,6 +24,8 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetMatches, IEnumerable<MatchDto>>, GetMatchesHandler >();
         services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler >();
         services.AddScoped<IQueryHandler<GetMessages, IEnumerable<MessageDto>>, GetMessagesHandler >();
+        services.AddScoped<IQueryHandler<GetMessage, MessageDto>, GetMessageHandler >();
+        services.AddScoped<IQueryHandler<GetMatch, IsMatchDto>, GetMatchHandler >();
         services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler >();
         services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler >();
         services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler >();

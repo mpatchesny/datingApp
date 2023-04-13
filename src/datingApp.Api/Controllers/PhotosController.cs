@@ -45,20 +45,23 @@ public class PhotosController : ControllerBase
     {
         command = command with {PhotoId = Guid.NewGuid()};
         await _addPhotoHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId });
+        var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = command.PhotoId});
+        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
+        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        command = command with {UserId = userId};
         await _changePhotoOridinalHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId });
+        return NoContent();
     }
 
     [HttpDelete("{photoId:guid}")]
     public async Task<ActionResult> Delete(Guid photoId)
     {
         await _deletePhotoHandler.HandleAsync(new DeletePhoto(photoId));
-        return Ok();
+        return NoContent();
     }
 }

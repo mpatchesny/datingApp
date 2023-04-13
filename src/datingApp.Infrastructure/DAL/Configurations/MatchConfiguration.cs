@@ -21,6 +21,10 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
             .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
+        builder.Property(x => x.IsDisplayedByUser1)
+            .IsRequired();
+        builder.Property(x => x.IsDisplayedByUser2)
+            .IsRequired();
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(x => x.UserId1);

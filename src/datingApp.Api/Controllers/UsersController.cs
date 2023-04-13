@@ -19,18 +19,21 @@ public class UserController : ControllerBase
     private readonly ICommandHandler<SignUp> _signUpHandler;
     private readonly ICommandHandler<ChangeUser> _changeUserHandler;
     private readonly ICommandHandler<DeleteUser> _deleteUserHandler;
+    private readonly IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> _getSwipesCandidatesHandler;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
                             IQueryHandler<GetPrivateUser, PrivateUserDto> getPrivateUserHandler,
                             ICommandHandler<ChangeUser> changeUserHandler,
-                            ICommandHandler<DeleteUser> deleteUserHandler)
+                            ICommandHandler<DeleteUser> deleteUserHandler,
+                            IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
         _getPrivateUserHandler = getPrivateUserHandler;
         _changeUserHandler = changeUserHandler;
         _deleteUserHandler = deleteUserHandler;
+        _getSwipesCandidatesHandler = getSwipesCandidatesHandler;
     }
 
     [HttpGet("me")]
@@ -42,6 +45,15 @@ public class UserController : ControllerBase
             return NotFound();
         }
         return user;
+    }
+
+    [HttpGet("recommendations")]
+    public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
+    {
+        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
+        var command = new GetSwipeCandidates(user.Settings);
+        return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 
     [HttpGet("{userId:guid}")]
@@ -62,22 +74,25 @@ public class UserController : ControllerBase
     {
         command = command with {UserId = Guid.NewGuid()};
         await _signUpHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
+        return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
     }
 
     [HttpPatch]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Patch(ChangeUser command)
     {
+        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        command = command with {UserId = userId};
         await _changeUserHandler.HandleAsync(command);
-        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId });
+        return NoContent();
     }
 
     [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
-        return Ok();
+        return NoContent();
     }
 }

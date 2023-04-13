@@ -23,6 +23,10 @@ public class SetMessageAsDisplayedHandler : ICommandHandler<SetMessageAsDisplaye
         {
             throw new MessageNotExistsException(command.MessageId);
         }
+        if (message.SendFromId == command.DisplayedByUserId)
+        {
+            throw new UserCannotSetMessageAsDisplayedException(command.MessageId);
+        }
         
         message.SetDisplayed();
         await _messageRepository.UpdateAsync(message);

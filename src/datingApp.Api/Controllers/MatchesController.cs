@@ -82,6 +82,7 @@ public class MatchesController : ControllerBase
     [HttpPatch("{matchId:guid}/messages")]
     public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] SetMessageAsDisplayed command)
     {
+        command = command with {DisplayedByUserId = Guid.Parse("00000000-0000-0000-0000-000000000001")};
         await _setMessageAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }

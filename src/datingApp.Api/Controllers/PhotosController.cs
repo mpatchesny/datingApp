@@ -52,6 +52,8 @@ public class PhotosController : ControllerBase
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
+        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        command = command with {UserId = userId};
         await _changePhotoOridinalHandler.HandleAsync(command);
         return NoContent();
     }

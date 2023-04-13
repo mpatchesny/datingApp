@@ -20,6 +20,20 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async void get_existing_message_by_id_should_return_nonempty_message()
+    {
+        var message = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.NotNull(message);
+    }
+
+    [Fact]
+    public async void get_nonexisting_message_by_id_should_return_null()
+    {
+        var message = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000000"));
+        Assert.Null(message);
+    }
+
+    [Fact]
     public async void get_nonexisting_message_by_match_id_should_return_empty_collection()
     {
         var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000002"));
@@ -57,6 +71,15 @@ public class MessageRepositoryTests : IDisposable
         var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(messages);
         Assert.Equal(2, messages.Count());
+    }
+
+    [Fact]
+    public async void update_message_should_succeed()
+    {
+        var message = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        message.SetDisplayed();
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(message));
+        Assert.Null(exception);
     }
 
     [Fact]

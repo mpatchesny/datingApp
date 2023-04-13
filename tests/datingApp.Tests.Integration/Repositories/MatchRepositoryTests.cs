@@ -71,6 +71,15 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async void update_match_should_succeed()
+    {
+        var match = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        match.SetDisplayed(match.UserId1);
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(match));
+        Assert.Null(exception);
+    }
+
+    [Fact]
     public async void add_match_with_existing_id_should_throw_exception()
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);

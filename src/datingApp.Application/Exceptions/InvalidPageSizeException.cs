@@ -1,0 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using datingApp.Core.Exceptions;
+
+namespace datingApp.Application.Exceptions;
+
+public class InvalidPageSizeException : CustomException
+{
+    public InvalidPageSizeException(int minPageSize, int maxPageSize) : base($"Page size should be integer between {minPageSize} and {maxPageSize}.")
+    {
+    }
+}

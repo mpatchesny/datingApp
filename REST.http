@@ -22,6 +22,19 @@ Content-Type: application/json
     "bio": ""
 }
 ###
+PATCH {{url}}/users
+Content-Type: application/json
+
+{
+    "dateOfBirth": "1987-03-10",
+    "discoverSex": 2,
+    "discoverRange": 40,
+    "discoverAgeFrom": 18,
+    "discoverAgeTo": 45,
+    "lat": 54.3719424,
+    "lon": 18.6143541
+}
+###
 DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
 
 ### PHOTOS ###
@@ -48,14 +61,8 @@ DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 
 ### MATCHES ###
 
-PATCH {{url}}/matches
-Content-Type: application/json
-
-{
-    "matchId": "00000000-0000-0000-0000-000000000001"
-}
 ###
-GET {{url}}/matches/00000000-0000-0000-0000-000000000001
+GET {{url}}/matches
 ###
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
 ###

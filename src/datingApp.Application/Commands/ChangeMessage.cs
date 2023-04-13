@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record ChangeMessage(Guid MessageId, bool IsDisplayed) : ICommand;
+public sealed record ChangeMessage(Guid MessageId) : ICommand;

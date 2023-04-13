@@ -24,10 +24,7 @@ public class ChangeMessageHandler : ICommandHandler<ChangeMessage>
             throw new MessageNotExistsException(command.MessageId);
         }
         
-        if (command.IsDisplayed)
-        {
-            message.SetDisplayed();
-            await _messageRepository.UpdateAsync(message);
-        }
+        message.SetDisplayed();
+        await _messageRepository.UpdateAsync(message);
     }
 }

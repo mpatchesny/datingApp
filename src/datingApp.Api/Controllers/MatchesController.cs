@@ -73,11 +73,11 @@ public class MatchesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{matchId:guid}")]
-    public async Task<ActionResult> ChangeMatch(Guid matchId)
+    [HttpPatch]
+    public async Task<ActionResult> ChangeMatch(SetMatchAsDisplayed command)
     {
         Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var command = new SetMatchAsDisplayed(matchId, userId);
+        command = command with {UserId = userId};
         await _setMatchAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }

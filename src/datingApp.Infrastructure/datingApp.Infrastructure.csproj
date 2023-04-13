@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="datingApp.Api" />
     <InternalsVisibleTo Include="datingApp.Tests.Unit" />
     <InternalsVisibleTo Include="datingApp.Tests.Integration" />
   </ItemGroup>

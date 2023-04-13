@@ -1,6 +1,7 @@
 using datingApp.Core;
 using datingApp.Application;
 using datingApp.Infrastructure;
+using datingApp.Infrastructure.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

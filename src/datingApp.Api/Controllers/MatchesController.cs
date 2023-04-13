@@ -45,9 +45,14 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]
-    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessage(Guid matchId, Guid messageId)
+    public async Task<ActionResult<MessageDto>> GetMessage(Guid matchId, Guid messageId)
     {
-        return Ok(await _getMessageHandler.HandleAsync(new GetMessage { MessageId = messageId }));
+        var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = messageId });
+        if (message == null)
+        {
+            return NotFound();
+        }
+        return message;
     }
 
     [HttpGet("{matchId:guid}/messages")]
@@ -59,6 +64,7 @@ public class MatchesController : ControllerBase
     [HttpPost("{matchId:guid}/messages")]
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
+        command = command with {SendFromId =  Guid.Parse("00000000-0000-0000-0000-000000000001")};
         command = command with {MessageId = Guid.NewGuid()};
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);

@@ -9,6 +9,7 @@ using datingApp.Application.Queries;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Exceptions;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +30,7 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler >();
         services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler >();
         services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler >();
+        services.AddSingleton<ExceptionMiddleware>();
         return services;
     }
 

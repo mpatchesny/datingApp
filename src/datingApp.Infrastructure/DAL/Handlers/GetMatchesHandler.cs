@@ -22,9 +22,6 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
         return await _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId)
-                        .Include(x => x.Messages
-                                .OrderByDescending(message => message.CreatedAt)
-                                .Take(1))
                         .Select(x => new
                             {
                                 Match = x,
@@ -40,7 +37,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
                                 Name = x.User.Name,
                                 IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
                                 ProfilePicture = (x.Photo != null) ? x.Photo.AsDto() : null,
-                                Messages = x.Match.Messages.Select(x => x.AsDto()).ToList(),
+                                Messages = x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
                                 CreatedAt = DateTime.UtcNow
                             })
                         .Skip((query.Page - 1) * query.PageSize)

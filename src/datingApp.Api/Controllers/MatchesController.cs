@@ -67,8 +67,7 @@ public class MatchesController : ControllerBase
     public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] ChangeMessage command)
     {
         await _changeMessageHandler.HandleAsync(command);
-        var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId });
-        return CreatedAtAction(nameof(GetMessage), new { message.MatchId, command.MessageId }, message);
+        return NoContent();
     }
 
     [HttpDelete("{matchId:guid}")]

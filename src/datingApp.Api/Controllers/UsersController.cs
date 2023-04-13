@@ -63,7 +63,7 @@ public class UserController : ControllerBase
         command = command with {UserId = Guid.NewGuid()};
         await _signUpHandler.HandleAsync(command);
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId }, user);
+        return CreatedAtAction(nameof(GetPrivateUser), new { }, user);
     }
 
     [HttpPatch]
@@ -72,8 +72,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Patch(ChangeUser command)
     {
         await _changeUserHandler.HandleAsync(command);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new { command.UserId }, user);
+        return NoContent();
     }
 
     [HttpDelete("{userId:guid}")]

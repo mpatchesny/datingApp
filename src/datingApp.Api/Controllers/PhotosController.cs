@@ -53,8 +53,7 @@ public class PhotosController : ControllerBase
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
         await _changePhotoOridinalHandler.HandleAsync(command);
-        var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = command.PhotoId});
-        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
+        return NoContent();
     }
 
     [HttpDelete("{photoId:guid}")]

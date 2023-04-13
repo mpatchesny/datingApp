@@ -39,7 +39,8 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = Guid.Parse("00000000-0000-0000-0000-000000000001") });
+        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         if (user is null)
         {
             return NotFound();
@@ -68,8 +69,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Post(SignUp command)
     {
         command = command with {UserId = Guid.NewGuid()};
@@ -79,8 +78,6 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Patch(ChangeUser command)
     {
         Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");

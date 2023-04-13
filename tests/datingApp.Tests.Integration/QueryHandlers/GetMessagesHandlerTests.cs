@@ -49,7 +49,7 @@ public class GetMessagesHandlerTests
         var query = new GetMessages();
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         query.SetPageSize(5);
-        query.SetPage(1);
+        query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
         Assert.NotEmpty(matches);
         Assert.Equal(4, matches.Count());

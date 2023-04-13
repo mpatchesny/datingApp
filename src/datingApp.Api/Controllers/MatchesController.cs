@@ -18,21 +18,21 @@ public class MatchesController : ControllerBase
     private readonly IQueryHandler<GetMessages, IEnumerable<MessageDto>> _getMessagesHandler;
     private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
     private readonly ICommandHandler<SendMessage> _sendMessageHandler;
-    private readonly ICommandHandler<ChangeMessage> _changeMessageHandler;
+    private readonly ICommandHandler<SetMessageAsDisplayed> _setMessageAsDisplayedHandler;
     private readonly ICommandHandler<DeleteMatch> _deleteMatchHandler;
     public MatchesController(IQueryHandler<GetMatches, IEnumerable<MatchDto>> getMatchesHandler,
                             ICommandHandler<SendMessage> sendMessageHandler,
                             ICommandHandler<DeleteMatch> deleteMatchHandler,
                             IQueryHandler<GetMessages, IEnumerable<MessageDto>> getMessagesHandler,
                             IQueryHandler<GetMessage, MessageDto> getMessageHandler,
-                            ICommandHandler<ChangeMessage> changeMessageHandler)
+                            ICommandHandler<SetMessageAsDisplayed> setMessageAsDisplayedHandler)
     {
         _getMatchesHandler = getMatchesHandler;
         _deleteMatchHandler = deleteMatchHandler;
         _getMessagesHandler = getMessagesHandler;
         _sendMessageHandler = sendMessageHandler;
         _getMessageHandler = getMessageHandler;
-        _changeMessageHandler = changeMessageHandler;
+        _setMessageAsDisplayedHandler = setMessageAsDisplayedHandler;
     }
 
     [HttpGet("{userId:guid}")]
@@ -64,9 +64,9 @@ public class MatchesController : ControllerBase
     }
 
     [HttpPatch("{matchId:guid}/messages")]
-    public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] ChangeMessage command)
+    public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] SetMessageAsDisplayed command)
     {
-        await _changeMessageHandler.HandleAsync(command);
+        await _setMessageAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }
 

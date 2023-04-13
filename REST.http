@@ -38,8 +38,7 @@ PATCH {{url}}/photos
 Content-Type: application/json
 
 {
-    "userId": "00000000-0000-0000-0000-000000000001",
-    "photoId": "0f63ca37-82cd-488e-a0b6-a18b0753a2bc",
+    "photoId": "00000000-0000-0000-0000-000000000001",
     "newOridinal": 0
 }
 ###
@@ -47,6 +46,13 @@ DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 
 ### MATCHES ###
 
+PATCH {{url}}/matches
+Content-Type: application/json
+
+{
+    "matchId": "00000000-0000-0000-0000-000000000001"
+}
+###
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001
 ###
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
@@ -65,8 +71,7 @@ PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
 Content-Type: application/json
 
 {
-    "messageId": "00000000-0000-0000-0000-000000000001",
-    "isDisplayed": true
+    "messageId": "00000000-0000-0000-0000-000000000001"
 }
 ###
 DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001

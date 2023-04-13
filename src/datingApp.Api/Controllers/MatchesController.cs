@@ -38,9 +38,10 @@ public class MatchesController : ControllerBase
         _setMatchAsDisplayedHandler = setMatchAsDisplayedHandler;
     }
 
-    [HttpGet("{userId:guid}")]
-    public async Task<ActionResult<IEnumerable<MatchDto>>> Get(Guid userId, [FromQuery] int? page, [FromQuery] int? pageSize)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<MatchDto>>> Get([FromQuery] int? page, [FromQuery] int? pageSize)
     {
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var command = new GetMatches { UserId = userId };
         command.SetPage(page);
         command.SetPageSize(pageSize);
@@ -70,7 +71,7 @@ public class MatchesController : ControllerBase
     [HttpPost("{matchId:guid}/messages")]
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
-        command = command with {SendFromId =  Guid.Parse("00000000-0000-0000-0000-000000000001")};
+        command = command with {SendFromId = Guid.Parse("00000000-0000-0000-0000-000000000001")};
         command = command with {MessageId = Guid.NewGuid()};
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);

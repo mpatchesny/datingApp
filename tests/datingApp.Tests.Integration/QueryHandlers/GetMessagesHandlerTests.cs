@@ -38,7 +38,7 @@ public class GetMessagesHandlerTests
     {
         var query = new GetMessages();
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.PageSize = 5;
+        query.SetPageSize(5);
         var matches = await _handler.HandleAsync(query);
         Assert.InRange(matches.Count(), 0, query.PageSize);
     }
@@ -48,8 +48,8 @@ public class GetMessagesHandlerTests
     {
         var query = new GetMessages();
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.PageSize = 5;
-        query.Page = 2;
+        query.SetPageSize(5);
+        query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
         Assert.NotEmpty(matches);
         Assert.Equal(4, matches.Count());

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Security;
 using datingApp.Core.Repositories;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -13,12 +14,19 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMemoryCache _cache;
-    public SignInByEmailHandler(IUserRepository userRepository, IMemoryCache cache)
+    private readonly IAuthenticator _authenticator;
+    private readonly ITokenStorage _storage;
+    public SignInByEmailHandler(IUserRepository userRepository,
+                                IMemoryCache cache,
+                                IAuthenticator authenticator,
+                                ITokenStorage storage)
     {
         _userRepository = userRepository;
         _cache = cache;
+        _authenticator = authenticator;
+        _storage = storage;
     }
-    
+
     public async Task HandleAsync(SignInByEmail command)
     {
         var user = await _userRepository.GetByEmailAsync(command.Email);
@@ -37,6 +45,7 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
             throw new InvalidCredentialsException();
         }
 
-        // Generowanie tokenu
+        var jwt = _authenticator.CreateToken(user.Id);
+        _storage.Set(jwt);
     }
 }

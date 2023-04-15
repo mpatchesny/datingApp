@@ -15,11 +15,11 @@ namespace datingApp.Application.Commands.Handlers;
 public class SignInHandler : ICommandHandler<RequestEmailCode>
 {
     private readonly IUserRepository _userRepository;
-    private readonly ICodeGenerator _codeGenerator;
+    private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IMemoryCache _cache;
     private readonly IEmailSender _emailSender;
     public SignInHandler(IUserRepository userRepository,
-                        ICodeGenerator codeGenerator,
+                        IAccessCodeGenerator codeGenerator,
                         IMemoryCache cache,
                         IEmailSender emailSender)
     {

@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Security;
 
-public interface ICodeGenerator
+public interface IAccessCodeGenerator
 {
-    public CodeDto GenerateCode(string email="", string phone="");
+    public AccessCodeDto GenerateCode(string email="", string phone="");
 }

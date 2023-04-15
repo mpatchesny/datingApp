@@ -39,8 +39,8 @@ public class SignInHandler : ICommandHandler<RequestEmailCode>
 
         var code = _codeGenerator.GenerateCode(email: command.Email);
         _cache.SetCode(code);
-
-        // Wysyłanie kodu na email
-        // TODO
+        // FIXME: magic numbers
+        string body = $"Enter this code to sign in to dating app:\n\n{code.Code}\n\nCode expires in 15 minutes.";
+        await _emailSender.SendAsync(command.Email, "Your sign-in code for dating app", body);
     }
 }

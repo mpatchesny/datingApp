@@ -7,5 +7,5 @@ namespace datingApp.Application.Services;
 
 public interface IEmailSender
 {
-    public Task SendAsync(string receiver, object email);
+    public Task SendAsync(string receiver, string subject, string body);
 }

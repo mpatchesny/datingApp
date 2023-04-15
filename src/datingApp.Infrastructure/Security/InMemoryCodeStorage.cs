@@ -18,11 +18,16 @@ public class InMemoryCodeStorage : ICodeStorage
 
     public AccessCodeDto Get(string emailOrPhone)
     {
-        return _cache.Get<AccessCodeDto>(emailOrPhone);
+        return _cache.Get<AccessCodeDto>(GetKey(emailOrPhone));
     }
 
     public void Set(AccessCodeDto code)
     {
-        _cache.Set(code.EmailOrPhone, code, TimeSpan.FromMinutes(15));
+        _cache.Set(GetKey(code.EmailOrPhone), code, TimeSpan.FromMinutes(15));
+    }
+
+    private string GetKey(string emailOrPhone)
+    {
+        return $"{emailOrPhone}_access_code";
     }
 }

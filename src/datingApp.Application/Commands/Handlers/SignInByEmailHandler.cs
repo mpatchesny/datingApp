@@ -32,7 +32,7 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
         var user = await _userRepository.GetByEmailAsync(command.Email);
         if (user == null)
         {
-            throw new UserNotExistsException();
+            throw new InvalidCredentialsException();
         }
         
         var code = _cache.GetCode(command.Email);

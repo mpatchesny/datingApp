@@ -31,13 +31,7 @@ public class SignInHandler : ICommandHandler<RequestEmailCode>
 
     public async Task HandleAsync(RequestEmailCode command)
     {
-        var user = await _userRepository.GetByEmailAsync(command.Email);
-        if (user == null)
-        {
-            throw new UserNotExistsException();
-        }
-
-        var code = _codeGenerator.GenerateCode(email: command.Email);
+        var code = _codeGenerator.GenerateCode(email: command.Email.ToLowerInvariant());
         _cache.SetCode(code);
         // FIXME: magic numbers
         string body = $"Enter this code to sign in to dating app:\n\n{code.Code}\n\nCode expires in 15 minutes.";

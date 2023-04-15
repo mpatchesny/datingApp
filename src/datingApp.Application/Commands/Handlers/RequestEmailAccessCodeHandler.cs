@@ -12,7 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailCode>
+public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessCode>
 {
     private readonly IUserRepository _userRepository;
     private readonly IAccessCodeGenerator _codeGenerator;
@@ -29,7 +29,7 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailCode>
         _emailSender = emailSender;
     }
 
-    public async Task HandleAsync(RequestEmailCode command)
+    public async Task HandleAsync(RequestEmailAccessCode command)
     {
         var code = _codeGenerator.GenerateCode(email: command.Email.ToLowerInvariant());
         _cache.SetCode(code);

@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record RequestEmailCode(string Email="") : ICommand;
+public sealed record RequestEmailAccessCode(string Email="") : ICommand;

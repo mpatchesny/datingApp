@@ -32,7 +32,7 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
         {
             throw new InvalidCredentialsException();
         }
-        else if (code.Code != command.Code || code.EmailOrPhone != command.Email.ToLowerInvariant())
+        else if (code.AccessCode != command.Code || code.EmailOrPhone != command.Email.ToLowerInvariant())
         {
             throw new InvalidCredentialsException();
         }

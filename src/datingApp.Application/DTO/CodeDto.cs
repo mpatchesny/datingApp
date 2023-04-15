@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.DTO;
 
-public class CodeDto
+public class AccessCodeDto
 {
     public string EmailOrPhone { get; set; }
-    public string Code { get; set; }
+    public string AccessCode { get; set; }
     public TimeSpan Expiry { get; set; }
 }

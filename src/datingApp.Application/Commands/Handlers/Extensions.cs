@@ -9,14 +9,14 @@ namespace datingApp.Application.Commands.Handlers;
 
 public static class CacheExtensions
 {
-    public static void SetCode(this IMemoryCache cache, CodeDto code)
+    public static void SetCode(this IMemoryCache cache, AccessCodeDto code)
     {
         // FIXME magic number
         cache.Set(code.EmailOrPhone, code, TimeSpan.FromMinutes(15));
     }
 
-    public static CodeDto GetCode(this IMemoryCache cache, string emailOrPhone)
+    public static AccessCodeDto GetCode(this IMemoryCache cache, string emailOrPhone)
     {
-        return cache.Get<CodeDto>(emailOrPhone);
+        return cache.Get<AccessCodeDto>(emailOrPhone);
     }
 }

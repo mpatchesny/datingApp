@@ -13,16 +13,16 @@ namespace datingApp.Application.Commands.Handlers;
 public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IMemoryCache _cache;
+    private readonly ICodeStorage _codeStorage;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _storage;
     public SignInByEmailHandler(IUserRepository userRepository,
-                                IMemoryCache cache,
+                                ICodeStorage codeStorage,
                                 IAuthenticator authenticator,
                                 ITokenStorage storage)
     {
         _userRepository = userRepository;
-        _cache = cache;
+        _codeStorage = codeStorage;
         _authenticator = authenticator;
         _storage = storage;
     }
@@ -35,7 +35,7 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
             throw new InvalidCredentialsException();
         }
         
-        var code = _cache.GetCode(command.Email);
+        var code = _codeStorage.Get(command.Email);
         if (code == null)
         {
             throw new InvalidCredentialsException();

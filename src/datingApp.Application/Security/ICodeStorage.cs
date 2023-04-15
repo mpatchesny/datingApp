@@ -8,6 +8,6 @@ namespace datingApp.Application.Security;
 
 public interface ICodeStorage
 {
-    public void Set(AccessCodeDto code);
-    public AccessCodeDto Get(string emailOrPhone);
+    void Set(AccessCodeDto code);
+    AccessCodeDto Get(string emailOrPhone);
 }

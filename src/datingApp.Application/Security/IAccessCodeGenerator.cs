@@ -8,5 +8,5 @@ namespace datingApp.Application.Security;
 
 public interface IAccessCodeGenerator
 {
-    public AccessCodeDto GenerateCode(string email="", string phone="");
+    public AccessCodeDto GenerateCode(string EmailOrPhone);
 }

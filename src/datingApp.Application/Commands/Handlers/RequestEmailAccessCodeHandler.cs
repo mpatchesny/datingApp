@@ -31,10 +31,11 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
 
     public async Task HandleAsync(RequestEmailAccessCode command)
     {
-        var code = _codeGenerator.GenerateCode(email: command.Email.ToLowerInvariant());
+        var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());
         _codeStorage.Set(code);
-        // FIXME: magic numbers
+        // FIXME: magic string
+        string subject = "Your sign-in code for dating app";
         string body = $"Enter this code to sign in to dating app:\n\n{code.AccessCode}\n\nCode expires in 15 minutes.";
-        await _emailSender.SendAsync(command.Email, "Your sign-in code for dating app", body);
+        await _emailSender.SendAsync(command.Email, subject, body);
     }
 }

@@ -7,7 +7,7 @@ namespace datingApp.Application.DTO;
 
 public class AccessCodeDto
 {
-    public string EmailOrPhone { get; set; }
-    public string AccessCode { get; set; }
-    public TimeSpan Expiry { get; set; }
+    public string EmailOrPhone { get; }
+    public string AccessCode { get; }
+    public TimeSpan Expiry { get; }
 }

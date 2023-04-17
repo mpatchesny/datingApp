@@ -15,6 +15,7 @@ public class HttpContextTokenStorage : ITokenStorage
     {
         _httpContextAccessor = httpContextAccessor;
     }
+
     public JwtDto Get()
     {
         if (_httpContextAccessor.HttpContext == null)

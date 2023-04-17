@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Security;
 
-public interface ICodeStorage
+public interface IAccessCodeStorage
 {
     void Set(AccessCodeDto code);
     AccessCodeDto Get(string emailOrPhone);

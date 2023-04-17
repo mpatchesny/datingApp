@@ -8,7 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace datingApp.Infrastructure.Security;
 
-internal sealed class InMemoryCodeStorage : ICodeStorage
+internal sealed class InMemoryCodeStorage : IAccessCodeStorage
 {
     private readonly IMemoryCache _cache;
     public InMemoryCodeStorage(IMemoryCache cache)

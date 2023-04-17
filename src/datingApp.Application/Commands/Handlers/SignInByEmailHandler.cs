@@ -13,11 +13,11 @@ namespace datingApp.Application.Commands.Handlers;
 public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
 {
     private readonly IUserRepository _userRepository;
-    private readonly ICodeStorage _codeStorage;
+    private readonly IAccessCodeStorage _codeStorage;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _storage;
     public SignInByEmailHandler(IUserRepository userRepository,
-                                ICodeStorage codeStorage,
+                                IAccessCodeStorage codeStorage,
                                 IAuthenticator authenticator,
                                 ITokenStorage storage)
     {

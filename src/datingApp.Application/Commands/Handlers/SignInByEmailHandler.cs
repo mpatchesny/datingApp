@@ -16,15 +16,18 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _storage;
+    private readonly AccessCodeVerificator _verificator;
     public SignInByEmailHandler(IUserRepository userRepository,
                                 IAccessCodeStorage codeStorage,
                                 IAuthenticator authenticator,
-                                ITokenStorage storage)
+                                ITokenStorage storage,
+                                AccessCodeVerificator verificator)
     {
         _userRepository = userRepository;
         _codeStorage = codeStorage;
         _authenticator = authenticator;
         _storage = storage;
+        _verificator = verificator;
     }
 
     public async Task HandleAsync(SignInByEmail command)
@@ -35,16 +38,13 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
             throw new InvalidCredentialsException();
         }
         
-        var code = _codeStorage.Get(command.Email);
-        if (code == null)
+        var accessCode = _codeStorage.Get(command.Email);
+        if (accessCode == null)
         {
             throw new InvalidCredentialsException();
         }
         
-        bool isCodeValid = code.AccessCode.ToLowerInvariant() == command.AccessCode.ToLowerInvariant();
-        isCodeValid = isCodeValid && code.EmailOrPhone == command.Email.ToLowerInvariant();
-        isCodeValid = isCodeValid && code.ExpirationTime >= DateTime.UtcNow;
-        if (!isCodeValid)
+        if (!_verificator.Verify(accessCode, command.AccessCode, command.Email))
         {
             throw new InvalidCredentialsException();
         }

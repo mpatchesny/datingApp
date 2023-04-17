@@ -23,7 +23,7 @@ internal static class Extensions
         services.Configure<AuthOptions>(configuration.GetRequiredSection(OptionsSectionName));
         services.Configure<AccessCodeOptions>(configuration.GetRequiredSection(AccessCodeOptionsSectionName));
         services.AddSingleton<IAuthenticator, Authenticator>();
-        // services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
+        services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
         services.AddAuthentication(o =>
                 {
                     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

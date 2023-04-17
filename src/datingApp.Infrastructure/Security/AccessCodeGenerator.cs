@@ -31,9 +31,4 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
             Expiry = TimeSpan.FromMinutes(15)
         };
     }
-
-    public bool Verify(string code, string EmailOrPhone)
-    {
-        throw new NotImplementedException();
-    }
 }

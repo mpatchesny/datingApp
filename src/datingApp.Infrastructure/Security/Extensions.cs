@@ -12,6 +12,7 @@ namespace datingApp.Infrastructure.Security;
 internal static class Extensions
 {
     private const string OptionsSectionName = "auth";
+    private const string AccessCodeOptionsSectionName = "access_code";
     
     public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
@@ -20,6 +21,7 @@ internal static class Extensions
         services.AddMemoryCache();
         services.AddSingleton<IAccessCodeStorage, InMemoryAccessCodeStorage>();
         services.Configure<AuthOptions>(configuration.GetRequiredSection(OptionsSectionName));
+        services.Configure<AccessCodeOptions>(configuration.GetRequiredSection(AccessCodeOptionsSectionName));
         services.AddSingleton<IAuthenticator, Authenticator>();
         // services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
         services.AddAuthentication(o =>

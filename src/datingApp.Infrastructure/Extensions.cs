@@ -32,8 +32,6 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler>();
         services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler>();
         services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler>();
-        services.AddMemoryCache();
-        services.AddSingleton<ICodeStorage, InMemoryCodeStorage>();
         services.AddSingleton<ExceptionMiddleware>();
         return services;
     }

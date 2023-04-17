@@ -28,7 +28,8 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
         { 
             AccessCode = code.ToString(),
             EmailOrPhone = emailOrPhone,
-            Expiry = TimeSpan.FromMinutes(15)
+            Expiry = TimeSpan.FromMinutes(15),
+            ExpirationTime = DateTime.UtcNow + TimeSpan.FromMinutes(15)
         };
     }
 }

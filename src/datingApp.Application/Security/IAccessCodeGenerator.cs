@@ -9,5 +9,4 @@ namespace datingApp.Application.Security;
 public interface IAccessCodeGenerator
 {
     public AccessCodeDto GenerateCode(string emailOrPhone);
-    public bool Verify(string code, string EmailOrPhone);
 }

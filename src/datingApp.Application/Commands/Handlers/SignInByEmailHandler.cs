@@ -41,7 +41,7 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
             throw new InvalidCredentialsException();
         }
         
-        bool isCodeValid = code.AccessCode == command.Code;
+        bool isCodeValid = code.AccessCode == command.AccessCode;
         isCodeValid = isCodeValid && code.EmailOrPhone == command.Email.ToLowerInvariant();
         isCodeValid = isCodeValid && code.ExpirationTime >= DateTime.UtcNow;
         if (!isCodeValid)

@@ -4,6 +4,13 @@
 
 GET {{url}}/users/me
 ###
+POST {{url}}/users/auth
+Content-Type: application/json
+
+{
+    "email": "test5554@test.com"
+}
+###
 GET {{url}}/users/recommendations
 ###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001

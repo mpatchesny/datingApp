@@ -17,6 +17,7 @@ internal sealed class SimpleEmailSender : IEmailSender
 
     public Task SendAsync(string receiver, string subject, string body)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
+        // throw new NotImplementedException();
     }
 }

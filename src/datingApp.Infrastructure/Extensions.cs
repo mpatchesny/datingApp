@@ -24,6 +24,7 @@ public static class Extensions
     {
         services.AddPostgres(configuration);
         services.AddAuth(configuration);
+        services.AddHttpContextAccessor();
         services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<IQueryHandler<GetMatches, IEnumerable<MatchDto>>, GetMatchesHandler>();
         services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler>();

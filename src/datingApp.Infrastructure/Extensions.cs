@@ -23,6 +23,7 @@ public static class Extensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPostgres(configuration);
+        services.AddAuth(configuration);
         services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<IQueryHandler<GetMatches, IEnumerable<MatchDto>>, GetMatchesHandler>();
         services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler>();

@@ -19,9 +19,9 @@ internal static class Extensions
         var options = configuration.GetOptions<AuthOptions>(OptionsSectionName);
 
         services.AddMemoryCache();
-        services.AddSingleton<IAccessCodeStorage, InMemoryAccessCodeStorage>();
         services.Configure<AuthOptions>(configuration.GetRequiredSection(OptionsSectionName));
         services.Configure<AccessCodeOptions>(configuration.GetRequiredSection(AccessCodeOptionsSectionName));
+        services.AddSingleton<IAccessCodeStorage, InMemoryAccessCodeStorage>();
         services.AddSingleton<IAuthenticator, Authenticator>();
         services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
         services.AddAuthentication(o =>

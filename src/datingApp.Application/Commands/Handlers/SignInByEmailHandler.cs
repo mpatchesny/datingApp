@@ -15,18 +15,18 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
     private readonly IUserRepository _userRepository;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IAuthenticator _authenticator;
-    private readonly ITokenStorage _storage;
+    private readonly ITokenStorage _tokenStorage;
     private readonly AccessCodeVerificator _verificator;
     public SignInByEmailHandler(IUserRepository userRepository,
                                 IAccessCodeStorage codeStorage,
                                 IAuthenticator authenticator,
-                                ITokenStorage storage,
+                                ITokenStorage tokenStorage,
                                 AccessCodeVerificator verificator)
     {
         _userRepository = userRepository;
         _codeStorage = codeStorage;
         _authenticator = authenticator;
-        _storage = storage;
+        _tokenStorage = tokenStorage;
         _verificator = verificator;
     }
 
@@ -50,6 +50,6 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
         }
 
         var jwt = _authenticator.CreateToken(user.Id);
-        _storage.Set(jwt);
+        _tokenStorage.Set(jwt);
     }
 }

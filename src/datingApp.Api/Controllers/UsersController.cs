@@ -107,7 +107,8 @@ public class UserController : ControllerBase
     public async Task<ActionResult<string>> RequestAccessCode(RequestEmailAccessCode command)
     {
         await _requestAccessCodeHandler.HandleAsync(command);
-        return command.Email;
+        var response = new { SendTo = command.Email };
+        return Ok(response);
     }
 
     [HttpPost("sing-in")]

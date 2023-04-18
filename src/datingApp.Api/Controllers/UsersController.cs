@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace datingApp.Api.Controllers;
@@ -20,13 +21,19 @@ public class UserController : ControllerBase
     private readonly ICommandHandler<ChangeUser> _changeUserHandler;
     private readonly ICommandHandler<DeleteUser> _deleteUserHandler;
     private readonly IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> _getSwipesCandidatesHandler;
+    private readonly ICommandHandler<RequestEmailAccessCode> _requestAccessCodeHandler;
+    private readonly ICommandHandler<SignInByEmail> _signInHandler;
+    private readonly ITokenStorage _tokenStorage;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
                             IQueryHandler<GetPrivateUser, PrivateUserDto> getPrivateUserHandler,
                             ICommandHandler<ChangeUser> changeUserHandler,
                             ICommandHandler<DeleteUser> deleteUserHandler,
-                            IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler)
+                            IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler,
+                            ICommandHandler<RequestEmailAccessCode> requestAccessCodeHandler,
+                            ICommandHandler<SignInByEmail> signInHandler,
+                            ITokenStorage tokenStorage)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
@@ -34,6 +41,9 @@ public class UserController : ControllerBase
         _changeUserHandler = changeUserHandler;
         _deleteUserHandler = deleteUserHandler;
         _getSwipesCandidatesHandler = getSwipesCandidatesHandler;
+        _requestAccessCodeHandler = requestAccessCodeHandler;
+        _signInHandler = signInHandler;
+        _tokenStorage = tokenStorage;
     }
 
     [HttpGet("me")]
@@ -91,5 +101,20 @@ public class UserController : ControllerBase
     {
         await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
         return NoContent();
+    }
+
+    [HttpPost("auth")]
+    public async Task<ActionResult<string>> RequestAccessCode(RequestEmailAccessCode command)
+    {
+        await _requestAccessCodeHandler.HandleAsync(command);
+        return command.Email;
+    }
+
+    [HttpPost("sing-in")]
+    public async Task<ActionResult<JwtDto>> SingIn(SignInByEmail command)
+    {
+        await _signInHandler.HandleAsync(command);
+        var jwt = _tokenStorage.Get();
+        return jwt;
     }
 }

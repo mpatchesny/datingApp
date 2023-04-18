@@ -20,8 +20,8 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
 
     public AccessCodeDto GenerateCode(string emailOrPhone)
     {
-        char[] code = {};
-        for (int i = 0; i < 6; i++)
+        char[] code = new char[5];
+        for (int i = 0; i < code.Length; i++)
         {
             var randInt = rand.Next(0, seed.Length);
             code[i] = seed[randInt];

@@ -24,6 +24,7 @@ public class UserController : ControllerBase
     private readonly ICommandHandler<RequestEmailAccessCode> _requestAccessCodeHandler;
     private readonly ICommandHandler<SignInByEmail> _signInHandler;
     private readonly ITokenStorage _tokenStorage;
+    private readonly IAccessCodeStorage _codeStorage;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
@@ -33,7 +34,8 @@ public class UserController : ControllerBase
                             IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler,
                             ICommandHandler<RequestEmailAccessCode> requestAccessCodeHandler,
                             ICommandHandler<SignInByEmail> signInHandler,
-                            ITokenStorage tokenStorage)
+                            ITokenStorage tokenStorage,
+                            IAccessCodeStorage codeStorage)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
@@ -44,6 +46,7 @@ public class UserController : ControllerBase
         _requestAccessCodeHandler = requestAccessCodeHandler;
         _signInHandler = signInHandler;
         _tokenStorage = tokenStorage;
+        _codeStorage = codeStorage;
     }
 
     [HttpGet("me")]
@@ -107,7 +110,8 @@ public class UserController : ControllerBase
     public async Task<ActionResult<string>> RequestAccessCode(RequestEmailAccessCode command)
     {
         await _requestAccessCodeHandler.HandleAsync(command);
-        var response = new { SendTo = command.Email };
+        var code = _codeStorage.Get(command.Email);
+        var response = new { SendTo = command.Email, Code = code.AccessCode };
         return Ok(response);
     }
 

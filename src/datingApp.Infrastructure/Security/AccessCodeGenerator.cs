@@ -20,7 +20,7 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
 
     public AccessCodeDto GenerateCode(string emailOrPhone)
     {
-        char[] code = new char[5];
+        char[] code = new char[6];
         for (int i = 0; i < code.Length; i++)
         {
             var randInt = rand.Next(0, seed.Length);
@@ -29,7 +29,7 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
 
         return new AccessCodeDto
         { 
-            AccessCode = code.ToString(),
+            AccessCode = new string(code),
             EmailOrPhone = emailOrPhone,
             Expiry = _expiry,
             ExpirationTime = DateTime.UtcNow + _expiry

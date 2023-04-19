@@ -38,7 +38,7 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler>();
         services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler>();
         services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler>();
-        services.AddSingleton<IEmailSender, SimpleEmailSender>();
+        services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<ExceptionMiddleware>();
         return services;
     }

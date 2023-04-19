@@ -7,6 +7,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace datingApp.Api.Controllers;
@@ -49,15 +50,17 @@ public class UserController : ControllerBase
         _codeStorage = codeStorage;
     }
 
+    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
-        if (user is null)
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name))
         {
             return NotFound();
         }
+
+        var userId = Guid.Parse(User.Identity?.Name);
+        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         return user;
     }
 

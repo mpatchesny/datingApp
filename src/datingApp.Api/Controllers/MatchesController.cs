@@ -115,5 +115,4 @@ public class MatchesController : ControllerBase
         await _deleteMatchHandler.HandleAsync(new DeleteMatch(matchId));
         return NoContent();
     }
-
 }

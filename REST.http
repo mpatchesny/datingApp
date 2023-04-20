@@ -29,8 +29,10 @@ GET {{url}}/users/me
 Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/users/recommendations
+Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
 ###
 POST {{url}}/users
 Content-Type: application/json
@@ -47,6 +49,7 @@ Content-Type: application/json
 }
 ###
 PATCH {{url}}/users
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -60,10 +63,12 @@ Content-Type: application/json
 }
 ###
 DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
 
 ### PHOTOS ###
 
 GET {{url}}/photos/d59bda90-7cc0-409b-b7d3-2e59ee237259
+Authorization: Bearer {{accessToken}}
 ###
 POST {{url}}/photos
 Content-Type: application/json
@@ -74,6 +79,7 @@ Content-Type: application/json
 }
 ###
 PATCH {{url}}/photos
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -82,17 +88,22 @@ Content-Type: application/json
 }
 ###
 DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
 
 ### MATCHES ###
 
 ###
 GET {{url}}/matches
+Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
 ###
 POST {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -101,6 +112,7 @@ Content-Type: application/json
 }
 ###
 PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -108,10 +120,13 @@ Content-Type: application/json
 }
 ###
 DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
 
 ### SWIPES ###
 
 GET {{url}}/like/00000000-0000-0000-0000-000000000002
+Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/pass/00000000-0000-0000-0000-000000000003
+Authorization: Bearer {{accessToken}}
 ###

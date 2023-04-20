@@ -43,7 +43,8 @@ public class MatchesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MatchDto>>> Get([FromQuery] int? page, [FromQuery] int? pageSize)
     {
-        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
+        var userId = Guid.Parse(User.Identity?.Name);
         var command = new GetMatches { UserId = userId };
         command.SetPage(page);
         command.SetPageSize(pageSize);
@@ -76,7 +77,8 @@ public class MatchesController : ControllerBase
     [HttpPost("{matchId:guid}/messages")]
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
-        command = command with {SendFromId = Guid.Parse("00000000-0000-0000-0000-000000000001")};
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
+        var userId = Guid.Parse(User.Identity?.Name);
         command = command with {MessageId = Guid.NewGuid()};
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
@@ -88,7 +90,9 @@ public class MatchesController : ControllerBase
     [HttpPatch("{matchId:guid}/messages")]
     public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] SetMessageAsDisplayed command)
     {
-        command = command with {DisplayedByUserId = Guid.Parse("00000000-0000-0000-0000-000000000001")};
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
+        var userId = Guid.Parse(User.Identity?.Name);
+        command = command with {DisplayedByUserId = userId};
         await _setMessageAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }
@@ -97,7 +101,8 @@ public class MatchesController : ControllerBase
     [HttpPatch]
     public async Task<ActionResult> ChangeMatch(SetMatchAsDisplayed command)
     {
-        Guid userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
+        var userId = Guid.Parse(User.Identity?.Name);
         command = command with {UserId = userId};
         await _setMatchAsDisplayedHandler.HandleAsync(command);
         return NoContent();

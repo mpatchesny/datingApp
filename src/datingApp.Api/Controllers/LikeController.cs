@@ -28,7 +28,8 @@ public class LikeController : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {
-        var swippedByUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
+        var swippedByUserId = Guid.Parse(User.Identity?.Name);
         var command = new SwipeUser(Guid.NewGuid(), swippedByUserId, userId, 2);
         await _swipeUserHandler.HandleAsync(command);
         var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId });

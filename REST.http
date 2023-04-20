@@ -2,7 +2,31 @@
 
 ### USERS ###
 
+###
+# @name auth
+POST {{url}}/users/auth
+Content-Type: application/json
+
+{
+    "email": "test5554@test.com"
+}
+
+###
+# @name sign_in
+@accessCode = {{auth.response.body.$.code}}
+
+POST {{url}}/users/sing-in
+Content-Type: application/json
+
+{
+    "email": "test5554@test.com",
+    "accessCode": "{{accessCode}}"
+}
+###
+@accessToken = {{sign_in.response.body.$.accessToken}}
+
 GET {{url}}/users/me
+Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/users/recommendations
 ###

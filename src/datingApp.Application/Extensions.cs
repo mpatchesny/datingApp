@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Security;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace datingApp.Application
@@ -29,6 +30,10 @@ namespace datingApp.Application
             services.AddScoped<ICommandHandler<DeleteUser>, DeleteUserHandler>();
             services.AddScoped<ICommandHandler<SetMessageAsDisplayed>, SetMessageAsDisplayedHandler>();
             services.AddScoped<ICommandHandler<SetMatchAsDisplayed>, SetMatchAsDisplayedHandler>();
+            services.AddSingleton<AccessCodeVerificator, AccessCodeVerificator>();
+            services.AddScoped<ICommandHandler<RequestEmailAccessCode>, RequestEmailAccessCodeHandler>();
+            services.AddScoped<ICommandHandler<SignInByEmail>, SignInByEmailHandler>();
+
             return services;
         }
     }

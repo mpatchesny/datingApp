@@ -33,7 +33,7 @@ public class PassController : ControllerBase
         var swippedByUserId = Guid.Parse(User.Identity?.Name);
         var command = new SwipeUser(Guid.NewGuid(), swippedByUserId, userId, 1);
         await _swipeUserHandler.HandleAsync(command);
-        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId });
+        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwippedById, SwipedWhoId = command.SwippedWhoId });
         return isMatch;
     }
 }

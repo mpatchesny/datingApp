@@ -8,7 +8,7 @@ POST {{url}}/users/auth
 Content-Type: application/json
 
 {
-    "email": "test5554@test.com"
+    "email": "test@test.com"
 }
 
 ###
@@ -19,7 +19,7 @@ POST {{url}}/users/sing-in
 Content-Type: application/json
 
 {
-    "email": "test5554@test.com",
+    "email": "test@test.com",
     "accessCode": "{{accessCode}}"
 }
 ###

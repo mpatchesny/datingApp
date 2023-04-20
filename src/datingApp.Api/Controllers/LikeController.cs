@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace datingApp.Api.Controllers;
@@ -23,6 +24,7 @@ public class LikeController : ControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
+    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {

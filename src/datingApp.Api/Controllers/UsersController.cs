@@ -58,12 +58,12 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
-
         var userId = Guid.Parse(User.Identity?.Name);
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         return user;
     }
 
+    [Authorize]
     [HttpGet("recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
@@ -73,6 +73,7 @@ public class UserController : ControllerBase
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 
+    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
@@ -93,6 +94,7 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
     }
 
+    [Authorize]
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangeUser command)
     {
@@ -102,6 +104,7 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {

@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace datingApp.Api.Controllers;
@@ -29,6 +30,7 @@ public class PhotosController : ControllerBase
         _deletePhotoHandler = deletePhotoHandler;
     }
 
+    [Authorize]
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
@@ -40,6 +42,7 @@ public class PhotosController : ControllerBase
         return photo;
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult> Post(AddPhoto command)
     {
@@ -49,6 +52,7 @@ public class PhotosController : ControllerBase
         return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
+    [Authorize]
     [HttpPatch]
     public async Task<ActionResult> Patch(ChangePhotoOridinal command)
     {
@@ -58,6 +62,7 @@ public class PhotosController : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpDelete("{photoId:guid}")]
     public async Task<ActionResult> Delete(Guid photoId)
     {

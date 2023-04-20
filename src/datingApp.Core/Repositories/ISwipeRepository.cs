@@ -9,5 +9,6 @@ namespace datingApp.Core.Repositories;
 public interface ISwipeRepository : IRepository
 {
     Task AddAsync(Swipe swipe);
+    Task<IEnumerable<Swipe>> GetByUserIdAsync(Guid userId);
     Task<Swipe> GetBySwipedBySwipedWhoAsync(Guid swipedById, Guid swipedWhoId);
 }

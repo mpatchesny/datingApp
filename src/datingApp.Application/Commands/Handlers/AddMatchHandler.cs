@@ -21,11 +21,6 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 
     public async Task HandleAsync(AddMatch command)
     {
-        var swipes = await _swipeRepository.GetByUserIdAsync(command.swippedById, command.swippedWhoId);
-        if (swipes.Count() < 2) return;
-        var passes = swipes.Where(x => x.Like == Like.Pass);
-        if (passes.Count() > 0) return;
-
         Match match = new Match(Guid.NewGuid(), command.swippedById, command.swippedWhoId, false, false, null, DateTime.UtcNow);
         await _matchRepository.AddAsync(match);
     }

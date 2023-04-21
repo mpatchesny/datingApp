@@ -12,7 +12,7 @@ using Xunit;
 namespace datingApp.Tests.Integration.QueryHandlers;
 
 [Collection("Integration tests")]
-public class GetPrivateUserHandlerTests
+public class GetPrivateUserHandlerTests : IDisposable
 {
     [Fact]
     public async Task query_existing_user_should_return_private_user_dto()

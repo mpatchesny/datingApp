@@ -12,7 +12,7 @@ using Xunit;
 namespace datingApp.Tests.Integration.QueryHandlers;
 
 [Collection("Integration tests")]
-public class GetMessagesHandlerTests
+public class GetMessagesHandlerTests : IDisposable
 {
     [Fact]
     public async Task query_messages_by_existing_match_id_should_return_nonempty_collection_of_messages_dto()

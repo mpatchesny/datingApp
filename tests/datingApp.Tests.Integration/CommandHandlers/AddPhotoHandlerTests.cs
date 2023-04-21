@@ -9,13 +9,14 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Exceptions;
 using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
 [Collection("Integration tests")]
-public class AddPhotoHandlerTests
+public class AddPhotoHandlerTests : IDisposable
 {
     [Fact]
     public async Task add_photo_to_existing_user_should_succeed()
@@ -34,15 +35,6 @@ public class AddPhotoHandlerTests
         Assert.IsType<UserNotExistsException>(exception);
     }
    
-    [Fact]
-    public async Task add_photo_with_wrong_base64_string_should_throw_exception()
-    {
-        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "1");
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        Assert.NotNull(exception);
-        Assert.IsType<FailToConvertBase64StringToArrayOfBytes>(exception);
-    }
-
     [Fact]
     public async Task add_photo_when_user_reached_photo_count_limit_should_throw_exception()
     {
@@ -80,7 +72,8 @@ public class AddPhotoHandlerTests
         var userRepository = new PostgresUserRepository(_testDb.DbContext);
 
         var mockedPhotoService = new Mock<IPhotoService>();
-        mockedPhotoService.Setup(m => m.SavePhoto(It.IsAny<byte[]>())).Returns("abc");
+        mockedPhotoService.Setup(m => m.GetImageFileFormat(It.IsAny<byte[]>())).Returns("jpg");
+        mockedPhotoService.Setup(m => m.SavePhoto(It.IsAny<byte[]>(), "jpg")).Returns("abc.jpg");
         _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object);
     }
 

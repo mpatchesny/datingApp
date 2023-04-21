@@ -90,6 +90,9 @@ Content-Type: application/json
 ###
 DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
+###
+GET {{url}}/storage/00000000-0000-0000-0000-000000000001.jpg
+Authorization: Bearer {{accessToken}}
 
 ### MATCHES ###
 

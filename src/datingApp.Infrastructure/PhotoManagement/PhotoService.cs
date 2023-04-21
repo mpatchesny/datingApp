@@ -11,6 +11,13 @@ namespace datingApp.Infrastructure.PhotoManagement;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
+    private readonly IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>()
+    {
+        {new byte[] {0x42, 0x4D}, "bmp"},
+        {new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png"},
+        {new byte[] {0xFF, 0xD8, 0xFF}, "jpg"},
+    };
+        
     public PhotoService(IOptions<PhotoServiceOptions> options)
     {
         _options = options;
@@ -36,10 +43,7 @@ internal sealed class PhotoService : IPhotoService
     {
         // Returns file extension associated with file format
         // if image file format is not known, returns null
-        IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>();
-        knownFileHeaders.Add(new byte[] {0x42, 0x4D}, "bmp");
-        knownFileHeaders.Add(new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png");
-        knownFileHeaders.Add(new byte[] {0xFF, 0xD8}, "jpg");
+
 
         string ext = null;
         bool match = false;

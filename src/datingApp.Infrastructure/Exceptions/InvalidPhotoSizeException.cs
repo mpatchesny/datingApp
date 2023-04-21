@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
 
-namespace datingApp.Application.Exceptions;
+namespace datingApp.Infrastructure.Exceptions;
 
 public class InvalidPhotoSizeException : CustomException
 {

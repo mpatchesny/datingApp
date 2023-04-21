@@ -11,16 +11,18 @@ namespace datingApp.Infrastructure.PhotoManagement;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
+    private readonly IOptions<StorageOptions> _storageOptions;
     private readonly IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>()
     {
         {new byte[] {0x42, 0x4D}, "bmp"},
         {new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png"},
         {new byte[] {0xFF, 0xD8, 0xFF}, "jpg"},
     };
-        
-    public PhotoService(IOptions<PhotoServiceOptions> options)
+
+    public PhotoService(IOptions<PhotoServiceOptions> options, IOptions<StorageOptions> storageOptions)
     {
         _options = options;
+        _storageOptions = storageOptions;
     }
 
     public byte[] ConvertToArrayOfBytes(string Base64Bytes)
@@ -65,9 +67,9 @@ internal sealed class PhotoService : IPhotoService
 
     public string SavePhoto(byte[] photo, string filename, string extension)
     {
-        BuildPath(_options.Value.StoragePath);
+        BuildPath(_storageOptions.Value.StoragePath);
         string fileNameWithExt = $"{filename}.{extension}";
-        string filePath = System.IO.Path.Combine(_options.Value.StoragePath, fileNameWithExt);
+        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, fileNameWithExt);
         System.IO.File.WriteAllBytes(filePath, photo);
         return filePath;
     }

@@ -120,7 +120,7 @@ public class PhotoServiceTests
         options.Value.StoragePath = "./";
         var service = new PhotoService(options);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
-        var path = service.SavePhoto(photo, "txt");
+        var path = service.SavePhoto(photo, "test", "txt");
         var fileExists = System.IO.File.Exists(path);
         Assert.True(fileExists);
         System.IO.File.Delete(path);
@@ -133,7 +133,7 @@ public class PhotoServiceTests
         options.Value.StoragePath = testDirectoryPath;
         var service = new PhotoService(options);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
-        var path = service.SavePhoto(photo, "txt");
+        var path = service.SavePhoto(photo, "test", "txt");
         var folderExists = System.IO.Directory.Exists(testDirectoryPath);
         Assert.True(folderExists);
         System.IO.File.Delete(path);

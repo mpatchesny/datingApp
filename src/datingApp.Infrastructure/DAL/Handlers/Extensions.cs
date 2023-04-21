@@ -47,6 +47,7 @@ internal static class Extensions
             Id = entity.Id,
             Oridinal = entity.Oridinal,
             Path = entity.Path,
+            Url = entity.Url,
             UserId = entity.UserId
         };
     }

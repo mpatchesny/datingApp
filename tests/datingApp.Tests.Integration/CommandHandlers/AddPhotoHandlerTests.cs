@@ -40,11 +40,11 @@ public class AddPhotoHandlerTests : IDisposable
     {
         var photos = new List<Photo>
         {
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 2),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 3),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 4),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 5),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 6)
+            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 2),
+            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 3),
+            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 4),
+            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 5),
+            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 6)
         };
         await _testDb.DbContext.Photos.AddRangeAsync(photos);
         await _testDb.DbContext.SaveChangesAsync();
@@ -61,7 +61,7 @@ public class AddPhotoHandlerTests : IDisposable
     {
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000000"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000000"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
@@ -73,7 +73,7 @@ public class AddPhotoHandlerTests : IDisposable
 
         var mockedPhotoService = new Mock<IPhotoService>();
         mockedPhotoService.Setup(m => m.GetImageFileFormat(It.IsAny<byte[]>())).Returns("jpg");
-        mockedPhotoService.Setup(m => m.SavePhoto(It.IsAny<byte[]>(), "jpg")).Returns("abc.jpg");
+        mockedPhotoService.Setup(m => m.SavePhoto(It.IsAny<byte[]>(), It.IsAny<string>(), "jpg")).Returns("abc.jpg");
         _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object);
     }
 

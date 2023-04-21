@@ -67,10 +67,11 @@ Authorization: Bearer {{accessToken}}
 
 ### PHOTOS ###
 
-GET {{url}}/photos/d59bda90-7cc0-409b-b7d3-2e59ee237259
+GET {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 ###
 POST {{url}}/photos
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {

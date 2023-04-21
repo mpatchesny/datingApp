@@ -17,7 +17,6 @@ namespace datingApp.Application
         {
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
-            services.AddSingleton<IPhotoService, StubPhotoService>();
             services.AddScoped<ICommandHandler<SignUp>, SignUpHandler>();
             services.AddScoped<ICommandHandler<ChangeUser>, ChangeUserHandler>();
             services.AddScoped<ICommandHandler<ChangeLocation>, ChangeLocationHandler>();
@@ -34,7 +33,6 @@ namespace datingApp.Application
             services.AddScoped<ICommandHandler<RequestEmailAccessCode>, RequestEmailAccessCodeHandler>();
             services.AddScoped<ICommandHandler<SignInByEmail>, SignInByEmailHandler>();
             services.AddScoped<ICommandHandler<AddMatch>, AddMatchHandler>();
-
             return services;
         }
     }

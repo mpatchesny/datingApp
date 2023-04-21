@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.PhotoManagement;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
@@ -39,6 +40,7 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler>();
         services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler>();
         services.AddSingleton<IEmailSender, DummyEmailSender>();
+        services.AddSingleton<IPhotoService, DummyPhotoService>();
         services.AddSingleton<ExceptionMiddleware>();
         return services;
     }

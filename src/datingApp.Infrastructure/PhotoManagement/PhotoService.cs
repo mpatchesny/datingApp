@@ -43,8 +43,6 @@ internal sealed class PhotoService : IPhotoService
     {
         // Returns file extension associated with file format
         // if image file format is not known, returns null
-
-
         string ext = null;
         bool match = false;
         foreach (var item in knownFileHeaders)

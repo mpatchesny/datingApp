@@ -27,14 +27,4 @@ internal sealed class PostgresSwipeRepository : ISwipeRepository
         var swipe = await _dbContext.Swipes.SingleOrDefaultAsync(x => x.SwippedById == swippedById & x.SwippedWhoId == swippedWhoId);
         return swipe;
     }
-
-    public async Task<IEnumerable<Swipe>> GetByUserIdAsync(Guid SwipedById, Guid SwipedWhoId)
-    {
-        var swipes = await _dbContext.Swipes
-                            .Where(x => x.SwippedById == SwipedById || x.SwippedById == SwipedWhoId)
-                            .Where(x => x.SwippedWhoId == SwipedWhoId || x.SwippedWhoId == SwipedById)
-                            .Distinct()
-                            .ToListAsync();
-        return swipes;
-    }
 }

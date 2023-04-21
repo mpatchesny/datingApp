@@ -7,8 +7,8 @@ namespace datingApp.Application.PhotoManagement;
 
 internal sealed class DummyPhotoService : IPhotoService
 {
-    public string SavePhoto(byte[] photo)
+    public string SavePhoto(byte[] photo, string extension)
     {
-        return Guid.NewGuid().ToString();
+        return $"{Guid.NewGuid().ToString()}.{extension}";
     }
 }

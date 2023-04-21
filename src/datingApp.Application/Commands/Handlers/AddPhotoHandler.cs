@@ -62,7 +62,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         }
 
         int oridinal = user.Photos.Count();
-        var photoPath = _photoService.SavePhoto(bytes);
+        var photoPath = _photoService.SavePhoto(bytes, "jpg");
         var photo = new Photo(command.PhotoId, command.UserId, photoPath, oridinal);
         await _photoRepository.AddAsync(photo);
     }

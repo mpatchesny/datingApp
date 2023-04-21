@@ -8,4 +8,6 @@ namespace datingApp.Infrastructure.PhotoManagement;
 public sealed class PhotoServiceOptions
 {
     public string StoragePath { get; set; }
+    public int MinPhotoSizeBytes { get; set; }
+    public int MaxPhotoSizeBytes { get; set; }
 }

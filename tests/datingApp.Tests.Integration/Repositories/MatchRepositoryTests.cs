@@ -43,6 +43,19 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async void get_existsing_match_by_exsits_should_return_true()
+    {
+        var match = await _repository.ExistsAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.True(match);
+    }
+    [Fact]
+    public async void get_nonexistsing_match_by_exsits_should_return_false()
+    {
+        var match = await _repository.ExistsAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.False(match);
+    }
+
+    [Fact]
     public async void delete_existing_match_by_id_should_succeed()
     {
         var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");

@@ -33,6 +33,7 @@ namespace datingApp.Application
             services.AddSingleton<AccessCodeVerificator, AccessCodeVerificator>();
             services.AddScoped<ICommandHandler<RequestEmailAccessCode>, RequestEmailAccessCodeHandler>();
             services.AddScoped<ICommandHandler<SignInByEmail>, SignInByEmailHandler>();
+            services.AddScoped<ICommandHandler<AddMatch>, AddMatchHandler>();
 
             return services;
         }

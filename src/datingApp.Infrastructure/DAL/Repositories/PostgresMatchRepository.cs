@@ -28,6 +28,14 @@ internal sealed class PostgresMatchRepository : IMatchRepository
         return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id == matchId);
     }
 
+    public async Task<bool> ExistsAsync(Guid userId1, Guid userId2)
+    {
+        var count = await _dbContext.Matches
+                    .Where(x => x.UserId1 == userId1 && x.UserId2 == userId2)
+                    .CountAsync();
+        return (count > 0);
+    }
+
     public async Task AddAsync(Match match)
     {
         await _dbContext.Matches.AddAsync(match);

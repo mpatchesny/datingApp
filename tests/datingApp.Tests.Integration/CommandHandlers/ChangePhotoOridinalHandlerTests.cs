@@ -27,7 +27,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     [Fact]
     public async Task change_oridinal_of_existing_photo_when_other_photo_with_that_oridinal_exists_should_succeed()
     {
-        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 1);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
         var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), 2);
@@ -52,7 +52,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
-        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 0);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 0);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

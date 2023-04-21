@@ -6,7 +6,7 @@ using datingApp.Application.Services;
 
 namespace datingApp.Infrastructure.Services;
 
-public class DummyEmailSender : IEmailSender
+internal sealed class DummyEmailSender : IEmailSender
 {
     public Task SendAsync(string receiver, string subject, string body)
     {

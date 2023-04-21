@@ -12,7 +12,7 @@ namespace datingApp.Infrastructure.Security;
 internal static class Extensions
 {
     private const string OptionsSectionName = "auth";
-    private const string AccessCodeOptionsSectionName = "access_code";
+    private const string AccessCodeOptionsSectionName = "AccessCode";
     
     public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {

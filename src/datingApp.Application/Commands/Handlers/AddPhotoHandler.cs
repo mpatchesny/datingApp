@@ -37,8 +37,9 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
         byte[] bytes = _photoService.ConvertToArrayOfBytes(command.Base64Bytes);
         _photoService.ValidatePhoto(bytes);
+        var extension = _photoService.GetImageFileFormat(bytes);
+        var photoPath = _photoService.SavePhoto(bytes, extension);
         int oridinal = user.Photos.Count();
-        var photoPath = _photoService.SavePhoto(bytes, "jpg");
         var photo = new Photo(command.PhotoId, command.UserId, photoPath, oridinal);
         await _photoRepository.AddAsync(photo);
     }

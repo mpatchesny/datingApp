@@ -13,6 +13,11 @@ internal sealed class DummyPhotoService : IPhotoService
         return bytes;
     }
 
+    public string GetImageFileFormat(byte[] photo)
+    {
+        return "jpg";
+    }
+
     public string SavePhoto(byte[] photo, string extension)
     {
         return $"{Guid.NewGuid().ToString()}.{extension}";

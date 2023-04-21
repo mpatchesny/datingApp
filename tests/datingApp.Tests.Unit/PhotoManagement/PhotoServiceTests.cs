@@ -22,6 +22,19 @@ public class PhotoServiceTests
     }
 
     [Fact]
+    public void given_invalid_unknown_file_format_validate_should_throw_exception()
+    {
+        IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
+        var service = new PhotoService(options);
+        byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
+        options.Value.MaxPhotoSizeBytes=10000;
+        options.Value.MinPhotoSizeBytes=1;
+        var exception = Record.Exception(() => service.ValidatePhoto(photo));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidPhotoException>(exception);
+    }
+
+    [Fact]
     public void get_image_file_format_returns_jpg_if_given_jpg_file_header()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
@@ -36,6 +49,8 @@ public class PhotoServiceTests
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
+        options.Value.MaxPhotoSizeBytes=10000;
+        options.Value.MinPhotoSizeBytes=100;
         byte[] photo = new byte[] {0x42, 0x4D};
         var ext = service.GetImageFileFormat(photo);
         Assert.Equal("bmp", ext);

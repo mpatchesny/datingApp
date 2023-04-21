@@ -15,14 +15,23 @@ internal sealed class PhotoService : IPhotoService
         _options = options;
     }
 
+    public byte[] ConvertToArrayOfBytes(string base64content)
+    {
+        throw new NotImplementedException();
+    }
+
     public string SavePhoto(byte[] photo, string extension)
     {
-        // TODO: add extension
-        string fileName = System.IO.Path.GetRandomFileName();
+        string fileName = $"{System.IO.Path.GetRandomFileName()}.{extension}";
         string filePath = System.IO.Path.Combine(_options.Value.StoragePath, fileName);
         BuildPath(_options.Value.StoragePath);
         System.IO.File.WriteAllBytes(filePath, photo);
         return filePath;
+    }
+
+    public void ValidatePhoto(byte[] photo)
+    {
+        throw new NotImplementedException();
     }
 
     private void BuildPath(string path)

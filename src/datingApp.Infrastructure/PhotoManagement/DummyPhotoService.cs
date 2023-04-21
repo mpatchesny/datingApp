@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.PhotoManagement;
 
-public class StubPhotoService : IPhotoService
+public class DummyPhotoService : IPhotoService
 {
     public string SavePhoto(byte[] photo)
     {

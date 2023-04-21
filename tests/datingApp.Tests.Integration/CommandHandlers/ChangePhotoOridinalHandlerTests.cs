@@ -14,7 +14,7 @@ using Xunit;
 namespace datingApp.Tests.Integration.CommandHandlers;
 
 [Collection("Integration tests")]
-public class ChangePhotoOridinalHandlerTests
+public class ChangePhotoOridinalHandlerTests : IDisposable
 {
     [Fact]
     public async Task change_oridinal_of_existing_photo_should_succeed()

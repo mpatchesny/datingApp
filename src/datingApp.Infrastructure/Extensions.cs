@@ -24,8 +24,9 @@ namespace datingApp.Infrastructure;
 
 public static class Extensions
 {
-    private const string EmailSenderOptionsSectionName = "email_sender";
-    private const string PhotoServiceOptionsSectionName = "photo_service";
+    private const string EmailSenderOptionsSectionName = "EmailSender";
+    private const string PhotoServiceOptionsSectionName = "PhotoService";
+    private const string StorageOptionsSectionName = "Storage";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPostgres(configuration);
@@ -33,6 +34,7 @@ public static class Extensions
         services.AddHttpContextAccessor();
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
+        services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<IQueryHandler<GetMatches, IEnumerable<MatchDto>>, GetMatchesHandler>();
         services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler>();

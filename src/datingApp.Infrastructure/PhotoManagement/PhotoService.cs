@@ -34,14 +34,38 @@ internal sealed class PhotoService : IPhotoService
 
     public string GetImageFileFormat(byte[] photo)
     {
-        throw new NotImplementedException();
+        // Returns file extension associated with file format
+        // if image file format is not known, returns null
+        IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>();
+        knownFileHeaders.Add(new byte[] {0x42, 0x4D}, "bmp");
+        knownFileHeaders.Add(new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png");
+        knownFileHeaders.Add(new byte[] {0xFF, 0xD8}, "jpg");
+
+        string ext = null;
+        bool match = false;
+        foreach (var item in knownFileHeaders)
+        {
+            for (int i = 0; i < item.Key.Length; i++)
+            {
+                match = (photo[i] == item.Key[i]);
+                if (!match) break;
+            }
+
+            if (match)
+            {
+                ext = item.Value;
+                break;
+            }
+        }
+
+        return ext;
     }
 
     public string SavePhoto(byte[] photo, string extension)
     {
-        string fileName = $"{System.IO.Path.GetRandomFileName()}.{extension}";
-        string filePath = System.IO.Path.Combine(_options.Value.StoragePath, fileName);
         BuildPath(_options.Value.StoragePath);
+        string fileName = $"{System.IO.Path.GetRandomFileName().ToLowerInvariant()}.{extension}";
+        string filePath = System.IO.Path.Combine(_options.Value.StoragePath, fileName);
         System.IO.File.WriteAllBytes(filePath, photo);
         return filePath;
     }
@@ -59,8 +83,10 @@ internal sealed class PhotoService : IPhotoService
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
-
-        // TODO: is a valid photo?
+        if (GetImageFileFormat(photo) == null)
+        {
+            throw new InvalidPhotoException();
+        }
     }
 
     private void BuildPath(string path)

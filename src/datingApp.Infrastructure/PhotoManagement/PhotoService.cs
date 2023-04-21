@@ -63,11 +63,11 @@ internal sealed class PhotoService : IPhotoService
         return ext;
     }
 
-    public string SavePhoto(byte[] photo, string extension)
+    public string SavePhoto(byte[] photo, string filename, string extension)
     {
         BuildPath(_options.Value.StoragePath);
-        string fileName = $"{System.IO.Path.GetRandomFileName().ToLowerInvariant()}.{extension}";
-        string filePath = System.IO.Path.Combine(_options.Value.StoragePath, fileName);
+        string fileNameWithExt = $"{filename}.{extension}";
+        string filePath = System.IO.Path.Combine(_options.Value.StoragePath, fileNameWithExt);
         System.IO.File.WriteAllBytes(filePath, photo);
         return filePath;
     }

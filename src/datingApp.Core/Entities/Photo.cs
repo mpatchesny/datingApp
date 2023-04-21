@@ -11,13 +11,15 @@ public class Photo
     public Guid Id { get; }
     public Guid UserId { get; private set; }
     public string Path { get; private set; }
+    public string Url { get; private set; }
     public int Oridinal { get; private set; }
 
-    public Photo(Guid id, Guid userId, string path, int oridinal)
+    public Photo(Guid id, Guid userId, string path, string url, int oridinal)
     {
         Id = id;
         UserId = userId;
         SetPath(path);
+        Url = url;
         Oridinal = oridinal;
     }
 

@@ -39,7 +39,7 @@ namespace datingApp.Infrastructure.DAL
 
             if (dbContext.Photos.Count() == 0)
             {
-                var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", 0);
+                var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 0);
                 dbContext.Photos.Add(photo);
                 await dbContext.SaveChangesAsync();
             };

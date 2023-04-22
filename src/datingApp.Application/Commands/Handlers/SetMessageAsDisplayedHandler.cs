@@ -18,17 +18,14 @@ public class SetMessageAsDisplayedHandler : ICommandHandler<SetMessageAsDisplaye
 
     public async Task HandleAsync(SetMessageAsDisplayed command)
     {
-        var message = await _messageRepository.GetByIdAsync(command.LastMessageId);
-        if (message == null)
-        {
-            throw new MessageNotExistsException(command.LastMessageId);
-        }
-        if (message.SendFromId == command.DisplayedByUserId)
-        {
-            throw new UserCannotSetMessageAsDisplayedException(command.LastMessageId);
-        }
+        var messages = (await _messageRepository.GetPreviousMessages(command.LastMessageId))
+                        .Where(x => x.IsDisplayed == false && x.SendFromId != command.DisplayedByUserId);
+        if (messages.Count() == 0) return;
         
-        message.SetDisplayed();
-        await _messageRepository.UpdateAsync(message);
+        foreach (var message in messages)
+        {
+            message.SetDisplayed();
+        }
+        await _messageRepository.UpdateRangeAsync(messages.ToArray());
     }
 }

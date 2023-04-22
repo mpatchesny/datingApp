@@ -9,7 +9,7 @@ namespace datingApp.Core.Repositories;
 public interface IMessageRepository
 {
     Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId);
-    Task<IEnumerable<Message>> GetPreviousMessages(Guid messageId);
+    Task<IEnumerable<Message>> GetPreviousNotDisplayedMessages(Guid messageId);
     Task<Message> GetByIdAsync(Guid messageId);
     Task AddAsync(Message message);
     Task UpdateAsync(Message message);

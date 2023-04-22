@@ -19,7 +19,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     [Fact]
     public async Task change_oridinal_of_existing_photo_should_succeed()
     {
-        var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), 2);
+        var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000001"), 2);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -30,7 +30,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
         var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
-        var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), 2);
+        var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000001"), 2);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -38,7 +38,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     [Fact]
     public async Task change_oridinal_of_nonexisting_photo_should_throw_exception()
     {
-        var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), 1);
+        var command = new ChangePhotoOridinal(Guid.Parse("00000000-0000-0000-0000-000000000002"), 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<PhotoNotExistsException>(exception);

@@ -17,7 +17,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
     [Fact]
     public async Task set_existsing_message_as_displayed_should_succeed()
     {
-        var command = new SetMessageAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -25,7 +25,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
     [Fact]
     public async Task when_not_user_who_received_message_set_message_as_displayed_should_throw_exception()
     {
-        var command = new SetMessageAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserCannotSetMessageAsDisplayedException>(exception);
@@ -34,7 +34,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
     [Fact]
     public async Task set_nonexistsing_message_as_displayed_should_throw_exception()
     {
-        var command = new SetMessageAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<MessageNotExistsException>(exception);

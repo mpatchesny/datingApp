@@ -8,7 +8,7 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class SetMessageAsDisplayedHandler : ICommandHandler<SetMessageAsDisplayed>
+public class SetMessageAsDisplayedHandler : ICommandHandler<SetMessagesAsDisplayed>
 {
     private readonly IMessageRepository _messageRepository;
     public SetMessageAsDisplayedHandler(IMessageRepository messageRepository)
@@ -16,7 +16,7 @@ public class SetMessageAsDisplayedHandler : ICommandHandler<SetMessageAsDisplaye
         _messageRepository = messageRepository;
     }
 
-    public async Task HandleAsync(SetMessageAsDisplayed command)
+    public async Task HandleAsync(SetMessagesAsDisplayed command)
     {
         var messages = (await _messageRepository.GetPreviousMessages(command.LastMessageId))
                         .Where(x => x.IsDisplayed == false && x.SendFromId != command.DisplayedByUserId);

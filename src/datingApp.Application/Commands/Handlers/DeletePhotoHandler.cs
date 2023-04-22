@@ -24,5 +24,17 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             throw new PhotoNotExistsException(command.PhotoId);
         }
         await _photoRepository.DeleteAsync(photo);
+
+        var fileExists = System.IO.File.Exists(photo.Path);
+        if (fileExists)
+        {
+            try
+            {
+                System.IO.File.Delete(photo.Path);
+            }
+            catch (System.Exception)
+            {
+            }
+        }
     }
 }

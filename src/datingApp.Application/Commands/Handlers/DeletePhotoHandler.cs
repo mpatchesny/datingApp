@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Application.PhotoManagement;
 using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
@@ -11,9 +12,11 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IPhotoRepository _photoRepository;
-    public DeletePhotoHandler(IPhotoRepository photoRepository)
+    private readonly IPhotoService _photoService;
+    public DeletePhotoHandler(IPhotoRepository photoRepository, IPhotoService photoService)
     {
         _photoRepository = photoRepository;
+        _photoService = photoService;
     }
 
     public async Task HandleAsync(DeletePhoto command)
@@ -25,16 +28,6 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         }
         await _photoRepository.DeleteAsync(photo);
 
-        var fileExists = System.IO.File.Exists(photo.Path);
-        if (fileExists)
-        {
-            try
-            {
-                System.IO.File.Delete(photo.Path);
-            }
-            catch (System.Exception)
-            {
-            }
-        }
+        _photoService.DeletePhoto(photo.Path);
     }
 }

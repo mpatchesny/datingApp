@@ -41,6 +41,21 @@ internal sealed class PhotoService : IPhotoService
         return bytes;
     }
 
+    public void DeletePhoto(string path)
+    {
+        if (System.IO.File.Exists(path))
+        {
+            try
+            {
+                System.IO.File.Delete(path);
+            }
+            catch (System.Exception)
+            {
+                // pass
+            }
+        }
+    }
+
     public string GetImageFileFormat(byte[] photo)
     {
         // Returns file extension associated with file format

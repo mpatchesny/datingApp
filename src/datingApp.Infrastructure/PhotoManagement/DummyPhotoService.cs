@@ -13,6 +13,11 @@ internal sealed class DummyPhotoService : IPhotoService
         return bytes;
     }
 
+    public void DeletePhoto(string path)
+    {
+        // do nothing
+    }
+
     public string GetImageFileFormat(byte[] photo)
     {
         return "jpg";

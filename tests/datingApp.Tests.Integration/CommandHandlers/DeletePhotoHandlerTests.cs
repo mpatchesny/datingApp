@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
+using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
 using Xunit;
@@ -47,7 +48,8 @@ public class DeletePhotoHandlerTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
-        _handler = new DeletePhotoHandler(photoRepository);
+        var photoService = new DummyPhotoService();
+        _handler = new DeletePhotoHandler(photoRepository, photoService);
     }
 
     // Teardown

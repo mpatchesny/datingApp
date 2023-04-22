@@ -28,7 +28,7 @@ Content-Type: application/json
 GET {{url}}/users/me
 Authorization: Bearer {{accessToken}}
 ###
-GET {{url}}/users/recommendations
+GET {{url}}/users/me/recommendations
 Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
@@ -48,7 +48,7 @@ Content-Type: application/json
     "bio": ""
 }
 ###
-PATCH {{url}}/users
+PATCH {{url}}/users/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -70,12 +70,11 @@ Authorization: Bearer {{accessToken}}
 GET {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 ###
-PATCH {{url}}/photos
+PATCH {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "photoId": "00000000-0000-0000-0000-000000000001",
     "newOridinal": 0
 }
 ###
@@ -106,12 +105,12 @@ Content-Type: application/json
     "text": "hejka2"
 }
 ###
-PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "messageId": "00000000-0000-0000-0000-000000000001"
+    "DisplayedByUserId": "00000000-0000-0000-0000-000000000001"
 }
 ###
 DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001

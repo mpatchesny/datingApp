@@ -19,7 +19,7 @@ public class MatchesController : ControllerBase
     private readonly IQueryHandler<GetMessages, IEnumerable<MessageDto>> _getMessagesHandler;
     private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
     private readonly ICommandHandler<SendMessage> _sendMessageHandler;
-    private readonly ICommandHandler<SetMessagesAsDisplayed> _setMessageAsDisplayedHandler;
+    private readonly ICommandHandler<SetMessagesAsDisplayed> _setMessagesAsDisplayedHandler;
     private readonly ICommandHandler<SetMatchAsDisplayed> _setMatchAsDisplayedHandler;
     private readonly ICommandHandler<DeleteMatch> _deleteMatchHandler;
     public MatchesController(IQueryHandler<GetMatches, IEnumerable<MatchDto>> getMatchesHandler,
@@ -27,7 +27,7 @@ public class MatchesController : ControllerBase
                             ICommandHandler<DeleteMatch> deleteMatchHandler,
                             IQueryHandler<GetMessages, IEnumerable<MessageDto>> getMessagesHandler,
                             IQueryHandler<GetMessage, MessageDto> getMessageHandler,
-                            ICommandHandler<SetMessagesAsDisplayed> setMessageAsDisplayedHandler,
+                            ICommandHandler<SetMessagesAsDisplayed> setMessagesAsDisplayedHandler,
                             ICommandHandler<SetMatchAsDisplayed> setMatchAsDisplayedHandler)
     {
         _getMatchesHandler = getMatchesHandler;
@@ -35,7 +35,7 @@ public class MatchesController : ControllerBase
         _getMessagesHandler = getMessagesHandler;
         _sendMessageHandler = sendMessageHandler;
         _getMessageHandler = getMessageHandler;
-        _setMessageAsDisplayedHandler = setMessageAsDisplayedHandler;
+        _setMessagesAsDisplayedHandler = setMessagesAsDisplayedHandler;
         _setMatchAsDisplayedHandler = setMatchAsDisplayedHandler;
     }
 
@@ -89,7 +89,7 @@ public class MatchesController : ControllerBase
     public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromRoute] Guid messageId, [FromBody] SetMessagesAsDisplayed command)
     {
         command = command with {LastMessageId = messageId};
-        await _setMessageAsDisplayedHandler.HandleAsync(command);
+        await _setMessagesAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }
 

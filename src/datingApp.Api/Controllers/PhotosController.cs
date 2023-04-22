@@ -53,12 +53,10 @@ public class PhotosController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch]
-    public async Task<ActionResult> Patch(ChangePhotoOridinal command)
+    [HttpPatch("{photoId:guid}")]
+    public async Task<ActionResult> Patch([FromRoute] Guid photoId, ChangePhotoOridinal command)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
-        command = command with {UserId = userId};
+        command = command with {PhotoId = photoId};
         await _changePhotoOridinalHandler.HandleAsync(command);
         return NoContent();
     }

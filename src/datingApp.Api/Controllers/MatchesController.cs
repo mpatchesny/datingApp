@@ -77,8 +77,6 @@ public class MatchesController : ControllerBase
     [HttpPost("{matchId:guid}/messages")]
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
         command = command with {MessageId = Guid.NewGuid()};
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
@@ -87,23 +85,19 @@ public class MatchesController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch("{matchId:guid}/messages")]
-    public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromBody] SetMessageAsDisplayed command)
+    [HttpPatch("{matchId:guid}/messages/{messageId:guid}")]
+    public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromRoute] Guid messageId, [FromBody] SetMessageAsDisplayed command)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
-        command = command with {DisplayedByUserId = userId};
+        command = command with {MessageId = messageId};
         await _setMessageAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }
 
     [Authorize]
-    [HttpPatch]
-    public async Task<ActionResult> ChangeMatch(SetMatchAsDisplayed command)
+    [HttpPatch("{matchId:guid}")]
+    public async Task<ActionResult> ChangeMatch([FromRoute] Guid matchId, [FromBody] SetMatchAsDisplayed command)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
-        command = command with {UserId = userId};
+        command = command with {MatchId = matchId};
         await _setMatchAsDisplayedHandler.HandleAsync(command);
         return NoContent();
     }

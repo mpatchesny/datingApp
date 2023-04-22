@@ -1,0 +1,24 @@
+Endpoints:
+GET users/me
+GET users/me/recommendations
+POST users
+PATCH users/<userId>
+DELETE users/<userId>
+POST users/auth
+POST users/sign-in
+
+GET photos/<photoId>
+POST photos
+PATCH photos/<photoId>
+
+GET matches
+POST matches
+PATCH matches/<matchId>
+GET matches/<matchId>/messages
+GET matches/<matchId>/messages/<messageId>
+POST matches/<matchId>/messages
+PATCH matches/<matchId>/messages/<messageId>
+DELETE matches/<matchId>
+
+GET /like/<userId>
+GET /like/<userId>

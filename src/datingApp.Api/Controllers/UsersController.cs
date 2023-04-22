@@ -61,7 +61,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("recommendations")]
+    [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
@@ -93,11 +93,9 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpPatch]
-    public async Task<ActionResult> Patch(ChangeUser command)
+    [HttpPatch("{userId:guid}")]
+    public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
         command = command with {UserId = userId};
         await _changeUserHandler.HandleAsync(command);
         return NoContent();

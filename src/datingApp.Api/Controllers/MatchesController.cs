@@ -41,7 +41,7 @@ public class MatchesController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MatchDto>>> Get([FromQuery] int? page, [FromQuery] int? pageSize)
+    public async Task<ActionResult<IEnumerable<MatchDto>>> GetMatch([FromQuery] int? page, [FromQuery] int? pageSize)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var userId = Guid.Parse(User.Identity?.Name);

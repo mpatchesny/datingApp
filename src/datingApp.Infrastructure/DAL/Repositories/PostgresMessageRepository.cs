@@ -38,6 +38,12 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task UpdateRangeAsync(Message[] messages)
+    {
+        _dbContext.Messages.UpdateRange(messages);
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(Guid messageId)
     {
         var message = await _dbContext.Messages.FirstAsync(x => x.Id == messageId);
@@ -45,4 +51,13 @@ internal sealed class PostgresMessageRepository : IMessageRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<Message>> GetPreviousNotDisplayedMessages(Guid messageId)
+    {
+        var minCreatedTime = _dbContext.Messages
+                                        .Where(x => x.Id == messageId)
+                                        .Select(x => x.CreatedAt)
+                                        .FirstOrDefault();
+        return await _dbContext.Messages.Where(x => x.CreatedAt <= minCreatedTime)
+                                        .Where(x => x.IsDisplayed == false).ToListAsync();
+    }
 }

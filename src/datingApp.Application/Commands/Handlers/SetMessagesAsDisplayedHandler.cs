@@ -8,10 +8,10 @@ using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class SetMessageAsDisplayedHandler : ICommandHandler<SetMessagesAsDisplayed>
+public class SetMessagesAsDisplayedHandler : ICommandHandler<SetMessagesAsDisplayed>
 {
     private readonly IMessageRepository _messageRepository;
-    public SetMessageAsDisplayedHandler(IMessageRepository messageRepository)
+    public SetMessagesAsDisplayedHandler(IMessageRepository messageRepository)
     {
         _messageRepository = messageRepository;
     }

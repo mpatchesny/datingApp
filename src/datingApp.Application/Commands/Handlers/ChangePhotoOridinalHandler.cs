@@ -22,17 +22,18 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
 
     public async Task HandleAsync(ChangePhotoOridinal command)
     {
-        var photos = await _photoRepository.GetByUserIdAsync(command.UserId);
-        var thisPhoto = photos.FirstOrDefault(x => x.Id == command.PhotoId);
+        var thisPhoto = await _photoRepository.GetByIdAsync(command.PhotoId);
         if (thisPhoto == null)
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
-
+        
         if (thisPhoto.Oridinal == command.NewOridinal)
         {
             return;
         }
+
+        var photos = await _photoRepository.GetByUserIdAsync(thisPhoto.UserId);
 
         var photoList = _photoOrderer.OrderPhotos(photos.ToList<Photo>(), thisPhoto.Id, command.NewOridinal);
         for (int i = 0; i < photoList.Count(); i++)

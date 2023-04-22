@@ -53,11 +53,16 @@ internal sealed class PostgresMessageRepository : IMessageRepository
 
     public async Task<IEnumerable<Message>> GetPreviousNotDisplayedMessages(Guid messageId)
     {
-        var minCreatedTime = _dbContext.Messages
-                                        .Where(x => x.Id == messageId)
-                                        .Select(x => x.CreatedAt)
-                                        .FirstOrDefault();
-        return await _dbContext.Messages.Where(x => x.CreatedAt <= minCreatedTime)
+        var condition = _dbContext.Messages
+                                .Where(x => x.Id == messageId)
+                                .Select(x => new {
+                                    x.CreatedAt,
+                                    x.MatchId
+                                })
+                                .FirstOrDefault();
+
+        return await _dbContext.Messages.Where(x => x.CreatedAt <= condition.CreatedAt)
+                                        .Where(x => x.MatchId == condition.MatchId)
                                         .Where(x => x.IsDisplayed == false).ToListAsync();
     }
 }

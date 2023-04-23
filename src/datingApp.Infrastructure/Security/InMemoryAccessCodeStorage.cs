@@ -18,7 +18,10 @@ internal sealed class InMemoryAccessCodeStorage : IAccessCodeStorage
 
     public AccessCodeDto Get(string emailOrPhone)
     {
-        return _cache.Get<AccessCodeDto>(GetKey(emailOrPhone));
+        var key = GetKey(emailOrPhone);
+        var code = _cache.Get<AccessCodeDto>(key);
+        _cache.Remove(key);
+        return code;
     }
 
     public void Set(AccessCodeDto code)

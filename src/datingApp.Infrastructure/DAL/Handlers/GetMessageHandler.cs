@@ -20,8 +20,8 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
     public async Task<MessageDto> HandleAsync(GetMessage query)
     {
         var message = await _dbContext.Messages
-                            .AsNoTracking()
-                            .SingleOrDefaultAsync(x => x.Id == query.MessageId);
+                                    .AsNoTracking()
+                                    .SingleOrDefaultAsync(x => x.Id == query.MessageId);
         return message?.AsDto();
     }
 }

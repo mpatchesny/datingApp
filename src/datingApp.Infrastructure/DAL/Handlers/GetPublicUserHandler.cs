@@ -23,9 +23,10 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
         var user= await _dbContext.Users
-                        .Include(x => x.Settings)
-                        .Include(x => x.Photos)
-                        .FirstOrDefaultAsync(x => x.Id == query.UserId);
+                            .AsNoTracking()
+                            .Include(x => x.Settings)
+                            .Include(x => x.Photos)
+                            .FirstOrDefaultAsync(x => x.Id == query.UserId);
         return user?.AsPublicDto(_spatial.CalculateDistance(query.Lat, query.Lon, user.Settings.Lat, user.Settings.Lon));
     }
 }

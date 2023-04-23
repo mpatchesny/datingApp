@@ -14,16 +14,13 @@ namespace datingApp.Application.Commands.Handlers;
 
 public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessCode>
 {
-    private readonly IUserRepository _userRepository;
     private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IEmailSender _emailSender;
-    public RequestEmailAccessCodeHandler(IUserRepository userRepository,
-                        IAccessCodeGenerator codeGenerator,
+    public RequestEmailAccessCodeHandler(IAccessCodeGenerator codeGenerator,
                         IAccessCodeStorage codeStorage,
                         IEmailSender emailSender)
     {
-        _userRepository = userRepository;
         _codeGenerator = codeGenerator;
         _codeStorage = codeStorage;
         _emailSender = emailSender;

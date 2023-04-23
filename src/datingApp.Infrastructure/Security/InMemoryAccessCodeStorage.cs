@@ -23,7 +23,7 @@ internal sealed class InMemoryAccessCodeStorage : IAccessCodeStorage
 
     public void Set(AccessCodeDto code)
     {
-        _cache.Set(GetKey(code.EmailOrPhone), code, TimeSpan.FromMinutes(15));
+        _cache.Set(GetKey(code.EmailOrPhone), code, code.Expiry);
     }
 
     private string GetKey(string emailOrPhone)

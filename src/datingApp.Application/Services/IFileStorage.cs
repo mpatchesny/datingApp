@@ -7,6 +7,6 @@ namespace datingApp.Application.Services;
 
 public interface IFIleStorage
 {
-    public string SavePhotoAsync(byte[] photo, string filename, string extension);
-    public void DeletePhotoAsync(string path);
+    public string SaveFileAsync(byte[] photo, string filename, string extension);
+    public void DeleteFileAsync(string path);
 }

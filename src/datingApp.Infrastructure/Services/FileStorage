@@ -14,16 +14,16 @@ internal sealed class FileStorage : IFileStorage
         _storageOptions = storageOptions;
     }
 
-    public string SavePhoto(byte[] photo, string filename, string extension)
+    public string SaveFile(byte[] file, string filename, string extension)
     {
         BuildPath(_storageOptions.Value.StoragePath);
         string fileNameWithExt = $"{filename}.{extension}";
         string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, fileNameWithExt);
-        System.IO.File.WriteAllBytes(filePath, photo);
+        System.IO.File.WriteAllBytes(filePath, file);
         return filePath;
     }
 
-    public void DeletePhoto(string path)
+    public void DeleteFile(string path)
     {
         if (System.IO.File.Exists(path))
         {

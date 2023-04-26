@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Services;
+using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
@@ -14,7 +15,7 @@ internal sealed class FileStorage : IFileStorage
         _storageOptions = storageOptions;
     }
 
-    public string SaveFile(byte[] file, string filename, string extension)
+    public async Task<string> SaveFileAsync(byte[] file, string filename, string extension)
     {
         BuildPath(_storageOptions.Value.StoragePath);
         string fileNameWithExt = $"{filename}.{extension}";
@@ -23,7 +24,7 @@ internal sealed class FileStorage : IFileStorage
         return filePath;
     }
 
-    public void DeleteFile(string path)
+    public async Task DeleteFileAsync(string path)
     {
         if (System.IO.File.Exists(path))
         {
@@ -37,5 +38,12 @@ internal sealed class FileStorage : IFileStorage
             }
         }
     }
-
+    
+    private void BuildPath(string path)
+    {
+        if (!System.IO.Directory.Exists(path))
+        {
+            System.IO.Directory.CreateDirectory(path);
+        }
+    }
 }

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface IFIleStorage
+public interface IFileStorage
 {
-    public string SaveFileAsync(byte[] photo, string filename, string extension);
-    public void DeleteFileAsync(string path);
+    public Task <string> SaveFileAsync(byte[] photo, string filename, string extension);
+    public Task DeleteFileAsync(string path);
 }

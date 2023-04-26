@@ -82,12 +82,4 @@ internal sealed class PhotoService : IPhotoService
             throw new InvalidPhotoException();
         }
     }
-
-    private void BuildPath(string path)
-    {
-        if (!System.IO.Directory.Exists(path))
-        {
-            System.IO.Directory.CreateDirectory(path);
-        }
-    }
 }

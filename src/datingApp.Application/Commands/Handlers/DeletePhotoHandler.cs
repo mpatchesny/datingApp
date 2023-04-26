@@ -13,10 +13,14 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IPhotoService _photoService;
-    public DeletePhotoHandler(IPhotoRepository photoRepository, IPhotoService photoService)
+    private readonly IFIleStorage _fileStorage;
+    public DeletePhotoHandler(IPhotoRepository photoRepository,
+                                IPhotoService photoService,
+                                IFIleStorage fileStorage)
     {
         _photoRepository = photoRepository;
         _photoService = photoService;
+        _fileStorage = fileStorage;
     }
 
     public async Task HandleAsync(DeletePhoto command)
@@ -28,6 +32,6 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         }
         await _photoRepository.DeleteAsync(photo);
 
-        _photoService.DeletePhoto(photo.Path);
+        await _fileStorage.DeletePhotoAsync(photo.Path);
     }
 }

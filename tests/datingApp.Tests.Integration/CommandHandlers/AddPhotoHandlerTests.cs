@@ -73,7 +73,9 @@ public class AddPhotoHandlerTests : IDisposable
 
         var mockedPhotoService = new Mock<IPhotoService>();
         mockedPhotoService.Setup(m => m.GetImageFileFormat(It.IsAny<byte[]>())).Returns("jpg");
-        _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object);
+        var mockedFileStorage = new Mock<IFileStorage>();
+        mockedFileStorage.Setup(m => m.SaveAsync(It.IsAny<string[]>(), It.IsAny<string[]>(), It.IsAny<string[]>())).Returns("abc");
+        _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object, mockedFileStorage.Object);
     }
 
     // Teardown

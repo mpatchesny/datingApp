@@ -31,6 +31,32 @@ public class SwipeRepositoryTests : IDisposable
         Assert.IsType<InvalidOperationException>(exception);
     }
 
+    [Fact]
+    public async Task get_by_swiped_by_swiped_who_should_return_nonempty_collection()
+    {
+        var swipes = new List<Swipe>{
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
+        };
+        _testDb.DbContext.Swipes.AddRange(swipes);
+
+        var swipe = _repository.GetBySwippedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.NotNull(swipe);
+    }
+
+    [Fact]
+    public async Task when_no_swipes_match_get_by_swiped_by_swiped_who_should_return_empty_collection()
+    {
+        var swipes = new List<Swipe>{
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
+        };
+        _testDb.DbContext.Swipes.AddRange(swipes);
+
+        var swipe = await _repository.GetBySwippedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.Null(swipe);
+    }
+
     // Arrange
     private readonly ISwipeRepository _repository;
     private readonly TestDatabase _testDb;

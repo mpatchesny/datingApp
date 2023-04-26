@@ -34,7 +34,8 @@ public class FileStorageTests
         var storage = new FileStorage(storageOptions);
 
         var path = System.IO.Path.Combine(".", "test.txt");
-        System.IO.File.Create(path);
+        var stream = System.IO.File.Create(path);
+        stream.Dispose();
 
         await storage.DeleteFileAsync(path);
 

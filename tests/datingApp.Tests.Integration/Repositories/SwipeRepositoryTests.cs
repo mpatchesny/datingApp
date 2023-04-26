@@ -40,7 +40,7 @@ public class SwipeRepositoryTests : IDisposable
         };
         _testDb.DbContext.Swipes.AddRange(swipes);
 
-        var swipe = _repository.GetBySwippedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        var swipe = await _repository.GetBySwippedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.NotNull(swipe);
     }
 

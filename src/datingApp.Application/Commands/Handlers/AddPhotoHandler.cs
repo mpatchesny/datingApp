@@ -15,11 +15,16 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
-    public AddPhotoHandler(IPhotoRepository photoRepository, IUserRepository userRepository, IPhotoService photoService)
+    private readonly IFIleStorage _fileStorage;
+    public AddPhotoHandler(IPhotoRepository photoRepository,
+                            IUserRepository userRepository,
+                            IPhotoService photoService,
+                            IFIleStorage fileStorage)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
         _photoService = photoService;
+        _fileStorage = fileStorage;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -38,7 +43,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         byte[] bytes = _photoService.ConvertToArrayOfBytes(command.Base64Bytes);
         _photoService.ValidatePhoto(bytes);
         var extension = _photoService.GetImageFileFormat(bytes);
-        var photoPath = _photoService.SavePhoto(bytes, command.PhotoId.ToString(), extension);
+        var photoPath = await _fileStorage.SavePhoto(bytes, command.PhotoId.ToString(), extension);
         // FIXME
         var photoUrl = "";
         int oridinal = user.Photos.Count();

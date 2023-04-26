@@ -113,13 +113,4 @@ public class PhotoServiceTests
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoSizeException>(exception);
     }
-
-    private string testDirectoryPath = "./test/";
-    public PhotoServiceTests()
-    {
-        if (System.IO.Directory.Exists(testDirectoryPath))
-        {
-            System.IO.Directory.Delete(testDirectoryPath);
-        }
-    }
 }

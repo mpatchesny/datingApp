@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Services;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -15,11 +16,16 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
-    public AddPhotoHandler(IPhotoRepository photoRepository, IUserRepository userRepository, IPhotoService photoService)
+    private readonly IFileStorage _fileStorage;
+    public AddPhotoHandler(IPhotoRepository photoRepository,
+                            IUserRepository userRepository,
+                            IPhotoService photoService,
+                            IFileStorage fileStorage)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
         _photoService = photoService;
+        _fileStorage = fileStorage;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -38,7 +44,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         byte[] bytes = _photoService.ConvertToArrayOfBytes(command.Base64Bytes);
         _photoService.ValidatePhoto(bytes);
         var extension = _photoService.GetImageFileFormat(bytes);
-        var photoPath = _photoService.SavePhoto(bytes, command.PhotoId.ToString(), extension);
+        var photoPath = (await _fileStorage.SaveFileAsync(bytes, command.PhotoId.ToString(), extension));
         // FIXME
         var photoUrl = "";
         int oridinal = user.Photos.Count();

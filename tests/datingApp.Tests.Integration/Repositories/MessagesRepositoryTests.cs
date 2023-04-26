@@ -20,7 +20,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void get_previous_not_displayed_messages_should_return_nonempty_collection()
+    public async void get_previous_not_displayed_messages_should_return_previous_messages_with_same_match_that_are_not_displayed()
     {
         var messages = new List<Message>{
             new Message(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", true, DateTime.UtcNow - TimeSpan.FromSeconds(1)),
@@ -95,6 +95,28 @@ public class MessageRepositoryTests : IDisposable
         var message = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         message.SetDisplayed();
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(message));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async void update_range_should_succeed()
+    {
+        var messages = new List<Message> {
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow)
+        };
+        await _testDb.DbContext.Messages.AddRangeAsync(messages);
+        _testDb.DbContext.SaveChanges();
+
+        var updatedMessages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        foreach (var message in updatedMessages)
+        {
+            message.SetDisplayed();
+        }
+
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateRangeAsync(updatedMessages.ToArray()));
         Assert.Null(exception);
     }
 

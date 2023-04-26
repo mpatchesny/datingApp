@@ -101,13 +101,13 @@ public class MessageRepositoryTests : IDisposable
     [Fact]
     public async void update_range_should_succeed()
     {
-        var messages = new List<Message> ({
-            Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
-            Message(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
-            Message(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
-            Message(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow)
-        });
-        _testDb.DbContext.Messages.AddRangeAsync(messages);
+        var messages = new List<Message> {
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "ahoj", false, DateTime.UtcNow)
+        };
+        await _testDb.DbContext.Messages.AddRangeAsync(messages);
         _testDb.DbContext.SaveChanges();
 
         var updatedMessages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
@@ -116,7 +116,7 @@ public class MessageRepositoryTests : IDisposable
             message.SetDisplayed();
         }
 
-        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateRangeAsync(updatedMessages));
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateRangeAsync(updatedMessages.ToArray()));
         Assert.Null(exception);
     }
 

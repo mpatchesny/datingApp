@@ -6,8 +6,10 @@ using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Services;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
@@ -49,7 +51,8 @@ public class DeletePhotoHandlerTests : IDisposable
 
         var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
         var photoService = new DummyPhotoService();
-        _handler = new DeletePhotoHandler(photoRepository, photoService);
+        var mockedFileStorage = new Mock<IFileStorage>();
+        _handler = new DeletePhotoHandler(photoRepository, photoService, mockedFileStorage.Object);
     }
 
     // Teardown

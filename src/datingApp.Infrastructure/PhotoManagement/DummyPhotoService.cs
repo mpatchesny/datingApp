@@ -23,11 +23,6 @@ internal sealed class DummyPhotoService : IPhotoService
         return "jpg";
     }
 
-    public string SavePhoto(byte[] photo, string filename, string extension)
-    {
-        return $"{filename}.{extension}";
-    }
-
     public void ValidatePhoto(byte[] photo)
     {
         // do nothing

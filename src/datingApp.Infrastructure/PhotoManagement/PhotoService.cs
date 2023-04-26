@@ -11,7 +11,7 @@ namespace datingApp.Infrastructure.PhotoManagement;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    private readonly IOptions<StorageOptions> _storageOptions;
+    
     private readonly IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>()
     {
         {new byte[] {0x42, 0x4D}, "bmp"},
@@ -19,10 +19,9 @@ internal sealed class PhotoService : IPhotoService
         {new byte[] {0xFF, 0xD8, 0xFF}, "jpg"},
     };
 
-    public PhotoService(IOptions<PhotoServiceOptions> options, IOptions<StorageOptions> storageOptions)
+    public PhotoService(IOptions<PhotoServiceOptions> options)
     {
         _options = options;
-        _storageOptions = storageOptions;
     }
 
     public byte[] ConvertToArrayOfBytes(string Base64Bytes)
@@ -39,21 +38,6 @@ internal sealed class PhotoService : IPhotoService
         }
 
         return bytes;
-    }
-
-    public void DeletePhoto(string path)
-    {
-        if (System.IO.File.Exists(path))
-        {
-            try
-            {
-                System.IO.File.Delete(path);
-            }
-            catch (System.Exception)
-            {
-                // pass
-            }
-        }
     }
 
     public string GetImageFileFormat(byte[] photo)
@@ -78,15 +62,6 @@ internal sealed class PhotoService : IPhotoService
         }
 
         return ext;
-    }
-
-    public string SavePhoto(byte[] photo, string filename, string extension)
-    {
-        BuildPath(_storageOptions.Value.StoragePath);
-        string fileNameWithExt = $"{filename}.{extension}";
-        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, fileNameWithExt);
-        System.IO.File.WriteAllBytes(filePath, photo);
-        return filePath;
     }
 
     public void ValidatePhoto(byte[] photo)

@@ -49,7 +49,7 @@ public class PhotoServiceTests
         var storage = new FileStorage(storageOptions);
 
         var path = System.IO.Path.Combine("./", "test", "txt");
-        var exception = await storage.DeleteFileAsync(path);
+        var exception = await Record.ExceptionAsync(async () => await storage.DeleteFileAsync(path));
 
         Assert.Null(exception);
     }

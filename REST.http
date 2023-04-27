@@ -31,6 +31,14 @@ Authorization: Bearer {{accessToken}}
 GET {{url}}/users/me/recommendations
 Authorization: Bearer {{accessToken}}
 ###
+GET {{url}}/users/me/updates
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "lastActivityTime": "{{$datetime iso8601 -15 d}}"
+}
+###
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 ###

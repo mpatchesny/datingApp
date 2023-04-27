@@ -7,6 +7,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Infrastructure.DAL.Handlers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ public class UserController : ControllerBase
     private readonly ICommandHandler<SignInByEmail> _signInHandler;
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
+    private readonly IQueryHandler<GetUpdates, IEnumerable<MatchDto>> _getUpdatesHandler;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
@@ -36,7 +38,8 @@ public class UserController : ControllerBase
                             ICommandHandler<RequestEmailAccessCode> requestAccessCodeHandler,
                             ICommandHandler<SignInByEmail> signInHandler,
                             ITokenStorage tokenStorage,
-                            IAccessCodeStorage codeStorage)
+                            IAccessCodeStorage codeStorage,
+                            IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
@@ -48,6 +51,7 @@ public class UserController : ControllerBase
         _signInHandler = signInHandler;
         _tokenStorage = tokenStorage;
         _codeStorage = codeStorage;
+        _getUpdatesHandler = getUpdatesHandler;
     }
 
     [Authorize]
@@ -69,6 +73,16 @@ public class UserController : ControllerBase
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         var command = new GetSwipeCandidates(user.Settings);
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
+    }
+
+    [Authorize]
+    [HttpGet("me/updates")]
+    public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates(GetUpdates query)
+    {
+        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
+        var userId = Guid.Parse(User.Identity?.Name);
+        query.UserId = userId;
+        return Ok(await _getUpdatesHandler.HandleAsync(query));
     }
 
     [Authorize]

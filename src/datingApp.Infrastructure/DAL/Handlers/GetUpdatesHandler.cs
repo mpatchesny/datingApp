@@ -19,26 +19,28 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
-        var newMatches = await _dbContext.Matches
+        var usersMatches = _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId)
-                        .Where(x => x.CreatedAt >= query.LastActivityTime)
-                        .Select(x => x.Id)
-                        .ToListAsync();
+                        .Select(x => x.Id);
 
-        var newMessages = await _dbContext.Messages
+        var newMessages = _dbContext.Messages
                         .AsNoTracking()
-                        .Where(x => newMatches.Contains(x.MatchId))
+                        .Where(x => usersMatches.Contains(x.MatchId))
                         .Where(x => x.CreatedAt >= query.LastActivityTime)
-                        .Select(x => x.MatchId)
-                        .ToListAsync();
+                        .Select(x => x.MatchId);
 
-        var newMatchesWithNewMessages = newMatches.Union(newMessages);
+        var newMatches = _dbContext.Matches
+                        .AsNoTracking()
+                        .Where(x => usersMatches.Contains(x.Id))
+                        .Where(x => x.CreatedAt >= query.LastActivityTime)
+                        .Select(x => x.Id);
+
+        var newMatchesAndNewMessages = newMatches.Union(newMessages);
 
         return await _dbContext.Matches
                         .AsNoTracking()
-                        .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId)
-                        .Where(x => newMatchesWithNewMessages.Contains(x.Id))
+                        .Where(x => newMatchesAndNewMessages.Contains(x.Id))
                         .Select(x => new
                             {
                                 Match = x,

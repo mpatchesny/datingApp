@@ -45,7 +45,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                         .Take(query.PageSize)
                         .ToListAsync();
 
-        var pageCount = query.Count();
+        var pageCount = (int) (query.Count() + query.PageSize - 1) / query.PageSize;
 
         return new PaginatedDataDto(
             Page = query.Page,

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<MatchDto>>
+internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, MatchDto>
 {
     private readonly DatingAppDbContext _dbContext;
     public GetMatchesHandler(DatingAppDbContext dbContext)
@@ -17,9 +17,9 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<MatchDto>> HandleAsync(GetMatches query)
+    public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
-        return await _dbContext.Matches
+        var data = await _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId)
                         .Select(x => new
@@ -43,5 +43,12 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)
                         .ToListAsync();
+        
+        return new PaginatedDataDto(
+            Page = query.Page,
+            PageSize = query.PageSize,
+            PageCount = 0,
+            Data = data
+            );
     }
 }

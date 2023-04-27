@@ -36,9 +36,9 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
-        services.AddScoped<IQueryHandler<GetMatches, IEnumerable<MatchDto>>, GetMatchesHandler>();
+        services.AddScoped<IQueryHandler<GetMatches, PaginatedDataDto>, GetMatchesHandler>();
+        services.AddScoped<IQueryHandler<GetMessages, PaginatedDataDto>, GetMessagesHandler>();
         services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler>();
-        services.AddScoped<IQueryHandler<GetMessages, IEnumerable<MessageDto>>, GetMessagesHandler>();
         services.AddScoped<IQueryHandler<GetMessage, MessageDto>, GetMessageHandler>();
         services.AddScoped<IQueryHandler<GetMatch, IsMatchDto>, GetMatchHandler>();
         services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler>();

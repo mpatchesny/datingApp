@@ -20,7 +20,6 @@ internal sealed class InMemoryAccessCodeStorage : IAccessCodeStorage
     {
         var key = GetKey(emailOrPhone);
         var code = _cache.Get<AccessCodeDto>(key);
-        _cache.Remove(key);
         return code;
     }
 

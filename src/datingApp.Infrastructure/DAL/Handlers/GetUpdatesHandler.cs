@@ -12,7 +12,7 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<MatchDto>>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetMatchesHandler(DatingAppDbContext dbContext)
+    public GetUpdatesHandler(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -28,7 +28,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
         var newMessages = await _dbContext.Messages
                         .AsNoTracking()
-                        .Where(x => x.MatchId.Contains(newMatches))
+                        .Where(x => newMatches.Contains(x.MatchId))
                         .Where(x => x.CreatedAt >= query.LastActivityTime)
                         .Select(x => x.MatchId)
                         .ToListAsync();
@@ -38,7 +38,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         return await _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId)
-                        .Where(x => x.MatchId.Contains(newMatchesWithNewMessages))
+                        .Where(x => newMatchesWithNewMessages.Contains(x.Id))
                         .Select(x => new
                             {
                                 Match = x,
@@ -57,8 +57,6 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                                 Messages = x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
                                 CreatedAt = DateTime.UtcNow
                             })
-                        .Skip((query.Page - 1) * query.PageSize)
-                        .Take(query.PageSize)
                         .ToListAsync();
     }
 }

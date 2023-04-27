@@ -19,19 +19,23 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
-        var data = await _dbContext.Messages
+        
+        var query = _dbContext.Messages
                             .AsNoTracking()
-                            .Where(x => x.MatchId == query.MatchId)
-                            .OrderByDescending(x => x.CreatedAt)
-                            .Skip((query.Page - 1) * query.PageSize)
-                            .Take(query.PageSize)
-                            .Select(x => x.AsDto())
-                            .ToListAsync();
+                            .Where(x => x.MatchId == query.MatchId);
+                            
+        var data = query.OrderByDescending(x => x.CreatedAt)
+                        .Select(x => x.AsDto())
+                        .Skip((query.Page - 1) * query.PageSize)
+                        .Take(query.PageSize)
+                        .ToListAsync();
+
+        var pageCount = query.Count();
 
         return new PaginatedDataDto(
             Page = query.Page,
             PageSize = query.PageSize,
-            PageCount = 0,
+            PageCount = pageCount,
             Data = data
             );
     }

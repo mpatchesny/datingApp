@@ -25,7 +25,6 @@ public class PassController : ControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
-    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {

@@ -27,7 +27,6 @@ public class LikeController : ControllerBase
         _addMatchHandler = addMatchHandler;
     }
 
-    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {

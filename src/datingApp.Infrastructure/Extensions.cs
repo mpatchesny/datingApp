@@ -52,6 +52,12 @@ public static class Extensions
         return services;
     }
 
+    public static string StoragePath(this IWebHostEnvironment environment, IConfiguration configuration)
+    {
+        var options = configuration.GetOptions<StorageOptions>(StorageOptionsSectionName);
+        return options.StoragePath;
+    }
+
     public static T GetOptions<T>(this IConfiguration configuration, string sectionName) where T : class, new()
     {
         var options = new T();

@@ -133,6 +133,9 @@ GET {{url}}/pass/00000000-0000-0000-0000-000000000003
 Authorization: Bearer {{accessToken}}
 ###
 
+### STORAGE ###
+GET {{url}}/storage/test.jpg
+
 ### UPLOAD PHOTO ###
 POST {{url}}/photos
 Authorization: Bearer {{accessToken}}

@@ -17,6 +17,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCore();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,8 +37,6 @@ app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-
 
 app.UseStaticFiles(new StaticFileOptions
 {

@@ -135,6 +135,7 @@ Authorization: Bearer {{accessToken}}
 
 ### STORAGE ###
 GET {{url}}/storage/test.jpg
+Authorization: Bearer {{accessToken}}
 
 ### UPLOAD PHOTO ###
 POST {{url}}/photos

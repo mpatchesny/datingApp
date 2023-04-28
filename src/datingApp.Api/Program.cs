@@ -17,7 +17,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCore();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,18 +32,13 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// builder.Services.AddAuthorization(options =>
-// {
-//     options.FallbackPolicy = new AuthorizationPolicyBuilder()
-//         .RequireAuthenticatedUser()
-//         .Build();
-// });
+
 
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
            Path.Combine(builder.Environment.ContentRootPath, builder.Environment.StoragePath(builder.Configuration))),
-    RequestPath = "/storage"
+    RequestPath = "/storage",
 });
 
 app.UseMiddleware<ExceptionMiddleware>();

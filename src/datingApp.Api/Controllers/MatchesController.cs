@@ -15,17 +15,17 @@ namespace datingApp.Api.Controllers;
 [Route("matches")]
 public class MatchesController : ControllerBase
 {
-    private readonly IQueryHandler<GetMatches, IEnumerable<MatchDto>> _getMatchesHandler;
-    private readonly IQueryHandler<GetMessages, IEnumerable<MessageDto>> _getMessagesHandler;
+    private readonly IQueryHandler<GetMatches, PaginatedDataDto> _getMatchesHandler;
+    private readonly IQueryHandler<GetMessages, PaginatedDataDto> _getMessagesHandler;
     private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
     private readonly ICommandHandler<SendMessage> _sendMessageHandler;
     private readonly ICommandHandler<SetMessagesAsDisplayed> _setMessagesAsDisplayedHandler;
     private readonly ICommandHandler<SetMatchAsDisplayed> _setMatchAsDisplayedHandler;
     private readonly ICommandHandler<DeleteMatch> _deleteMatchHandler;
-    public MatchesController(IQueryHandler<GetMatches, IEnumerable<MatchDto>> getMatchesHandler,
+    public MatchesController(IQueryHandler<GetMatches, PaginatedDataDto> getMatchesHandler,
                             ICommandHandler<SendMessage> sendMessageHandler,
                             ICommandHandler<DeleteMatch> deleteMatchHandler,
-                            IQueryHandler<GetMessages, IEnumerable<MessageDto>> getMessagesHandler,
+                            IQueryHandler<GetMessages, PaginatedDataDto> getMessagesHandler,
                             IQueryHandler<GetMessage, MessageDto> getMessageHandler,
                             ICommandHandler<SetMessagesAsDisplayed> setMessagesAsDisplayedHandler,
                             ICommandHandler<SetMatchAsDisplayed> setMatchAsDisplayedHandler)
@@ -40,7 +40,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MatchDto>>> GetMatch([FromQuery] int? page, [FromQuery] int? pageSize)
+    public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var userId = Guid.Parse(User.Identity?.Name);
@@ -62,7 +62,7 @@ public class MatchesController : ControllerBase
     }
 
     [HttpGet("{matchId:guid}/messages")]
-    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages(Guid matchId, [FromQuery] int? page, [FromQuery] int? pageSize)
+    public async Task<ActionResult<PaginatedDataDto>> GetMessages(Guid matchId, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
         var command = new GetMessages { MatchId = matchId };
         command.SetPage(page);

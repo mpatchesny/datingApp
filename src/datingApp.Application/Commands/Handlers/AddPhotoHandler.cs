@@ -46,7 +46,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         var extension = _photoService.GetImageFileFormat(bytes);
         var photoPath = (await _fileStorage.SaveFileAsync(bytes, command.PhotoId.ToString(), extension));
         // FIXME
-        var photoUrl = "";
+        var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
         var photo = new Photo(command.PhotoId, command.UserId, photoPath, photoUrl, oridinal);
         await _photoRepository.AddAsync(photo);

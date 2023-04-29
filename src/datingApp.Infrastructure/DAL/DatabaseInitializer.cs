@@ -23,7 +23,7 @@ namespace datingApp.Infrastructure.DAL
             var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
             await dbContext.Database.MigrateAsync(cancellationToken);
 
-            if (dbContext.Users.Count() < 3)
+            if (dbContext.Users.Count() == 0)
             {
                 var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 30, 100, 0.0, 0.0);
                 var testUser = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings);

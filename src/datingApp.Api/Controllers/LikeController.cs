@@ -27,7 +27,7 @@ public class LikeController : ControllerBase
         _addMatchHandler = addMatchHandler;
     }
 
-    [HttpGet("{userId:guid}")]
+    [HttpPost("{userId:guid}")]
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();

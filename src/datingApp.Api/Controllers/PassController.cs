@@ -25,7 +25,7 @@ public class PassController : ControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
-    [HttpGet("{userId:guid}")]
+    [HttpPost("{userId:guid}")]
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();

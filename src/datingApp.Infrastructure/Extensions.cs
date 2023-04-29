@@ -50,6 +50,7 @@ public static class Extensions
         services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddSingleton<IFileStorage, FileStorage>();
+        services.AddSingleton<IBackgroundServiceQueue, BackgroundServiceQueue>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddHostedService<MyBackgroundService>();
         services.AddLogging();

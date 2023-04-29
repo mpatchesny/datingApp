@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Services;
 using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
@@ -12,13 +13,16 @@ public class MyBackgroundService : BackgroundService
     private readonly ILogger<MyBackgroundService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<BackgroundServiceOptions> _backgroundServiceOptions;
+    private readonly IBackgroundServiceQueue _queue;
     public MyBackgroundService(IServiceProvider serviceProvider,
                                ILogger<MyBackgroundService> logger,
-                               IOptions<BackgroundServiceOptions> backgroundServiceOptions)
+                               IOptions<BackgroundServiceOptions> backgroundServiceOptions,
+                               IBackgroundServiceQueue queue)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
         _backgroundServiceOptions = backgroundServiceOptions;
+        _queue = queue;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,9 +31,18 @@ public class MyBackgroundService : BackgroundService
         {
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-                // TODO
-                // wykonywanie zapytania
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
+                    var item = _queue.Dequeue();
+                    if (item != null)
+                    {
+                        // TODO
+                        // parse json to command
+                        // handle command
+                        
+                    }
+                };
             }
             catch (Exception ex)
             {

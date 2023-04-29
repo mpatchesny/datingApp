@@ -44,7 +44,7 @@ public class GetMessagesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task returns_proper_number_of_messages_when_page_above_1()
+    public async Task proper_number_of_messages_are_returned_when_page_is_above_1()
     {
         var query = new GetMessages();
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
@@ -53,6 +53,39 @@ public class GetMessagesHandlerTests : IDisposable
         var matches = await _handler.HandleAsync(query);
         Assert.NotEmpty(matches.Data);
         Assert.Equal(4, matches.Data.Count());
+    }
+
+    [Fact]
+    public async Task paginated_data_dto_returns_proper_number_page_count()
+    {
+        var query = new GetMessages();
+        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.SetPageSize(1);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+        Assert.Equal(9, matches.PageCount);
+    }
+
+    [Fact]
+    public async Task paginated_data_dto_returns_proper_number_of_page_size()
+    {
+        var query = new GetMessages();
+        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.SetPageSize(1);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+        Assert.Equal(1, matches.PageSize);
+    }
+
+    [Fact]
+    public async Task paginated_data_dto_returns_proper_page()
+    {
+        var query = new GetMessages();
+        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.SetPageSize(1);
+        query.SetPage(2);
+        var matches = await _handler.HandleAsync(query);
+        Assert.Equal(2, matches.Page);
     }
 
     // Arrange

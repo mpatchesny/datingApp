@@ -73,6 +73,39 @@ public class GetMatchesHandlerTests : IDisposable
         Assert.Equal(matches.Data.First().IsDisplayed, true);
     }
     
+    [Fact]
+    public async Task paginated_data_dto_returns_proper_number_page_count()
+    {
+        var query = new GetMatches();
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.SetPageSize(1);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+        Assert.Equal(9, matches.PageCount);
+    }
+
+    [Fact]
+    public async Task paginated_data_dto_returns_proper_number_of_page_size()
+    {
+        var query = new GetMatches();
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.SetPageSize(1);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+        Assert.Equal(1, matches.PageSize);
+    }
+
+    [Fact]
+    public async Task paginated_data_dto_returns_proper_page()
+    {
+        var query = new GetMatches();
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.SetPageSize(1);
+        query.SetPage(2);
+        var matches = await _handler.HandleAsync(query);
+        Assert.Equal(2, matches.Page);
+    }
+    
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetMatchesHandler _handler;

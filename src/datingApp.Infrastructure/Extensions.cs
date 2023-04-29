@@ -36,7 +36,7 @@ public static class Extensions
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
-        services.Configure<BackgroundServiceOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
+        services.Configure<BackgroundServiceOptions>(configuration.GetRequiredSection(BackgroundServiceOptionsName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<IQueryHandler<GetMatches, PaginatedDataDto>, GetMatchesHandler>();
         services.AddScoped<IQueryHandler<GetMessages, PaginatedDataDto>, GetMessagesHandler>();

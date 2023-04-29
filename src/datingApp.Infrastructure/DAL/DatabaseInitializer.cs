@@ -11,15 +11,15 @@ namespace datingApp.Infrastructure.DAL
 {
     internal sealed class DatabaseInitializer : IHostedService
     {
-        private readonly IServiceProvider _serviceProdivder;
+        private readonly IServiceProvider _serviceProvider;
         public DatabaseInitializer(IServiceProvider serviceProvider)
         {
-            _serviceProdivder = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using (var scope = _serviceProdivder.CreateScope())
+            using (var scope = _serviceProvider.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
                 await dbContext.Database.MigrateAsync(cancellationToken);

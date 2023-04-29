@@ -1,28 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using datingApp.Application.Services;
 
 namespace datingApp.Infrastructure.Services;
 
-public class BackgroundServiceQueue : IBackgroundServiceQueue
+internal sealed class BackgroundServiceQueue : IBackgroundServiceQueue
 {
-    private readonly List<dynamic> queue = new List<dynamic>();
+    private readonly DatingAppDbContext _dbContext;
 
-    public BackgroundServiceQueue()
+    public BackgroundServiceQueue(DatingAppDbContext dbContext)
     {
+        _dbContext = dbContext;
     }
 
     public void Enqueue(dynamic item)
     {
-        queue.Add(item);
+        string json = JsonSerializer.Serialize(item);
+        _dbContext.Queue.AddAsync(json);
+        _dbContext.SaveChangesAsync();
     }
 
     public dynamic Dequeue()
     {
-        var item = queue.FirstOrDefault();
-        if (queue.Count() > 0) queue.RemoveAt(0);
+        var item = _dbContext.Queue.FirstOrDefault();
+        _dbContext.Queue.Remove(item);
+        _dbContext.SaveChangesAsync();
         return item;
     }
 

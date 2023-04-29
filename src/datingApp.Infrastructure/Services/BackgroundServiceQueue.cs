@@ -22,7 +22,7 @@ public class BackgroundServiceQueue : IBackgroundServiceQueue
     public dynamic Dequeue()
     {
         var item = queue.FirstOrDefault();
-        queue.RemoveAt(0);
+        if (queue.Count() > 0) queue.RemoveAt(0);
         return item;
     }
 

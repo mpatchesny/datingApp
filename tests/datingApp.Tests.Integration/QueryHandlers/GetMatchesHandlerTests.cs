@@ -20,8 +20,8 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var matches = await _handler.HandleAsync(query);
-        Assert.NotEmpty(matches);
-        Assert.IsType<MatchDto>(matches.First());
+        Assert.NotEmpty(matches.Data);
+        Assert.IsType<MatchDto>(matches.Data.First());
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
         var matches = await _handler.HandleAsync(query);
-        Assert.Empty(matches);
+        Assert.Empty(matches.Data);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class GetMatchesHandlerTests : IDisposable
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         query.SetPageSize(5);
         var matches = await _handler.HandleAsync(query);
-        Assert.InRange(matches.Count(), 0, query.PageSize);
+        Assert.InRange(matches.Data.Count(), 0, query.PageSize);
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public class GetMatchesHandlerTests : IDisposable
         query.SetPageSize(5);
         query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
-        Assert.NotEmpty(matches);
-        Assert.Equal(4, matches.Count());
+        Assert.NotEmpty(matches.Data);
+        Assert.Equal(4, matches.Data.Count());
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000002"), matches.First().UserId);
+        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000002"), matches.Data.First().UserId);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(matches.First().IsDisplayed, true);
+        Assert.Equal(matches.Data.First().IsDisplayed, true);
     }
     
     // Arrange

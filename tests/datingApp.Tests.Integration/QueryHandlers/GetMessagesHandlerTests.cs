@@ -20,8 +20,8 @@ public class GetMessagesHandlerTests : IDisposable
         var query = new GetMessages();
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var messages = await _handler.HandleAsync(query);
-        Assert.NotEmpty(messages);
-        Assert.IsType<MessageDto>(messages.First());
+        Assert.NotEmpty(messages.Data);
+        Assert.IsType<MessageDto>(messages.Data.First());
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class GetMessagesHandlerTests : IDisposable
         var query = new GetMessages();
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000000");
         var messages = await _handler.HandleAsync(query);
-        Assert.Empty(messages);
+        Assert.Empty(messages.Data);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class GetMessagesHandlerTests : IDisposable
         query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         query.SetPageSize(5);
         var matches = await _handler.HandleAsync(query);
-        Assert.InRange(matches.Count(), 0, query.PageSize);
+        Assert.InRange(matches.Data.Count(), 0, query.PageSize);
     }
 
     [Fact]
@@ -51,8 +51,8 @@ public class GetMessagesHandlerTests : IDisposable
         query.SetPageSize(5);
         query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
-        Assert.NotEmpty(matches);
-        Assert.Equal(4, matches.Count());
+        Assert.NotEmpty(matches.Data);
+        Assert.Equal(4, matches.Data.Count());
     }
 
     // Arrange

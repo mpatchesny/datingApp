@@ -34,5 +34,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         builder.Property(x => x.Sex)
             .IsRequired();
+
+        builder.HasIndex(x => new {x.Sex, x.DateOfBirth});
     }
 }

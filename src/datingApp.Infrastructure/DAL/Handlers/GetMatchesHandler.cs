@@ -38,7 +38,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, IEnumerable<
                                 IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
                                 ProfilePicture = (x.Photo != null) ? x.Photo.AsDto() : null,
                                 Messages = x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
-                                CreatedAt = DateTime.UtcNow
+                                CreatedAt = x.Match.CreatedAt
                             })
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)

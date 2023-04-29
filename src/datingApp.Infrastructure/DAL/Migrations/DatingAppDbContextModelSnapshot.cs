@@ -45,9 +45,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
-
                     b.HasIndex("UserId2");
+
+                    b.HasIndex("UserId1", "UserId2", "CreatedAt");
 
                     b.ToTable("Matches");
                 });
@@ -77,9 +77,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MatchId");
-
                     b.HasIndex("SendFromId");
+
+                    b.HasIndex("MatchId", "CreatedAt");
 
                     b.ToTable("Messages");
                 });
@@ -105,7 +105,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "Oridinal");
 
                     b.ToTable("Photos");
                 });
@@ -134,6 +134,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("SwippedById", "SwippedWhoId")
                         .IsUnique();
+
+                    b.HasIndex("SwippedById", "SwippedWhoId", "Like");
 
                     b.ToTable("Swipes");
                 });
@@ -181,6 +183,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("Phone")
                         .IsUnique();
 
+                    b.HasIndex("Sex", "DateOfBirth");
+
                     b.ToTable("Users");
                 });
 
@@ -208,6 +212,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasColumnType("double precision");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Lat", "Lon");
 
                     b.ToTable("UserSettings");
                 });

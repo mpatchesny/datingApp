@@ -19,7 +19,9 @@ internal sealed class BackgroundServiceQueue : IBackgroundServiceQueue
     public void Enqueue(dynamic item)
     {
         string json = JsonSerializer.Serialize(item);
-        _dbContext.Queue.AddAsync(json);
+        QueueItem queueItem = new QueueItem();
+        queueItem.Data = json;
+        _dbContext.Queue.AddAsync(queueItem);
         _dbContext.SaveChangesAsync();
     }
 

@@ -19,11 +19,11 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
-        var query = await _dbContext.Matches
+        var dbQuery = _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId);
         
-        var data = query.Select(x => new
+        var data = await dbQuery.Select(x => new
                             {
                                 Match = x,
                                 User = _dbContext.Users.Where(u => u.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2)).FirstOrDefault(),
@@ -45,13 +45,13 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                         .Take(query.PageSize)
                         .ToListAsync();
 
-        var pageCount = (int) (query.Count() + query.PageSize - 1) / query.PageSize;
+        var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto(
+        return new PaginatedDataDto{
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = data
-            );
+            Data = new List<dynamic>(data)
+            };
     }
 }

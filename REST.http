@@ -74,8 +74,9 @@ DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 
 ### PHOTOS ###
+@photo = c63d92d0-d758-460e-a95b-4648e4654d2a.jpg
 
-GET {{url}}/photos/00000000-0000-0000-0000-000000000001
+GET {{url}}/photos/c63d92d0-d758-460e-a95b-4648e4654d2a
 Authorization: Bearer {{accessToken}}
 ###
 PATCH {{url}}/photos/00000000-0000-0000-0000-000000000001
@@ -89,7 +90,7 @@ Content-Type: application/json
 DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 ###
-GET {{url}}/storage/00000000-0000-0000-0000-000000000001.jpg
+GET {{url}}/storage/{{photo}}
 Authorization: Bearer {{accessToken}}
 
 ### MATCHES ###

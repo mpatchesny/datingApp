@@ -39,7 +39,6 @@ public class MatchesController : ControllerBase
         _setMatchAsDisplayedHandler = setMatchAsDisplayedHandler;
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MatchDto>>> GetMatch([FromQuery] int? page, [FromQuery] int? pageSize)
     {
@@ -51,7 +50,6 @@ public class MatchesController : ControllerBase
         return Ok(await _getMatchesHandler.HandleAsync(command));
     }
 
-    [Authorize]
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]
     public async Task<ActionResult<MessageDto>> GetMessage(Guid matchId, Guid messageId)
     {
@@ -63,7 +61,6 @@ public class MatchesController : ControllerBase
         return message;
     }
 
-    [Authorize]
     [HttpGet("{matchId:guid}/messages")]
     public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages(Guid matchId, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
@@ -73,7 +70,6 @@ public class MatchesController : ControllerBase
         return Ok(await _getMessagesHandler.HandleAsync(command));
     }
 
-    [Authorize]
     [HttpPost("{matchId:guid}/messages")]
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
@@ -84,7 +80,6 @@ public class MatchesController : ControllerBase
         return CreatedAtAction(nameof(GetMessage), new { command.MatchId, command.MessageId }, message);
     }
 
-    [Authorize]
     [HttpPatch("{matchId:guid}/messages/{messageId:guid}")]
     public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromRoute] Guid messageId, [FromBody] SetMessagesAsDisplayed command)
     {
@@ -93,7 +88,6 @@ public class MatchesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
     [HttpPatch("{matchId:guid}")]
     public async Task<ActionResult> ChangeMatch([FromRoute] Guid matchId, [FromBody] SetMatchAsDisplayed command)
     {
@@ -102,7 +96,6 @@ public class MatchesController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
     [HttpDelete("{matchId:guid}")]
     public async Task<ActionResult> Delete(Guid matchId)
     {

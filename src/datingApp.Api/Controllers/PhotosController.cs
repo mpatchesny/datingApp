@@ -30,7 +30,6 @@ public class PhotosController : ControllerBase
         _deletePhotoHandler = deletePhotoHandler;
     }
 
-    [Authorize]
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
@@ -42,7 +41,6 @@ public class PhotosController : ControllerBase
         return photo;
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult> Post(AddPhoto command)
     {
@@ -52,7 +50,6 @@ public class PhotosController : ControllerBase
         return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
-    [Authorize]
     [HttpPatch("{photoId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid photoId, ChangePhotoOridinal command)
     {
@@ -61,7 +58,6 @@ public class PhotosController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
     [HttpDelete("{photoId:guid}")]
     public async Task<ActionResult> Delete(Guid photoId)
     {

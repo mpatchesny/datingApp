@@ -13,16 +13,13 @@ public class MyBackgroundService : BackgroundService
     private readonly ILogger<MyBackgroundService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<BackgroundServiceOptions> _backgroundServiceOptions;
-    private readonly IBackgroundServiceQueue _queue;
     public MyBackgroundService(IServiceProvider serviceProvider,
                                ILogger<MyBackgroundService> logger,
-                               IOptions<BackgroundServiceOptions> backgroundServiceOptions,
-                               IBackgroundServiceQueue queue)
+                               IOptions<BackgroundServiceOptions> backgroundServiceOptions)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
         _backgroundServiceOptions = backgroundServiceOptions;
-        _queue = queue;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,13 +31,14 @@ public class MyBackgroundService : BackgroundService
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
-                    var item = _queue.Dequeue();
+                    var queue = scope.ServiceProvider.GetRequiredService<BackgroundServiceQueue>();
+                    var item = queue.Dequeue();
                     if (item != null)
                     {
                         // TODO
                         // parse json to command
                         // handle command
-                        
+                        _logger.LogWarning($"Item from queue: {item}");
                     }
                 };
             }

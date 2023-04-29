@@ -31,14 +31,13 @@ public class MyBackgroundService : BackgroundService
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
-                    var queue = scope.ServiceProvider.GetRequiredService<BackgroundServiceQueue>();
-                    var item = queue.Dequeue();
+                    var queue = scope.ServiceProvider.GetRequiredService<IBackgroundServiceQueue>();
+                    QueueItem item = queue.Dequeue();
                     if (item != null)
                     {
                         // TODO
                         // parse json to command
                         // handle command
-                        _logger.LogWarning($"Item from queue: {item}");
                     }
                 };
             }

@@ -21,15 +21,15 @@ internal sealed class BackgroundServiceQueue : IBackgroundServiceQueue
         string json = JsonSerializer.Serialize(item);
         QueueItem queueItem = new QueueItem();
         queueItem.Data = json;
-        _dbContext.Queue.AddAsync(queueItem);
-        _dbContext.SaveChangesAsync();
+        _dbContext.Queue.Add(queueItem);
+        _dbContext.SaveChanges();
     }
 
     public dynamic Dequeue()
     {
         var item = _dbContext.Queue.FirstOrDefault();
         _dbContext.Queue.Remove(item);
-        _dbContext.SaveChangesAsync();
+        _dbContext.SaveChanges();
         return item;
     }
 

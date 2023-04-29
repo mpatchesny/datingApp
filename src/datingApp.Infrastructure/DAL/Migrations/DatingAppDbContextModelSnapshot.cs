@@ -22,6 +22,22 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("datingApp.Application.Services.QueueItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Queue");
+                });
+
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
                 {
                     b.Property<Guid>("Id")

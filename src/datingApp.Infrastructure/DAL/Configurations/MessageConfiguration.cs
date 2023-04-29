@@ -29,5 +29,7 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(x => x.SendFromId);
+
+        builder.HasIndex(x => new {x.MatchId, x.CreatedAt});
     }
 }

@@ -29,5 +29,7 @@ internal sealed class SwipeConfiguration : IEntityTypeConfiguration<Swipe>
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(x => x.SwippedWhoId);
+
+        builder.HasIndex(x => new {x.SwippedById, x.SwippedWhoId, x.Like});
     }
 }

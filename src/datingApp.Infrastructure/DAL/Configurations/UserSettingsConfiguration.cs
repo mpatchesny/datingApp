@@ -12,7 +12,7 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
 {
     public void Configure(EntityTypeBuilder<UserSettings> builder)
     {
-        builder.HasKey(e => e.UserId);
+        builder.HasKey(x => x.UserId);
         builder.Property(x => x.UserId)
             .IsRequired();
         builder.Property(x => x.DiscoverRange)
@@ -27,5 +27,7 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
             .IsRequired();
         builder.Property(x => x.Lon)
             .IsRequired();
+
+        builder.HasIndex(x => new {x.Lat, x.Lon});
     }
 }

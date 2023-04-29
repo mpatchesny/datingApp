@@ -27,6 +27,7 @@ public static class Extensions
     private const string EmailSenderOptionsSectionName = "EmailSender";
     private const string PhotoServiceOptionsSectionName = "PhotoService";
     private const string StorageOptionsSectionName = "Storage";
+    private const string BackgroundServiceOptionsName = "BackgroundService";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPostgres(configuration);
@@ -35,6 +36,7 @@ public static class Extensions
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
+        services.Configure<BackgroundServiceOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<IQueryHandler<GetMatches, PaginatedDataDto>, GetMatchesHandler>();
         services.AddScoped<IQueryHandler<GetMessages, PaginatedDataDto>, GetMessagesHandler>();
@@ -49,6 +51,8 @@ public static class Extensions
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddSingleton<IFileStorage, FileStorage>();
         services.AddSingleton<ExceptionMiddleware>();
+        services.AddHostedService<MyBackgroundService>();
+        services.AddLogging();
         return services;
     }
 

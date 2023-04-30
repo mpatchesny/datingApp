@@ -34,9 +34,13 @@ public class RequestEmailAccessCodeHandlerTests
         var emailSender = new Mock<IEmailSender>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
+        var emailMsg = new Email();
+        var emailGenerator = new Mock<IEmailGenerator>();
+        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object);
+        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
         await handler.HandleAsync(command);
 
         codeGenerator.Verify(mock => mock.GenerateCode(email), Times.Once());
@@ -62,9 +66,13 @@ public class RequestEmailAccessCodeHandlerTests
         var emailSender = new Mock<IEmailSender>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
+        var emailMsg = new Email();
+        var emailGenerator = new Mock<IEmailGenerator>();
+        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object);
+        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
         await handler.HandleAsync(command);
 
         codeStorage.Verify(mock => mock.Set(code), Times.Once());
@@ -90,9 +98,13 @@ public class RequestEmailAccessCodeHandlerTests
         var emailSender = new Mock<IEmailSender>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
+        var emailMsg = new Email();
+        var emailGenerator = new Mock<IEmailGenerator>();
+        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object);
+        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
         await handler.HandleAsync(command);
 
         emailSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());

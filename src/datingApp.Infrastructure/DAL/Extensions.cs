@@ -10,12 +10,12 @@ namespace datingApp.Infrastructure.DAL;
 
 internal static class Extensions
 {
-    private const string OptionsSectionName = "postgres";
+    private const string DbOptionsSectionName = "postgres";
     
     public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<PostgresOptions>(configuration.GetRequiredSection(OptionsSectionName));
-        var postgresOptions = configuration.GetOptions<PostgresOptions>(OptionsSectionName);
+        services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
+        var postgresOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);
         services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(postgresOptions.ConnectionString));
         services.AddScoped<IUserRepository, PostgresUserRepository>();
         services.AddScoped<IPhotoRepository, PostgresPhotoRepository>();

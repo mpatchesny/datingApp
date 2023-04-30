@@ -30,10 +30,8 @@ internal sealed class PostgresMatchRepository : IMatchRepository
 
     public async Task<bool> ExistsAsync(Guid userId1, Guid userId2)
     {
-        var count = await _dbContext.Matches
-                    .Where(x => x.UserId1 == userId1 && x.UserId2 == userId2)
-                    .CountAsync();
-        return (count > 0);
+        return await _dbContext.Matches
+                    .AnyAsync(x => x.UserId1 == userId1 && x.UserId2 == userId2);
     }
 
     public async Task AddAsync(Match match)

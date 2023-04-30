@@ -55,7 +55,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                                 UserId = x.User.Id,
                                 Name = x.User.Name,
                                 IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
-                                ProfilePicture = (x.Photo != null) ? x.Photo.AsDto() : null,
+                                ProfilePicture = x.Photo == null ? null : x.Photo.AsDto(),
                                 Messages = x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
                                 CreatedAt = x.Match.CreatedAt
                             })

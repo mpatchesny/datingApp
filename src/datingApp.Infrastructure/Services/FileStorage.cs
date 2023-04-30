@@ -10,8 +10,8 @@ namespace datingApp.Infrastructure.Services;
 internal sealed class FileStorage : IFileStorage
 {
     private readonly IOptions<StorageOptions> _storageOptions;
-    private readonly ILogger _logger;
-    public FileStorage(IOptions<StorageOptions> storageOptions, ILogger logger)
+    private readonly ILogger<IFileStorage> _logger;
+    public FileStorage(IOptions<StorageOptions> storageOptions, ILogger<IFileStorage> logger)
     {
         _storageOptions = storageOptions;
         _logger = logger;

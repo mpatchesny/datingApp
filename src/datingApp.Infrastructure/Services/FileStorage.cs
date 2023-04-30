@@ -26,7 +26,7 @@ internal sealed class FileStorage : IFileStorage
     public async Task DeleteFileAsync(string identification)
     {
         var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);
-        FileInfo[] files = storage.GetFiles("*" + identification + "*.*");
+        FileInfo[] files = storage.GetFiles(identification + ".*");
         if (files.Count() == 0) return;
 
         foreach (var file in files)

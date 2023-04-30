@@ -33,8 +33,12 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
 
         // FIXME: magic strings
         string expirationTime = code.Expiry.Minutes.ToString();
-        string subject = "Your sign-in code for dating app";
-        string body = $"Enter this code to sign in to dating app:\n\n{code.AccessCode}\n\nCode expires in {expirationTime} minutes.";
-        _= _emailSender.SendAsync(command.Email, subject, body);
+        var email = new Email
+            {
+                Receiver = command.Email,
+                Subject = "Your sign-in code for dating app",
+                Body = $"Enter this code to sign in to dating app:\n\n{code.AccessCode}\n\nCode expires in {expirationTime} minutes.",
+            };
+        _ = _emailSender.SendAsync(email);
     }
 }

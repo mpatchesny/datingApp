@@ -39,6 +39,7 @@ public class SwipeRepositoryTests : IDisposable
             new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
         };
         _testDb.DbContext.Swipes.AddRange(swipes);
+        _testDb.DbContext.SaveChanges();
 
         var swipe = await _repository.GetBySwippedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.NotNull(swipe);
@@ -52,6 +53,7 @@ public class SwipeRepositoryTests : IDisposable
             new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
         };
         _testDb.DbContext.Swipes.AddRange(swipes);
+        _testDb.DbContext.SaveChanges();
 
         var swipe = await _repository.GetBySwippedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.Null(swipe);

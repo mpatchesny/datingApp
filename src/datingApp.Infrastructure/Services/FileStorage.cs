@@ -15,22 +15,25 @@ internal sealed class FileStorage : IFileStorage
         _storageOptions = storageOptions;
     }
 
-    public async Task<string> SaveFileAsync(byte[] file, string filename, string extension)
+    public async Task SaveFileAsync(byte[] file, string identification, string extension)
     {
         BuildPath(_storageOptions.Value.StoragePath);
-        string fileNameWithExt = $"{filename}.{extension}";
-        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, fileNameWithExt);
+        string filename = $"{identification}.{extension}";
+        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, filename);
         System.IO.File.WriteAllBytes(filePath, file);
-        return filePath;
     }
 
-    public async Task DeleteFileAsync(string path)
+    public async Task DeleteFileAsync(string identification)
     {
-        if (System.IO.File.Exists(path))
+        var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);
+        FileInfo[] files = storage.GetFiles("*" + identification + "*.*");
+        if (files.Count() == 0) return;
+
+        foreach (var file in files)
         {
             try
             {
-                System.IO.File.Delete(path);
+                file.Delete();
             }
             catch (System.Exception)
             {

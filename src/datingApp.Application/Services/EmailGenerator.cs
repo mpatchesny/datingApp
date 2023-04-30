@@ -21,7 +21,8 @@ public class EmailGenerator : IEmailGenerator
         email.Body = _options.Value.BodyTemplate;
         foreach (var key in kwargs.Keys)
         {
-            // TODO simple string substitution
+            email.Subject = email.Subject.Replace($"{key}", kwargs[key]);
+            email.Body = email.Body.Replace($"{key}", kwargs[key]);
         }
         return email;
     }

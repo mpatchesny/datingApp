@@ -16,7 +16,7 @@ internal sealed class TestDatabase : IDisposable
             .AddJsonFile("appsettings.Test.json")
             .Build();
         string optionsSectionName = "postgres";
-        var options = configuration.GetOptions<PostgresOptions>(optionsSectionName);
+        var options = configuration.GetOptions<DatabaseOptions>(optionsSectionName);
         DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(options.ConnectionString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();

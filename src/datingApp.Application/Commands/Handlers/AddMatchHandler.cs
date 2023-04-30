@@ -36,16 +36,12 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
         if (!matchExists)
         {
             var swipe1 = await _swipeRepository.GetBySwippedBy(userId1, userId2);
-            var swipe2 = await _swipeRepository.GetBySwippedBy(userId2, userId1);
+            if (swipe1 == null) return;
+            if (swipe1.Like == Like.Pass) return;
 
-            if (swipe1 == null || swipe2 == null)
-            {
-                return;
-            }
-            else if (swipe1.Like == Like.Pass || swipe1.Like == Like.Pass)
-            {
-                return;
-            }
+            var swipe2 = await _swipeRepository.GetBySwippedBy(userId2, userId1);
+            if (swipe2 == null) return;
+            if (swipe2.Like == Like.Pass) return;
 
             Match match = new Match(Guid.NewGuid(), userId1, userId2, false, false, null, DateTime.UtcNow);
             await _matchRepository.AddAsync(match);

@@ -44,11 +44,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         byte[] bytes = _photoService.ConvertToArrayOfBytes(command.Base64Bytes);
         _photoService.ValidatePhoto(bytes);
         var extension = _photoService.GetImageFileFormat(bytes);
-        var photoPath = (await _fileStorage.SaveFileAsync(bytes, command.PhotoId.ToString(), extension));
+        _ = _fileStorage.SaveFileAsync(bytes, command.PhotoId.ToString(), extension);
         // FIXME
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
-        var photo = new Photo(command.PhotoId, command.UserId, photoPath, photoUrl, oridinal);
+        var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);
         await _photoRepository.AddAsync(photo);
     }
 }

@@ -53,7 +53,7 @@ namespace datingApp.Infrastructure.DAL
 
             if (dbContext.Messages.Count() == 0)
             {
-                var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hej :)", false, DateTime.UtcNow);
+                var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "hej :)", false, DateTime.UtcNow);
                 dbContext.Messages.Add(message);
                 await dbContext.SaveChangesAsync();
             };

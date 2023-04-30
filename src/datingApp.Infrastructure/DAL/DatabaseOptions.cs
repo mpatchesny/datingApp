@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Infrastructure.DAL;
 
-internal sealed class PostgresOptions
+internal sealed class DatabaseOptions
 {
     public string ConnectionString { get; set; }
 }

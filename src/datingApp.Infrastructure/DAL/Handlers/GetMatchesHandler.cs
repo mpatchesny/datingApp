@@ -19,31 +19,48 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
-        var dbQuery = _dbContext.Matches
+        var dbQuery = 
+            from m in _dbContext.Matches
+            from u in _dbContext.Users
+            from p in _dbContext.Photos.Where(p => p.Oridinal == 0 && p.UserId == u.Id).DefaultIfEmpty()
+            where u.Id == m.UserId1 || u.Id == m.UserId2
+            where m.UserId1 == query.UserId || m.UserId2 == query.UserId 
+            where u.Id != query.UserId
+            select new 
+            {
+                Match = m,
+                User = u,
+                Photo = p,
+            };
+
+        var data = await dbQuery
                         .AsNoTracking()
-                        .Where(x => x.UserId1 == query.UserId || x.UserId2 == query.UserId);
-        
-        var data = await dbQuery.Select(x => new
-                            {
-                                Match = x,
-                                User = _dbContext.Users.Where(u => u.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2)).FirstOrDefault(),
-                                Photo = _dbContext.Photos.Where(p => p.UserId == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2))
-                                            .FirstOrDefault(p => p.Oridinal == 0)
-                            })
-                        .Select(x =>
-                            new MatchDto()
-                            {
-                                Id = x.Match.Id,
-                                UserId = x.User.Id,
-                                Name = x.User.Name,
-                                IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
-                                ProfilePicture = (x.Photo != null) ? x.Photo.AsDto() : null,
-                                Messages = x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
-                                CreatedAt = x.Match.CreatedAt
-                            })
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)
                         .ToListAsync();
+
+        var matchesId = data.Select(x => x.Match.Id).Distinct();
+
+        var messagesList = await _dbContext.Messages
+                        .AsNoTracking()
+                        .Where(x => matchesId.Contains(x.MatchId))
+                        .ToListAsync(); 
+
+        List<MatchDto> dataDto = new List<MatchDto>();
+        foreach (var x in data)
+        {
+            dataDto.Add(
+                new MatchDto()
+                {
+                    Id = x.Match.Id,
+                    UserId = x.User.Id,
+                    Name = x.User.Name,
+                    IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
+                    ProfilePicture = x.Photo == null ? null : x.Photo.AsDto(),
+                    Messages = messagesList.Where(m => m.MatchId == x.Match.Id).OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()),
+                    CreatedAt = x.Match.CreatedAt
+                });
+        }
 
         var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
 
@@ -51,7 +68,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(data)
+            Data = new List<dynamic>(dataDto)
             };
     }
 }

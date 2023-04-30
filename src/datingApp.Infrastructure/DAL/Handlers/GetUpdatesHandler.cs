@@ -30,35 +30,52 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                         .Where(x => x.CreatedAt >= query.LastActivityTime)
                         .Select(x => x.MatchId);
 
-        var newMatches = _dbContext.Matches
+        var newMatchesAndNewMessages = await _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => usersMatches.Contains(x.Id))
                         .Where(x => x.CreatedAt >= query.LastActivityTime)
-                        .Select(x => x.Id);
-
-        var newMatchesAndNewMessages = newMatches.Union(newMessages);
-
-        return await _dbContext.Matches
-                        .AsNoTracking()
-                        .Where(x => newMatchesAndNewMessages.Contains(x.Id))
-                        .Select(x => new
-                            {
-                                Match = x,
-                                User = _dbContext.Users.Where(u => u.Id == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2)).FirstOrDefault(),
-                                Photo = _dbContext.Photos.Where(p => p.UserId == ((x.UserId1 != query.UserId) ? x.UserId1 : x.UserId2))
-                                            .FirstOrDefault(p => p.Oridinal == 0)
-                            })
-                        .Select(x =>
-                            new MatchDto()
-                            {
-                                Id = x.Match.Id,
-                                UserId = x.User.Id,
-                                Name = x.User.Name,
-                                IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
-                                ProfilePicture = (x.Photo != null) ? x.Photo.AsDto() : null,
-                                Messages = x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
-                                CreatedAt = x.Match.CreatedAt
-                            })
+                        .Select(x => x.Id)
+                        .Union(newMessages)
                         .ToListAsync();
+
+        var dbQuery = 
+            from m in _dbContext.Matches
+            from u in _dbContext.Users
+            from p in _dbContext.Photos.Where(p => p.Oridinal == 0 && p.UserId == u.Id).DefaultIfEmpty()
+            where u.Id == m.UserId1 || u.Id == m.UserId2
+            where m.UserId1 == query.UserId || m.UserId2 == query.UserId 
+            where u.Id != query.UserId
+            where newMatchesAndNewMessages.Contains(m.Id)
+            select new 
+            {
+                Match = m,
+                User = u,
+                Photo = p
+            };
+
+        var messagesList = await _dbContext.Messages
+                        .AsNoTracking()
+                        .Where(x => newMessages.Contains(x.Id))
+                        .ToListAsync(); 
+
+        var data = await dbQuery.AsNoTracking().ToListAsync();
+
+        List<MatchDto> dataDto = new List<MatchDto>();
+        foreach (var x in data)
+        {
+            dataDto.Add(
+                new MatchDto()
+                {
+                    Id = x.Match.Id,
+                    UserId = x.User.Id,
+                    Name = x.User.Name,
+                    IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
+                    ProfilePicture = x.Photo == null ? null : x.Photo.AsDto(),
+                    Messages = messagesList.Where(m => m.MatchId == x.Match.Id).Select(x => x.AsDto()).ToList(),
+                    CreatedAt = x.Match.CreatedAt
+                });
+        }
+
+        return dataDto;
     }
 }

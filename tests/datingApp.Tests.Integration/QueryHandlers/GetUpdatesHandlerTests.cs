@@ -169,6 +169,50 @@ public class GetUpdatesHandlerTests : IDisposable
         Assert.Empty(result);
     }
 
+    [Fact]
+    public async Task wget_updates_should_return_empty_collection_if_user_id_passed_in_query_not_match_existing_user()
+    {
+               var users = new List<User>();
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
+        users.Add(new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test1@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings));
+        
+        settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 45.5, 45.5);
+        users.Add(new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111112", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings));
+
+        settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000003"), Sex.Female, 18, 21, 20, 45.5, 45.5);
+        users.Add(new User(Guid.Parse("00000000-0000-0000-0000-000000000003"), "111111113", "test3@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings));
+
+        settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000004"), Sex.Female, 18, 21, 20, 45.5, 45.5);
+        users.Add(new User(Guid.Parse("00000000-0000-0000-0000-000000000004"), "111111114", "test4@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings));
+        
+        settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000005"), Sex.Female, 18, 21, 20, 45.5, 45.5);
+        users.Add(new User(Guid.Parse("00000000-0000-0000-0000-000000000005"), "111111115", "test5@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings));
+        
+        _testDb.DbContext.Users.AddRange(users);
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var matches = new List<Match> {
+            new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow - TimeSpan.FromHours(1)),
+            new Match(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"), false, false, null, DateTime.UtcNow - TimeSpan.FromHours(1))
+        };
+
+        _testDb.DbContext.Matches.AddRange(matches);
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var messages = new List<Message> {
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", false, DateTime.UtcNow + TimeSpan.FromHours(1)),
+            new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", false, DateTime.UtcNow + TimeSpan.FromHours(1))
+        };
+
+        _testDb.DbContext.Messages.AddRange(messages);
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000000");
+        var query = new GetUpdates{ UserId = userId, LastActivityTime = DateTime.UtcNow};
+        var result = await _handler.HandleAsync(query);
+        Assert.Empty(result);
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetUpdatesHandler _handler;

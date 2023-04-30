@@ -9,7 +9,6 @@ public class PhotoDto
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
-    public string Path { get; set; }
     public string Url { get; set; }
     public int Oridinal { get; set; }
 }

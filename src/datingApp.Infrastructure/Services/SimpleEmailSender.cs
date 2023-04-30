@@ -45,10 +45,10 @@ internal sealed class SimpleEmailSender : IEmailSender
                 client.UseDefaultCredentials = false;
                 await client.SendMailAsync(message);
             }
-            catch
+            catch (Exception ex)
             {
                 var error = $"{nameof(SimpleEmailSender)}: failed to send email to {email.Receiver}.";
-                _logger.LogError(error);
+                _logger.LogError(ex, error);
             }
             finally
             {

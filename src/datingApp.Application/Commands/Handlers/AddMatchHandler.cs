@@ -19,14 +19,10 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 
     public async Task HandleAsync(AddMatch command)
     {
-        Guid userId1;
-        Guid userId2;
-        if (command.swippedById.CompareTo(command.swippedWhoId) < 0)
-        {
-            userId1 = command.swippedById;
-            userId2 = command.swippedWhoId;
-        }
-        else
+        Guid userId1 = command.swippedById;
+        Guid userId2 = command.swippedWhoId;
+        
+        if (command.swippedById.CompareTo(command.swippedWhoId) >= 0)
         {
             userId1 = command.swippedWhoId;
             userId2 = command.swippedById;

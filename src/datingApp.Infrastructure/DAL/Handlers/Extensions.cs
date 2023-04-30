@@ -31,6 +31,8 @@ internal static class Extensions
             Id = entity.Id,
             Age = entity.GetAge(),
             DateOfBirth = entity.DateOfBirth,
+            Email = entity.Email,
+            Phone = entity.Phone,
             Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface IEmailSender
+public interface IEmailGenerator
 {
-    public Task SendAsync(Email email);
+    public Email Generate(string ReceiverEmailAddress, Dictionary<string, string> kwargs);
 }

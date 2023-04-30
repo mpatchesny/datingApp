@@ -8,7 +8,7 @@ namespace datingApp.Infrastructure.Services;
 
 internal sealed class DummyEmailSender : IEmailSender
 {
-    public Task SendAsync(string receiver, string subject, string body)
+    public Task SendAsync(Email email)
     {
         // does nothing
         return Task.CompletedTask;

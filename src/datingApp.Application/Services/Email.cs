@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface IEmailSender
+public class Email
 {
-    public Task SendAsync(Email email);
+    public string Receiver { get; set; }
+    public string Subject { get; set; }
+    public string Body { get; set; }
 }

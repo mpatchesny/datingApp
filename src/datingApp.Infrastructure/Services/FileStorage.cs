@@ -20,13 +20,14 @@ internal sealed class FileStorage : IFileStorage
         BuildPath(_storageOptions.Value.StoragePath);
         string filename = $"{identification}.{extension}";
         string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, filename);
-        System.IO.File.WriteAllBytes(filePath, file);
+        await System.IO.File.WriteAllBytesAsync(filePath, file);
     }
 
     public async Task DeleteFileAsync(string identification)
     {
         var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);
-        FileInfo[] files = storage.GetFiles(identification + ".*");
+        var task = new Task<FileInfo[]>(() => { return storage.GetFiles(identification + ".*"); });
+        var files = await task;
         if (files.Count() == 0) return;
 
         foreach (var file in files)

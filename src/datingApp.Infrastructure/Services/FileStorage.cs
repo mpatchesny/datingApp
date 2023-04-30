@@ -10,9 +10,11 @@ namespace datingApp.Infrastructure.Services;
 internal sealed class FileStorage : IFileStorage
 {
     private readonly IOptions<StorageOptions> _storageOptions;
-    public FileStorage(IOptions<StorageOptions> storageOptions)
+    private readonly ILogger _logger;
+    public FileStorage(IOptions<StorageOptions> storageOptions, ILogger logger)
     {
         _storageOptions = storageOptions;
+        _logger = logger;
     }
 
     public async Task SaveFileAsync(byte[] file, string identification, string extension)
@@ -20,7 +22,15 @@ internal sealed class FileStorage : IFileStorage
         BuildPath(_storageOptions.Value.StoragePath);
         string filename = $"{identification}.{extension}";
         string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, filename);
-        await System.IO.File.WriteAllBytesAsync(filePath, file);
+        try
+        {
+            await System.IO.File.WriteAllBytesAsync(filePath, file);
+        }
+        catch (Exception ex)
+        {
+            var error = $"{nameof(FileStorage)}: Failed to save file to disk: Id: {identification}, path: {filePath}.";
+            _logger.LogError(ex, error);
+        }
     }
 
     public async Task DeleteFileAsync(string identification)
@@ -36,9 +46,10 @@ internal sealed class FileStorage : IFileStorage
             {
                 file.Delete();
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
-                // pass
+                var error = $"{nameof(FileStorage)}: Failed to delete file: Id: {identification}, path: {file.FullName}.";
+                _logger.LogError(ex, error);
             }
         }
     }

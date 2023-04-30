@@ -10,7 +10,7 @@ namespace datingApp.Infrastructure.DAL;
 
 internal static class Extensions
 {
-    private const string DbOptionsSectionName = "postgres";
+    private const string DbOptionsSectionName = "database";
     
     public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
     {

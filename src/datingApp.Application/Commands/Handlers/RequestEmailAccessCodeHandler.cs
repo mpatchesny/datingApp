@@ -35,6 +35,6 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         string expirationTime = code.Expiry.Minutes.ToString();
         string subject = "Your sign-in code for dating app";
         string body = $"Enter this code to sign in to dating app:\n\n{code.AccessCode}\n\nCode expires in {expirationTime} minutes.";
-        await _emailSender.SendAsync(command.Email, subject, body);
+        _= _emailSender.SendAsync(command.Email, subject, body);
     }
 }

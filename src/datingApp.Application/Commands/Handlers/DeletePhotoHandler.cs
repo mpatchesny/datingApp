@@ -33,6 +33,6 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         }
         await _photoRepository.DeleteAsync(photo);
 
-        await _fileStorage.DeleteFileAsync(photo.Path);
+        _ = _fileStorage.DeleteFileAsync(photo.Path);
     }
 }

@@ -17,13 +17,16 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
     private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IEmailSender _emailSender;
+    private readonly IEmailGenerator _emailGenerator;
     public RequestEmailAccessCodeHandler(IAccessCodeGenerator codeGenerator,
                         IAccessCodeStorage codeStorage,
-                        IEmailSender emailSender)
+                        IEmailSender emailSender,
+                        IEmailGenerator emailGenerator)
     {
         _codeGenerator = codeGenerator;
         _codeStorage = codeStorage;
         _emailSender = emailSender;
+        _emailGenerator = emailGenerator;
     }
 
     public async Task HandleAsync(RequestEmailAccessCode command)
@@ -31,14 +34,9 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());
         _codeStorage.Set(code);
 
-        // FIXME: magic strings
         string expirationTime = code.Expiry.Minutes.ToString();
-        var email = new Email
-            {
-                Receiver = command.Email,
-                Subject = "Your sign-in code for dating app",
-                Body = $"Enter this code to sign in to dating app:\n\n{code.AccessCode}\n\nCode expires in {expirationTime} minutes.",
-            };
+        var emailGeneratorArgs = new Dictionary<String, string>{{ "AccessCode", code.AccessCode }, { "ExpirationTime", expirationTime }};
+        var email = _emailGenerator.Generate(command.Email, emailGeneratorArgs);
         _ = _emailSender.SendAsync(email);
     }
 }

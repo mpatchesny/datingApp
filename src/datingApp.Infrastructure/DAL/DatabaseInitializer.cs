@@ -44,6 +44,13 @@ namespace datingApp.Infrastructure.DAL
                 await dbContext.SaveChangesAsync();
             };
 
+            if (dbContext.Swipes.Count() == 0)
+            {
+                var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow);
+                dbContext.Swipes.Add(swipe);
+                await dbContext.SaveChangesAsync();
+            };
+
             if (dbContext.Matches.Count() == 0)
             {
                 var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);

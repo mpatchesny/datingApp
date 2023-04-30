@@ -12,9 +12,10 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 {
     private readonly IMatchRepository _matchRepository;
     private readonly ISwipeRepository _swipeRepository;
-    public AddMatchHandler(IMatchRepository matchRepository)
+    public AddMatchHandler(IMatchRepository matchRepository, ISwipeRepository swipeRepository)
     {
         _matchRepository = matchRepository;
+        _swipeRepository = swipeRepository;
     }
 
     public async Task HandleAsync(AddMatch command)

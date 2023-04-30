@@ -35,7 +35,7 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         _codeStorage.Set(code);
 
         string expirationTime = code.Expiry.Minutes.ToString();
-        var emailGeneratorArgs = new Dictionary<String, string>{{ "AccessCode", code.AccessCode }, { "ExpirationTime", expirationTime }};
+        var emailGeneratorArgs = new Dictionary<string, string>{{ "AccessCode", code.AccessCode }, { "ExpirationTime", expirationTime }};
         var email = _emailGenerator.Generate(command.Email, emailGeneratorArgs);
         _ = _emailSender.SendAsync(email);
     }

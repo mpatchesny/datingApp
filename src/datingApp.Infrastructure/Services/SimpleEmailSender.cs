@@ -11,24 +11,28 @@ namespace datingApp.Infrastructure.Services;
 internal sealed class SimpleEmailSender : IEmailSender
 {
     private readonly IOptions<EmailSenderOptions> _options;
-    public SimpleEmailSender(IOptions<EmailSenderOptions> options)
+    private readonly ILogger<IEmailSender> _logger;
+    public SimpleEmailSender(IOptions<EmailSenderOptions> options,
+                            ILogger<IEmailSender> logger)
     {
         _options = options;
+        _logger = logger;
     }
 
-    public async Task SendAsync(string receiver, string subject, string body)
+    public async Task SendAsync(Email email)
     {
         MailMessage message = new MailMessage(
             _options.Value.SendFrom,
-            receiver,
-            subject,
-            body);
+            email.Receiver,
+            email.Subject,
+            email.Body);
 
         int port = 0;
         if (!int.TryParse(_options.Value.ServerPort, out port))
         {
-            // TODO: add logging
             new InvalidCastException($"Port {_options.Value.ServerPort} cannot be cast to integer.");
+            var error = $"{nameof(SimpleEmailSender)}: port {_options.Value.ServerPort} cannot be cast to integer.";
+            _logger.LogError(error);
         }
 
         using (var client = new SmtpClient(_options.Value.ServerAddress, port))
@@ -43,8 +47,8 @@ internal sealed class SimpleEmailSender : IEmailSender
             }
             catch
             {
-                // TODO: add logging
-                throw;
+                var error = $"{nameof(SimpleEmailSender)}: failed to send email to {email.Receiver}.";
+                _logger.LogError(error);
             }
             finally
             {

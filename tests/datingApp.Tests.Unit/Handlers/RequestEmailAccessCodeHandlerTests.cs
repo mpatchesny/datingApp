@@ -32,7 +32,7 @@ public class RequestEmailAccessCodeHandlerTests
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
         var emailSender = new Mock<IEmailSender>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
@@ -60,7 +60,7 @@ public class RequestEmailAccessCodeHandlerTests
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
         var emailSender = new Mock<IEmailSender>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
@@ -88,13 +88,13 @@ public class RequestEmailAccessCodeHandlerTests
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
         var emailSender = new Mock<IEmailSender>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
         var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object);
         await handler.HandleAsync(command);
 
-        emailSender.Verify(mock => mock.SendAsync(email, It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+        emailSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
     }
 }

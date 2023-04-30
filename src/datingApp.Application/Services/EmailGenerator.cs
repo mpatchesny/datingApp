@@ -19,6 +19,7 @@ public class EmailGenerator : IEmailGenerator
         email.Receiver = ReceiverEmailAddress;
         email.Subject = _options.Value.SubjectTemplate;
         email.Body = _options.Value.BodyTemplate;
+
         foreach (var key in kwargs.Keys)
         {
             email.Subject = email.Subject.Replace($"{key}", kwargs[key]);

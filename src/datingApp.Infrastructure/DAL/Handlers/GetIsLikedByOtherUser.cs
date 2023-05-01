@@ -10,10 +10,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMatchHandler : IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto>
+internal sealed class GetIsLikedByOtherUserHandler : IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetMatchHandler(DatingAppDbContext dbContext = null)
+    public GetIsLikedByOtherUserHandler(DatingAppDbContext dbContext = null)
     {
         _dbContext = dbContext;
     }

@@ -42,7 +42,7 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
-    private readonly GetMatchHandler _handler;
+    private readonly GetIsLikedByOtherUserHandler _handler;
     public GetIsLikedByOtherUserHandlerTests()
     {
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
@@ -54,7 +54,7 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
-        _handler = new GetMatchHandler(_testDb.DbContext);
+        _handler = new GetIsLikedByOtherUserHandler(_testDb.DbContext);
     }
 
     // Teardown

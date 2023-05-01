@@ -23,8 +23,8 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsMatchDto>
         var swipeExists = await _dbContext.Swipes
                                 .AsNoTracking()
                                 .AnyAsync(x => 
-                                    ((x.SwipedById == query.SwipedById || x.SwipedWhoId == query.SwipedWhoId) && x.Like == Like.Like) ||
-                                    ((x.SwipedById == query.SwipedWhoId || x.SwipedWhoId == query.SwipedById) && x.Like == Like.Like));
+                                    (x.SwipedById == query.SwipedById && x.SwipedWhoId == query.SwipedWhoId && x.Like == Like.Like) &&
+                                    (x.SwipedById == query.SwipedWhoId && x.SwipedWhoId == query.SwipedById && x.Like == Like.Like));
         return new IsMatchDto {
             Match = swipeExists
         };

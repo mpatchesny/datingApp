@@ -20,13 +20,15 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsMatchDto>
 
     public async Task<IsMatchDto> HandleAsync(GetMatch query)
     {
-        var swipeExists = await _dbContext.Swipes
+        var swipesCount = await _dbContext.Swipes
                                 .AsNoTracking()
-                                .AnyAsync(x => 
-                                    (x.SwipedById == query.SwipedById && x.SwipedWhoId == query.SwipedWhoId && x.Like == Like.Like) &&
-                                    (x.SwipedById == query.SwipedWhoId && x.SwipedWhoId == query.SwipedById && x.Like == Like.Like));
+                                .Where(x => 
+                                    (x.SwipedById == query.SwipedById && x.SwipedWhoId == query.SwipedWhoId && x.Like == Like.Like) ||
+                                    (x.SwipedById == query.SwipedWhoId && x.SwipedWhoId == query.SwipedById && x.Like == Like.Like))
+                                .CountAsync();
+        
         return new IsMatchDto {
-            Match = swipeExists
+            Match = (swipesCount == 2)
         };
     }
 }

@@ -37,7 +37,10 @@ public class LikeController : ControllerBase
         await _swipeUserHandler.HandleAsync(command);
 
         var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });
-        await _addMatchHandler.HandleAsync(new AddMatch(swipedById, swipedWhoId));
+        if (isLikedByOtherUser.IsLikedByOtherUser) 
+        {
+            await _addMatchHandler.HandleAsync(new AddMatch(swipedById, swipedWhoId));
+        }
         
         return isLikedByOtherUser;
     }

@@ -11,11 +11,9 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 {
     private readonly IMatchRepository _matchRepository;
-    private readonly ISwipeRepository _swipeRepository;
-    public AddMatchHandler(IMatchRepository matchRepository, ISwipeRepository swipeRepository)
+    public AddMatchHandler(IMatchRepository matchRepository)
     {
         _matchRepository = matchRepository;
-        _swipeRepository = swipeRepository;
     }
 
     public async Task HandleAsync(AddMatch command)
@@ -31,14 +29,6 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 
         var matchExists = await _matchRepository.ExistsAsync(userId1, userId2);
         if (matchExists) return;
-
-        var swipe1 = await _swipeRepository.GetBySwipedBy(userId1, userId2);
-        if (swipe1 == null) return;
-        if (swipe1.Like == Like.Pass) return;
-
-        var swipe2 = await _swipeRepository.GetBySwipedBy(userId2, userId1);
-        if (swipe2 == null) return;
-        if (swipe2.Like == Like.Pass) return;
 
         Match match = new Match(Guid.NewGuid(), userId1, userId2, false, false, null, DateTime.UtcNow);
         await _matchRepository.AddAsync(match);

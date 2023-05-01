@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Services;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.Exceptions;
 using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Unit.Services;
@@ -18,7 +21,8 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions);
+        var mock = new Mock<ILogger<IFileStorage>>();
+        var storage = new FileStorage(storageOptions, mock.Object);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         await storage.SaveFileAsync(photo, "test", "txt");
         string path = System.IO.Path.Combine(storageOptions.Value.StoragePath,"test.txt");
@@ -32,7 +36,8 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions);
+        var mock = new Mock<ILogger<IFileStorage>>();
+        var storage = new FileStorage(storageOptions, mock.Object);
 
         var path = System.IO.Path.Combine(".", "test.txt");
         var stream = System.IO.File.Create(path);
@@ -49,7 +54,8 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions);
+        var mock = new Mock<ILogger<IFileStorage>>();
+        var storage = new FileStorage(storageOptions, mock.Object);
         var exception = await Record.ExceptionAsync(async () => await storage.DeleteFileAsync("test.txt"));
         Assert.Null(exception);
     }
@@ -59,7 +65,8 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = testDirectoryPath;
-        var storage = new FileStorage(storageOptions);
+        var mock = new Mock<ILogger<IFileStorage>>();
+        var storage = new FileStorage(storageOptions, mock.Object);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         await storage.SaveFileAsync(photo, "test", "txt");
         var folderExists = System.IO.Directory.Exists(testDirectoryPath);

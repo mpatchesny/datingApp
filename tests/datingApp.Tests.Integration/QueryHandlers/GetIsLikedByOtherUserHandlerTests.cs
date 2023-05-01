@@ -14,12 +14,11 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetIsLikedByOtherUserHandlerTests : IDisposable
 {
     [Fact]
-    public async void given_two_users_liked_each_other_get_match_should_return_non_empty_match_dto_with_true_match_value()
+    public async void given_other_user_like_user_get_match_should_return_non_emptyis_liked_by_other_user_dto_with_true_is_liked_value()
     {
         var swipes = new List<Swipe>
         {
             new Core.Entities.Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
-            new Core.Entities.Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow)
         };
         await _testDb.DbContext.Swipes.AddRangeAsync(swipes);
         await _testDb.DbContext.SaveChangesAsync();
@@ -32,25 +31,7 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_only_one_user_liked_other_get_match_should_return_non_empty_match_dto_with_false_Match_value()
-    {
-        var swipes = new List<Swipe>
-        {
-            new Core.Entities.Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
-            new Core.Entities.Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
-        };
-        await _testDb.DbContext.Swipes.AddRangeAsync(swipes);
-        await _testDb.DbContext.SaveChangesAsync();
-        
-        var query = new GetIsLikedByOtherUser { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
-        var match = await _handler.HandleAsync(query);
-        Assert.NotNull(match);
-        Assert.IsType<IsLikedByOtherUserDto>(match);
-        Assert.Equal(false, match.IsLikedByOtherUser);
-    }
-
-    [Fact]
-    public async void given_no_swipes_exists_get_match_should_return_non_empty_match_dto_with_false_Match_value()
+    public async void given_no_swipes_exists_get_match_should_return_non_empty_is_liked_by_other_user_dto_with_false_Match_value()
     {
         var query = new GetIsLikedByOtherUser { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);

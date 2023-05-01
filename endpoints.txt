@@ -1,6 +1,7 @@
 Endpoints:
 GET users/me
 GET users/me/recommendations
+GET users/<userId>
 POST users
 PATCH users/<userId>
 DELETE users/<userId>
@@ -20,5 +21,5 @@ POST matches/<matchId>/messages
 PATCH matches/<matchId>/messages/<messageId>
 DELETE matches/<matchId>
 
-GET /like/<userId>
-GET /like/<userId>
+POST /like/<userId>
+POST /pass/<userId>

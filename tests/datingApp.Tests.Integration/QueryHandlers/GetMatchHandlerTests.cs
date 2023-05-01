@@ -27,8 +27,8 @@ public class GetMatchHandlerTests : IDisposable
         var query = new GetMatch { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
-        Assert.IsType<IsMatchDto>(match);
-        Assert.Equal(true, match.Match);
+        Assert.IsType<IsLikedByOtherUserDto>(match);
+        Assert.Equal(true, match.IsLikedByOtherUser);
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class GetMatchHandlerTests : IDisposable
         var query = new GetMatch { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
-        Assert.IsType<IsMatchDto>(match);
-        Assert.Equal(false, match.Match);
+        Assert.IsType<IsLikedByOtherUserDto>(match);
+        Assert.Equal(false, match.IsLikedByOtherUser);
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public class GetMatchHandlerTests : IDisposable
         var query = new GetMatch { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
-        Assert.IsType<IsMatchDto>(match);
-        Assert.Equal(false, match.Match);
+        Assert.IsType<IsLikedByOtherUserDto>(match);
+        Assert.Equal(false, match.IsLikedByOtherUser);
     }
 
     // Arrange

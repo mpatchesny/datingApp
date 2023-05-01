@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.DTO;
 
-public class IsMatchDto
+public class IsLikedByOtherUserDto
 {
-    public bool Match { get; set; }
+    public bool IsLikedByOtherUser { get; set; }
 }

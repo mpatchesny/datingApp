@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsMatchDto>
+internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsLikedByOtherUserDto>
 {
     private readonly DatingAppDbContext _dbContext;
     public GetMatchHandler(DatingAppDbContext dbContext = null)
@@ -18,7 +18,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsMatchDto>
         _dbContext = dbContext;
     }
 
-    public async Task<IsMatchDto> HandleAsync(GetMatch query)
+    public async Task<IsLikedByOtherUserDto> HandleAsync(GetMatch query)
     {
         var swipesCount = await _dbContext.Swipes
                                 .AsNoTracking()
@@ -27,8 +27,8 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, IsMatchDto>
                                     (x.SwipedById == query.SwipedWhoId && x.SwipedWhoId == query.SwipedById && x.Like == Like.Like))
                                 .CountAsync();
         
-        return new IsMatchDto {
-            Match = (swipesCount == 2)
+        return new IsLikedByOtherUserDto {
+            IsLikedByOtherUser = (swipesCount == 2)
         };
     }
 }

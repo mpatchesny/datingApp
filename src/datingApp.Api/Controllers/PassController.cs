@@ -23,14 +23,14 @@ public class PassController : ControllerBase
     }
 
     [HttpPost("{userId:guid}")]
-    public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
+    public async Task<ActionResult<IsLikedByOtherUserDto>> Get(Guid userId)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var swipedByUserId = Guid.Parse(User.Identity?.Name);
         var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 1);
         await _swipeUserHandler.HandleAsync(command);
 
-        var isLikedByOtherUser = new IsMatchDto {Match = false};
+        var isLikedByOtherUser = new IsLikedByOtherUserDto {IsLikedByOtherUser = false};
         return isLikedByOtherUser;
     }
 }

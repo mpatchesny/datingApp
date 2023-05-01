@@ -30,7 +30,7 @@ public class PassController : ControllerBase
         var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 1);
         await _swipeUserHandler.HandleAsync(command);
 
-        var isMatch = new IsMatchDto {Match = false};
-        return isMatch;
+        var isLikedByOtherUser = new IsMatchDto {Match = false};
+        return isLikedByOtherUser;
     }
 }

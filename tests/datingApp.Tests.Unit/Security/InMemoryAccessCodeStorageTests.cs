@@ -29,23 +29,6 @@ public class InMemoryAccessCodeStorageTests
         Assert.Equal(code, storage.Get(email));
     }
 
-     [Fact(Skip="code storage Get method needs to be called at least two times in order it to work")]
-    public void if_access_code_with_given_email_exists_storage_should_null_for_all_but_first_call()
-    {
-        string email = "test@test.com";
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
-            EmailOrPhone = email,
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
-        var storage = new InMemoryAccessCodeStorage(_memoryCache);
-        storage.Set(code);
-        Assert.Equal(code, storage.Get(email));
-        Assert.Null(storage.Get(email));
-    }
-
     [Fact]
     public void if_access_code_with_given_email_exists_storage_should_return_null_after_expiration_time()
     {

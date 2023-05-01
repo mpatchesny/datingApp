@@ -41,6 +41,6 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
         if (swipe2.Like == Like.Pass) return;
 
         Match match = new Match(Guid.NewGuid(), userId1, userId2, false, false, null, DateTime.UtcNow);
-        _ = _matchRepository.AddAsync(match);
+        await _matchRepository.AddAsync(match);
     }
 }

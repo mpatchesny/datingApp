@@ -11,7 +11,7 @@ using Xunit;
 namespace datingApp.Tests.Integration.QueryHandlers;
 
 [Collection("Integration tests")]
-public class GetMatchHandlerTests : IDisposable
+public class GetIsLikedByOtherUserHandlerTests : IDisposable
 {
     [Fact]
     public async void given_two_users_liked_each_other_get_match_should_return_non_empty_match_dto_with_true_match_value()
@@ -62,7 +62,7 @@ public class GetMatchHandlerTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetMatchHandler _handler;
-    public GetMatchHandlerTests()
+    public GetIsLikedByOtherUserHandlerTests()
     {
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);

@@ -82,8 +82,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SwippedById = table.Column<Guid>(type: "uuid", nullable: false),
-                    SwippedWhoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SwipedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    SwipedWhoId = table.Column<Guid>(type: "uuid", nullable: false),
                     Like = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -91,14 +91,14 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Swipes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Swipes_Users_SwippedById",
-                        column: x => x.SwippedById,
+                        name: "FK_Swipes_Users_SwipedById",
+                        column: x => x.SwipedById,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Swipes_Users_SwippedWhoId",
-                        column: x => x.SwippedWhoId,
+                        name: "FK_Swipes_Users_SwipedWhoId",
+                        column: x => x.SwipedWhoId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -181,14 +181,14 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwippedById",
+                name: "IX_Swipes_SwipedById",
                 table: "Swipes",
-                column: "SwippedById");
+                column: "SwipedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwippedWhoId",
+                name: "IX_Swipes_SwipedWhoId",
                 table: "Swipes",
-                column: "SwippedWhoId");
+                column: "SwipedWhoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",

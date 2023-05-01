@@ -125,17 +125,17 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<int>("Like")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("SwippedById")
+                    b.Property<Guid>("SwipedById")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SwippedWhoId")
+                    b.Property<Guid>("SwipedWhoId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SwippedWhoId");
+                    b.HasIndex("SwipedWhoId");
 
-                    b.HasIndex("SwippedById", "SwippedWhoId")
+                    b.HasIndex("SwipedById", "SwipedWhoId")
                         .IsUnique();
 
                     b.ToTable("Swipes");
@@ -258,13 +258,13 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 {
                     b.HasOne("datingApp.Core.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("SwippedById")
+                        .HasForeignKey("SwipedById")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("datingApp.Core.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("SwippedWhoId")
+                        .HasForeignKey("SwipedWhoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

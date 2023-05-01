@@ -11,13 +11,13 @@ namespace datingApp.Infrastructure.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Swipes_SwippedById",
+                name: "IX_Swipes_SwipedById",
                 table: "Swipes");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwippedById_SwippedWhoId",
+                name: "IX_Swipes_SwipedById_SwipedWhoId",
                 table: "Swipes",
-                columns: new[] { "SwippedById", "SwippedWhoId" },
+                columns: new[] { "SwipedById", "SwipedWhoId" },
                 unique: true);
         }
 
@@ -25,13 +25,13 @@ namespace datingApp.Infrastructure.DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Swipes_SwippedById_SwippedWhoId",
+                name: "IX_Swipes_SwipedById_SwipedWhoId",
                 table: "Swipes");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwippedById",
+                name: "IX_Swipes_SwipedById",
                 table: "Swipes",
-                column: "SwippedById");
+                column: "SwipedById");
         }
     }
 }

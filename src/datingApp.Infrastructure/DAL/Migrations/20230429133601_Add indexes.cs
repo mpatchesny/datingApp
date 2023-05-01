@@ -33,9 +33,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 columns: new[] { "Sex", "DateOfBirth" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwippedById_SwippedWhoId_Like",
+                name: "IX_Swipes_SwipedById_SwipedWhoId_Like",
                 table: "Swipes",
-                columns: new[] { "SwippedById", "SwippedWhoId", "Like" });
+                columns: new[] { "SwipedById", "SwipedWhoId", "Like" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_UserId_Oridinal",
@@ -65,7 +65,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 table: "Users");
 
             migrationBuilder.DropIndex(
-                name: "IX_Swipes_SwippedById_SwippedWhoId_Like",
+                name: "IX_Swipes_SwipedById_SwipedWhoId_Like",
                 table: "Swipes");
 
             migrationBuilder.DropIndex(

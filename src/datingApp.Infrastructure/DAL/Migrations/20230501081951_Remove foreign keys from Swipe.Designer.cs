@@ -12,8 +12,8 @@ using datingApp.Infrastructure;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20230429133601_Add indexes")]
-    partial class Addindexes
+    [Migration("20230501081951_Remove foreign keys from Swipe")]
+    partial class RemoveforeignkeysfromSwipe
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -132,8 +132,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SwipedWhoId");
 
                     b.HasIndex("SwipedById", "SwipedWhoId")
                         .IsUnique();
@@ -256,21 +254,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasOne("datingApp.Core.Entities.User", null)
                         .WithMany("Photos")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
-                {
-                    b.HasOne("datingApp.Core.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("SwipedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("datingApp.Core.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("SwipedWhoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

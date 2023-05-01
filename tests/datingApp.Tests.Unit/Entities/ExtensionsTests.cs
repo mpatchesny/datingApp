@@ -66,7 +66,7 @@ public class ExtensionsTests
     }
 
     [Fact]
-    public void swipe_is_owner_should_return_true_when_user_id_match_swipped_by_user_id()
+    public void swipe_is_owner_should_return_true_when_user_id_match_swiped_by_user_id()
     {
         var userId1 = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var userId2 = Guid.Parse("00000000-0000-0000-0000-000000000002");
@@ -75,7 +75,7 @@ public class ExtensionsTests
     }
 
     [Fact]
-    public void swipe_is_owner_should_return_true_when_user_id_dont_match_swipped_by_user_id()
+    public void swipe_is_owner_should_return_true_when_user_id_dont_match_swiped_by_user_id()
     {
         var userId1 = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var userId2 = Guid.Parse("00000000-0000-0000-0000-000000000002");

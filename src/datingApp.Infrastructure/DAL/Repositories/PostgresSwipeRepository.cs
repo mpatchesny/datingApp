@@ -22,9 +22,14 @@ internal sealed class PostgresSwipeRepository : ISwipeRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Swipe> GetBySwippedBy(Guid swippedById, Guid swippedWhoId)
+    public async Task<Swipe> GetBySwipedBy(Guid swipedById, Guid swipedWhoId)
     {
-        var swipe = await _dbContext.Swipes.SingleOrDefaultAsync(x => x.SwippedById == swippedById & x.SwippedWhoId == swippedWhoId);
+        var swipe = await _dbContext.Swipes.SingleOrDefaultAsync(x => x.SwipedById == swipedById & x.SwipedWhoId == swipedWhoId);
         return swipe;
+    }
+
+    public async Task<bool> SwipeExists(Guid swipedById, Guid swipedWhoId)
+    {
+        return await _dbContext.Swipes.AnyAsync(x => x.SwipedById == swipedById & x.SwipedWhoId == swipedWhoId);
     }
 }

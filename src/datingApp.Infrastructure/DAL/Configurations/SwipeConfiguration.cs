@@ -23,12 +23,6 @@ internal sealed class SwipeConfiguration : IEntityTypeConfiguration<Swipe>
             .IsUnique();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.SwipedById);
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.SwipedWhoId);
 
         builder.HasIndex(x => new {x.SwipedById, x.SwipedWhoId, x.Like});
     }

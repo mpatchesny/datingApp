@@ -20,23 +20,23 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 
     public async Task HandleAsync(AddMatch command)
     {
-        Guid userId1 = command.swippedById;
-        Guid userId2 = command.swippedWhoId;
+        Guid userId1 = command.swipedById;
+        Guid userId2 = command.swipedWhoId;
         
-        if (command.swippedById.CompareTo(command.swippedWhoId) >= 0)
+        if (command.swipedById.CompareTo(command.swipedWhoId) >= 0)
         {
-            userId1 = command.swippedWhoId;
-            userId2 = command.swippedById;
+            userId1 = command.swipedWhoId;
+            userId2 = command.swipedById;
         }
 
         var matchExists = await _matchRepository.ExistsAsync(userId1, userId2);
         if (matchExists) return;
 
-        var swipe1 = await _swipeRepository.GetBySwippedBy(userId1, userId2);
+        var swipe1 = await _swipeRepository.GetBySwipedBy(userId1, userId2);
         if (swipe1 == null) return;
         if (swipe1.Like == Like.Pass) return;
 
-        var swipe2 = await _swipeRepository.GetBySwippedBy(userId2, userId1);
+        var swipe2 = await _swipeRepository.GetBySwipedBy(userId2, userId1);
         if (swipe2 == null) return;
         if (swipe2.Like == Like.Pass) return;
 

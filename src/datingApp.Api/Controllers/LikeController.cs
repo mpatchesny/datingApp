@@ -34,7 +34,7 @@ public class LikeController : ControllerBase
         var swipedByUserId = Guid.Parse(User.Identity?.Name);
         var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 2);
         await _swipeUserHandler.HandleAsync(command);
-        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwippedById, SwipedWhoId = command.SwippedById });
+        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedById });
         await _addMatchHandler.HandleAsync(new AddMatch(swipedByUserId, userId));
         
         return isMatch;

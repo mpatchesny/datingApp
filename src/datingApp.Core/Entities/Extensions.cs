@@ -29,6 +29,6 @@ public static class Extensions
     }
     public static bool IsOwner(this Swipe entity, Guid userId)
     {
-        return (entity.SwippedById == userId);
+        return (entity.SwipedById == userId);
     }
 }

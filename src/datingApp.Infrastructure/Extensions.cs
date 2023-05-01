@@ -40,7 +40,7 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetMessages, PaginatedDataDto>, GetMessagesHandler>();
         services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler>();
         services.AddScoped<IQueryHandler<GetMessage, MessageDto>, GetMessageHandler>();
-        services.AddScoped<IQueryHandler<GetMatch, IsMatchDto>, GetMatchHandler>();
+        services.AddScoped<IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto>, GetIsLikedByOtherUserHandler>();
         services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler>();
         services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler>();
         services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler>();

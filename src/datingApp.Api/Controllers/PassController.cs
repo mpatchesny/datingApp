@@ -17,20 +17,24 @@ namespace datingApp.Api.Controllers;
 public class PassController : ControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    public PassController(ICommandHandler<SwipeUser> swipeUserHandler)
+    private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
+    public PassController(ICommandHandler<SwipeUser> swipeUserHandler,
+                        IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> getLikedByOtherUserHandler)
     {
         _swipeUserHandler = swipeUserHandler;
+        _getLikedByOtherUserHandler = getLikedByOtherUserHandler;
     }
 
     [HttpPost("{userId:guid}")]
     public async Task<ActionResult<IsLikedByOtherUserDto>> Get(Guid userId)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var swipedByUserId = Guid.Parse(User.Identity?.Name);
-        var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 1);
+        var swipedById = Guid.Parse(User.Identity?.Name);
+        var swipedWhoId = userId;
+        var command = new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 1);
         await _swipeUserHandler.HandleAsync(command);
 
-        var isLikedByOtherUser = new IsLikedByOtherUserDto {IsLikedByOtherUser = false};
+        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });
         return isLikedByOtherUser;
     }
 }

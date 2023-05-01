@@ -17,12 +17,9 @@ namespace datingApp.Api.Controllers;
 public class PassController : ControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    private readonly IQueryHandler<GetMatch, IsMatchDto> _getMatchHandler;
-    public PassController(ICommandHandler<SwipeUser> swipeUserHandler,
-                        IQueryHandler<GetMatch, IsMatchDto> getMatchHandler)
+    public PassController(ICommandHandler<SwipeUser> swipeUserHandler)
     {
         _swipeUserHandler = swipeUserHandler;
-        _getMatchHandler = getMatchHandler;
     }
 
     [HttpPost("{userId:guid}")]
@@ -32,8 +29,8 @@ public class PassController : ControllerBase
         var swipedByUserId = Guid.Parse(User.Identity?.Name);
         var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 1);
         await _swipeUserHandler.HandleAsync(command);
-        
-        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = command.SwipedWhoId });
+
+        var isMatch = new IsMatchDto {Match = false};
         return isMatch;
     }
 }

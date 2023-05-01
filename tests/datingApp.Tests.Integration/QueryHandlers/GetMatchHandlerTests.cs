@@ -24,7 +24,7 @@ public class GetMatchHandlerTests : IDisposable
         await _testDb.DbContext.Swipes.AddRangeAsync(swipes);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var query = new GetMatch { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
+        var query = new GetIsLikedByOtherUser { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
         Assert.IsType<IsLikedByOtherUserDto>(match);
@@ -42,7 +42,7 @@ public class GetMatchHandlerTests : IDisposable
         await _testDb.DbContext.Swipes.AddRangeAsync(swipes);
         await _testDb.DbContext.SaveChangesAsync();
         
-        var query = new GetMatch { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
+        var query = new GetIsLikedByOtherUser { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
         Assert.IsType<IsLikedByOtherUserDto>(match);
@@ -52,7 +52,7 @@ public class GetMatchHandlerTests : IDisposable
     [Fact]
     public async void given_no_swipes_exists_get_match_should_return_non_empty_match_dto_with_false_Match_value()
     {
-        var query = new GetMatch { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
+        var query = new GetIsLikedByOtherUser { SwipedById =  Guid.Parse("00000000-0000-0000-0000-000000000001"), SwipedWhoId = Guid.Parse("00000000-0000-0000-0000-000000000002") };
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
         Assert.IsType<IsLikedByOtherUserDto>(match);

@@ -16,10 +16,10 @@ namespace datingApp.Api.Controllers;
 public class LikeController : ControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    private readonly IQueryHandler<GetMatch, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
+    private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
     private readonly ICommandHandler<AddMatch> _addMatchHandler;
     public LikeController(ICommandHandler<SwipeUser> swipeUserHandler,
-                        IQueryHandler<GetMatch, IsLikedByOtherUserDto> getLikedByOtherUserHandler,
+                        IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> getLikedByOtherUserHandler,
                         ICommandHandler<AddMatch> addMatchHandler)
     {
         _swipeUserHandler = swipeUserHandler;
@@ -36,7 +36,7 @@ public class LikeController : ControllerBase
         var command = new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 2);
         await _swipeUserHandler.HandleAsync(command);
 
-        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(new GetMatch { SwipedById = command.SwipedById, SwipedWhoId = swipedWhoId });
+        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(new GetIsLikedByOtherUser { SwipedById = command.SwipedById, SwipedWhoId = swipedWhoId });
         await _addMatchHandler.HandleAsync(new AddMatch(swipedById, swipedWhoId));
         
         return isLikedByOtherUser;

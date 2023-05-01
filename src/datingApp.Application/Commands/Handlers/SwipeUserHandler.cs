@@ -21,16 +21,8 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
 
     public async Task HandleAsync(SwipeUser command)
     {
-        /*
-        var user = await _userRepository.GetByIdAsync(command.SwipedWhoId);
-        if (user == null)
-        {
-            throw new UserNotExistsException(command.SwipedWhoId);
-        }
-        */
-
-        var swipeExists = await _swipeRepository.GetBySwipedBy(command.SwipedById, command.SwipedWhoId);
-        if (swipeExists == null)
+        var swipeExists = await _swipeRepository.SwipeExists(command.SwipedById, command.SwipedWhoId);
+        if (!swipeExists)
         {
             var swipe = new Swipe(command.SwipeId, command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
             await _swipeRepository.AddAsync(swipe);

@@ -31,12 +31,12 @@ public class LikeController : ControllerBase
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var swippedByUserId = Guid.Parse(User.Identity?.Name);
-        var command = new SwipeUser(Guid.NewGuid(), swippedByUserId, userId, 2);
+        var swipedByUserId = Guid.Parse(User.Identity?.Name);
+        var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 2);
         await _swipeUserHandler.HandleAsync(command);
-        await _addMatchHandler.HandleAsync(new AddMatch(swippedByUserId, userId));
+        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwippedById, SwipedWhoId = command.SwippedById });
+        await _addMatchHandler.HandleAsync(new AddMatch(swipedByUserId, userId));
         
-        var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwippedById, SwipedWhoId = command.SwippedWhoId });
         return isMatch;
     }
 }

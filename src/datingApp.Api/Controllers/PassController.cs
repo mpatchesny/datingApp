@@ -29,8 +29,8 @@ public class PassController : ControllerBase
     public async Task<ActionResult<IsMatchDto>> Get(Guid userId)
     {
         if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var swippedByUserId = Guid.Parse(User.Identity?.Name);
-        var command = new SwipeUser(Guid.NewGuid(), swippedByUserId, userId, 1);
+        var swipedByUserId = Guid.Parse(User.Identity?.Name);
+        var command = new SwipeUser(Guid.NewGuid(), swipedByUserId, userId, 1);
         await _swipeUserHandler.HandleAsync(command);
         
         var isMatch = await _getMatchHandler.HandleAsync(new GetMatch { SwipedById = command.SwippedById, SwipedWhoId = command.SwippedWhoId });

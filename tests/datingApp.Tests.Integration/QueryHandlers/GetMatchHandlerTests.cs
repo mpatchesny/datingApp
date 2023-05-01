@@ -14,7 +14,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchHandlerTests : IDisposable
 {
     [Fact]
-    public async void given_two_users_liked_each_other_get_match_should_return_non_empty_match_dto_with_true_Match_value()
+    public async void given_two_users_liked_each_other_get_match_should_return_non_empty_match_dto_with_true_match_value()
     {
         var swipes = new List<Swipe>
         {
@@ -32,7 +32,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_two_users_liked_each_other_and_swipe_duplicates_exists_get_match_should_return_non_empty_match_dto_with_true_Match_value()
+    public async void given_two_users_liked_each_other_and_swipe_duplicates_exists_get_match_should_return_non_empty_match_dto_with_true_match_value()
     {
         var swipes = new List<Swipe>
         {

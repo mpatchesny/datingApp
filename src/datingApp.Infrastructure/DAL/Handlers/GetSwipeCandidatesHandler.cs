@@ -33,12 +33,12 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
         var square = _spatial.GetApproxSquareAroundPoint(query.Lat, query.Lon, query.Range);
 
-        var swippedCandidates = 
+        var swipedCandidates = 
             _dbContext.Swipes.Where(s => s.SwippedById == query.UserId).Select(x => x.SwippedWhoId);
         
         var earlyCandidates = await _dbContext.Users
                     .Where(x => x.Id != query.UserId)
-                    .Where(x => !swippedCandidates.Contains(x.Id))
+                    .Where(x => !swipedCandidates.Contains(x.Id))
                     .Where(x => ((int) x.Sex & query.Sex) > 0)
                     .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
                     .Where(x => x.Settings.Lat <= square.NorthLat)

@@ -243,7 +243,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task users_already_swipped_are_not_returned()
+    public async Task users_already_swiped_are_not_returned()
     {
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);

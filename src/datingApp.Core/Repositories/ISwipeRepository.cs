@@ -10,4 +10,5 @@ public interface ISwipeRepository : IRepository
 {
     Task AddAsync(Swipe swipe);
     Task<Swipe> GetBySwipedBy(Guid swipedById, Guid swipedWhoId);
+    Task<bool> SwipeExists(Guid swipedById, Guid swipedWhoId);
 }

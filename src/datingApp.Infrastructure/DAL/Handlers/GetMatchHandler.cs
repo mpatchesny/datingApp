@@ -20,15 +20,12 @@ internal sealed class GetMatchHandler : IQueryHandler<GetIsLikedByOtherUser, IsL
 
     public async Task<IsLikedByOtherUserDto> HandleAsync(GetIsLikedByOtherUser query)
     {
-        var swipesCount = await _dbContext.Swipes
+        var likeExists = await _dbContext.Swipes
                                 .AsNoTracking()
-                                .Where(x => 
-                                    (x.SwipedById == query.SwipedById && x.SwipedWhoId == query.SwipedWhoId && x.Like == Like.Like) ||
-                                    (x.SwipedById == query.SwipedWhoId && x.SwipedWhoId == query.SwipedById && x.Like == Like.Like))
-                                .CountAsync();
+                                .AnyAsync(x => x.SwipedById == query.SwipedById && x.SwipedWhoId == query.SwipedWhoId && x.Like == Like.Like);
         
         return new IsLikedByOtherUserDto {
-            IsLikedByOtherUser = (swipesCount == 2)
+            IsLikedByOtherUser = likeExists
         };
     }
 }

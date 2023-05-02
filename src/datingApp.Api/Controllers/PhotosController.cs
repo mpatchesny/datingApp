@@ -33,7 +33,7 @@ public class PhotosController : ApiControllerBase
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
-        var query = new GetPhoto { PhotoId = photoId};
+        var query = Authenticate(new GetPhoto { PhotoId = photoId});
         var photo = await _getPhotoHandler.HandleAsync(query);
         if (photo == null)
         {
@@ -45,10 +45,10 @@ public class PhotosController : ApiControllerBase
     [HttpPost]
     public async Task<ActionResult> Post(AddPhoto command)
     {
-        command = command with {PhotoId = Guid.NewGuid()};
+        command = Authenticate(command with {PhotoId = Guid.NewGuid()});
         await _addPhotoHandler.HandleAsync(command);
 
-        var query = new GetPhoto { PhotoId = command.PhotoId};
+        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
         var photo = await _getPhotoHandler.HandleAsync(query);
         return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
@@ -56,7 +56,7 @@ public class PhotosController : ApiControllerBase
     [HttpPatch("{photoId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid photoId, ChangePhotoOridinal command)
     {
-        command = command with {PhotoId = photoId};
+        command = Authenticate(command with {PhotoId = photoId});
         await _changePhotoOridinalHandler.HandleAsync(command);
         return NoContent();
     }
@@ -64,7 +64,7 @@ public class PhotosController : ApiControllerBase
     [HttpDelete("{photoId:guid}")]
     public async Task<ActionResult> Delete(Guid photoId)
     {
-        var command = new DeletePhoto(photoId);
+        var command = Authenticate(new DeletePhoto(photoId));
         await _deletePhotoHandler.HandleAsync(command);
         return NoContent();
     }

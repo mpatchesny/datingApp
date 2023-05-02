@@ -57,8 +57,7 @@ public class UserController : ApiControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        var userId = Guid.Parse(User.Identity?.Name);
-        var query = new GetPrivateUser { UserId = userId };
+        var query = Authenticate(new GetPrivateUser { UserId = AuthenticatedUserId });
         var user = await _getPrivateUserHandler.HandleAsync(query);
         return user;
     }
@@ -66,32 +65,48 @@ public class UserController : ApiControllerBase
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
-        var userId = Guid.Parse(User.Identity?.Name);
-        var query = new GetPrivateUser { UserId = userId };
+        var query = Authenticate(new GetPrivateUser { UserId = AuthenticatedUserId });
         var user = await _getPrivateUserHandler.HandleAsync(query);
 
-        var command = new GetSwipeCandidates(user.Settings);
+        var command = Authenticate(new GetSwipeCandidates(user.Settings));
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 
     [HttpGet("me/updates")]
     public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates(GetUpdates query)
     {
-        var userId = Guid.Parse(User.Identity?.Name);
-        query.UserId = userId;
+        query = Authenticate(query);
+        query.UserId = AuthenticatedUserId;
         return Ok(await _getUpdatesHandler.HandleAsync(query));
     }
 
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
-        var query = new GetPublicUser { UserId = userId };
+        var query = Authenticate(new GetPublicUser { UserId = userId });
         var user = await _getPublicUserHandler.HandleAsync(query);
         if (user is null)
         {
             return NotFound();
         }
         return user;
+    }
+
+    [HttpPatch("{userId:guid}")]
+    public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
+    {
+        command = Authenticate(command);
+        command = command with {UserId = userId};
+        await _changeUserHandler.HandleAsync(command);
+        return NoContent();
+    }
+
+    [HttpDelete("{userId:guid}")]
+    public async Task<ActionResult> Delete(Guid userId)
+    {
+        var command = Authenticate(new DeleteUser(userId));
+        await _deleteUserHandler.HandleAsync(command);
+        return NoContent();
     }
 
     [AllowAnonymous]
@@ -104,22 +119,6 @@ public class UserController : ApiControllerBase
         var query = new GetPrivateUser { UserId = command.UserId };
         var user = await _getPrivateUserHandler.HandleAsync(query);
         return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
-    }
-
-    [HttpPatch("{userId:guid}")]
-    public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
-    {
-        command = command with {UserId = userId};
-        await _changeUserHandler.HandleAsync(command);
-        return NoContent();
-    }
-
-    [HttpDelete("{userId:guid}")]
-    public async Task<ActionResult> Delete(Guid userId)
-    {
-        var command = new DeleteUser(userId);
-        await _deleteUserHandler.HandleAsync(command);
-        return NoContent();
     }
 
     [AllowAnonymous]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
 
@@ -9,7 +10,6 @@ namespace datingApp.Infrastructure.Exceptions;
 
 internal sealed class ExceptionMiddleware : IMiddleware
 {
-
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
@@ -18,7 +18,6 @@ internal sealed class ExceptionMiddleware : IMiddleware
         }
         catch (Exception exception)
         {
-            Console.WriteLine(exception.ToString());
             await HandleExceptionAsync(exception, context);
         }
     }
@@ -27,7 +26,8 @@ internal sealed class ExceptionMiddleware : IMiddleware
     {
         var (statusCode, error) = exception switch 
         {
-            CustomException => (StatusCodes.Status400BadRequest, new Error(exception.GetType().Name.Replace("Exception", ""), exception.Message)),
+            UnauthorizedException => (StatusCodes.Status403Forbidden, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
+            CustomException => (StatusCodes.Status400BadRequest, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             _ => (StatusCodes.Status500InternalServerError, new Error("error", "Something went wrong.")),
         };
 
@@ -36,4 +36,12 @@ internal sealed class ExceptionMiddleware : IMiddleware
     }
 
     private record Error(string Code, string Reason);
+
+    private string GetPrettyExeptionName(string exceptionName)
+    {
+        var re = new Regex("([A-Z])");
+        var ex = exceptionName.Replace("Exception", "");
+        ex = re.Replace(ex, "_$1").ToLowerInvariant();
+        return ex.StartsWith("_") ? ex.Substring(1) : ex;
+    }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Abstractions;
 
-public interface IAuthenticatedQuery
+public interface IAuthenticatedQuery<TResult>
 {
     public Guid AuthenticatedUserId { get; set; }
 }

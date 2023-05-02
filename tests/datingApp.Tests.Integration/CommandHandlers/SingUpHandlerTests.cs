@@ -41,7 +41,7 @@ public class SingUpHandlerTests : IDisposable
         Assert.Null(exception);
     }
 
-    [Fact(Skip = "check if swiped exists is removed")]
+    [Fact]
     public async Task given_invalid_date_of_birth_singup_should_throw_exception()
     {
         var command = new SignUp(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "freeemail@test.com", "Januesz", "01.01.2000", 1, 1);

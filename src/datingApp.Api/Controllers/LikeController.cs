@@ -28,15 +28,15 @@ public class LikeController : ControllerBase
     }
 
     [HttpPost("{userId:guid}")]
-    public async Task<ActionResult<IsLikedByOtherUserDto>> Get(Guid userId)
+    public async Task<ActionResult<IsLikedByOtherUserDto>> Post(Guid userId)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var swipedById = Guid.Parse(User.Identity?.Name);
+        var swipedById = Guid.Parse(User.Identity?.Name);;
         var swipedWhoId = userId;
         var command = new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 2);
         await _swipeUserHandler.HandleAsync(command);
 
-        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });
+        var query = new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById };
+        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(query);
         if (isLikedByOtherUser.IsLikedByOtherUser) 
         {
             await _addMatchHandler.HandleAsync(new AddMatch(swipedById, swipedWhoId));

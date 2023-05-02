@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Abstractions;
 
-public class AuthenticatedCommandBase : IAuthenticatedCommand
+public record AuthenticatedCommandBase() : IAuthenticatedCommand
 {
     public Guid AuthenticatedUserId { get ; set; }
 }

@@ -13,7 +13,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("matches")]
-public class MatchesController : ControllerBase
+public class MatchesController : ApiControllerBase
 {
     private readonly IQueryHandler<GetMatches, PaginatedDataDto> _getMatchesHandler;
     private readonly IQueryHandler<GetMessages, PaginatedDataDto> _getMessagesHandler;

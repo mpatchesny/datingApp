@@ -15,7 +15,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-public class UserController : ControllerBase
+public class UserController : ApiControllerBase
 {
     private readonly IQueryHandler<GetPublicUser, PublicUserDto> _getPublicUserHandler;
     private readonly IQueryHandler<GetPrivateUser, PrivateUserDto> _getPrivateUserHandler;

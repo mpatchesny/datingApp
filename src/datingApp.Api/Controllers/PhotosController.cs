@@ -13,7 +13,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("photos")]
-public class PhotosController : ControllerBase
+public class PhotosController : ApiControllerBase
 {
     private readonly IQueryHandler<GetPhoto, PhotoDto> _getPhotoHandler;
     private readonly ICommandHandler<AddPhoto> _addPhotoHandler;

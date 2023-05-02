@@ -14,7 +14,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("pass")]
-public class PassController : ControllerBase
+public class PassController : ApiControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
     private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;

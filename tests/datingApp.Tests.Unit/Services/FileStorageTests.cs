@@ -58,7 +58,6 @@ public class FileStorageTests
         var storage = new FileStorage(storageOptions, _logger);
         
         var exception = await Record.ExceptionAsync(async () => await storage.DeleteFileAsync("test.txt"));
-        
         Assert.Null(exception);
     }
 

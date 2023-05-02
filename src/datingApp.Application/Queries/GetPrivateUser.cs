@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetPrivateUser : IQuery<PrivateUserDto>
+public class GetPrivateUser : AuthenticatedQueryBase<PrivateUserDto>
 {
     public Guid UserId { get; set; }
 }

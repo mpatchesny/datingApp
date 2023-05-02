@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetSwipeCandidates : IQuery<IEnumerable<PublicUserDto>>
+public class GetSwipeCandidates : AuthenticatedQueryBase<IEnumerable<PublicUserDto>>
 {
     public Guid UserId { get; set; }
     public int AgeFrom { get; set; }

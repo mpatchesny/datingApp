@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetMessage : IQuery<MessageDto>
+public class GetMessage : AuthenticatedQueryBase<MessageDto>
 {
     public Guid MessageId { get; set; }
 }

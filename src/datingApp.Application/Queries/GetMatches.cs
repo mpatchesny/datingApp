@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetMatches : PaginatedQuery, IQuery<PaginatedDataDto>
+public class GetMatches : PaginatedQuery
 {
     public Guid UserId { get; set; }
 }

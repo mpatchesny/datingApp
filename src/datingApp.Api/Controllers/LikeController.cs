@@ -13,7 +13,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("like")]
-public class LikeController : ControllerBase
+public class LikeController : ApiControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
     private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
@@ -30,12 +30,12 @@ public class LikeController : ControllerBase
     [HttpPost("{userId:guid}")]
     public async Task<ActionResult<IsLikedByOtherUserDto>> Post(Guid userId)
     {
-        var swipedById = Guid.Parse(User.Identity?.Name);;
+        var swipedById = AuthenticatedUserId;
         var swipedWhoId = userId;
-        var command = new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 2);
+        var command = Authenticate(new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 2));
         await _swipeUserHandler.HandleAsync(command);
 
-        var query = new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById };
+        var query = Authenticate(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });
         var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(query);
         if (isLikedByOtherUser.IsLikedByOtherUser) 
         {

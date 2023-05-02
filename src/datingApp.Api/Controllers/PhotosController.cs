@@ -33,7 +33,8 @@ public class PhotosController : ControllerBase
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
-        var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = photoId});
+        var query = new GetPhoto { PhotoId = photoId};
+        var photo = await _getPhotoHandler.HandleAsync(query);
         if (photo == null)
         {
             return NotFound();
@@ -46,7 +47,9 @@ public class PhotosController : ControllerBase
     {
         command = command with {PhotoId = Guid.NewGuid()};
         await _addPhotoHandler.HandleAsync(command);
-        var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = command.PhotoId});
+
+        var query = new GetPhoto { PhotoId = command.PhotoId};
+        var photo = await _getPhotoHandler.HandleAsync(query);
         return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
@@ -61,7 +64,8 @@ public class PhotosController : ControllerBase
     [HttpDelete("{photoId:guid}")]
     public async Task<ActionResult> Delete(Guid photoId)
     {
-        await _deletePhotoHandler.HandleAsync(new DeletePhoto(photoId));
+        var command = new DeletePhoto(photoId);
+        await _deletePhotoHandler.HandleAsync(command);
         return NoContent();
     }
 }

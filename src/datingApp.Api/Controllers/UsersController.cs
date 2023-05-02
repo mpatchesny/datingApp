@@ -58,7 +58,8 @@ public class UserController : ControllerBase
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
         var userId = Guid.Parse(User.Identity?.Name);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
+        var query = new GetPrivateUser { UserId = userId };
+        var user = await _getPrivateUserHandler.HandleAsync(query);
         return user;
     }
 
@@ -66,7 +67,9 @@ public class UserController : ControllerBase
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
         var userId = Guid.Parse(User.Identity?.Name);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
+        var query = new GetPrivateUser { UserId = userId };
+        var user = await _getPrivateUserHandler.HandleAsync(query);
+
         var command = new GetSwipeCandidates(user.Settings);
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
@@ -82,7 +85,8 @@ public class UserController : ControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
-        var user = await _getPublicUserHandler.HandleAsync(new GetPublicUser { UserId = userId });
+        var query = new GetPublicUser { UserId = userId };
+        var user = await _getPublicUserHandler.HandleAsync(query);
         if (user is null)
         {
             return NotFound();
@@ -96,7 +100,9 @@ public class UserController : ControllerBase
     {
         command = command with {UserId = Guid.NewGuid()};
         await _signUpHandler.HandleAsync(command);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
+
+        var query = new GetPrivateUser { UserId = command.UserId };
+        var user = await _getPrivateUserHandler.HandleAsync(query);
         return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
     }
 
@@ -111,7 +117,8 @@ public class UserController : ControllerBase
     [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {
-        await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
+        var command = new DeleteUser(userId);
+        await _deleteUserHandler.HandleAsync(command);
         return NoContent();
     }
 

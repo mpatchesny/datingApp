@@ -52,7 +52,8 @@ public class MatchesController : ControllerBase
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]
     public async Task<ActionResult<MessageDto>> GetMessage(Guid matchId, Guid messageId)
     {
-        var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = messageId });
+        var query = new GetMessage { MessageId = messageId };
+        var message = await _getMessageHandler.HandleAsync(query);
         if (message == null)
         {
             return NotFound();
@@ -75,7 +76,9 @@ public class MatchesController : ControllerBase
         command = command with {MessageId = Guid.NewGuid()};
         command = command with {MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
-        var message = await _getMessageHandler.HandleAsync(new GetMessage { MessageId = command.MessageId });
+
+        var query = new GetMessage { MessageId = command.MessageId };
+        var message = await _getMessageHandler.HandleAsync(query);
         return CreatedAtAction(nameof(GetMessage), new { command.MatchId, command.MessageId }, message);
     }
 
@@ -98,7 +101,8 @@ public class MatchesController : ControllerBase
     [HttpDelete("{matchId:guid}")]
     public async Task<ActionResult> Delete(Guid matchId)
     {
-        await _deleteMatchHandler.HandleAsync(new DeleteMatch(matchId));
+        var command = new DeleteMatch(matchId);
+        await _deleteMatchHandler.HandleAsync(command);
         return NoContent();
     }
 }

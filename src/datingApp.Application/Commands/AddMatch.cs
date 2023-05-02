@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record AddMatch(Guid swipedById, Guid swipedWhoId) : ICommand;
+public sealed record AddMatch(Guid swipedById, Guid swipedWhoId) : AuthenticatedCommandBase;

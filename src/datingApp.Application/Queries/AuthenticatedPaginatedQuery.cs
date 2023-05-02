@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
+using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 
 namespace datingApp.Application.Queries;
 
-public class PaginatedQuery
+public class AuthenticatedPaginatedQuery : AuthenticatedQueryBase<PaginatedDataDto>
 {
     public int Page { get; private set; } = 1;
     public int PageSize { get; private set; } = 15;

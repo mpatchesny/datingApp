@@ -15,4 +15,4 @@ public sealed record ChangeUser(Guid UserId,
                                 int? DiscoverRange=null,
                                 int? DiscoverSex=null,
                                 double? Lat=null,
-                                double? Lon=null) : ICommand;
+                                double? Lon=null) : AuthenticatedCommandBase;

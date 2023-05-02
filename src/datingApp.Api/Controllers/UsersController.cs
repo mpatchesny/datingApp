@@ -15,7 +15,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("users")]
-public class UserController : ControllerBase
+public class UserController : ApiControllerBase
 {
     private readonly IQueryHandler<GetPublicUser, PublicUserDto> _getPublicUserHandler;
     private readonly IQueryHandler<GetPrivateUser, PrivateUserDto> _getPrivateUserHandler;
@@ -57,35 +57,34 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
+        var query = Authenticate(new GetPrivateUser { UserId = AuthenticatedUserId });
+        var user = await _getPrivateUserHandler.HandleAsync(query);
         return user;
     }
 
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
-        var command = new GetSwipeCandidates(user.Settings);
+        var query = Authenticate(new GetPrivateUser { UserId = AuthenticatedUserId });
+        var user = await _getPrivateUserHandler.HandleAsync(query);
+
+        var command = Authenticate(new GetSwipeCandidates(user.Settings));
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 
     [HttpGet("me/updates")]
     public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates(GetUpdates query)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
-        var userId = Guid.Parse(User.Identity?.Name);
-        query.UserId = userId;
+        query = Authenticate(query);
+        query.UserId = AuthenticatedUserId;
         return Ok(await _getUpdatesHandler.HandleAsync(query));
     }
 
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
-        var user = await _getPublicUserHandler.HandleAsync(new GetPublicUser { UserId = userId });
+        var query = Authenticate(new GetPublicUser { UserId = userId });
+        var user = await _getPublicUserHandler.HandleAsync(query);
         if (user is null)
         {
             return NotFound();
@@ -93,19 +92,10 @@ public class UserController : ControllerBase
         return user;
     }
 
-    [AllowAnonymous]
-    [HttpPost]
-    public async Task<ActionResult> Post(SignUp command)
-    {
-        command = command with {UserId = Guid.NewGuid()};
-        await _signUpHandler.HandleAsync(command);
-        var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = command.UserId });
-        return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
-    }
-
     [HttpPatch("{userId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
     {
+        command = Authenticate(command);
         command = command with {UserId = userId};
         await _changeUserHandler.HandleAsync(command);
         return NoContent();
@@ -114,8 +104,21 @@ public class UserController : ControllerBase
     [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {
-        await _deleteUserHandler.HandleAsync(new DeleteUser(userId));
+        var command = Authenticate(new DeleteUser(userId));
+        await _deleteUserHandler.HandleAsync(command);
         return NoContent();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<ActionResult> Post(SignUp command)
+    {
+        command = command with {UserId = Guid.NewGuid()};
+        await _signUpHandler.HandleAsync(command);
+
+        var query = new GetPrivateUser { UserId = command.UserId };
+        var user = await _getPrivateUserHandler.HandleAsync(query);
+        return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
     }
 
     [AllowAnonymous]

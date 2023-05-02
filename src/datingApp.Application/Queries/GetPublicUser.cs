@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetPublicUser : IQuery<PublicUserDto>
+public class GetPublicUser : AuthenticatedQueryBase<PublicUserDto>
 {
     public Guid UserId { get; set; }
     public double Lat { get; set; }

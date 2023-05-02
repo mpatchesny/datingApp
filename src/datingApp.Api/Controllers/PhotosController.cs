@@ -13,7 +13,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Route("photos")]
-public class PhotosController : ControllerBase
+public class PhotosController : ApiControllerBase
 {
     private readonly IQueryHandler<GetPhoto, PhotoDto> _getPhotoHandler;
     private readonly ICommandHandler<AddPhoto> _addPhotoHandler;
@@ -33,7 +33,8 @@ public class PhotosController : ControllerBase
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
-        var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = photoId});
+        var query = Authenticate(new GetPhoto { PhotoId = photoId});
+        var photo = await _getPhotoHandler.HandleAsync(query);
         if (photo == null)
         {
             return NotFound();
@@ -44,16 +45,18 @@ public class PhotosController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Post(AddPhoto command)
     {
-        command = command with {PhotoId = Guid.NewGuid()};
+        command = Authenticate(command with {PhotoId = Guid.NewGuid()});
         await _addPhotoHandler.HandleAsync(command);
-        var photo = await _getPhotoHandler.HandleAsync(new GetPhoto { PhotoId = command.PhotoId});
+
+        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
+        var photo = await _getPhotoHandler.HandleAsync(query);
         return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 
     [HttpPatch("{photoId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid photoId, ChangePhotoOridinal command)
     {
-        command = command with {PhotoId = photoId};
+        command = Authenticate(command with {PhotoId = photoId});
         await _changePhotoOridinalHandler.HandleAsync(command);
         return NoContent();
     }
@@ -61,7 +64,8 @@ public class PhotosController : ControllerBase
     [HttpDelete("{photoId:guid}")]
     public async Task<ActionResult> Delete(Guid photoId)
     {
-        await _deletePhotoHandler.HandleAsync(new DeletePhoto(photoId));
+        var command = Authenticate(new DeletePhoto(photoId));
+        await _deletePhotoHandler.HandleAsync(command);
         return NoContent();
     }
 }

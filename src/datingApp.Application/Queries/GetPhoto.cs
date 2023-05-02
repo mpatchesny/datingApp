@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetPhoto : IQuery<PhotoDto>
+public class GetPhoto : AuthenticatedQueryBase<PhotoDto>
 {
     public Guid PhotoId { get; set; }
 }

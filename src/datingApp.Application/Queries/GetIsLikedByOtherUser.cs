@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetIsLikedByOtherUser : IQuery<IsLikedByOtherUserDto>
+public class GetIsLikedByOtherUser : AuthenticatedQueryBase<IsLikedByOtherUserDto>
 {
     public Guid SwipedById { get; set; }
     public Guid SwipedWhoId { get; set; }

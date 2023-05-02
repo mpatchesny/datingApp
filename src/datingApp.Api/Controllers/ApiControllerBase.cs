@@ -15,9 +15,9 @@ public abstract class ApiControllerBase : ControllerBase
             Guid.Parse(User.Identity.Name) :
             Guid.Empty;
 
-    protected dynamic Authenticate(dynamic query)
+    protected dynamic Authenticate(dynamic commandOrQuery)
     {
-        query.AuthenticatedUserId = this.AuthenticatedUserId;
-        return query;
+        commandOrQuery.AuthenticatedUserId = this.AuthenticatedUserId;
+        return commandOrQuery;
     }
 }

@@ -57,7 +57,6 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var userId = Guid.Parse(User.Identity?.Name);
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         return user;
@@ -66,7 +65,6 @@ public class UserController : ControllerBase
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var userId = Guid.Parse(User.Identity?.Name);
         var user = await _getPrivateUserHandler.HandleAsync(new GetPrivateUser { UserId = userId });
         var command = new GetSwipeCandidates(user.Settings);
@@ -76,7 +74,6 @@ public class UserController : ControllerBase
     [HttpGet("me/updates")]
     public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates(GetUpdates query)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var userId = Guid.Parse(User.Identity?.Name);
         query.UserId = userId;
         return Ok(await _getUpdatesHandler.HandleAsync(query));

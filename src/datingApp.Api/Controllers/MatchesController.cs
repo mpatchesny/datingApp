@@ -42,7 +42,6 @@ public class MatchesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
     {
-        if (string.IsNullOrWhiteSpace(User.Identity?.Name)) return NotFound();
         var userId = Guid.Parse(User.Identity?.Name);
         var command = new GetMatches { UserId = userId };
         command.SetPage(page);

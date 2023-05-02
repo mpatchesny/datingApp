@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record DeleteUser(Guid UserId) : ICommand;
+public sealed record DeleteUser(Guid UserId) : AuthenticatedCommandBase;

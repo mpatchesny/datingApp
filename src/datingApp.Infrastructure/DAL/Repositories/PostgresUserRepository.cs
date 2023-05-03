@@ -15,11 +15,6 @@ internal sealed class PostgresUserRepository : IUserRepository
     {
         _dbContext = dbContext;
     }
-    
-    public IQueryable<User> GetAll()
-    {
-        return _dbContext.Users.AsQueryable();
-    }
 
     public async Task<User> GetByEmailAsync(string email)
     {

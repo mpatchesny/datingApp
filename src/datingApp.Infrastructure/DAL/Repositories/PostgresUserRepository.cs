@@ -24,8 +24,6 @@ internal sealed class PostgresUserRepository : IUserRepository
     public async Task<User> GetByEmailAsync(string email)
     {
         return await _dbContext.Users
-                        .Include(x => x.Photos)
-                        .Include(x => x.Settings)
                         .FirstOrDefaultAsync(x=> x.Email == email.ToLowerInvariant().Trim());
     }
 
@@ -40,8 +38,6 @@ internal sealed class PostgresUserRepository : IUserRepository
     public async Task<User> GetByPhoneAsync(string phone)
     {
         return await _dbContext.Users
-                        .Include(x => x.Photos)
-                        .Include(x => x.Settings)
                         .FirstOrDefaultAsync(x=> x.Phone == phone);
     }
     public async Task AddAsync(User user)

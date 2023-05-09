@@ -54,6 +54,7 @@ public class UserController : ApiControllerBase
         _getUpdatesHandler = getUpdatesHandler;
     }
 
+    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
@@ -62,6 +63,7 @@ public class UserController : ApiControllerBase
         return user;
     }
 
+    [Authorize]
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
@@ -72,6 +74,7 @@ public class UserController : ApiControllerBase
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 
+    [Authorize]
     [HttpGet("me/updates")]
     public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates(GetUpdates query)
     {
@@ -80,6 +83,7 @@ public class UserController : ApiControllerBase
         return Ok(await _getUpdatesHandler.HandleAsync(query));
     }
 
+    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
@@ -92,6 +96,7 @@ public class UserController : ApiControllerBase
         return user;
     }
 
+    [Authorize]
     [HttpPatch("{userId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
     {
@@ -101,6 +106,7 @@ public class UserController : ApiControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {

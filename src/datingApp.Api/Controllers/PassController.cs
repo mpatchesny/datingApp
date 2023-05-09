@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace datingApp.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("pass")]
 public class PassController : ApiControllerBase
 {

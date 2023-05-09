@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace datingApp.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("photos")]
 public class PhotosController : ApiControllerBase
 {

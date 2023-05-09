@@ -67,6 +67,8 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
+    "job": "McDonald's",
+    "bio": "jestem wesoły romek",
     "dateOfBirth": "1987-03-10",
     "discoverSex": 2,
     "discoverRange": 40,

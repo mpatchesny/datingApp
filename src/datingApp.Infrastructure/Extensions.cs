@@ -13,7 +13,6 @@ using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
-using datingApp.Infrastructure.Middleware;
 using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
@@ -50,7 +49,6 @@ public static class Extensions
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddSingleton<IFileStorage, FileStorage>();
         services.AddSingleton<ExceptionMiddleware>();
-        services.AddSingleton<OptionsMiddleware>();
         return services;
     }
 

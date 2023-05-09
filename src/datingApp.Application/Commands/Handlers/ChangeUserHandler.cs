@@ -31,7 +31,7 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         }
 
         if (command.Bio != null) user.ChangeBio(command.Bio);
-        if (command.Job != null) user.ChangeBio(command.Job);
+        if (command.Job != null) user.ChangeJob(command.Job);
         if (command.DateOfBirth != null)
         {
             if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))

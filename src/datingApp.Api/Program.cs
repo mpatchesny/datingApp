@@ -4,9 +4,9 @@ using datingApp.Infrastructure;
 using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authorization;
+using datingApp.Infrastructure.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // Add services to the container.
 
@@ -17,12 +17,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCore();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddCors(options =>
+     options.AddDefaultPolicy(
+        builder =>
+        {
+            builder
+                .WithOrigins("http://localhost:4200")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod() 
+                .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
+        })
+);
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,8 +45,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseMiddleware<OptionsMiddleware>();
 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -1,7 +1,11 @@
-@url = http://localhost:5000
+@url = https://localhost:8443
+
+OPTIONS {{url}}/users/auth
+Origin: http://localhost:4200
+Referer: http://localhost:4200
+Access-Control-Request-Method: POST
 
 ### USERS ###
-
 ###
 # @name auth
 POST {{url}}/users/auth
@@ -30,6 +34,8 @@ Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/users/me/recommendations
 Authorization: Bearer {{accessToken}}
+Origin: http://localhost:4200
+Referer: : http://localhost:4200
 ###
 GET {{url}}/users/me/updates
 Authorization: Bearer {{accessToken}}

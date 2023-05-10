@@ -9,5 +9,9 @@ namespace datingApp.Application.Queries;
 
 public class GetMatches : AuthenticatedPaginatedQuery
 {
+    public GetMatches(PaginatedDefaultsOptions options) : base(options)
+    {
+    }
+
     public Guid UserId { get; set; }
 }

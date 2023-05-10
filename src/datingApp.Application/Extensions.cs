@@ -16,12 +16,10 @@ namespace datingApp.Application
     public static class Extensions
     {
         private const string EmailGeneratorOptionsName = "AccessCodeEmail";
-        private const string PaginatedDefaultsOptionsName = "PaginatedDefaults";
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
             services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
-            services.Configure<PaginatedDefaultsOptions>(configuration.GetRequiredSection(PaginatedDefaultsOptionsName));
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
             services.AddScoped<ICommandHandler<SignUp>, SignUpHandler>();
             services.AddScoped<ICommandHandler<ChangeUser>, ChangeUserHandler>();

@@ -107,6 +107,9 @@ Authorization: Bearer {{accessToken}}
 GET {{url}}/matches
 Authorization: Bearer {{accessToken}}
 ###
+GET {{url}}/matches/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
+###
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
 Authorization: Bearer {{accessToken}}
 ###

@@ -10,10 +10,19 @@ namespace datingApp.Application.Queries;
 
 public class AuthenticatedPaginatedQuery : AuthenticatedQueryBase<PaginatedDataDto>
 {
+    // FIXME: magic string
     public int Page { get; private set; } = 1;
-    public int PageSize { get; private set; } = 15;
+    public int PageSize { get; private set; }
+    private readonly PaginatedDefaultsOptions _options;
 
-    private const int MaxPageSize = 100;
+    public AuthenticatedPaginatedQuery(PaginatedDefaultsOptions options)
+    {
+        _options = options;
+        if (PageSize == 0)
+        {
+            PageSize = _options.DefaultPageSize;
+        }
+    }
 
     public void SetPage(int? page)
     {
@@ -28,9 +37,9 @@ public class AuthenticatedPaginatedQuery : AuthenticatedQueryBase<PaginatedDataD
     public void SetPageSize(int? pageSize)
     {
         if (pageSize == null) return;
-        if (pageSize < 0 || pageSize > MaxPageSize)
+        if (pageSize < 0 || pageSize > _options.MaxPageSize)
         {
-            throw new InvalidPageSizeException(0, MaxPageSize);
+            throw new InvalidPageSizeException(0, _options.MaxPageSize);
         }
         PageSize = (int) pageSize;
     }

@@ -46,15 +46,16 @@ public class MatchesController : ApiControllerBase
     [HttpGet]
     public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
     {
-        var command = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
-        command.SetPage(page);
-        command.SetPageSize(pageSize);
-        return Ok(await _getMatchesHandler.HandleAsync(command));
+        var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
+        query.SetPage(page);
+        query.SetPageSize(pageSize);
+        return Ok(await _getMatchesHandler.HandleAsync(query));
     }
 
     [HttpGet("{matchId:guid}")]
-    public async Task<ActionResult<MatchDto>> GetMatch(GetMatch query)
+    public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
     {
+        var query = new GetMatch { MatchId = matchId };
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
         return Ok(await _getMatchHandler.HandleAsync(query));
@@ -75,10 +76,10 @@ public class MatchesController : ApiControllerBase
     [HttpGet("{matchId:guid}/messages")]
     public async Task<ActionResult<PaginatedDataDto>> GetMessages(Guid matchId, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
-        var command = Authenticate(new GetMessages { MatchId = matchId });
-        command.SetPage(page);
-        command.SetPageSize(pageSize);
-        return Ok(await _getMessagesHandler.HandleAsync(command));
+        var query = Authenticate(new GetMessages { MatchId = matchId });
+        query.SetPage(page);
+        query.SetPageSize(pageSize);
+        return Ok(await _getMessagesHandler.HandleAsync(query));
     }
 
     [HttpPost("{matchId:guid}/messages")]

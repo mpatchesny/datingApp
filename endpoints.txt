@@ -13,7 +13,7 @@ POST photos
 PATCH photos/<photoId>
 
 GET matches
-POST matches
+GET matches/<matchId>
 PATCH matches/<matchId>
 GET matches/<matchId>/messages
 GET matches/<matchId>/messages/<messageId>

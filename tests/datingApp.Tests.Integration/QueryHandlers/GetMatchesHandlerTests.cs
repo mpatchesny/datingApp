@@ -61,7 +61,7 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000002"), matches.Data.First().UserId);
+        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000002"), matches.Data.First().User.Id);
     }
 
     [Fact]

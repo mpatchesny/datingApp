@@ -12,7 +12,6 @@ public class AuthenticatedPaginatedQuery : AuthenticatedQueryBase<PaginatedDataD
 {
     public int Page { get; private set; } = 1;
     public int PageSize { get; private set; } = 15;
-
     private const int MaxPageSize = 100;
 
     public void SetPage(int? page)

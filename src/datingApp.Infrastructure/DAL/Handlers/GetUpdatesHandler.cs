@@ -67,10 +67,12 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 new MatchDto()
                 {
                     Id = x.Match.Id,
-                    UserId = x.User.Id,
-                    Name = x.User.Name,
+                    User = await _dbContext.Users
+                        .AsNoTracking()
+                        .Where(u => u.Id == ((x.Match.UserId1 == query.UserId) ? x.Match.UserId2 : x.Match.UserId1))
+                        .Select(u => u.AsPublicDto(0))
+                        .FirstOrDefaultAsync(),
                     IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
-                    ProfilePicture = x.Photo == null ? null : x.Photo.AsDto(),
                     Messages = messagesList.Where(m => m.MatchId == x.Match.Id).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });

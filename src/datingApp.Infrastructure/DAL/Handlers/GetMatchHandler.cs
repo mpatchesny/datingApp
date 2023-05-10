@@ -26,7 +26,11 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         return new MatchDto
             {
                 Id = match.Id,
-                UserId = ((match.UserId1 == query.UserId) ? match.UserId2 : match.UserId1),
+                User = await _dbContext.Users
+                        .AsNoTracking()
+                        .Where(u => u.Id == ((match.UserId1 == query.UserId) ? match.UserId2 : match.UserId1))
+                        .Select(u => u.AsPublicDto(0))
+                        .FirstOrDefaultAsync(),
                 IsDisplayed = ((match.UserId1 == query.UserId) ? match.IsDisplayedByUser1 : match.IsDisplayedByUser2),
                 // FIXME: magic string
                 Messages = _dbContext.Messages.Where(m => m.MatchId == match.Id).OrderByDescending(m => m.CreatedAt).Take(10).Select(x => x.AsDto()),

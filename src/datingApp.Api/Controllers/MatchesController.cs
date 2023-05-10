@@ -17,6 +17,7 @@ namespace datingApp.Api.Controllers;
 public class MatchesController : ApiControllerBase
 {
     private readonly IQueryHandler<GetMatches, PaginatedDataDto> _getMatchesHandler;
+    private readonly IQueryHandler<GetMatch, MatchDto> _getMatchHandler;
     private readonly IQueryHandler<GetMessages, PaginatedDataDto> _getMessagesHandler;
     private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
     private readonly ICommandHandler<SendMessage> _sendMessageHandler;
@@ -29,7 +30,8 @@ public class MatchesController : ApiControllerBase
                             IQueryHandler<GetMessages, PaginatedDataDto> getMessagesHandler,
                             IQueryHandler<GetMessage, MessageDto> getMessageHandler,
                             ICommandHandler<SetMessagesAsDisplayed> setMessagesAsDisplayedHandler,
-                            ICommandHandler<SetMatchAsDisplayed> setMatchAsDisplayedHandler)
+                            ICommandHandler<SetMatchAsDisplayed> setMatchAsDisplayedHandler,
+                            IQueryHandler<GetMatch, MatchDto> getMatchHandler)
     {
         _getMatchesHandler = getMatchesHandler;
         _deleteMatchHandler = deleteMatchHandler;
@@ -38,6 +40,7 @@ public class MatchesController : ApiControllerBase
         _getMessageHandler = getMessageHandler;
         _setMessagesAsDisplayedHandler = setMessagesAsDisplayedHandler;
         _setMatchAsDisplayedHandler = setMatchAsDisplayedHandler;
+        _getMatchHandler = getMatchHandler;
     }
 
     [HttpGet]
@@ -47,6 +50,14 @@ public class MatchesController : ApiControllerBase
         command.SetPage(page);
         command.SetPageSize(pageSize);
         return Ok(await _getMatchesHandler.HandleAsync(command));
+    }
+
+    [HttpGet("{matchId:guid}")]
+    public async Task<ActionResult<MatchDto>> GetMatch(GetMatch query)
+    {
+        query = Authenticate(query);
+        query.UserId = AuthenticatedUserId;
+        return Ok(await _getMatchHandler.HandleAsync(query));
     }
 
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]

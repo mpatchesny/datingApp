@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMatchHandler
+internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 {
     private readonly DatingAppDbContext _dbContext;
     public GetMatchHandler(DatingAppDbContext dbContext)

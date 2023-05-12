@@ -26,7 +26,7 @@ namespace datingApp.Infrastructure.DAL
             if (dbContext.Users.Count() == 0)
             {
                 List<User> users = new List<User>{
-                    new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "Maciej", new DateOnly(1999,1,1), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 30, 100, 0.0, 0.0), bio: "Lubie zapach kawy o poranku"),
+                    new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "Maciej", new DateOnly(1999,1,1), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female & Sex.Male, 18, 99, 100, 0.0, 0.0), bio: "Lubie zapach kawy o poranku"),
                     new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test1@test.com", "Grazyna", new DateOnly(1999,1,1), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 30, 100, 0.0, 0.0)),
                     new User(Guid.Parse("00000000-0000-0000-0000-000000000003"), "222222222", "test2@test.com", "Karyna", new DateOnly(1999,1,1), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 30, 100, 0.0, 0.0)),
                     new User(Guid.NewGuid(), "123456789", "dwight@dundermifflin.com", "Dwight Schrute", new DateOnly(1970, 1, 20), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Assistant manager", "I am Dwight, I am a beet farmer. Beets. Bears. Battlestar Galactica."),

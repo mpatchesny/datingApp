@@ -25,15 +25,28 @@ namespace datingApp.Infrastructure.DAL
 
             if (dbContext.Users.Count() == 0)
             {
-                var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 30, 100, 0.0, 0.0);
-                var testUser = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), Sex.Male, null, settings);
-                var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 30, 100, 0.0, 0.0);
-                var testUser2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test1@test.com", "grazyna", new DateOnly(1999,1,1), Sex.Female, null, settings2);
-                var settings3 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000003"), Sex.Male, 18, 30, 100, 0.0, 0.0);
-                var testUser3 = new User(Guid.Parse("00000000-0000-0000-0000-000000000003"), "222222222", "test2@test.com", "karyna", new DateOnly(1999,1,1), Sex.Female, null, settings3);
-                dbContext.Users.Add(testUser);
-                dbContext.Users.Add(testUser2);
-                dbContext.Users.Add(testUser3);
+                List<User> users = new List<User>{
+                    new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "Maciej", new DateOnly(1999,1,1), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 30, 100, 0.0, 0.0), bio: "Lubie zapach kawy o poranku"),
+                    new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test1@test.com", "Grazyna", new DateOnly(1999,1,1), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 30, 100, 0.0, 0.0)),
+                    new User(Guid.Parse("00000000-0000-0000-0000-000000000003"), "222222222", "test2@test.com", "Karyna", new DateOnly(1999,1,1), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 30, 100, 0.0, 0.0)),
+                    new User(Guid.NewGuid(), "123456789", "dwight@dundermifflin.com", "Dwight Schrute", new DateOnly(1970, 1, 20), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Assistant manager", "I am Dwight, I am a beet farmer. Beets. Bears. Battlestar Galactica."),
+                    new User(Guid.NewGuid(), "555123456", "jim@dundermifflin.com", "Jim", new DateOnly(1978, 10, 1), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Salesman", "Just a regular guy who happens to work here."),
+                    new User(Guid.NewGuid(), "555867530", "pam@dundermifflin.com", "Pam", new DateOnly(1979, 3, 25), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 50, 100, 0.0, 0.0), "Receptionist", "I'm Pam, I love art and design and I'm engaged to Jim."),
+                    new User(Guid.NewGuid(), "5551357", "michael.scott@dundermifflin.com", "Michael", new DateOnly(1964, 3, 15), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Regional Manager", "Hi, I'm Michael. I'm the World's Best Boss and I love making people laugh."),
+                    new User(Guid.NewGuid(), "5553698", "ryan.howard@dundermifflin.com", "Ryan", new DateOnly(1979, 5, 5), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Temp", "Hey, I'm Ryan. I'm a temp at Dunder Mifflin and I'm also working on a startup called WUPHF.com."),
+                    new User(Guid.NewGuid(), "5557890", "kelly.kapoor@dundermifflin.com", "Kelly", new DateOnly(1980, 2, 5), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 50, 100, 0.0, 0.0), "Customer Service", "Hi, I'm Kelly. I'm obsessed with celebrity gossip and I love fashion."),
+                    new User(Guid.NewGuid(), "5554321", "stanley.hudson@dundermifflin.com", "Stanley", new DateOnly(1958, 2, 19), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Sales Representative", "I'm Stanley. I just want to do my job and go home."),
+                    new User(Guid.NewGuid(), "5552468", "angela.martin@dundermifflin.com", "Angela", new DateOnly(1971, 6, 25), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 50, 100, 0.0, 0.0), "Accounting", "Hi, I'm Angela. I'm in charge of accounting and I take cats very seriously."),
+                    new User(Guid.NewGuid(), "5558642", "oscar.martinez@dundermifflin.com", "Oscar", new DateOnly(1971, 5, 21), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 50, 100, 0.0, 0.0), "Accounting", "Hey, I'm Oscar. I'm an accountant and I'm also openly gay."),
+                    new User(Guid.NewGuid(), "5551234", "kevin@dundermifflin.com", "Kevin", new DateOnly(1978, 6, 1), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Accountant", "I'm Kevin, and I love my chili. Sometimes I spill it on myself, but it's worth it."),
+                    new User(Guid.NewGuid(), "5554322", "creed@dundermifflin.com", "Creed", new DateOnly(1943, 2, 8), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Quality Assurance", "I'm Creed, and I'm the real boss around here. Just don't tell anyone."),
+                    new User(Guid.NewGuid(), "5555678", "phyllis@dundermifflin.com", "Phyllis", new DateOnly(1951, 3, 15), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 50, 100, 0.0, 0.0), "Sales", "I'm Phyllis, and I'm a saleswoman here at Dunder Mifflin. I love knitting and baking."),
+                    new User(Guid.NewGuid(), "5558765", "meredith@dundermifflin.com", "Meredith", new DateOnly(1966, 5, 12), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 99, 100, 0.0, 0.0), "Supplier Relations", "I'm Meredith, and I like to party. Sometimes I bring my own booze to work."),
+                    new User(Guid.NewGuid(),"55555555", "andy@dundermifflin.com", "Andy", new DateOnly(1980, 7, 22), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female, 18, 50, 100, 0.0, 0.0), "Regional Director", "I'm Andy, the Nard Dog! I'm a Cornell grad and an acapella enthusiast. I used to have anger issues, but I've worked hard to control my temper. I'm also a talented musician, and I'm always looking for an opportunity to showcase my singing skills."),
+                    new User(Guid.NewGuid(), "555555556", "erin.hannon@dundermifflin.com", "Erin Hannon", new DateOnly(1986, 10, 4), Sex.Female, null, new UserSettings(Guid.NewGuid(), Sex.Male, 18, 50, 100, 0.0, 0.0), "Receptionist", "Hi, I'm Erin! I love puppies, romantic comedies, and bubble baths. I'm still trying to figure out the whole receptionist thing, but I'm excited to be here at Dunder Mifflin!")
+                };
+
+                dbContext.Users.AddRange(users);
                 await dbContext.SaveChangesAsync();
             };
 

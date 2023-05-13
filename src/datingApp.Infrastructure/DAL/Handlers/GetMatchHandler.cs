@@ -34,7 +34,12 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
                         .FirstOrDefaultAsync(),
                 IsDisplayed = ((match.UserId1 == query.UserId) ? match.IsDisplayedByUser1 : match.IsDisplayedByUser2),
                 // FIXME: magic string
-                Messages = _dbContext.Messages.Where(m => m.MatchId == match.Id).OrderByDescending(m => m.CreatedAt).Take(10).Select(x => x.AsDto()),
+                Messages = _dbContext.Messages
+                        .Where(m => m.MatchId == match.Id)
+                        .OrderByDescending(m => m.CreatedAt)
+                        .Take(10)
+                        .OrderBy(x => x.CreatedAt)
+                        .Select(x => x.AsDto()),
                 CreatedAt = match.CreatedAt
             }; 
     }

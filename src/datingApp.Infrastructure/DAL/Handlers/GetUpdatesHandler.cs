@@ -56,6 +56,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var messagesList = await _dbContext.Messages
                         .AsNoTracking()
                         .Where(x => newMessages.Contains(x.Id))
+                        .OrderBy(x => x.CreatedAt)
                         .ToListAsync(); 
 
         var data = await dbQuery.AsNoTracking().ToListAsync();

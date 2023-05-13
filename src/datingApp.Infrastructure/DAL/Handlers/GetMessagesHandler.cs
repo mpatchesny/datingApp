@@ -28,6 +28,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
                         .Select(x => x.AsDto())
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)
+                        .OrderBy(x => x.CreatedAt)
                         .ToListAsync();
 
         var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;

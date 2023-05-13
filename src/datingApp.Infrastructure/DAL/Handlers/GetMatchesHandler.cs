@@ -60,7 +60,11 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                         .Select(u => u.AsPublicDto(0))
                         .FirstOrDefaultAsync(),
                     IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
-                    Messages = messagesList.Where(m => m.MatchId == x.Match.Id).OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()),
+                    Messages = messagesList
+                        .Where(m => m.MatchId == x.Match.Id)
+                        .OrderByDescending(m => m.CreatedAt)
+                        .Take(1)
+                        .Select(x => x.AsDto()),
                     CreatedAt = x.Match.CreatedAt
                 });
         }

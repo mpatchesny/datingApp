@@ -70,6 +70,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                     User = await _dbContext.Users
                         .AsNoTracking()
                         .Where(u => u.Id == ((x.Match.UserId1 == query.UserId) ? x.Match.UserId2 : x.Match.UserId1))
+                        .Include(u => u.Photos)
                         .Select(u => u.AsPublicDto(0))
                         .FirstOrDefaultAsync(),
                     IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),

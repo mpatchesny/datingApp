@@ -29,6 +29,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
                 User = await _dbContext.Users
                         .AsNoTracking()
                         .Where(u => u.Id == ((match.UserId1 == query.UserId) ? match.UserId2 : match.UserId1))
+                        .Include(u => u.Photos)
                         .Select(u => u.AsPublicDto(0))
                         .FirstOrDefaultAsync(),
                 IsDisplayed = ((match.UserId1 == query.UserId) ? match.IsDisplayedByUser1 : match.IsDisplayedByUser2),

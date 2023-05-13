@@ -73,8 +73,16 @@ namespace datingApp.Infrastructure.DAL
 
             if (dbContext.Messages.Count() == 0)
             {
-                var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "hej :)", false, DateTime.UtcNow);
-                dbContext.Messages.Add(message);
+                List<Message> messages = new List<Message> {
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "Cześć, co słychać?", false, DateTime.UtcNow - TimeSpan.FromMinutes(20)),
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "Wszystko w porzadku, a u Ciebie?", false, DateTime.UtcNow - TimeSpan.FromMinutes(15)),
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "U mnie też wszystko w porządku. Właśnie oglądam seriale.", false, DateTime.UtcNow - TimeSpan.FromMinutes(13)),
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "To super, ja lubie The Office, a Ty?", false, DateTime.UtcNow - TimeSpan.FromMinutes(10)),
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "Ja też! Michael jest najlepszy!.", false, DateTime.UtcNow - TimeSpan.FromMinutes(9)),
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "❤️❤️❤️ chyba jesteśmy sobie przeznaczeni! Wyjdziesz za mnie?", false, DateTime.UtcNow - TimeSpan.FromMinutes(8)),
+                    new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "No pewnie!", false, DateTime.UtcNow - TimeSpan.FromMinutes(7)),
+                };
+                dbContext.Messages.AddRange(messages);
                 await dbContext.SaveChangesAsync();
             };
         }

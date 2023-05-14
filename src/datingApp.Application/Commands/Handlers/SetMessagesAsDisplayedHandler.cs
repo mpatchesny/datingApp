@@ -19,7 +19,8 @@ public class SetMessagesAsDisplayedHandler : ICommandHandler<SetMessagesAsDispla
     public async Task HandleAsync(SetMessagesAsDisplayed command)
     {
         var messages = (await _messageRepository.GetPreviousNotDisplayedMessages(command.LastMessageId))
-                        .Where(x => x.SendFromId != command.DisplayedByUserId);
+                        .Where(x => x.SendFromId != command.DisplayedByUserId)
+                        .ToList();
 
         if (messages.Count() == 0) return;
         

@@ -29,7 +29,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Bio)
             .HasMaxLength(400);
         builder.Property(x => x.Job)
-            .HasMaxLength(30);
+            .HasMaxLength(50);
         builder.Property(x => x.DateOfBirth)
             .IsRequired();
         builder.Property(x => x.Sex)

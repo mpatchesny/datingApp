@@ -25,11 +25,6 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
             throw new UserNotExistsException(command.UserId);
         }
 
-        if (command.Bio == null && command.Job == null && command.DateOfBirth == null)
-        {
-            return;
-        }
-
         if (command.Bio != null) user.ChangeBio(command.Bio);
         if (command.Job != null) user.ChangeJob(command.Job);
         if (command.DateOfBirth != null)
@@ -63,10 +58,6 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
             settingsChanged = true;
         }
 
-        if (settingsChanged)
-        {
-            await _userRepository.UpdateSettingsAsync(user);
-        }
         await _userRepository.UpdateAsync(user);
     }
 }

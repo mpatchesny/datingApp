@@ -139,7 +139,7 @@ public class User
     }
     private void SetJob(string job)
     {
-        if (job.Length > 30)
+        if (job.Length > 50)
         {
             throw new JobTooLongException();
         }

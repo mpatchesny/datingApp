@@ -133,10 +133,10 @@ public class UserTests
     }
 
     [Fact]
-    public void user_job_longer_than_30_chars_should_throw_exception()
+    public void user_job_longer_than_50_chars_should_throw_exception()
     {
         string job = "";
-        for (int i=1; i<=31; i++)
+        for (int i=1; i<=51; i++)
         {
             job += "a";
         }

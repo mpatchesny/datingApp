@@ -22,6 +22,14 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
         Assert.Null(exception);
     }
 
+    [Fact]
+    public async Task set_non_existsing_messages_as_displayed_should_do_nothing()
+    {
+        var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000099"), Guid.Parse("00000000-0000-0000-0000-000000000099"));
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.Null(exception);
+    }
+
     // Arrange
     private readonly SetMessagesAsDisplayedHandler _handler;
     private readonly TestDatabase _testDb;

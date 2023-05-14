@@ -22,6 +22,8 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         var match = await _dbContext.Matches
                         .AsNoTracking()
                         .FirstOrDefaultAsync(x => x.Id == query.MatchId);
+
+        if (match == null) return null;
         
         return new MatchDto
             {

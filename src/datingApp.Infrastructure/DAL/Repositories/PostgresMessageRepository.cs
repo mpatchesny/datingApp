@@ -61,6 +61,8 @@ internal sealed class PostgresMessageRepository : IMessageRepository
                                 })
                                 .FirstOrDefault();
 
+        if (condition == null) return new List<Message>();
+
         return await _dbContext.Messages.Where(x => x.CreatedAt <= condition.CreatedAt)
                                         .Where(x => x.MatchId == condition.MatchId)
                                         .Where(x => x.IsDisplayed == false).ToListAsync();

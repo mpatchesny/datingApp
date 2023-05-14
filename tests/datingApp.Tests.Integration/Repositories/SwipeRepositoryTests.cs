@@ -46,6 +46,22 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task when_swipes_with_given_id_exsits_swipe_exists_should_return_true()
+    {
+        var swipes = new List<Swipe>{
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
+        };
+        _testDb.DbContext.Swipes.AddRange(swipes);
+        _testDb.DbContext.SaveChanges();
+
+        var swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.Equal(true, swipe);
+        swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Equal(true, swipe);
+    }
+
+    [Fact]
     public async Task when_no_swipes_match_get_by_swiped_by_swiped_who_should_return_empty_collection()
     {
         var swipes = new List<Swipe>{
@@ -61,6 +77,25 @@ public class SwipeRepositoryTests : IDisposable
         Assert.Null(swipe);
         swipe = await _repository.GetBySwipedBy(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"));
         Assert.Null(swipe);
+    }
+
+    [Fact]
+    public async Task when_no_swipes_match_swipe_exists_should_return_false()
+    {
+        // SwipeExists
+        var swipes = new List<Swipe>{
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow),
+            new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Pass, DateTime.UtcNow)
+        };
+        _testDb.DbContext.Swipes.AddRange(swipes);
+        _testDb.DbContext.SaveChanges();
+
+        var swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.Equal(false, swipe);
+        swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Equal(false, swipe);
+        swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"));
+        Assert.Equal(false, swipe);
     }
 
     // Arrange

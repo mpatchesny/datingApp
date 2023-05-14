@@ -36,26 +36,21 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
             user.ChangeDateOfBirth(dob);
         }
 
-        bool settingsChanged = false;
         if (command.DiscoverAgeFrom != null && command.DiscoverAgeTo != null)
         {
             user.Settings.ChangeDiscoverAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
-            settingsChanged = true;
         }
         if (command.DiscoverRange != null) 
         {
             user.Settings.ChangeDiscoverRange((int) command.DiscoverRange);
-            settingsChanged = true;
         }
         if (command.DiscoverSex != null) 
         {
             user.Settings.ChangeDiscoverSex((Sex) command.DiscoverSex);
-            settingsChanged = true;
         }
         if (command.Lat != null && command.Lon != null)
         {
             user.Settings.ChangeLocation((double) command.Lat, (double) command.Lon);
-            settingsChanged = true;
         }
 
         await _userRepository.UpdateAsync(user);

@@ -18,14 +18,35 @@ public class UserSettingsTests
         Assert.Null(exception);
     }
 
+    [Fact]
+    public void user_settings_should_accept_male_discovery_sex()
+    {
+        var discoverySex = Sex.Male;
+        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), discoverySex, 20, 21, 20, 45.5, 45.5));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void user_settings_should_accept_female_discovery_sex()
+    {
+        var discoverySex = Sex.Female;
+        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), discoverySex, 20, 21, 20, 45.5, 45.5));
+        Assert.Null(exception);
+    }
+
     [Theory]
+    [InlineData(-1)]
     [InlineData(0)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
     [InlineData(7)]
+    [InlineData(8)]
     public void invalid_user_settings_discovery_sex_should_throw_exception(int discoverySex)
     {
         var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), (Sex) discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.NotNull(exception);
-        Assert.IsType<InvalidUserSexException>(exception);
+        Assert.IsType<InvalidUserDiscoverySexException>(exception);
     }
 
     [Theory]

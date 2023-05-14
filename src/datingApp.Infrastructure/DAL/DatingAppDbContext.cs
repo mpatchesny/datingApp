@@ -10,6 +10,7 @@ namespace datingApp.Infrastructure;
 internal sealed class DatingAppDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<UserSettings> UserSettings { get; set; }
     public DbSet<Match> Matches { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<Swipe> Swipes { get; set; }

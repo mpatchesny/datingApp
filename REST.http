@@ -34,8 +34,6 @@ Authorization: Bearer {{accessToken}}
 ###
 GET {{url}}/users/me/recommendations
 Authorization: Bearer {{accessToken}}
-Origin: http://localhost:4200
-Referer: : http://localhost:4200
 ###
 GET {{url}}/users/me/updates
 Authorization: Bearer {{accessToken}}

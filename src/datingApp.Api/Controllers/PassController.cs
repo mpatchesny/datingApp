@@ -26,8 +26,8 @@ public class PassController : ApiControllerBase
         _getLikedByOtherUserHandler = getLikedByOtherUserHandler;
     }
 
-    [HttpPost("{userId:guid}")]
-    public async Task<ActionResult<IsLikedByOtherUserDto>> Post(Guid userId)
+    [HttpPut("{userId:guid}")]
+    public async Task<ActionResult<IsLikedByOtherUserDto>> Put(Guid userId)
     {
         var swipedById = Guid.Parse(User.Identity?.Name);
         var swipedWhoId = userId;

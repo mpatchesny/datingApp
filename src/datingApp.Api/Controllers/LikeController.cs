@@ -28,8 +28,8 @@ public class LikeController : ApiControllerBase
         _addMatchHandler = addMatchHandler;
     }
 
-    [HttpPost("{userId:guid}")]
-    public async Task<ActionResult<IsLikedByOtherUserDto>> Post(Guid userId)
+    [HttpPut("{userId:guid}")]
+    public async Task<ActionResult<IsLikedByOtherUserDto>> Put(Guid userId)
     {
         var swipedById = AuthenticatedUserId;
         var swipedWhoId = userId;

@@ -136,10 +136,10 @@ Authorization: Bearer {{accessToken}}
 
 ### SWIPES ###
 
-POST {{url}}/like/00000000-0000-0000-0000-000000000003
+PUT {{url}}/like/00000000-0000-0000-0000-000000000003
 Authorization: Bearer {{accessToken}}
 ###
-POST {{url}}/pass/00000000-0000-0000-0000-000000000003
+PUT {{url}}/pass/00000000-0000-0000-0000-000000000003
 Authorization: Bearer {{accessToken}}
 ###
 

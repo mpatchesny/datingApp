@@ -48,6 +48,28 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task update_existing_user_settings_should_succeed()
+    {
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user = await _userRepository.GetByIdAsync(userId);
+        user.Settings.ChangeDiscoverAge(18, 99);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateSettingsAsync(user));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task update_user_settings_should_change_user_settings_in_db()
+    {
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user = await _userRepository.GetByIdAsync(userId);
+        user.Settings.ChangeDiscoverAge(20, 99);
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateSettingsAsync(user));
+        user = await _userRepository.GetByIdAsync(userId);
+        Assert.Equal(20, user.Settings.DiscoverAgeFrom);
+        Assert.Equal(99, user.Settings.DiscoverAgeTo);
+    }
+
+    [Fact]
     public async Task delete_existing_user_should_succeed()
     {
         var user = await _userRepository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));

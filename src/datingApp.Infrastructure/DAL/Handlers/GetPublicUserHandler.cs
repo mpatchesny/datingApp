@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,8 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
                                         .Where(x => x.UserId == query.UserRequestedId)
                                         .Select(x => new { x.Lat, x.Lon })
                                         .FirstOrDefaultAsync();
+
+        if (userRequested == null) return null;
 
         var user = await _dbContext.Users
                             .AsNoTracking()

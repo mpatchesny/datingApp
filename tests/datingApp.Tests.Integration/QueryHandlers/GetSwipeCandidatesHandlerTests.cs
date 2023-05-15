@@ -21,7 +21,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(Sex.Male | Sex.Female, Sex.Male)]
     public async Task when_candidates_with_proper_sex_exist_returns_nonempty_list(Sex userLookingForSex, Sex candidateSex)
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), userLookingForSex, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 0.0, 0.0);
@@ -33,12 +33,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 18;
-        query.AgeTo = 100;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = (int) userLookingForSex;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -50,7 +44,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(Sex.Female, Sex.Male)]
     public async Task when_no_candidates_with_proper_sex_returns_empty_list(Sex userLookingForSex, Sex candidateSex)
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), userLookingForSex, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 0.0, 0.0);
@@ -62,12 +56,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 18;
-        query.AgeTo = 100;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = (int) userLookingForSex;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -82,7 +70,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(18, 100, 45)]
     public async Task when_candidates_with_proper_age_exists_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 0.0, 0.0);
@@ -96,12 +84,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = queryAgeFrom;
-        query.AgeTo = queryAgeTo;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = (int) Sex.Male;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -116,7 +98,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(50, 60, 70)]
     public async Task when_no_candidates_with_proper_age_returns_empty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 0.0, 0.0);
@@ -130,12 +112,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = queryAgeFrom;
-        query.AgeTo = queryAgeTo;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = (int) Sex.Male;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -145,7 +121,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task when_candidates_within_range_exist_returns_nonempty_list()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 100, 25, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 0.0, 0.0);
@@ -157,12 +133,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 18;
-        query.AgeTo = 100;
-        query.Range = 25;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = (int) Sex.Male;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -172,7 +142,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task when_no_candidates_within_range_returns_empty_list()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 21, 20, 1.0, 1.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 100, 25, 1.0, 1.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 1.0, 1.0);
@@ -184,12 +154,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 18;
-        query.AgeTo = 100;
-        query.Range = 25;
-        query.Lat = 1.0;
-        query.Lon = 1.0;
-        query.Sex = (int) Sex.Male;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -199,7 +163,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task candidates_returned_are_sorted_by_number_of_likes_descending()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 21, 20, 1.0, 1.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.MaleAndFemale, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 1.0, 1.0);
@@ -227,12 +191,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 1;
-        query.AgeTo = 100;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = 3;
         query.HowMany = 999;
 
         var candidates = await _handler.HandleAsync(query);
@@ -245,7 +203,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task users_already_swiped_are_not_returned()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 0.0, 0.0);
@@ -264,12 +222,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 18;
-        query.AgeTo = 100;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = 1;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);
@@ -279,7 +231,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task candidates_returned_count_equals_how_many_from_query()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 0.0, 0.0);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
 
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 0.0, 0.0);
@@ -306,12 +258,6 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.AgeFrom = 18;
-        query.AgeTo = 100;
-        query.Range = 100;
-        query.Lat = 0.0;
-        query.Lon = 0.0;
-        query.Sex = 1;
         query.HowMany = 2;
 
         var candidates = await _handler.HandleAsync(query);

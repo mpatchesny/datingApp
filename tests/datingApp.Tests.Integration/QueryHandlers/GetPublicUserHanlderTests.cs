@@ -21,6 +21,7 @@ public class GetPublicUserHanlderTests : IDisposable
     {
         var query = new GetPublicUser();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var user = await _handler.HandleAsync(query);
         Assert.NotNull(user);
         Assert.IsType<PublicUserDto>(user);
@@ -31,6 +32,17 @@ public class GetPublicUserHanlderTests : IDisposable
     {
         var query = new GetPublicUser();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
+        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user = await _handler.HandleAsync(query);
+        Assert.Null(user);
+    }
+
+    [Fact]
+    public async Task request_by_nonexisting_user_should_return_null()
+    {
+        var query = new GetPublicUser();
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000005");
         var user = await _handler.HandleAsync(query);
         Assert.Null(user);
     }

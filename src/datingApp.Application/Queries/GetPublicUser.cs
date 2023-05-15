@@ -9,7 +9,6 @@ namespace datingApp.Application.Queries;
 
 public class GetPublicUser : AuthenticatedQueryBase<PublicUserDto>
 {
+    public Guid UserRequestedId { get; set; }
     public Guid UserId { get; set; }
-    public double Lat { get; set; }
-    public double Lon { get; set; }
 }

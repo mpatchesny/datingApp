@@ -18,7 +18,7 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
     }
     public async Task HandleAsync(SignUp command)
     {
-        if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
+        if (command.DateOfBirth != null && !DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
         {
             throw new InvalidDateOfBirthFormatException(command.DateOfBirth);
         }

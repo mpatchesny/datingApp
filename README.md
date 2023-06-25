@@ -33,7 +33,7 @@ TODO
 
 ## What's left to do?
 
-[] authorization
-[] more & better tests (API tests, etc.)
-[] use Redis to store JWT tokens and access codes
-[] fix endpoints, eg. split PATCH users into three endpoints: change user profile info, user settings and user location
+- [] authorization
+- [] more & better tests (API tests, etc.)
+- [] use Redis to store JWT tokens and access codes
+- [] fix endpoints, eg. split PATCH users into three endpoints: change user profile info, user settings and user location

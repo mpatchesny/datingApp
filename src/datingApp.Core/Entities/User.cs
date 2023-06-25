@@ -122,6 +122,11 @@ public class User
     }
     private void SetDateOfBirth(DateOnly dateOfBirth)
     {
+        if (dateOfBirth.CompareTo(new DateOnly()) == 0)
+        {
+            throw new DateOfBirthCannotBeEmptyException();
+        }
+
         DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
         var age = CalculateAge(dateOfBirth, currDate);
         if (age < 18 | age > 100) 

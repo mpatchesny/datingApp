@@ -120,6 +120,14 @@ public class UserTests
     }
 
     [Fact]
+    public void try_set_empty_date_as_date_of_birth_should_throw_DateOfBirthCannotBeEmptyException()
+    {
+        var exception = Record.Exception(() =>new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "janusz", new DateOnly(), Sex.Male, null, properUserSettings));
+        Assert.NotNull(exception);
+        Assert.IsType<DateOfBirthCannotBeEmptyException>(exception);
+    }
+
+    [Fact]
     public void user_bio_longer_than_400_chars_should_throw_exception()
     {
         string bio = "";

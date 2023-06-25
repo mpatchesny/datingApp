@@ -8,13 +8,13 @@ I used DevMentors' [Solid WebAPI](https://platform.devmentors.io/courses/solid-w
 
 ## How to run
 
-Clone repository. Navigate to repository folder in console and run the following command to run Postgres container:
+Clone repository. Navigate to repository folder in console and run the following command to run Postgres container:\
 `docker compose up -d`
 
-Next, navigate to ./src/datingApp.Api and run the following command to run application:
+Next, navigate to ./src/datingApp.Api and run the following command to run application:\
 `dotner run`
 
-If no success, try to run the follwing command to restore project's dependencies:
+If no success, try to run the follwing command to restore project's dependencies:\
 `dotnet restore`
 
 Alternatively, open datingApp.sln solution in Visual Studio and run solution from there.

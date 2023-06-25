@@ -12,7 +12,7 @@ Clone repository. Navigate to repository folder in console and run the following
 `docker compose up -d`
 
 Next, navigate to ./src/datingApp.Api and run the following command to run application:\
-`dotner run`
+`dotnet run`
 
 If no success, try to run the follwing command to restore project's dependencies:\
 `dotnet restore`

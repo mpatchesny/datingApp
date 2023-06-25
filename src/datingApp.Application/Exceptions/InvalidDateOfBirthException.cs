@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class InvalidDateOfBirthFormatException : CustomException
 {
-    public InvalidDateOfBirthFormatException(string date) : base($"Provided date of birth {date} is invalid.")
+    public InvalidDateOfBirthFormatException(string date) : base($"Provided date of birth: {date} is invalid.")
     {
     }
 }

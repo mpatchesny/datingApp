@@ -8,20 +8,20 @@ I used DevMentors' [Solid WebAPI](https://platform.devmentors.io/courses/solid-w
 
 ## How to run
 
-Clone repository. Navigate to repository folder in console and run the following command to run Postgres container:\
+Clone repository. Navigate to repository folder in terminal and execute the following command to run Postgres container:\
 `docker compose up -d`
 
-Next, navigate to ./src/datingApp.Api and run the following command to run application:\
-`dotnet run`
-
-If no success, try to run the follwing command to restore project's dependencies:\
+Next, execute following command in terminal to restore project's dependencies:\
 `dotnet restore`
+
+Next, navigate to ./src/datingApp.Api and execute the following command to run application:\
+`dotnet run`
 
 Alternatively, open datingApp.sln solution in Visual Studio and run solution from there.
 
 ## How to use
 
-TODO
+Please see [REST.http](REST.http) for examples of API calls. You must have [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) VS Code extension installed in order to run API calls from this file.
 
 ## What's interesting in this project?
 

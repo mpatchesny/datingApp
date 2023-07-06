@@ -19,7 +19,6 @@ using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: InternalsVisibleTo("MySpot.Tests.Integration")]
 namespace datingApp.Infrastructure;
 
 public static class Extensions

@@ -6,7 +6,24 @@ Referer: http://localhost:4200
 Access-Control-Request-Method: POST
 
 ### USERS ###
-###
+
+### Create user
+POST {{url}}/users
+Content-Type: application/json
+
+{
+    "phone": "12345629",
+    "email": "test@test.com",
+    "name": "Some name",
+    "dateOfBirth": "1990-01-01",
+    "sex": 1,
+    "discoverSex": 2,
+    "job": "Some job I work at (optional)",
+    "bio": "Some bio (optional)"
+}
+
+### Request access code
+### For now, access code is retuned as a response to this call
 # @name auth
 POST {{url}}/users/auth
 Content-Type: application/json
@@ -15,9 +32,10 @@ Content-Type: application/json
     "email": "test@test.com"
 }
 
-###
-# @name sign_in
 @accessCode = {{auth.response.body.$.code}}
+
+### Sign in with acquired access code
+# @name sign_in
 
 POST {{url}}/users/sing-in
 Content-Type: application/json
@@ -29,12 +47,15 @@ Content-Type: application/json
 ###
 @accessToken = {{sign_in.response.body.$.accessToken}}
 
+### Get information about your profile
 GET {{url}}/users/me
 Authorization: Bearer {{accessToken}}
-###
+
+### Get profiles to swipe
 GET {{url}}/users/me/recommendations
 Authorization: Bearer {{accessToken}}
-###
+
+### Get information about new matches and messages since given last activity time
 GET {{url}}/users/me/updates
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -42,49 +63,40 @@ Content-Type: application/json
 {
     "lastActivityTime": "{{$datetime iso8601 -15 d}}"
 }
-###
+
+### Get information about another user
 GET {{url}}/users/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
-###
-POST {{url}}/users
-Content-Type: application/json
 
-{
-    "phone": "12345629",
-    "email": "test5554@test.com",
-    "name": "Maciej",
-    "dateOfBirth": "1987-03-10",
-    "sex": 1,
-    "discoverSex": 2,
-    "job": "McDonald's",
-    "bio": ""
-}
-###
+### Update your profile information
 PATCH {{url}}/users/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "job": "McDonald's",
-    "bio": "jestem wesoły romek",
-    "dateOfBirth": "1987-03-10",
+    "job": "Some another job",
+    "bio": "Some another bio",
+    "dateOfBirth": "1990-01-02",
     "discoverSex": 2,
     "discoverRange": 40,
     "discoverAgeFrom": 18,
     "discoverAgeTo": 45,
-    "lat": 54.3719424,
-    "lon": 18.6143541
+    "lat": 50.3719424,
+    "lon": 16.6143541
 }
-###
+
+### Delete account
 DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 
 ### PHOTOS ###
 @photo = c63d92d0-d758-460e-a95b-4648e4654d2a.jpg
 
+### Get information about a single photo
 GET {{url}}/photos/c63d92d0-d758-460e-a95b-4648e4654d2a
 Authorization: Bearer {{accessToken}}
-###
+
+### Update photo's oridinal number
 PATCH {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -92,28 +104,36 @@ Content-Type: application/json
 {
     "newOridinal": 0
 }
-###
+
+### Delete photo
 DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
-###
+
+### Get photo's base64 encoded binary
 GET {{url}}/storage/{{photo}}
 Authorization: Bearer {{accessToken}}
 
 ### MATCHES ###
 
-###
+### Get information about logged user's matches
 GET {{url}}/matches
 Authorization: Bearer {{accessToken}}
-###
+
+### Get information about a single match
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
-###
+
+### Get messages for a given match
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
 Authorization: Bearer {{accessToken}}
-###
+
+### Get information about a single message
 GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
-###
+
+### Send message to a given match
+### Messages can be send only within a match
+### A match is only created when two users like each others' profiles
 POST {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -122,7 +142,9 @@ Content-Type: application/json
     "sendFromId": "00000000-0000-0000-0000-000000000001",
     "text": "hejka2"
 }
-###
+
+### Mark message as displayed
+### As a result all messages older than given message will be marked as displayed, too
 PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -130,20 +152,24 @@ Content-Type: application/json
 {
     "DisplayedByUserId": "00000000-0000-0000-0000-000000000001"
 }
-###
+
+### Delete match
+### As a result all messages within match will be deleted too
 DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001
 Authorization: Bearer {{accessToken}}
 
 ### SWIPES ###
 
+### Like another user
 PUT {{url}}/like/00000000-0000-0000-0000-000000000003
 Authorization: Bearer {{accessToken}}
-###
+
+### Pass another user
 PUT {{url}}/pass/00000000-0000-0000-0000-000000000003
 Authorization: Bearer {{accessToken}}
-###
 
 ### UPLOAD PHOTO ###
+### Photo binary must be base64 encoded
 POST {{url}}/photos
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json

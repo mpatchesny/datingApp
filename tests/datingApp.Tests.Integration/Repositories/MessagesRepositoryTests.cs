@@ -61,6 +61,8 @@ public class MessageRepositoryTests : IDisposable
     {
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.Parse("00000000-0000-0000-0000-000000000001")));
         Assert.Null(exception);
+        var deletedMatch = _testDb.DbContext.Matches.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(deletedMatch);
     }
 
     [Fact]
@@ -87,6 +89,8 @@ public class MessageRepositoryTests : IDisposable
         var messages = await _repository.GetByMatchIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(messages);
         Assert.Equal(2, messages.Count());
+        var addedMessage = _testDb.DbContext.Messages.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.Same(message, addedMessage);
     }
 
     [Fact]
@@ -96,6 +100,8 @@ public class MessageRepositoryTests : IDisposable
         message.SetDisplayed();
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(message));
         Assert.Null(exception);
+        var updatedMessage = _testDb.DbContext.Messages.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Same(message, updatedMessage);
     }
 
     [Fact]

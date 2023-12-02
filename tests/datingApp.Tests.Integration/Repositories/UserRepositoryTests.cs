@@ -45,6 +45,8 @@ public class UserRepositoryTests : IDisposable
         user.ChangeBio("new bio");
         var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateAsync(user));
         Assert.Null(exception);
+        var updatedUser = _testDb.DbContext.Users.FirstOrDefault(x => x.Id == userId);
+        Assert.Same(user, updatedUser);
     }
 
     [Fact]
@@ -53,6 +55,8 @@ public class UserRepositoryTests : IDisposable
         var user = await _userRepository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.Null(exception);
+        var deletedUser = _testDb.DbContext.Users.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(deletedUser);
     }
 
     [Fact(Skip="after change user id from int to guid this test fails")]
@@ -72,6 +76,8 @@ public class UserRepositoryTests : IDisposable
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
         Assert.Null(exception);
+        var addedUser = _testDb.DbContext.Users.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.Same(addedUser, user);
     }
 
     [Fact]

@@ -18,6 +18,8 @@ public class SwipeRepositoryTests : IDisposable
         var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
         Assert.Null(exception);
+        var addedSwipe = _testDb.DbContext.Swipes.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Same(swipe, addedSwipe);
     }
 
     [Fact]
@@ -56,9 +58,9 @@ public class SwipeRepositoryTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
-        Assert.Equal(true, swipe);
+        Assert.True(swipe);
         swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.Equal(true, swipe);
+        Assert.True(swipe);
     }
 
     [Fact]
@@ -91,11 +93,11 @@ public class SwipeRepositoryTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
-        Assert.Equal(false, swipe);
+        Assert.False(swipe);
         swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.Equal(false, swipe);
+        Assert.False(swipe);
         swipe = await _repository.SwipeExists(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000003"));
-        Assert.Equal(false, swipe);
+        Assert.False(swipe);
     }
 
     // Arrange

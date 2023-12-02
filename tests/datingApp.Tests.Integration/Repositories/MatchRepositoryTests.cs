@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
@@ -17,15 +18,15 @@ public class MatchRepositoryTests : IDisposable
     {
         var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var matches = await _repository.GetByUserIdAsync(userId);
-        Assert.Equal(1, matches.Count());
-        Assert.Equal(0, matches.Where(x => x.UserId1 != userId && x.UserId2 != userId).Count());
+        Assert.Single(matches);
+        Assert.Empty(matches.Where(x => x.UserId1 != userId && x.UserId2 != userId));
     }
 
     [Fact]
     public async void get_match_by_nonexisting_user_id_should_return_empty_collection()
     {
         var matches = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000000"));
-        Assert.Equal(0, matches.Count());
+        Assert.Empty(matches);
     }
 
     [Fact]
@@ -62,6 +63,8 @@ public class MatchRepositoryTests : IDisposable
         var match = await _repository.GetByIdAsync(matchId);
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(match));
         Assert.Null(exception);
+        var deletedMatch = _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(deletedMatch);
     }
 
     [Fact]
@@ -72,7 +75,7 @@ public class MatchRepositoryTests : IDisposable
         await _repository.DeleteAsync(match);
         _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.Equal(0, matches.Count());
+        Assert.Empty(matches);
     }
 
     [Fact]
@@ -81,6 +84,8 @@ public class MatchRepositoryTests : IDisposable
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
+        var addedMatch = _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000003"));
+        Assert.Same(addedMatch, match);
     }
 
     [Fact]
@@ -90,6 +95,8 @@ public class MatchRepositoryTests : IDisposable
         match.SetDisplayed(match.UserId1);
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(match));
         Assert.Null(exception);
+        var updatedMatch = _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Same(updatedMatch, match);
     }
 
     [Fact]

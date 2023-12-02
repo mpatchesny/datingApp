@@ -32,6 +32,8 @@ public class PhotoRepositoryTests : IDisposable
         var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.Null(exception);
+        var addedPhoto = _testDb.DbContext.Photos.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        Assert.Same(photo, addedPhoto);
     }
 
     [Fact]
@@ -68,6 +70,8 @@ public class PhotoRepositoryTests : IDisposable
         photo.ChangeOridinal(3);
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(photo));
         Assert.Null(exception);
+        var updatedPhoto = _testDb.DbContext.Photos.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Same(photo, updatedPhoto);
     }
 
     [Fact]
@@ -76,6 +80,8 @@ public class PhotoRepositoryTests : IDisposable
         var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
         Assert.Null(exception);
+        var deletedPhoto = _testDb.DbContext.Photos.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(deletedPhoto);
     }
 
     // Arrange

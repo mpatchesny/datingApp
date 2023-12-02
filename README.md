@@ -35,6 +35,6 @@ Please see [REST.http](REST.http) for examples of API calls. You must have [REST
 
 - [ ] authorization
 - [ ] more & better tests (API tests, etc.)
-- [ ] use Redis to store JWT tokens and access codes
-- [ ] fix some endpoints, eg. split PATCH users into three endpoints: change user profile info, user settings and user location
+- [ ] eliminate application state
+- [ ] some endpoints needs fixing
 - [ ] fix async/ await

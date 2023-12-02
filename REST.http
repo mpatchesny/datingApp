@@ -65,11 +65,13 @@ Content-Type: application/json
 }
 
 ### Get information about another user
-GET {{url}}/users/00000000-0000-0000-0000-000000000001
+@myUserId = 00000000-0000-0000-0000-000000000001
+@otherUserId = 00000000-0000-0000-0000-000000000003
+GET {{url}}/users/{{otherUserId}}
 Authorization: Bearer {{accessToken}}
 
 ### Update your profile information
-PATCH {{url}}/users/00000000-0000-0000-0000-000000000001
+PATCH {{url}}/users/{{myUserId}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -86,18 +88,19 @@ Content-Type: application/json
 }
 
 ### Delete account
-DELETE {{url}}/users/00000000-0000-0000-0000-000000000001
+DELETE {{url}}/users/{{myUserId}}
 Authorization: Bearer {{accessToken}}
 
 ### PHOTOS ###
 @photo = c63d92d0-d758-460e-a95b-4648e4654d2a.jpg
+@photoId = 00000000-0000-0000-0000-000000000001
 
 ### Get information about a single photo
-GET {{url}}/photos/c63d92d0-d758-460e-a95b-4648e4654d2a
+GET {{url}}/photos/{{photoId}}
 Authorization: Bearer {{accessToken}}
 
 ### Update photo's oridinal number
-PATCH {{url}}/photos/00000000-0000-0000-0000-000000000001
+PATCH {{url}}/photos/{{photoId}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -106,7 +109,7 @@ Content-Type: application/json
 }
 
 ### Delete photo
-DELETE {{url}}/photos/00000000-0000-0000-0000-000000000001
+DELETE {{url}}/photos/{{photoId}}
 Authorization: Bearer {{accessToken}}
 
 ### Get photo's base64 encoded binary
@@ -116,56 +119,59 @@ Authorization: Bearer {{accessToken}}
 ### MATCHES ###
 
 ### Get information about logged user's matches
+@matchId = 00000000-0000-0000-0000-000000000001
+@messageId = 00000000-0000-0000-0000-000000000001
+
 GET {{url}}/matches
 Authorization: Bearer {{accessToken}}
 
 ### Get information about a single match
-GET {{url}}/matches/00000000-0000-0000-0000-000000000001
+GET {{url}}/matches/{{matchId}}
 Authorization: Bearer {{accessToken}}
 
 ### Get messages for a given match
-GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+GET {{url}}/matches/{{matchId}}
 Authorization: Bearer {{accessToken}}
 
 ### Get information about a single message
-GET {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
+GET {{url}}/matches/{{matchId}}/messages/{{messageId}}
 Authorization: Bearer {{accessToken}}
 
 ### Send message to a given match
 ### Messages can be send only within a match
 ### A match is only created when two users like each others' profiles
-POST {{url}}/matches/00000000-0000-0000-0000-000000000001/messages
+POST {{url}}/matches/{{matchId}}/messages
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "sendFromId": "00000000-0000-0000-0000-000000000001",
-    "text": "hejka2"
+    "sendFromId": "{{myUserId}}",
+    "text": "hello"
 }
 
 ### Mark message as displayed
-### As a result all messages older than given message will be marked as displayed, too
-PATCH {{url}}/matches/00000000-0000-0000-0000-000000000001/messages/00000000-0000-0000-0000-000000000001
+### As a result all messages older than given message will be marked as displayed
+PATCH {{url}}/matches/{{matchId}}/messages/{{messageId}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "DisplayedByUserId": "00000000-0000-0000-0000-000000000001"
+    "DisplayedByUserId": "{{myUserId}}"
 }
 
 ### Delete match
-### As a result all messages within match will be deleted too
-DELETE {{url}}/matches/00000000-0000-0000-0000-000000000001
+### As a result all messages within match will be deleted
+DELETE {{url}}/matches/{{matchId}}
 Authorization: Bearer {{accessToken}}
 
 ### SWIPES ###
 
 ### Like another user
-PUT {{url}}/like/00000000-0000-0000-0000-000000000003
+PUT {{url}}/like/{{otherUserId}}
 Authorization: Bearer {{accessToken}}
 
 ### Pass another user
-PUT {{url}}/pass/00000000-0000-0000-0000-000000000003
+PUT {{url}}/pass/{{otherUserId}}
 Authorization: Bearer {{accessToken}}
 
 ### UPLOAD PHOTO ###

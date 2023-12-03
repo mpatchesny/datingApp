@@ -19,30 +19,28 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 
     public async Task<MatchDto> HandleAsync(GetMatch query)
     {
-        var match = await _dbContext.Matches
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(x => x.Id == query.MatchId);
+        var dbQuery = 
+            from match in _dbContext.Matches.Include(m => m.Messages)
+            from user in _dbContext.Users.Include(u => u.Photos)
+            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
+            where match.Id == query.MatchId
+            select new 
+            {
+                Match = match,
+                User = user
+            };
 
-        if (match == null) return null;
+        var data = await dbQuery.FirstOrDefaultAsync();
+        if (data == null) return null;
 
         return new MatchDto
             {
-                Id = match.Id,
-                User = await _dbContext.Users
-                        .AsNoTracking()
-                        .Where(u => u.Id == ((match.UserId1 == query.UserId) ? match.UserId2 : match.UserId1))
-                        .Include(u => u.Photos)
-                        .Select(u => u.AsPublicDto(0))
-                        .FirstOrDefaultAsync(),
-                IsDisplayed = (match.UserId1 == query.UserId) ? match.IsDisplayedByUser1 : match.IsDisplayedByUser2,
+                Id = data.Match.Id,
+                User = data.User.AsPublicDto(0),
+                IsDisplayed = (data.Match.UserId1 == query.UserId) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
                 // FIXME: magic string
-                Messages = _dbContext.Messages
-                        .Where(m => m.MatchId == match.Id)
-                        .OrderByDescending(m => m.CreatedAt)
-                        .Take(10)
-                        .OrderBy(m => m.CreatedAt)
-                        .Select(m => m.AsDto()),
-                CreatedAt = match.CreatedAt
+                Messages = data.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(10).OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
+                CreatedAt = data.Match.CreatedAt
             }; 
     }
 }

@@ -41,7 +41,6 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var dbQuery = 
             from m in _dbContext.Matches
             from u in _dbContext.Users
-            from p in _dbContext.Photos.Where(p => p.Oridinal == 0 && p.UserId == u.Id).DefaultIfEmpty()
             where u.Id == m.UserId1 || u.Id == m.UserId2
             where m.UserId1 == query.UserId || m.UserId2 == query.UserId 
             where u.Id != query.UserId
@@ -50,7 +49,6 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
             {
                 Match = m,
                 User = u,
-                Photo = p
             };
 
         var messagesList = await _dbContext.Messages
@@ -74,7 +72,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                         .Include(u => u.Photos)
                         .Select(u => u.AsPublicDto(0))
                         .FirstOrDefaultAsync(),
-                    IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
+                    IsDisplayed = (x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
                     Messages = messagesList.Where(m => m.MatchId == x.Match.Id).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });

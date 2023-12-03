@@ -17,6 +17,9 @@ Next, execute following command in terminal to restore project's dependencies:\
 Next, navigate to ./src/datingApp.Api and execute the following command to run application:\
 `dotnet run`
 
+You may need to generate certificates, you can do so by running the following command:\
+`dotnet dev-certs https`
+
 Alternatively, open datingApp.sln solution in Visual Studio and run solution from there.
 
 ## How to use

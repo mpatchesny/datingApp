@@ -51,24 +51,15 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var newMessagesAndMatches = newMessagesMatchId.Union(newMatchesId);
 
         var dbQuery = 
-            from m in _dbContext.Matches
-            from u in _dbContext.Users
-            where u.Id == m.UserId1 || u.Id == m.UserId2
-            where m.UserId1 == query.UserId || m.UserId2 == query.UserId 
-            where u.Id != query.UserId
-            where newMessagesAndMatches.Contains(m.Id)
+            from match in _dbContext.Matches.Include(m => m.Messages)
+            from user in _dbContext.Users.Include(u => u.Photos)
+            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
+            where newMessagesAndMatches.Contains(match.Id)
             select new 
             {
-                Match = m,
-                User = u,
+                Match = match,
+                User = user
             };
-
-        var messagesList = await _dbContext.Messages
-                        .AsNoTracking()
-                        .Where(x => newMessagesMatchId.Contains(x.MatchId))
-                        .Where(x => x.CreatedAt >= query.LastActivityTime)
-                        .OrderBy(x => x.CreatedAt)
-                        .ToListAsync(); 
 
         var data = await dbQuery.AsNoTracking().ToListAsync();
 
@@ -79,14 +70,9 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 new MatchDto()
                 {
                     Id = x.Match.Id,
-                    User = await _dbContext.Users
-                        .AsNoTracking()
-                        .Where(u => u.Id == ((x.Match.UserId1 == query.UserId) ? x.Match.UserId2 : x.Match.UserId1))
-                        .Include(u => u.Photos)
-                        .Select(u => u.AsPublicDto(0))
-                        .FirstOrDefaultAsync(),
+                    User = x.User.AsPublicDto(0),
                     IsDisplayed = (x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
-                    Messages = messagesList.Where(m => m.MatchId == x.Match.Id).Select(x => x.AsDto()).ToList(),
+                    Messages =  x.Match.Messages.Where(m => m.CreatedAt >= query.LastActivityTime).OrderBy(m => m.CreatedAt).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });
         }

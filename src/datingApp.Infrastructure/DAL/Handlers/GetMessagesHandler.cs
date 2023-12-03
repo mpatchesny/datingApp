@@ -19,7 +19,6 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
-        
         var dbQuery = _dbContext.Messages
                             .AsNoTracking()
                             .Where(x => x.MatchId == query.MatchId)

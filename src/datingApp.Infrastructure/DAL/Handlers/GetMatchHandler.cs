@@ -24,7 +24,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
                         .FirstOrDefaultAsync(x => x.Id == query.MatchId);
 
         if (match == null) return null;
-        
+
         return new MatchDto
             {
                 Id = match.Id,
@@ -34,14 +34,14 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
                         .Include(u => u.Photos)
                         .Select(u => u.AsPublicDto(0))
                         .FirstOrDefaultAsync(),
-                IsDisplayed = ((match.UserId1 == query.UserId) ? match.IsDisplayedByUser1 : match.IsDisplayedByUser2),
+                IsDisplayed = (match.UserId1 == query.UserId) ? match.IsDisplayedByUser1 : match.IsDisplayedByUser2,
                 // FIXME: magic string
                 Messages = _dbContext.Messages
                         .Where(m => m.MatchId == match.Id)
                         .OrderByDescending(m => m.CreatedAt)
                         .Take(10)
-                        .OrderBy(x => x.CreatedAt)
-                        .Select(x => x.AsDto()),
+                        .OrderBy(m => m.CreatedAt)
+                        .Select(m => m.AsDto()),
                 CreatedAt = match.CreatedAt
             }; 
     }

@@ -27,7 +27,7 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
         Assert.IsType<IsLikedByOtherUserDto>(match);
-        Assert.Equal(true, match.IsLikedByOtherUser);
+        Assert.True(match.IsLikedByOtherUser);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
         Assert.IsType<IsLikedByOtherUserDto>(match);
-        Assert.Equal(false, match.IsLikedByOtherUser);
+        Assert.False(match.IsLikedByOtherUser);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
         var match = await _handler.HandleAsync(query);
         Assert.NotNull(match);
         Assert.IsType<IsLikedByOtherUserDto>(match);
-        Assert.Equal(false, match.IsLikedByOtherUser);
+        Assert.False(match.IsLikedByOtherUser);
     }
 
     // Arrange

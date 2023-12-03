@@ -62,8 +62,8 @@ public class MessageRepositoryTests : IDisposable
     {
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.Parse("00000000-0000-0000-0000-000000000001")));
         Assert.Null(exception);
-        var deletedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.Null(deletedMatch);
+        var deletedMessage = await _testDb.DbContext.Messages.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(deletedMessage);
     }
 
     [Fact]

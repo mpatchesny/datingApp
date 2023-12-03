@@ -25,9 +25,9 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
                             .OrderByDescending(x => x.CreatedAt);
                             
         var data = await dbQuery
-                        .Select(x => x.AsDto())
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)
+                        .Select(x => x.AsDto())
                         .ToListAsync();
 
         data = data.OrderBy(x => x.CreatedAt).ToList();

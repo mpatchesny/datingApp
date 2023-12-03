@@ -12,11 +12,9 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
 {
     private readonly ISwipeRepository _swipeRepository;
-    private readonly IUserRepository _userRepository;
-    public SwipeUserHandler(ISwipeRepository swipeRepository, IUserRepository userRepository)
+    public SwipeUserHandler(ISwipeRepository swipeRepository)
     {
         _swipeRepository = swipeRepository;
-        _userRepository = userRepository;
     }
 
     public async Task HandleAsync(SwipeUser command)

@@ -63,7 +63,7 @@ public class MatchRepositoryTests : IDisposable
         var match = await _repository.GetByIdAsync(matchId);
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(match));
         Assert.Null(exception);
-        var deletedMatch = _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var deletedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Null(deletedMatch);
     }
 
@@ -84,7 +84,7 @@ public class MatchRepositoryTests : IDisposable
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
-        var addedMatch = _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000003"));
+        var addedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000003"));
         Assert.Same(addedMatch, match);
     }
 
@@ -95,7 +95,7 @@ public class MatchRepositoryTests : IDisposable
         match.SetDisplayed(match.UserId1);
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(match));
         Assert.Null(exception);
-        var updatedMatch = _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var updatedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Same(updatedMatch, match);
     }
 

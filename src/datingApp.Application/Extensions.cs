@@ -23,7 +23,6 @@ namespace datingApp.Application
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
             services.AddScoped<ICommandHandler<SignUp>, SignUpHandler>();
             services.AddScoped<ICommandHandler<ChangeUser>, ChangeUserHandler>();
-            services.AddScoped<ICommandHandler<ChangeLocation>, ChangeLocationHandler>();
             services.AddScoped<ICommandHandler<AddPhoto>, AddPhotoHandler>();
             services.AddScoped<ICommandHandler<ChangePhotoOridinal>, ChangePhotoOridinalHandler>();
             services.AddScoped<ICommandHandler<DeletePhoto>, DeletePhotoHandler>();

@@ -42,7 +42,8 @@ internal sealed class PostgresUserRepository : IUserRepository
     }
     public async Task UpdateAsync(User user)
     {
-        _dbContext.Users.Update(user);
+        var originalUser = _dbContext.Users.FirstOrDefault(x => x.Id == user.Id);
+        _dbContext.Entry(originalUser).CurrentValues.SetValues(user);
         await _dbContext.SaveChangesAsync();
     }
     public async Task DeleteAsync(User user)

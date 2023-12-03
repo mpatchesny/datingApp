@@ -21,7 +21,7 @@ internal static class Extensions
         services.AddMemoryCache();
         services.Configure<AuthOptions>(configuration.GetRequiredSection(OptionsSectionName));
         services.Configure<AccessCodeOptions>(configuration.GetRequiredSection(AccessCodeOptionsSectionName));
-        services.AddSingleton<IAccessCodeStorage, InMemoryAccessCodeStorage>();
+        services.AddScoped<IAccessCodeStorage, DbAccessCodeStorage>();
         services.AddSingleton<IAccessCodeGenerator, AccessCodeGenerator>();
         services.AddSingleton<IAuthenticator, Authenticator>();
         services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();

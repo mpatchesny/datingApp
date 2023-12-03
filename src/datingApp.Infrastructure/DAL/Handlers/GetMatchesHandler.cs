@@ -20,31 +20,21 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
         var dbQuery = 
-            from m in _dbContext.Matches
-            from u in _dbContext.Users
-            from p in _dbContext.Photos.Where(p => p.Oridinal == 0 && p.UserId == u.Id).DefaultIfEmpty()
-            where u.Id == m.UserId1 || u.Id == m.UserId2
-            where m.UserId1 == query.UserId || m.UserId2 == query.UserId 
-            where u.Id != query.UserId
+            from match in _dbContext.Matches.Include(m => m.Messages)
+            from user in _dbContext.Users.Include(u => u.Photos)
+            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
+            where match.UserId1 == query.UserId || match.UserId2 == query.UserId
             select new 
             {
-                Match = m,
-                User = u,
-                Photo = p,
+                Match = match,
+                User = user
             };
 
         var data = await dbQuery
-                        .AsNoTracking()
-                        .Skip((query.Page - 1) * query.PageSize)
-                        .Take(query.PageSize)
-                        .ToListAsync();
-
-        var matchesId = data.Select(x => x.Match.Id).Distinct();
-
-        var messagesList = await _dbContext.Messages
-                        .AsNoTracking()
-                        .Where(x => matchesId.Contains(x.MatchId))
-                        .ToListAsync(); 
+                            .AsNoTracking()
+                            .Skip((query.Page - 1) * query.PageSize)
+                            .Take(query.PageSize)
+                            .ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
         foreach (var x in data)
@@ -53,18 +43,9 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 new MatchDto()
                 {
                     Id = x.Match.Id,
-                    User = await _dbContext.Users
-                        .AsNoTracking()
-                        .Where(u => u.Id == ((x.Match.UserId1 == query.UserId) ? x.Match.UserId2 : x.Match.UserId1))
-                        .Include(u => u.Photos)
-                        .Select(u => u.AsPublicDto(0))
-                        .FirstOrDefaultAsync(),
-                    IsDisplayed = ((x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2),
-                    Messages = messagesList
-                        .Where(m => m.MatchId == x.Match.Id)
-                        .OrderByDescending(m => m.CreatedAt)
-                        .Take(1)
-                        .Select(x => x.AsDto()),
+                    User = x.User.AsPublicDto(0),
+                    IsDisplayed = (x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
+                    Messages =  x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });
         }

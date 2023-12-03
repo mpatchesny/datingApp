@@ -36,7 +36,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
                             .Include(x => x.Settings)
                             .Include(x => x.Photos)
                             .FirstOrDefaultAsync(x => x.Id == query.UserId);
-                            
+
         return user?.AsPublicDto(_spatial.CalculateDistance(userRequested.Lat, userRequested.Lon, user.Settings.Lat, user.Settings.Lon));
     }
 }

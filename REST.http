@@ -31,7 +31,7 @@ Content-Type: application/json
 {
     "email": "test@test.com"
 }
-
+###
 @accessCode = {{auth.response.body.$.code}}
 
 ### Sign in with acquired access code
@@ -76,13 +76,6 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "job": "Some another job",
-    "bio": "Some another bio",
-    "dateOfBirth": "1990-01-02",
-    "discoverSex": 2,
-    "discoverRange": 40,
-    "discoverAgeFrom": 18,
-    "discoverAgeTo": 45,
     "lat": 50.3719424,
     "lon": 16.6143541
 }

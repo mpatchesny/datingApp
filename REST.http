@@ -130,7 +130,7 @@ GET {{url}}/matches/{{matchId}}
 Authorization: Bearer {{accessToken}}
 
 ### Get messages for a given match
-GET {{url}}/matches/{{matchId}}
+GET {{url}}/matches/{{matchId}}/messages
 Authorization: Bearer {{accessToken}}
 
 ### Get information about a single message

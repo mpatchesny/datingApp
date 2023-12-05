@@ -16,16 +16,18 @@ internal sealed class StorageMiddleware : IMiddleware
     private readonly ILogger<IMiddleware> _logger;
     private readonly IFileStorage _dbFileStorage;
     private readonly FileStorageOptions _diskFileStorageOptions;
-    public StorageMiddleware(ILogger<IMiddleware> logger)
+    public StorageMiddleware(ILogger<IMiddleware> logger, IFileStorage dbFileStorage, FileStorageOptions diskFileStorageOptions)
     {
         _logger = logger;
+        _dbFileStorage = dbFileStorage;
+        _diskFileStorageOptions = diskFileStorageOptions;
     }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (context.Request.Path.ToString().StartsWith("/storage"))
         {
             var s = context.Request.Path.ToString().Replace("/storage/", "").Split(".");
-            if (s.Length == 1) 
+            if (s.Length == 2) 
             {
                 string id = s[0];
                 string ext = s[1];

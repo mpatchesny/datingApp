@@ -33,6 +33,19 @@ internal sealed class DiskFileStorage : IFileStorage
         }
     }
 
+    public async Task<byte[]> GetFileAsync(string identification)
+    {
+        var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);
+        var files = storage.GetFiles(identification + ".*");
+        if (files.Count() > 0)
+        {
+            return await System.IO.File.ReadAllBytesAsync(files[0].FullName);
+        }
+        var error = $"{nameof(DiskFileStorage)}: File with id: {identification} not found.";
+        _logger.LogError(error);
+        return null;
+    }
+
     public async Task DeleteFileAsync(string identification)
     {
         var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);

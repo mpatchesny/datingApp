@@ -39,7 +39,7 @@ internal sealed class DbFileStorage : IFileStorage
     public async Task SaveFileAsync(byte[] photo, string identification, string extension)
     {
         var file = new FileDto {
-            Id=identification,
+            Id = identification,
             Extension = extension,
             Binary = photo
         };

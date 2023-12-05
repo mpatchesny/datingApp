@@ -7,6 +7,7 @@ using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Services;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
@@ -40,7 +41,8 @@ public class DeleteUserHandlerTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
         var userRepository = new PostgresUserRepository(_testDb.DbContext);
-        _handler = new DeleteUserHandler(userRepository);
+        var fileStorage = new DbFileStorage(_testDb.DbContext);
+        _handler = new DeleteUserHandler(userRepository, fileStorage);
     }
 
     // Teardown

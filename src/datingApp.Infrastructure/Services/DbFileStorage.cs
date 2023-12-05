@@ -45,7 +45,8 @@ internal sealed class DbFileStorage : IFileStorage
         };
         if (await _dbContext.Files.AnyAsync(x => x.Id == identification))
         {
-            _dbContext.Files.Update(file);
+            var originalFile = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == identification);
+            _dbContext.Entry(originalFile).CurrentValues.SetValues(file);
         }
         else
         {

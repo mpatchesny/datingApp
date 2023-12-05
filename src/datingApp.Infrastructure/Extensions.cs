@@ -49,6 +49,7 @@ public static class Extensions
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddSingleton<IFileStorage, FileStorage>();
         services.AddSingleton<ExceptionMiddleware>();
+        services.AddSingleton<StorageMiddleware>();
         return services;
     }
 

@@ -37,6 +37,7 @@ app.UseCors(
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<StorageMiddleware>();
 
 app.UseStaticFiles(new StaticFileOptions
 {

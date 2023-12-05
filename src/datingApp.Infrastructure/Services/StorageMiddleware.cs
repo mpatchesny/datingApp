@@ -21,21 +21,11 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (context.Request.Path.ToString().StartsWith("/storage"))
         {
-            string id = "";
-            string ext = "";
-            try
+            var s = context.Request.Path.ToString().Replace("/storage/", "").Split(".");
+            if (s.Length >= 1) 
             {
-                var s = context.Request.Path.ToString().Replace("/storage/", "").Split(".");
-                id = s[0];
-                ext = s[1];
-            }
-            catch (System.Exception)
-            {
-                // pass
-            }
-            if (!string.IsNullOrEmpty(id))
-            {
-                // pobieranie danych z bazy i zapisywanie na dysku
+                string id = s[0];
+                string ext = s[1];
                 // storageService.GetFile(id);
                 _logger.LogInformation($"Storage access: {id}, {ext}");
             }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
+using datingApp.Infrastructure.Services;
 
 namespace datingApp.Infrastructure.Exceptions;
 
@@ -14,7 +15,7 @@ internal sealed class StorageMiddleware : IMiddleware
 {
     private readonly ILogger<IMiddleware> _logger;
     private readonly IFileStorage _dbFileStorage;
-    private readonly IFileStorage _diskFileStorage;
+    private readonly FileStorageOptions _diskFileStorageOptions;
     public StorageMiddleware(ILogger<IMiddleware> logger)
     {
         _logger = logger;
@@ -37,13 +38,12 @@ internal sealed class StorageMiddleware : IMiddleware
 
     private async Task GetFileFromDatabaseAndSaveLocallyIfNotExists(string id, string extension)
     {
-        var file = await _diskFileStorage.GetFileAsync(id);
-        if (file == null)
+        if (!_diskFileStorageOptions.Exists(id))
         {
-            file = await _dbFileStorage.GetFileAsync(id);
+            var file = await _dbFileStorage.GetFileAsync(id);
             if (file != null)
             {
-                await _diskFileStorage.SaveFileAsync(file, id, extension);
+                _diskFileStorageOptions.SaveFile(file, id, extension);
             }
         }
     }

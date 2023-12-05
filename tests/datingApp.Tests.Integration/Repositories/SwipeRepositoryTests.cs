@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
@@ -18,7 +19,7 @@ public class SwipeRepositoryTests : IDisposable
         var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Like.Like, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
         Assert.Null(exception);
-        var addedSwipe = _testDb.DbContext.Swipes.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var addedSwipe = await _testDb.DbContext.Swipes.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Same(swipe, addedSwipe);
     }
 

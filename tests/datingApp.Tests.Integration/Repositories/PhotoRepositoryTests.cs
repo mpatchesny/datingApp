@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
@@ -32,7 +33,7 @@ public class PhotoRepositoryTests : IDisposable
         var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.Null(exception);
-        var addedPhoto = _testDb.DbContext.Photos.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        var addedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000002"));
         Assert.Same(photo, addedPhoto);
     }
 
@@ -70,7 +71,7 @@ public class PhotoRepositoryTests : IDisposable
         photo.ChangeOridinal(3);
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(photo));
         Assert.Null(exception);
-        var updatedPhoto = _testDb.DbContext.Photos.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var updatedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Same(photo, updatedPhoto);
     }
 
@@ -80,7 +81,7 @@ public class PhotoRepositoryTests : IDisposable
         var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
         Assert.Null(exception);
-        var deletedPhoto = _testDb.DbContext.Photos.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var deletedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Null(deletedPhoto);
     }
 

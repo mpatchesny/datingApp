@@ -15,14 +15,14 @@ using Xunit;
 
 namespace datingApp.Tests.Unit.Services;
 
-public class FileStorageTests
+public class FileStorageTests : IDisposable
 {
     [Fact]
     public async Task file_should_be_saved_to_storageAsync()
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         
         await storage.SaveFileAsync(photo, "test", "txt");
@@ -38,7 +38,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
 
         var path = System.IO.Path.Combine(".", "test.txt");
         var stream = System.IO.File.Create(path);
@@ -55,7 +55,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
         
         var exception = await Record.ExceptionAsync(async () => await storage.DeleteFileAsync("test.txt"));
         Assert.Null(exception);
@@ -66,7 +66,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = testDirectoryPath;
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         
         await storage.SaveFileAsync(photo, "test", "txt");
@@ -76,13 +76,35 @@ public class FileStorageTests
         System.IO.Directory.Delete(testDirectoryPath, true);
     }
 
+    [Fact]
+    public async Task if_file_not_exists_GetFileAsync_returns_null()
+    {
+        IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
+        storageOptions.Value.StoragePath = testDirectoryPath;
+        var storage = new DiskFileStorage(storageOptions, _logger);
+        var file = await storage.GetFileAsync("some identification");
+        Assert.Null(file);
+    }
+
+    [Fact]
+    public async Task if_file_exists_GetFileAsync_returns_file_binary()
+    {
+        IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
+        storageOptions.Value.StoragePath = testDirectoryPath;
+        var storage = new DiskFileStorage(storageOptions, _logger);
+        string filePath = System.IO.Path.Combine(storageOptions.Value.StoragePath, "identif.txt");
+        await System.IO.File.WriteAllTextAsync(filePath, "abrakadabra");
+        var file = await storage.GetFileAsync("identif");
+        Assert.NotNull(file);
+    }
+
     private string testDirectoryPath = "./test/";
     private readonly ILogger<IFileStorage> _logger;
     public FileStorageTests()
     {
-        if (System.IO.Directory.Exists(testDirectoryPath))
+        if (!System.IO.Directory.Exists(testDirectoryPath))
         {
-            System.IO.Directory.Delete(testDirectoryPath, true);
+            System.IO.Directory.CreateDirectory(testDirectoryPath);
         }
 
         var serviceProvider = new ServiceCollection()
@@ -90,5 +112,13 @@ public class FileStorageTests
             .BuildServiceProvider();
         var factory = serviceProvider.GetService<ILoggerFactory>();
         _logger = factory.CreateLogger<IFileStorage>();
+    }
+
+    public void Dispose()
+    {
+        if (System.IO.Directory.Exists(testDirectoryPath))
+        {
+            System.IO.Directory.Delete(testDirectoryPath, true);
+        }
     }
 }

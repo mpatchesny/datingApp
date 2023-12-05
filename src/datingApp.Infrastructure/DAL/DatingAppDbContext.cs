@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,8 @@ internal sealed class DatingAppDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<Swipe> Swipes { get; set; }
     public DbSet<Photo> Photos { get; set; }
+    public DbSet<AccessCodeDto> AccessCodes { get; set; }
+    public DbSet<FileDto> Files { get; set; }
 
     public DatingAppDbContext(DbContextOptions<DatingAppDbContext> options) : base(options)
     {

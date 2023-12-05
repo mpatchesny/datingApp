@@ -44,8 +44,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         byte[] bytes = _photoService.ConvertToArrayOfBytes(command.Base64Bytes);
         _photoService.ValidatePhoto(bytes);
         var extension = _photoService.GetImageFileFormat(bytes);
-        _ = _fileStorage.SaveFileAsync(bytes, command.PhotoId.ToString(), extension);
-        // FIXME
+        await _fileStorage.SaveFileAsync(bytes, command.PhotoId.ToString(), extension);
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
         var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);

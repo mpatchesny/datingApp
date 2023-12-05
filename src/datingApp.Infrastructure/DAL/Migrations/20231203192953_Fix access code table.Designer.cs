@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using datingApp.Infrastructure;
@@ -11,9 +12,11 @@ using datingApp.Infrastructure;
 namespace datingApp.Infrastructure.DAL.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    partial class DatingAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231203192953_Fix access code table")]
+    partial class Fixaccesscodetable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,26 +45,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("EmailOrPhone");
 
                     b.ToTable("AccessCodes");
-                });
-
-            modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<byte[]>("Binary")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>

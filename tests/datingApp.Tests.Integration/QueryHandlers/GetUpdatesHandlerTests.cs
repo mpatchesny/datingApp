@@ -85,7 +85,7 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = userId, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
         Assert.NotEmpty(result);
-        Assert.Equal(1, result.Count());
+        Assert.Single(result);
     }
 
     [Fact]

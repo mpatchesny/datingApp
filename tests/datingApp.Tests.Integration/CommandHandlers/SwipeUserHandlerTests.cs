@@ -46,8 +46,7 @@ public class SwipeUserHandlerTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var swipeRepository = new PostgresSwipeRepository(_testDb.DbContext);
-        var userRepository = new PostgresUserRepository(_testDb.DbContext);
-        _handler = new SwipeUserHandler(swipeRepository, userRepository);
+        _handler = new SwipeUserHandler(swipeRepository);
     }
 
     // Teardown

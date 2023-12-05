@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
@@ -61,8 +62,8 @@ public class MessageRepositoryTests : IDisposable
     {
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.Parse("00000000-0000-0000-0000-000000000001")));
         Assert.Null(exception);
-        var deletedMatch = _testDb.DbContext.Matches.FirstOrDefault(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.Null(deletedMatch);
+        var deletedMessage = await _testDb.DbContext.Messages.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(deletedMessage);
     }
 
     [Fact]

@@ -20,12 +20,12 @@ public class GetMatchHandlerTests : IDisposable
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb.DbContext.Users.Add(user);
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456799", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456799", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001") ,Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         await _testDb.DbContext.SaveChangesAsync();
 
@@ -44,14 +44,14 @@ public class GetMatchHandlerTests : IDisposable
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb.DbContext.Users.Add(user);
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456799", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456799", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
-        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"),Guid.Parse("00000000-0000-0000-0000-000000000001"),"test","test", 0);
+        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "test", "test", 0);
         _testDb.DbContext.Photos.Add(photo);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001") ,Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         await _testDb.DbContext.SaveChangesAsync();
 
@@ -70,12 +70,12 @@ public class GetMatchHandlerTests : IDisposable
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb.DbContext.Users.Add(user);
         var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456799", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456799", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001") ,Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
         _testDb.DbContext.Matches.Add(match);
         await _testDb.DbContext.SaveChangesAsync();
 

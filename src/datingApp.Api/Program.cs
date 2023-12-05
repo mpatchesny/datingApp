@@ -4,6 +4,7 @@ using datingApp.Infrastructure;
 using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authorization;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,15 @@ builder.Services.AddCore();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddCors();
+builder.Host.UseSerilog((context, loggerConfiguration) =>
+{
+    loggerConfiguration.WriteTo
+        .Console();
+    // .WriteTo
+    // .File("logs.txt")
+    // .WriteTo
+    // .Seq("http://localhost:5341");
+});
 
 var app = builder.Build();
 

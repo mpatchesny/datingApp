@@ -17,6 +17,7 @@ internal sealed class DatingAppDbContext : DbContext
     public DbSet<Swipe> Swipes { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<AccessCodeDto> AccessCodes { get; set; }
+    public DbSet<FileDto> Files { get; set; }
 
     public DatingAppDbContext(DbContextOptions<DatingAppDbContext> options) : base(options)
     {

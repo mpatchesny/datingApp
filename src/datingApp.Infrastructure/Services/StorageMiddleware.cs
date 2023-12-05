@@ -24,18 +24,18 @@ internal sealed class StorageMiddleware : IMiddleware
         if (context.Request.Path.ToString().StartsWith("/storage"))
         {
             var s = context.Request.Path.ToString().Replace("/storage/", "").Split(".");
-            if (s.Length >= 1) 
+            if (s.Length == 1) 
             {
                 string id = s[0];
                 string ext = s[1];
-                await EnsureFileExists(id, ext);
+                await GetFileFromDatabaseAndSaveLocallyIfNotExists(id, ext);
                 _logger.LogInformation($"Storage access: {id}, {ext}");
             }
         }
         await next(context);
     }
 
-    private async Task EnsureFileExists(string id, string extension)
+    private async Task GetFileFromDatabaseAndSaveLocallyIfNotExists(string id, string extension)
     {
         var file = await _diskFileStorage.GetFileAsync(id);
         if (file == null)

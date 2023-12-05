@@ -47,7 +47,7 @@ public static class Extensions
         services.AddScoped<IQueryHandler<GetMatch, MatchDto>, GetMatchHandler>();
         services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
-        services.AddSingleton<IFileStorage, DiskFileStorage>();
+        services.AddScoped<IFileStorage, DbFileStorage>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddSingleton<StorageMiddleware>();
         return services;

@@ -22,7 +22,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         
         await storage.SaveFileAsync(photo, "test", "txt");
@@ -38,7 +38,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
 
         var path = System.IO.Path.Combine(".", "test.txt");
         var stream = System.IO.File.Create(path);
@@ -55,7 +55,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = ".";
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
         
         var exception = await Record.ExceptionAsync(async () => await storage.DeleteFileAsync("test.txt"));
         Assert.Null(exception);
@@ -66,7 +66,7 @@ public class FileStorageTests
     {
         IOptions<StorageOptions> storageOptions = Options.Create<StorageOptions>(new StorageOptions());
         storageOptions.Value.StoragePath = testDirectoryPath;
-        var storage = new FileStorage(storageOptions, _logger);
+        var storage = new DiskFileStorage(storageOptions, _logger);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         
         await storage.SaveFileAsync(photo, "test", "txt");

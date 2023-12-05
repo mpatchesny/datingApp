@@ -7,11 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class FileStorage : IFileStorage
+internal sealed class DiskFileStorage : IFileStorage
 {
     private readonly IOptions<StorageOptions> _storageOptions;
     private readonly ILogger<IFileStorage> _logger;
-    public FileStorage(IOptions<StorageOptions> storageOptions, ILogger<IFileStorage> logger)
+    public DiskFileStorage(IOptions<StorageOptions> storageOptions, ILogger<IFileStorage> logger)
     {
         _storageOptions = storageOptions;
         _logger = logger;
@@ -28,7 +28,7 @@ internal sealed class FileStorage : IFileStorage
         }
         catch (Exception ex)
         {
-            var error = $"{nameof(FileStorage)}: Failed to save file to disk: Id: {identification}, path: {filePath}.";
+            var error = $"{nameof(DiskFileStorage)}: Failed to save file to disk: Id: {identification}, path: {filePath}.";
             _logger.LogError(ex, error);
         }
     }
@@ -47,7 +47,7 @@ internal sealed class FileStorage : IFileStorage
             }
             catch (Exception ex)
             {
-                var error = $"{nameof(FileStorage)}: Failed to delete file: Id: {identification}, path: {file.FullName}.";
+                var error = $"{nameof(DiskFileStorage)}: Failed to delete file: Id: {identification}, path: {file.FullName}.";
                 _logger.LogError(ex, error);
             }
         }

@@ -23,7 +23,7 @@ public class Spatial : ISpatial
         var sdlon = Math.Sin((toLonRad - fromLonRad) / 2);
         var q = sdlat * sdlat + Math.Cos(fromLatRad) * Math.Cos(toLatRad) * sdlon * sdlon;
         var d = 2 * r * Math.Asin(Math.Sqrt(q));
-        return (int) Math.Round(d);
+        return (int) Math.Floor(d);
     }
 
     public Coords GetApproxSquareAroundPoint(double lat, double lon, int distance)

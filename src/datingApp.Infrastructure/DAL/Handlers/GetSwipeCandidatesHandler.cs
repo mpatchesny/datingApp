@@ -30,24 +30,25 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         DateOnly minDob = new DateOnly(now.Year - settings.DiscoverAgeTo, now.Month, now.Day);
         DateOnly maxDob = new DateOnly(now.Year - settings.DiscoverAgeFrom, now.Month, now.Day);
 
-        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.DiscoverRange);
+        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.DiscoverRange + 5);
 
         var swipedCandidates = 
             _dbContext.Swipes.Where(s => s.SwipedById == userId).Select(x => x.SwipedWhoId);
 
         return _dbContext.Users
-                    .Where(x => x.Id != userId)
-                    .Where(x => !swipedCandidates.Contains(x.Id))
-                    .Where(x => ((int) x.Sex & (int) settings.DiscoverSex) > 0)
-                    .Where(x => x.DateOfBirth >= minDob && x.DateOfBirth <= maxDob)
+                    .Where(candidate => candidate.Id != userId)
+                    .Where(candidate => !swipedCandidates.Contains(candidate.Id))
+                    .Where(candidate => ((int) candidate.Sex & (int) settings.DiscoverSex) > 0)
+                    .Where(candidate => candidate.DateOfBirth >= minDob)
+                    .Where(candidate => candidate.DateOfBirth <= maxDob)
                     .Where(x => x.Settings.Lat <= spatialSquare.NorthLat)
                     .Where(x => x.Settings.Lat >= spatialSquare.SouthLat)
                     .Where(x => x.Settings.Lon <= spatialSquare.EastLon)
                     .Where(x => x.Settings.Lon >= spatialSquare.WestLon)
-                    .Select(x => x.Id);
+                    .Select(candidate => candidate.Id);
     }
 
-    private Task<List<User>> GetCandidatesAsync(IQueryable<Guid> initialCandidates, int howMany)
+    private Task<List<User>> GetCandidatesAsync(IQueryable<Guid> initialCandidates)
     {
         // we want candidates sorted by number of likes descending
         // we want only number of candidates equals to HowMany
@@ -62,7 +63,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Select(x => x.User)
                     .Include(x => x.Settings)
                     .Include(x => x.Photos)
-                    .Take(howMany)
                     .AsNoTracking()
                     .ToListAsync();
     }
@@ -75,11 +75,12 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                                 .FirstOrDefaultAsync();
         if (settings == null) return null;
         var initialCandidates = GetInitialCandidatesToSwipe(settings, query.UserId);
-        var candidates = await GetCandidatesAsync(initialCandidates, query.HowMany);
+        var candidates = await GetCandidatesAsync(initialCandidates);
         // we want candidates within range of user who requested
         return candidates
                 .Select(u => u.AsPublicDto(_spatial.CalculateDistance(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))
                 .Where(u => u.Distance <= settings.DiscoverRange)
+                .Take(query.HowMany)
                 .ToList();
     }
 }

@@ -10,9 +10,9 @@ namespace datingApp.Tests.Unit.Spatial;
 public class SpatialTests
 {
     [Theory]
-    [InlineData(54.3748048524063, 18.617995680434113, 52.285241957954106, 21.020699940845155, 282)]
-    [InlineData(54.37539776012496, 18.618187777316162, 54.37017703288759, 18.627504041571758, 1)]
-    [InlineData(40.67801005527118, -74.0226594916749, 51.490976502695595, -0.24581200990659666, 5567)]
+    [InlineData(54.3748048524063, 18.617995680434113, 52.285241957954106, 21.020699940845155, 281)]
+    [InlineData(54.37539776012496, 18.618187777316162, 54.37017703288759, 18.627504041571758, 0)]
+    [InlineData(40.67801005527118, -74.0226594916749, 51.490976502695595, -0.24581200990659666, 5566)]
     public void given_two_points_spatial_returns_proper_calculated_distance_in_kilometers(double lat1, double lon1, double lat2, double lon2, int expectedDistance)
     {
         var spatial = new Infrastructure.Spatial.Spatial();

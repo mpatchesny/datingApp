@@ -9,11 +9,11 @@ using datingApp.Infrastructure;
 
 #nullable disable
 
-namespace datingApp.Infrastructure.DAL.Migrations
+namespace datingApp.Infrastructure.DAL.migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20231203192953_Fix access code table")]
-    partial class Fixaccesscodetable
+    [Migration("20231206090323_Fix access codes table")]
+    partial class Fixaccesscodestable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,26 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("EmailOrPhone");
 
                     b.ToTable("AccessCodes");
+                });
+
+            modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Binary")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>

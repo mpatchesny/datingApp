@@ -30,7 +30,9 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
                 User = user
             };
 
-        var data = await dbQuery.FirstOrDefaultAsync();
+        var data = await dbQuery
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync();
         if (data == null) return null;
 
         return new MatchDto

@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Api", "src\dating
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Core", "src\datingApp.Core\datingApp.Core.csproj", "{152D0135-A2E4-4863-915A-EA3C98AB379A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{29EBFFF6-F62B-47E5-8132-25FF18834D9E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Tests.Unit", "tests\datingApp.Tests.Unit\datingApp.Tests.Unit.csproj", "{323BED9E-60AB-4870-BD74-0D0BC088E9C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Application", "src\datingApp.Application\datingApp.Application.csproj", "{94B20964-0E14-4898-BEFB-3E2004B1E98D}"

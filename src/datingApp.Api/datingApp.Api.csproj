@@ -23,4 +23,8 @@
     <ProjectReference Include="../datingApp.Infrastructure/datingApp.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="datingApp.Tests.Integration" />
+  </ItemGroup>
+
 </Project>

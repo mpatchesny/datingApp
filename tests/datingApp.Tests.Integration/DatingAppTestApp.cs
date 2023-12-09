@@ -5,12 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace datingApp.Tests.Integration.Controllers;
+namespace datingApp.Tests.Integration;
 
 internal sealed class DatingAppTestApp : WebApplicationFactory<Program>
 {
+    public HttpClient Client { get; }
     public DatingAppTestApp()
     {
-        // pass
+        Client = base.WithWebHostBuilder(builder => 
+         {}
+        ).CreateClient();
     }
+
 }

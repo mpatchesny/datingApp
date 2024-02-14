@@ -39,5 +39,5 @@ Please see [REST.http](REST.http) for examples of API calls. You must have [REST
 - [ ] authorization
 - [ ] more & better tests (API tests, etc.)
 - [x] eliminate application state
-- [x] some endpoints needs fixing
+- [x] some endpoints need fixing
 - [ ] fix async/ await

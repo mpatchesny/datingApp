@@ -19,7 +19,7 @@ namespace datingApp.Infrastructure.DAL
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using var scope = _serviceProdivder.CreateScope();
+            var scope = _serviceProdivder.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
             await dbContext.Database.MigrateAsync(cancellationToken);
 
@@ -108,7 +108,6 @@ namespace datingApp.Infrastructure.DAL
                 await dbContext.SaveChangesAsync();
             };
         }
-
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

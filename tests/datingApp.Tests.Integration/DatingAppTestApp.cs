@@ -18,5 +18,4 @@ internal sealed class DatingAppTestApp : WebApplicationFactory<Program>
             builder.UseEnvironment("test");
         }).CreateClient();
     }
-
 }

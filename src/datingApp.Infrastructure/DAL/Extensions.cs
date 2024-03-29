@@ -23,6 +23,10 @@ internal static class Extensions
         services.AddScoped<IMatchRepository, PostgresMatchRepository>();
         services.AddScoped<IMessageRepository, PostgresMessageRepository>();
         services.AddHostedService<DatabaseInitializer>();
+        if (postgresOptions.SeedSampleData)
+        {
+            services.AddHostedService<DatabaseSeeder>();
+        }
 
         // EF Core + Npgsql issue
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

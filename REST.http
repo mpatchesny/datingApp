@@ -37,7 +37,7 @@ Content-Type: application/json
 ### Sign in with acquired access code
 # @name sign_in
 
-POST {{url}}/users/sing-in
+POST {{url}}/users/sign-in
 Content-Type: application/json
 
 {

@@ -135,7 +135,7 @@ public class UserController : ApiControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost("sing-in")]
+    [HttpPost("sign-in")]
     public async Task<ActionResult<JwtDto>> SingIn(SignInByEmail command)
     {
         await _signInHandler.HandleAsync(command);

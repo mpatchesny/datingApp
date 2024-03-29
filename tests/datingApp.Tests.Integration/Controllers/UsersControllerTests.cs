@@ -52,6 +52,21 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_email_not_exists_auth_post_request_should_return_200_ok()
+    {
+        var userId = Guid.NewGuid();
+        var settings = new UserSettings(userId, Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var email = "test@test.com";
+        var user = new User(userId, "123456789", email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        await _testDb.DbContext.Users.AddAsync(user);
+        await _testDb.DbContext.SaveChangesAsync();
+        var email2 = "test1@test.com";
+        var command = new RequestEmailAccessCode(email2);
+        var response = await Client.PostAsJsonAsync("users/auth", command);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
     public async Task given_valid_access_code_sign_in_post_request_should_return_200_ok_and_JWT_token()
     {
         var userId = Guid.NewGuid();
@@ -67,7 +82,6 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
                 Expiry = TimeSpan.FromMinutes(15)
             };
         await _testDb.DbContext.Users.AddAsync(user);
-        await _testDb.DbContext.SaveChangesAsync();
         await _testDb.DbContext.AccessCodes.AddAsync(code);
         await _testDb.DbContext.SaveChangesAsync();
         var command = new SignInByEmail(email, accessCode);
@@ -75,13 +89,37 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var token = await response.Content.ReadFromJsonAsync<JwtDto>();
         Assert.NotNull(token);
-        Assert.False(String.IsNullOrWhiteSpace(token.AccessToken));
+        Assert.False(string.IsNullOrWhiteSpace(token.AccessToken));
+    }
+
+    [Fact]
+    public async Task given_invalid_access_code_sign_in_post_request_should_return_400_bad_request()
+    {
+        var userId = Guid.NewGuid();
+        var settings = new UserSettings(userId, Sex.Female, 18, 20, 50, 45.5, 45.5);
+        var email = "test@test.com";
+        var user = new User(userId, "123456789", email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var accessCode = "12345";
+        var code = new AccessCodeDto()
+            {
+                AccessCode = accessCode,
+                EmailOrPhone = email,
+                ExpirationTime = DateTime.UtcNow,
+                Expiry = TimeSpan.FromMinutes(15)
+            };
+        await _testDb.DbContext.Users.AddAsync(user);
+        await _testDb.DbContext.AccessCodes.AddAsync(code);
+        await _testDb.DbContext.SaveChangesAsync();
+        var invalidAccessCode = "67890";
+        var command = new SignInByEmail(email, invalidAccessCode);
+        var response = await Client.PostAsJsonAsync("users/sign-in", command);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
     public async Task get_public_user_when_not_logged_in_should_return_401_unauthorized()
     {
-        var guid = new Guid("00000000-0000-0000-0000-000000000001");
+        var guid = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var response = await Client.GetAsync($"users/{guid}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }

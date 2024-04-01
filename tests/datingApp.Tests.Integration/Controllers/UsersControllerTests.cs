@@ -193,7 +193,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task patch_users_should_return_201_no_content()
+    public async Task patch_users_with_changes_should_return_201_no_content()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);

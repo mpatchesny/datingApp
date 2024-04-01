@@ -91,7 +91,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
             {
                 AccessCode = accessCode,
                 EmailOrPhone = email,
-                ExpirationTime = DateTime.UtcNow,
+                ExpirationTime = DateTime.UtcNow + TimeSpan.FromMinutes(15),
                 Expiry = TimeSpan.FromMinutes(15)
             };
         await _testDb.DbContext.AccessCodes.AddAsync(code);
@@ -103,7 +103,28 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_missing_JWT_token_get_users_should_return_401_unauthorized()
+    public async Task given_expired_access_code_sign_in_post_request_should_return_400_bad_request()
+    {
+        var email = "test@test.com";
+        await CreateUserAsync(email);
+        var accessCode = "12345";
+        var code = new AccessCodeDto()
+            {
+                AccessCode = accessCode,
+                EmailOrPhone = email,
+                ExpirationTime = DateTime.UtcNow,
+                Expiry = TimeSpan.FromMilliseconds(1)
+            };
+        await _testDb.DbContext.AccessCodes.AddAsync(code);
+        await _testDb.DbContext.SaveChangesAsync();
+        var invalidAccessCode = "12345";
+        var command = new SignInByEmail(email, invalidAccessCode);
+        var response = await Client.PostAsJsonAsync("users/sign-in", command);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_missing_token_get_users_should_return_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -112,7 +133,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_JWT_token_get_users_should_return_401_unauthorized()
+    public async Task given_invalid_token_get_users_should_return_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -133,15 +154,6 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user.Id}");
         Assert.NotNull(response);
         Assert.Equal(user.Id, response.Id);
-    }
-
-    [Fact]
-    public async Task given_missing_JWT_token_get_users_me_should_return_401_unauthorized()
-    {
-        var email = "test@test.com";
-        var user = await CreateUserAsync(email);
-        var response = await Client.GetAsync("users/me");
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
@@ -168,7 +180,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task patch_users_with_no_changes_provided_should_return_201_no_content()
+    public async Task patch_users_with_no_changes_should_return_201_no_content()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);

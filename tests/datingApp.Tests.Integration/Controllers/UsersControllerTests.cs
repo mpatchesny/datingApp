@@ -108,9 +108,11 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_invalid_JWT_token_get_public_user_should_return_401_unauthorized()
     {
-        // TODO
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        var badToken = token.AccessToken + "x";
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
         var response = await Client.GetAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -118,21 +120,25 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_valid_JWT_token_get_public_user_should_return_200_ok_and_public_user()
     {
-        // TODO
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
-        var response = await Client.GetAsync($"users/{user.Id}");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user.Id}");
+        Assert.NotNull(response);
+        Assert.Equal(user.Id, response.Id);
     }
 
     [Fact]
-    public async Task given_valid_JWT_token_get_users_me_should_return_200_ok_and_private_user()
+    public async Task given_valid_JWT_token_get_users_should_return_200_ok_and_private_user()
     {
-        // TODO
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
-        var response = await Client.GetAsync($"users/{user.Id}");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/{user.Id}");
+        Assert.NotNull(response);
+        Assert.Equal(user.Id, response.Id);
     }
 
     private async Task<User> CreateUserAsync(string email)
@@ -146,7 +152,6 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     private readonly TestDatabase _testDb;
-
     public UsersControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
         _testDb = new TestDatabase();

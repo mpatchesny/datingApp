@@ -15,12 +15,16 @@ namespace datingApp.Tests.Integration.Controllers;
 public class UsersControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]
-    public async Task given_valid_sign_up_post_request_should_return_201_created()
+    public async Task given_valid_sign_up_post_request_should_return_201_created_and_private_user_dto()
     {
-        var command = new SignUp(Guid.Empty, "123456789", "test@test.com", "Janusz", "2000-01-01", 1, 1);
+        var email = "test@test.com";
+        var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers);
+        var dto = await response.Content.ReadFromJsonAsync<PrivateUserDto>();
+        Assert.NotNull(dto);
+        Assert.Equal(dto.Email, email);
     }
 
     [Fact]

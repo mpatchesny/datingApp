@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
+using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using Newtonsoft.Json;
 using Xunit;
@@ -46,7 +47,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var phone = "123456789";
         await CreateUserAsync(email, phone);
         var email2 = "test1@test.com";
-        var command = new SignUp(Guid.Empty,phone, email2, "Janusz", "2000-01-01", 1, 1);
+        var command = new SignUp(Guid.Empty, phone, email2, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -71,7 +72,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_access_code_sign_in_post_request_should_return_200_ok_and_JWT_token()
+    public async Task given_valid_access_code_sign_in_post_request_should_return_200_ok_and_token()
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
@@ -216,6 +217,44 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
         Assert.NotNull(response);
         Assert.Equal(10, response.Count);
+    }
+
+    [Fact]
+    public async Task get_updates_should_return_200_and_list_of_matches_dto()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+        Assert.NotNull(response);
+    }
+
+    [Fact]
+    public async Task get_updates_should_return_list_of_matches_dto_since_last_activity_time_parameter()
+    {
+        var time = DateTime.UtcNow;
+        var user = await CreateUserAsync("test@test.com");
+        var user2 = await CreateUserAsync("test2@test.com");
+        var user3 = await CreateUserAsync("test3@test.com");
+        var user4 = await CreateUserAsync("test4@test.com");
+        var user5 = await CreateUserAsync("test5@test.com");
+        var user6 = await CreateUserAsync("test6@test.com");
+        _testDb.DbContext.Matches.Add(new Match(Guid.Empty, user.Id, user2.Id, false, false, null, time - TimeSpan.FromSeconds(1)));
+        _testDb.DbContext.Matches.Add(new Match(Guid.Empty, user.Id, user3.Id, false, false, null, time - TimeSpan.FromSeconds(1)));
+        _testDb.DbContext.Matches.Add(new Match(Guid.Empty, user.Id, user4.Id, false, false, null, time - TimeSpan.FromSeconds(1)));
+        _testDb.DbContext.Matches.Add(new Match(Guid.Parse("00000000-0000-0000-0000-000000000011"), user.Id, user5.Id, false, false, null, time - TimeSpan.FromHours(2)));
+        _testDb.DbContext.Matches.Add(new Match(Guid.Parse("00000000-0000-0000-0000-000000000012"), user.Id, user6.Id, false, false, null, time - TimeSpan.FromHours(2)));
+        await _testDb.DbContext.SaveChangesAsync();
+        _testDb.DbContext.Messages.Add(new Message(Guid.Empty, Guid.Parse("00000000-0000-0000-0000-000000000011"), user5.Id, "test", false, time - TimeSpan.FromSeconds(1)));
+        _testDb.DbContext.Messages.Add(new Message(Guid.Empty, Guid.Parse("00000000-0000-0000-0000-000000000012"), user6.Id, "test", false, time - TimeSpan.FromSeconds(1)));
+        await _testDb.DbContext.SaveChangesAsync();
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var lastActivityTime = time - TimeSpan.FromHours(1);
+        var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
+        Assert.NotNull(response);
+        Assert.Equal(5, response.Count);
     }
 
     [Fact]

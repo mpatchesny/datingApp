@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Controllers;
@@ -101,7 +103,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_missing_JWT_token_get_public_user_should_return_401_unauthorized()
+    public async Task given_missing_JWT_token_get_users_should_return_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -110,7 +112,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_JWT_token_get_public_user_should_return_401_unauthorized()
+    public async Task given_invalid_JWT_token_get_users_should_return_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -122,7 +124,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_JWT_token_get_public_user_should_return_200_ok_and_public_user()
+    public async Task get_users_should_return_200_ok_and_public_user()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -134,15 +136,61 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_JWT_token_get_users_should_return_200_ok_and_private_user()
+    public async Task given_missing_JWT_token_get_users_me_should_return_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var response = await Client.GetAsync("users/me");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task get_users_me_should_return_200_ok_and_private_user()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
-        var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/{user.Id}");
+        var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/me");
         Assert.NotNull(response);
         Assert.Equal(user.Id, response.Id);
+    }
+
+    [Fact]
+    public async Task delete_users_should_return_201_no_content()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.DeleteAsync($"users/{user.Id}");
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task patch_users_with_no_changes_provided_should_return_201_no_content()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var command = new ChangeUser(user.Id);
+        var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"users/{user.Id}", content);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task patch_users_should_return_201_no_content()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var command = new ChangeUser(user.Id, "2001-01-01");
+        var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"users/{user.Id}", content);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
     private async Task<User> CreateUserAsync(string email)

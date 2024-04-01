@@ -40,6 +40,18 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_phone_already_exists_sign_up_post_request_should_return_400_bad_request()
+    {
+        var email = "test@test.com";
+        var phone = "123456789";
+        await CreateUserAsync(email, phone);
+        var email2 = "test1@test.com";
+        var command = new SignUp(Guid.Empty,phone, email2, "Janusz", "2000-01-01", 1, 1);
+        var response = await Client.PostAsJsonAsync("users", command);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task given_email_exists_auth_post_request_should_return_200_ok()
     {
         var email = "test@test.com";
@@ -180,6 +192,33 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task get_recommendations_should_return_200_and_list_of_public_user_dto()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
+        Assert.NotNull(response);
+    }
+
+    [Fact]
+    public async Task get_recommendations_should_return_max_10_private_user_dtos()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        for (int i=0; i<20; i++)
+        {
+            await CreateUserAsync($"test{i}@test.com");
+        }
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
+        Assert.NotNull(response);
+        Assert.Equal(10, response.Count);
+    }
+
+    [Fact]
     public async Task patch_users_with_no_changes_should_return_201_no_content()
     {
         var email = "test@test.com";
@@ -205,11 +244,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
-    private async Task<User> CreateUserAsync(string email)
+    private async Task<User> CreateUserAsync(string email, string phone = null)
     {
         var userId = Guid.NewGuid();
-        var settings = new UserSettings(userId, Sex.Female, 18, 20, 50, 45.5, 45.5);
-        var user = new User(userId, "123456789", email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(userId, Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        Random random = new Random();
+        if (phone == null) phone = random.Next(100000000, 999999999).ToString();
+        var user = new User(userId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         await _testDb.DbContext.Users.AddAsync(user);
         await _testDb.DbContext.SaveChangesAsync();
         return user;

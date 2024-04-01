@@ -73,8 +73,10 @@ public class UserController : ApiControllerBase
 
     [Authorize]
     [HttpGet("me/updates")]
-    public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates(GetUpdates query)
+    public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates([FromQuery(Name = "lastActivityTime")] DateTime lastActivityTime)
     {
+        var query = new GetUpdates();
+        query.LastActivityTime = lastActivityTime;
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
         return Ok(await _getUpdatesHandler.HandleAsync(query));

@@ -193,7 +193,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task delete_users_should_return_204_no_content()
+    public async Task given_user_exists_delete_users_should_return_204_no_content()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -201,6 +201,17 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
         var response = await Client.DeleteAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact (Skip = "FIXME")]
+    public async Task given_user_not_exists_delete_users_should_return_410_gone()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.DeleteAsync($"users/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
     }
 
     [Fact]

@@ -351,6 +351,19 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
+    [Fact]
+    public async Task given_user_not_exists_patch_users_404_not_found()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var command = new ChangeUser(user.Id, "2001-01-01");
+        var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"users/{Guid.NewGuid()}", content);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
     private async Task<User> CreateUserAsync(string email, string phone = null)
     {
         var userId = Guid.NewGuid();

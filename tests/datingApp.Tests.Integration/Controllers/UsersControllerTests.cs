@@ -170,6 +170,17 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_user_with_given_id_not_exists_get_users_should_return_404_not_found()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetAsync($"users/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task get_users_me_should_return_200_ok_and_private_user()
     {
         var email = "test@test.com";

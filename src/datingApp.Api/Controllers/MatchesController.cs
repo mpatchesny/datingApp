@@ -43,15 +43,6 @@ public class MatchesController : ApiControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
-    {
-        var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
-        query.SetPage(page);
-        query.SetPageSize(pageSize);
-        return Ok(await _getMatchesHandler.HandleAsync(query));
-    }
-
     [HttpGet("{matchId:guid}")]
     public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
     {
@@ -59,6 +50,15 @@ public class MatchesController : ApiControllerBase
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
         return Ok(await _getMatchHandler.HandleAsync(query));
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
+    {
+        var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
+        query.SetPage(page);
+        query.SetPageSize(pageSize);
+        return Ok(await _getMatchesHandler.HandleAsync(query));
     }
 
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]

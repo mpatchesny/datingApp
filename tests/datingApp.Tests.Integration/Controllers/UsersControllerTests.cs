@@ -333,8 +333,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
         var command = new ChangeUser(user.Id);
-        var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
-        var response = await Client.PatchAsync($"users/{user.Id}", content);
+        var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"users/{user.Id}", payload);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 

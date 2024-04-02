@@ -231,6 +231,63 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task get_updates_without_lastActivityTime_specified_should_return_list_of_all_not_displayed_messages_and_matches_as_matches_dto()
+    {
+        var user = await CreateUserAsync("test@test.com");
+        var users = new List<User>();
+        for (int i=0; i<100; i++)
+        {
+            var tempUser = await CreateUserAsync($"test{i}@test.com");
+            users.Add(tempUser);
+        }
+
+        var matches = new List<Match>();
+        var random = new Random();
+        for (int i=0; i<50; i++)
+        {
+            var match = new Match(Guid.Empty, user.Id, users[i].Id, false, false, null, DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            matches.Add(match);
+            _testDb.DbContext.Matches.Add(match);
+        }
+        await _testDb.DbContext.SaveChangesAsync();
+    
+        for (int i=50; i<100; i++)
+        {
+            var match = new Match(Guid.Empty, user.Id, users[i].Id, true, false, null, DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            matches.Add(match);
+            _testDb.DbContext.Matches.Add(match);
+        }
+        await _testDb.DbContext.SaveChangesAsync();
+
+        for (int i=0; i<50; i++)
+        {
+            var message = new Message(Guid.Empty, matches[i].Id, matches[i].UserId2, "test", false, DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            _testDb.DbContext.Messages.Add(message);
+        }
+        await _testDb.DbContext.SaveChangesAsync();
+
+        for (int i=50; i<75; i++)
+        {
+            var message = new Message(Guid.Empty, matches[i].Id, matches[i].UserId2, "test", false, DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            _testDb.DbContext.Messages.Add(message);
+        }
+        await _testDb.DbContext.SaveChangesAsync();
+
+        for (int i=75; i<100; i++)
+        {
+            var message = new Message(Guid.Empty, matches[i].Id, matches[i].UserId2, "test", true, DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            _testDb.DbContext.Messages.Add(message);
+        }
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+        Assert.NotNull(response);
+        Assert.Equal(100, response.Count);
+    }
+
+    [Fact]
     public async Task get_updates_should_return_list_of_matches_dto_since_last_activity_time_parameter()
     {
         var time = DateTime.UtcNow;

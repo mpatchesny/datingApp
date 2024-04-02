@@ -74,7 +74,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_payload_patch_photo_post_photo_should_201_no_content()
+    public async Task given_valid_payload_patch_photo_post_photo_should_204_no_content()
     {
         var user = await CreateUserAsync("test@test.com");
         var photo = new Photo(Guid.Empty, user.Id, "test", "test", 0);
@@ -105,7 +105,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_exists_delete_photo_post_photo_should_201_no_content()
+    public async Task given_photo_exists_delete_photo_post_photo_should_204_no_content()
     {
         var user = await CreateUserAsync("test@test.com");
         var photo = new Photo(Guid.Empty, user.Id, "test", "test", 0);

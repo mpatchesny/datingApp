@@ -30,6 +30,8 @@ internal sealed class ExceptionMiddleware : IMiddleware
             UnauthorizedException => (StatusCodes.Status403Forbidden, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             PhotoNotExistsException => (StatusCodes.Status404NotFound, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             UserNotExistsException => (StatusCodes.Status404NotFound, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
+            PhotoAlreadyDeletedException => (StatusCodes.Status410Gone, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
+            UserAlreadyDeletedException => (StatusCodes.Status410Gone, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             CustomException => (StatusCodes.Status400BadRequest, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             _ => (StatusCodes.Status500InternalServerError, new Error("error", "Something went wrong.")),
         };

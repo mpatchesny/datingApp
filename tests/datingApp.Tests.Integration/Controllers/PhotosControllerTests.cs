@@ -21,10 +21,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task get_photo_should_return_200_ok_and_photo_dto()
     {
         var user = await CreateUserAsync("test@test.com");
-        var photo = new Photo(Guid.Empty, user.Id, "path", "url", 0);
-        
-        _testDb.DbContext.Photos.Add(photo);
-        await _testDb.DbContext.SaveChangesAsync();
+        var photo = await CreatePhotoAsync(user);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
@@ -77,9 +74,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task given_valid_payload_patch_photo_post_photo_should_204_no_content()
     {
         var user = await CreateUserAsync("test@test.com");
-        var photo = new Photo(Guid.Empty, user.Id, "test", "test", 0);
-        _testDb.DbContext.Photos.Add(photo);
-        await _testDb.DbContext.SaveChangesAsync();
+        var photo = await CreatePhotoAsync(user);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
@@ -108,9 +103,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task given_photo_exists_delete_photo_post_photo_should_204_no_content()
     {
         var user = await CreateUserAsync("test@test.com");
-        var photo = new Photo(Guid.Empty, user.Id, "test", "test", 0);
-        _testDb.DbContext.Photos.Add(photo);
-        await _testDb.DbContext.SaveChangesAsync();
+        var photo = await CreatePhotoAsync(user);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
@@ -141,6 +134,14 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.Users.AddAsync(user);
         await _testDb.DbContext.SaveChangesAsync();
         return user;
+    }
+
+    private async Task<Photo> CreatePhotoAsync(User user)
+    {
+        var photo = new Photo(Guid.Empty, user.Id, "path", "url", 0);
+        await _testDb.DbContext.Photos.AddAsync(photo);
+        await _testDb.DbContext.SaveChangesAsync();
+        return photo;
     }
 
     private readonly TestDatabase _testDb;

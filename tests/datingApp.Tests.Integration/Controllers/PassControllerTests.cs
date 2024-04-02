@@ -13,7 +13,7 @@ namespace datingApp.Tests.Integration.Controllers;
 public class PassControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]
-    public async Task put_pass_returns_200_status_code_and_false_if_other_user_not_liked()
+    public async Task given_other_user_not_liked_put_pass_returns_200_status_code_and_false_content()
     {
         var user1 = await CreateUserAsync("test@test.com");
         var user2 = await CreateUserAsync("test2@test.com");
@@ -28,7 +28,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task put_pass_returns_404_status_code()
+    public async Task given_other_user_not_exists_put_pass_returns_404_status_code()
     {
         var user1 = await CreateUserAsync("test@test.com");
 
@@ -40,7 +40,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task put_pass_returns_200_status_code_and_true_if_other_user_liked()
+    public async Task given_other_user_liked_put_pass_returns_200_status_code_and_true_content()
     {
         var user1 = await CreateUserAsync("test@test.com");
         var user2 = await CreateUserAsync("test2@test.com");

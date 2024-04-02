@@ -28,6 +28,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
         var (statusCode, error) = exception switch 
         {
             UnauthorizedException => (StatusCodes.Status403Forbidden, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
+            PhotoNotExistsException => (StatusCodes.Status404NotFound, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             CustomException => (StatusCodes.Status400BadRequest, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
             _ => (StatusCodes.Status500InternalServerError, new Error("error", "Something went wrong.")),
         };

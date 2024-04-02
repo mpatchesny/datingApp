@@ -42,7 +42,7 @@ public class LikeController : ApiControllerBase
         {
             await _addMatchHandler.HandleAsync(new AddMatch(swipedById, swipedWhoId));
         }
-        
+
         return isLikedByOtherUser;
     }
 }

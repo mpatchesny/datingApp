@@ -49,7 +49,12 @@ public class MatchesController : ApiControllerBase
         var query = new GetMatch { MatchId = matchId };
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
-        return Ok(await _getMatchHandler.HandleAsync(query));
+        var match = await _getMatchHandler.HandleAsync(query);
+        if (match == null)
+        {
+            return NotFound();
+        }
+        return Ok(match);
     }
 
     [HttpGet]

@@ -150,6 +150,40 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
     }
 
+    [Fact]
+    public async Task get_storage_returns_200_OK_and_base_64_encoded_photo()
+    {
+        var user = await CreateUserAsync("test@test.com");
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
+        var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
+        var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
+        var postResponse = await Client.PostAsJsonAsync("/photos", command);
+        Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
+
+        var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
+        var response = await Client.GetAsync($"/storage/{photoDto.Url}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        Assert.Equal(photoBase64, responseContent);
+    }
+
+    [Fact]
+    public async Task given_physical_file_not_exists_get_storage_returns_404_not_found()
+    {
+        var user = await CreateUserAsync("test@test.com");
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
+        var notExistingPhotoUrl = Guid.NewGuid().ToString() + ".jpg";
+        var response = await Client.GetAsync($"/storage/{notExistingPhotoUrl}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     private async Task<User> CreateUserAsync(string email, string phone = null)
     {
         var userId = Guid.NewGuid();

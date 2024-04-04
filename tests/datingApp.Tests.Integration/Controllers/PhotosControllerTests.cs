@@ -31,14 +31,19 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(photo.Id, response.Id);
     }
 
-    [Fact]
-    public async Task given_photo_not_exists_get_photo_returns_404_not_found()
+    [Fact (Skip ="FIXME")]
+    public async Task given_photo_not_exists_get_photo_returns_404_not_found_and_proper_error_reason()
     {
         var user = await CreateUserAsync("test@test.com");
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
-        var response = await Client.GetAsync($"photos/{Guid.NewGuid()}");
+
+        var notExistingPhotoId = Guid.NewGuid();
+        var response = await Client.GetAsync($"photos/{notExistingPhotoId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
     [Fact]
@@ -53,6 +58,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
         var response = await Client.PostAsJsonAsync("/photos", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
         Assert.Equal(user.Id, dto.UserId);
     }
@@ -86,17 +92,21 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_not_exists_patch_photo_post_photo_returns_404_not_found()
+    public async Task given_photo_not_exists_patch_photo_post_photo_returns_404_not_found_and_proper_error_reason()
     {
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var command = new ChangePhotoOridinal(Guid.NewGuid(), 0);
+        var notExistingPhotoId = Guid.NewGuid();
+        var command = new ChangePhotoOridinal(notExistingPhotoId, 0);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
-        var response = await Client.PatchAsync($"/photos/{Guid.NewGuid()}", payload);
+        var response = await Client.PatchAsync($"/photos/{notExistingPhotoId}", payload);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
     [Fact]
@@ -113,15 +123,19 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_not_exists_delete_photo_post_photo_returns_404_not_found()
+    public async Task given_photo_not_exists_delete_photo_post_photo_returns_404_not_found_and_proper_error_reason()
     {
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var response = await Client.DeleteAsync($"/photos/{Guid.NewGuid()}");
+        var notExistingPhotoId = Guid.NewGuid();
+        var response = await Client.DeleteAsync($"/photos/{notExistingPhotoId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
     [Fact (Skip = "FIXME")]

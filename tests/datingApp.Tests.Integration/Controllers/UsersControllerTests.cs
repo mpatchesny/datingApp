@@ -18,7 +18,7 @@ namespace datingApp.Tests.Integration.Controllers;
 public class UsersControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]
-    public async Task given_valid_sign_up_post_request_should_return_201_created_and_private_user_dto()
+    public async Task given_valid_sign_up_post_request_returns_201_created_and_private_user_dto()
     {
         var email = "test@test.com";
         var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
@@ -31,7 +31,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_email_already_exists_sign_up_post_request_should_return_400_bad_request()
+    public async Task given_email_already_exists_sign_up_post_request_returns_400_bad_request()
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
@@ -41,7 +41,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_phone_already_exists_sign_up_post_request_should_return_400_bad_request()
+    public async Task given_phone_already_exists_sign_up_post_request_returns_400_bad_request()
     {
         var email = "test@test.com";
         var phone = "123456789";
@@ -53,7 +53,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_email_exists_auth_post_request_should_return_200_ok()
+    public async Task given_email_exists_auth_post_request_returns_200_ok()
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
@@ -63,7 +63,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_email_not_exists_auth_post_request_should_return_200_ok()
+    public async Task given_email_not_exists_auth_post_request_returns_200_ok()
     {
         var email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
@@ -72,7 +72,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_access_code_sign_in_post_request_should_return_200_ok_and_token()
+    public async Task given_valid_access_code_sign_in_post_request_returns_200_ok_and_token()
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
@@ -95,7 +95,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_access_code_sign_in_post_request_should_return_400_bad_request()
+    public async Task given_invalid_access_code_sign_in_post_request_returns_400_bad_request()
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
@@ -116,7 +116,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_expired_access_code_sign_in_post_request_should_return_400_bad_request()
+    public async Task given_expired_access_code_sign_in_post_request_returns_400_bad_request()
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
@@ -137,7 +137,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_missing_token_get_users_should_return_401_unauthorized()
+    public async Task given_missing_token_get_users_returns_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -146,7 +146,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_token_get_users_should_return_401_unauthorized()
+    public async Task given_invalid_token_get_users_returns_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -158,7 +158,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_users_should_return_200_ok_and_public_user()
+    public async Task get_users_returns_200_ok_and_public_user()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -170,7 +170,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_user_with_given_id_not_exists_get_users_should_return_404_not_found()
+    public async Task given_user_with_given_id_not_exists_get_users_returns_404_not_found()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -181,7 +181,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_users_me_should_return_200_ok_and_private_user()
+    public async Task get_users_me_returns_200_ok_and_private_user()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -193,7 +193,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_user_exists_delete_users_should_return_204_no_content()
+    public async Task given_user_exists_delete_users_returns_204_no_content()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -204,7 +204,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact (Skip = "FIXME")]
-    public async Task given_user_not_exists_delete_users_should_return_410_gone()
+    public async Task given_user_not_exists_delete_users_returns_410_gone()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -215,7 +215,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_recommendations_should_return_200_and_list_of_public_user_dto()
+    public async Task get_recommendations_returns_200_and_list_of_public_user_dto()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -226,7 +226,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_recommendations_should_return_max_10_private_user_dtos()
+    public async Task get_recommendations_returns_max_10_private_user_dtos()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -242,7 +242,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_updates_should_return_200_and_list_of_matches_dto()
+    public async Task get_updates_returns_200_and_list_of_matches_dto()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -253,7 +253,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_updates_without_lastActivityTime_specified_should_return_list_of_all_not_displayed_messages_and_matches_as_matches_dto()
+    public async Task get_updates_without_lastActivityTime_specified_returns_list_of_all_not_displayed_messages_and_matches_as_matches_dto()
     {
         var user = await CreateUserAsync("test@test.com");
         var users = new List<User>();
@@ -310,7 +310,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_updates_should_return_list_of_matches_dto_since_last_activity_time_parameter()
+    public async Task get_updates_returns_list_of_matches_dto_since_last_activity_time_parameter()
     {
         var time = DateTime.UtcNow;
         var user = await CreateUserAsync("test@test.com");
@@ -337,7 +337,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task patch_users_with_no_changes_should_return_204_no_content()
+    public async Task patch_users_with_no_changes_returns_204_no_content()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -350,7 +350,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task patch_users_with_changes_should_return_204_no_content()
+    public async Task patch_users_with_changes_returns_204_no_content()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);

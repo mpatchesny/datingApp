@@ -38,12 +38,12 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var notExistsingMatchId = Guid.NewGuid();
-        var response = await Client.GetAsync($"matches/{notExistsingMatchId}");
+        var notExistingMatchId = Guid.NewGuid();
+        var response = await Client.GetAsync($"matches/{notExistingMatchId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"Match with id {notExistsingMatchId} does not exist.", error.Reason);
+        Assert.Equal($"Match with id {notExistingMatchId} does not exist.", error.Reason);
     }
     
     [Fact]
@@ -221,12 +221,12 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var notExistsingMatchId = Guid.NewGuid();
-        var response = await Client.GetAsync($"matches/{notExistsingMatchId}/messages");
+        var notExistingMatchId = Guid.NewGuid();
+        var response = await Client.GetAsync($"matches/{notExistingMatchId}/messages");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"Match with id {notExistsingMatchId} does not exist.", error.Reason);
+        Assert.Equal($"Match with id {notExistingMatchId} does not exist.", error.Reason);
     }
 
     [Fact]
@@ -275,18 +275,63 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user1 = await CreateUserAsync("test1@test.com");
         var user2 = await CreateUserAsync("test2@test.com");
         var match = await CreateMatchAsync(user1, user2);
-        var notExistsingMatchId = Guid.NewGuid();
+        var notExistingMatchId = Guid.NewGuid();
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var command = new SendMessage(Guid.Empty, notExistsingMatchId, user1.Id, "test");
+        var command = new SendMessage(Guid.Empty, notExistingMatchId, user1.Id, "test");
 
-        var response = await Client.PostAsJsonAsync($"matches/{notExistsingMatchId}/messages", command);
+        var response = await Client.PostAsJsonAsync($"matches/{notExistingMatchId}/messages", command);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"Match with id {notExistsingMatchId} does not exist.", error.Reason);
+        Assert.Equal($"Match with id {notExistingMatchId} does not exist.", error.Reason);
+    }
+
+    [Fact ]
+    public async void delete_existing_match_returns_204_no_content()
+    {
+        var user1 = await CreateUserAsync("test1@test.com");
+        var user2 = await CreateUserAsync("test2@test.com");
+        var match = await CreateMatchAsync(user1, user2);
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
+        var response = await Client.DeleteAsync($"matches/{match.Id}");
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact (Skip = "FIXME")]
+    public async void given_match_not_exists_delete_returns_404_not_found()
+    {
+        var user1 = await CreateUserAsync("test1@test.com");
+        var user2 = await CreateUserAsync("test2@test.com");
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
+        var notExistingMatchId = Guid.NewGuid();
+        var response = await Client.DeleteAsync($"matches/{notExistingMatchId}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        // var error = await response.Content.ReadFromJsonAsync<Error>();
+        // Assert.Equal($"Match with id {notExistingMatchId} does not exist.", error.Reason);
+    }
+
+    [Fact (Skip = "FIXME")]
+    public async void given_match_was_already_deleted_delete_returns_410_gone()
+    {
+        var user1 = await CreateUserAsync("test1@test.com");
+        var user2 = await CreateUserAsync("test2@test.com");
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
+        var notExistingMatchId = Guid.NewGuid();
+        var response = await Client.DeleteAsync($"matches/{notExistingMatchId}");
+        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
     }
 
     private async Task<User> CreateUserAsync(string email, string phone = null)

@@ -24,6 +24,8 @@ namespace datingApp.Tests.Integration
             return token;
         }
 
+        protected record Error(string Code, string Reason);
+
         public ControllerTestBase(OptionsProvider optionsProvider)
         {
             var authOptions = optionsProvider.Get<AuthOptions>("auth");

@@ -362,8 +362,6 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         return message;
     }
 
-    private record Error(string Code, string Reason);
-
     private readonly TestDatabase _testDb;
     public MatchesControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {

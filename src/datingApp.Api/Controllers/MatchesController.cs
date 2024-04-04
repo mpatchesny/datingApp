@@ -91,7 +91,7 @@ public class MatchesController : ApiControllerBase
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
         command = Authenticate(command);
-        command = command with {MessageId = Guid.NewGuid(), MatchId = matchId};
+        command = command with {MessageId = Guid.NewGuid(), SendFromId = command.AuthenticatedUserId, MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
 
         var query = Authenticate(new GetMessage { MessageId = command.MessageId });

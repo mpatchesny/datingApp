@@ -25,9 +25,11 @@ internal sealed class FileStorageOptions
 
     public void SaveFile(byte[] file, string identification, string extension)
     {
-        BuildPath(_storageOptions.Value.StoragePath);
+        var fullPath = System.IO.Path.GetFullPath(_storageOptions.Value.StoragePath);
+        BuildPath(fullPath);
         string filename = $"{identification}.{extension}";
         string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, filename);
+
         try
         {
             System.IO.File.WriteAllBytes(filePath, file);

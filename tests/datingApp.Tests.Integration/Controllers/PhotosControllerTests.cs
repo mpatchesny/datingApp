@@ -112,8 +112,20 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
+    [Fact]
+    public async Task given_photo_not_exists_delete_photo_post_photo_should_404_not_found()
+    {
+        var user = await CreateUserAsync("test@test.com");
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
+        var response = await Client.DeleteAsync($"/photos/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
     [Fact (Skip = "FIXME")]
-    public async Task given_photo_not_exists_delete_photo_post_photo_should_410_gone()
+    public async Task given_photo_was_alread_deleted_delete_photo_post_photo_should_410_gone()
     {
         var user = await CreateUserAsync("test@test.com");
 

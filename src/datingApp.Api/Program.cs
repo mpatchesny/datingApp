@@ -51,8 +51,12 @@ app.UseMiddleware<StorageMiddleware>();
 
 app.UseStaticFiles(new StaticFileOptions
 {
+
     FileProvider = new PhysicalFileProvider(
-           Path.Combine(builder.Environment.ContentRootPath, builder.Environment.StoragePath(builder.Configuration))),
+        Path.GetFullPath(
+            String.Format(builder.Environment.StoragePath(builder.Configuration), builder.Environment.ContentRootPath)
+        )
+    ),
     RequestPath = "/storage",
 });
 

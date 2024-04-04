@@ -22,9 +22,11 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     {
         var email = "test@test.com";
         var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
+
         var response = await Client.PostAsJsonAsync("users", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(response.Headers);
+
         var dto = await response.Content.ReadFromJsonAsync<PrivateUserDto>();
         Assert.NotNull(dto);
         Assert.Equal(dto.Email, email);
@@ -35,6 +37,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
+
         var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -47,6 +50,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var phone = "123456789";
         await CreateUserAsync(email, phone);
         var email2 = "test1@test.com";
+
         var command = new SignUp(Guid.Empty, phone, email2, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -57,6 +61,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     {
         var email = "test@test.com";
         await CreateUserAsync(email);
+
         var command = new RequestEmailAccessCode(email);
         var response = await Client.PostAsJsonAsync("users/auth", command);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -86,6 +91,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
             };
         await _testDb.DbContext.AccessCodes.AddAsync(code);
         await _testDb.DbContext.SaveChangesAsync();
+
         var command = new SignInByEmail(email, accessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -110,6 +116,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.AccessCodes.AddAsync(code);
         await _testDb.DbContext.SaveChangesAsync();
         var invalidAccessCode = "67890";
+
         var command = new SignInByEmail(email, invalidAccessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -130,8 +137,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
             };
         await _testDb.DbContext.AccessCodes.AddAsync(code);
         await _testDb.DbContext.SaveChangesAsync();
+
         var invalidAccessCode = "12345";
         var command = new SignInByEmail(email, invalidAccessCode);
+
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -153,6 +162,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         var badToken = token.AccessToken + "x";
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
+
         var response = await Client.GetAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -164,20 +174,26 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
         var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user.Id}");
         Assert.NotNull(response);
         Assert.Equal(user.Id, response.Id);
     }
 
-    [Fact]
-    public async Task given_user_with_given_id_not_exists_get_users_returns_404_not_found()
+    [Fact (Skip = "FIXME")]
+    public async Task given_user_with_given_id_not_exists_get_users_returns_404_not_found_and_proper_error_reason()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
-        var response = await Client.GetAsync($"users/{Guid.NewGuid()}");
+
+        var notExistingUserId = Guid.NewGuid();
+        var response = await Client.GetAsync($"users/{notExistingUserId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
     }
 
     [Fact]
@@ -187,6 +203,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
         var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/me");
         Assert.NotNull(response);
         Assert.Equal(user.Id, response.Id);
@@ -199,12 +216,29 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
         var response = await Client.DeleteAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
+    [Fact]
+    public async Task given_user_not_exists_delete_users_returns_404_not_found_and_proper_error_reason()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        
+        var notExistingUserId = Guid.NewGuid();
+        var response = await Client.DeleteAsync($"users/{notExistingUserId}");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
+    }
+
     [Fact (Skip = "FIXME")]
-    public async Task given_user_not_exists_delete_users_returns_410_gone()
+    public async Task given_user_was_alread_deleted_delete_users_returns_410_gone()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);

@@ -18,7 +18,7 @@ namespace datingApp.Tests.Integration.Controllers;
 public class PhotosControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]
-    public async Task get_photo_should_return_200_ok_and_photo_dto()
+    public async Task get_photo_returns_200_ok_and_photo_dto()
     {
         var user = await CreateUserAsync("test@test.com");
         var photo = await CreatePhotoAsync(user);
@@ -32,7 +32,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_not_exists_get_photo_should_return_404_not_found()
+    public async Task given_photo_not_exists_get_photo_returns_404_not_found()
     {
         var user = await CreateUserAsync("test@test.com");
         var token = Authorize(user.Id);
@@ -42,7 +42,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_payload_post_photo_should_return_201_created_and_photo_dto()
+    public async Task given_valid_payload_post_photo_returns_201_created_and_photo_dto()
     {
         var user = await CreateUserAsync("test@test.com");
 
@@ -58,7 +58,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_empty_base64_photo_post_photo_should_return_400_bad_request()
+    public async Task given_empty_base64_photo_post_photo_returns_400_bad_request()
     {
         var user = await CreateUserAsync("test@test.com");
 
@@ -71,7 +71,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_valid_payload_patch_photo_post_photo_should_204_no_content()
+    public async Task given_valid_payload_patch_photo_post_photo_returns_204_no_content()
     {
         var user = await CreateUserAsync("test@test.com");
         var photo = await CreatePhotoAsync(user);
@@ -86,7 +86,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_not_exists_patch_photo_post_photo_should_404_not_found()
+    public async Task given_photo_not_exists_patch_photo_post_photo_returns_404_not_found()
     {
         var user = await CreateUserAsync("test@test.com");
 
@@ -100,7 +100,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_exists_delete_photo_post_photo_should_204_no_content()
+    public async Task given_photo_exists_delete_photo_post_photo_returns_204_no_content()
     {
         var user = await CreateUserAsync("test@test.com");
         var photo = await CreatePhotoAsync(user);
@@ -113,7 +113,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_not_exists_delete_photo_post_photo_should_404_not_found()
+    public async Task given_photo_not_exists_delete_photo_post_photo_returns_404_not_found()
     {
         var user = await CreateUserAsync("test@test.com");
 
@@ -125,7 +125,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact (Skip = "FIXME")]
-    public async Task given_photo_was_alread_deleted_delete_photo_post_photo_should_410_gone()
+    public async Task given_photo_was_alread_deleted_delete_photo_post_photo_returns_410_gone()
     {
         var user = await CreateUserAsync("test@test.com");
 

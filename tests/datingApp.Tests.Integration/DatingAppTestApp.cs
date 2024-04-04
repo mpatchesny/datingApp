@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -16,9 +17,16 @@ internal sealed class DatingAppTestApp : WebApplicationFactory<Program>
     {
         Client = base.WithWebHostBuilder(builder => 
         {
+            var tempFolder = Path.GetTempPath();
             if (services is not null)
             {
-                builder.ConfigureServices(services);
+                builder.ConfigureServices(services =>
+                {
+                    services.Configure<StorageOptions>(opts =>
+                        {
+                            opts.StoragePath = tempFolder;
+                        });
+                });
             }
             builder.UseEnvironment("test");
         }).CreateClient();

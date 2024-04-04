@@ -20,13 +20,14 @@ internal sealed class DatingAppTestApp : WebApplicationFactory<Program>
             var tempFolder = Path.GetTempPath();
             if (services is not null)
             {
-                builder.ConfigureServices(services =>
-                {
-                    services.Configure<StorageOptions>(opts =>
-                        {
-                            opts.StoragePath = tempFolder;
-                        });
-                });
+                builder.ConfigureServices(services);
+                // services =>
+                // {
+                //     services.Configure<StorageOptions>(opts =>
+                //         {
+                //             opts.StoragePath = "../../..";
+                //         });
+                // });
             }
             builder.UseEnvironment("test");
         }).CreateClient();

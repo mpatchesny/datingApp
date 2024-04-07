@@ -50,15 +50,15 @@ app.UseAuthorization();
 app.UseMiddleware<StorageMiddleware>();
 
 app.UseStaticFiles(new StaticFileOptions
-{
-
-    FileProvider = new PhysicalFileProvider(
-        Path.GetFullPath(
-            String.Format(builder.Environment.StoragePath(builder.Configuration), builder.Environment.ContentRootPath)
-        )
-    ),
-    RequestPath = "/storage",
-});
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.GetFullPath(
+                String.Format(builder.Environment.StoragePath(builder.Configuration), builder.Environment.ContentRootPath)
+            )
+        ),
+        RequestPath = "/storage",
+    }
+);
 
 app.UseMiddleware<ExceptionMiddleware>();
 

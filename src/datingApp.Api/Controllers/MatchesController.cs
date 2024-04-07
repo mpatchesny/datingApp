@@ -43,6 +43,20 @@ public class MatchesController : ApiControllerBase
         _getMatchHandler = getMatchHandler;
     }
 
+    [HttpGet("{matchId:guid}")]
+    public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
+    {
+        var query = new GetMatch { MatchId = matchId };
+        query = Authenticate(query);
+        query.UserId = AuthenticatedUserId;
+        var match = await _getMatchHandler.HandleAsync(query);
+        if (match == null)
+        {
+            return NotFound();
+        }
+        return Ok(match);
+    }
+
     [HttpGet]
     public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
     {
@@ -50,15 +64,6 @@ public class MatchesController : ApiControllerBase
         query.SetPage(page);
         query.SetPageSize(pageSize);
         return Ok(await _getMatchesHandler.HandleAsync(query));
-    }
-
-    [HttpGet("{matchId:guid}")]
-    public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
-    {
-        var query = new GetMatch { MatchId = matchId };
-        query = Authenticate(query);
-        query.UserId = AuthenticatedUserId;
-        return Ok(await _getMatchHandler.HandleAsync(query));
     }
 
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]
@@ -86,7 +91,7 @@ public class MatchesController : ApiControllerBase
     public async Task<ActionResult> SendMessage([FromRoute] Guid matchId, [FromBody] SendMessage command)
     {
         command = Authenticate(command);
-        command = command with {MessageId = Guid.NewGuid(), MatchId = matchId};
+        command = command with {MessageId = Guid.NewGuid(), SendFromId = command.AuthenticatedUserId, MatchId = matchId};
         await _sendMessageHandler.HandleAsync(command);
 
         var query = Authenticate(new GetMessage { MessageId = command.MessageId });

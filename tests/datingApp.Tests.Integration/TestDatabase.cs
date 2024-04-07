@@ -11,13 +11,7 @@ internal sealed class TestDatabase : IDisposable
     public DatingAppDbContext DbContext { get; }
     public TestDatabase()
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.Test.json")
-            .Build();
-        
-        string optionsSectionName = "database";
-        var options = configuration.GetOptions<DatabaseOptions>(optionsSectionName);
+        var options = new OptionsProvider().Get<DatabaseOptions>("database");
         DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(options.ConnectionString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();

@@ -8,4 +8,5 @@ namespace datingApp.Infrastructure.DAL;
 internal sealed class DatabaseOptions
 {
     public string ConnectionString { get; set; }
+    public bool SeedSampleData { get; set; }
 }

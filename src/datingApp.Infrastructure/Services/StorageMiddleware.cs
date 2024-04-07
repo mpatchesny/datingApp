@@ -24,18 +24,33 @@ internal sealed class StorageMiddleware : IMiddleware
     }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (context.Request.Path.ToString().StartsWith("/storage"))
+        if (context.Request.Path.ToString().Contains("/storage"))
         {
-            var s = context.Request.Path.ToString().Replace("/storage/", "").Split(".");
-            if (s.Length == 2) 
+            var s = GetFilenameAndFileExtFromUri(context.Request.Path.ToString());
+            if (s.Length == 2)
             {
-                string id = s[0];
-                string ext = s[1];
-                await GetFileFromDatabaseAndSaveLocallyIfNotExists(id, ext);
-                _logger.LogInformation($"Storage access: {id}, {ext}");
+                await GetFileFromDatabaseAndSaveLocallyIfNotExists(s[0], s[1]);
             }
         }
         await next(context);
+    }
+
+    private static string[] GetFilenameAndFileExtFromUri(string uri)
+    {
+        var findText = "/storage";
+        var pos = uri.IndexOf(findText);
+        var filename = "";
+
+        try
+        {
+            var lowerBound = pos + findText.Length + 1;
+            filename = uri.Substring(lowerBound, uri.Length - lowerBound);
+        }
+        catch
+        {}
+
+        var s = filename.Split(".");
+        return s;
     }
 
     private async Task GetFileFromDatabaseAndSaveLocallyIfNotExists(string id, string extension)

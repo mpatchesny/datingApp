@@ -37,7 +37,7 @@ Content-Type: application/json
 ### Sign in with acquired access code
 # @name sign_in
 
-POST {{url}}/users/sing-in
+POST {{url}}/users/sign-in
 Content-Type: application/json
 
 {
@@ -56,13 +56,9 @@ GET {{url}}/users/me/recommendations
 Authorization: Bearer {{accessToken}}
 
 ### Get information about new matches and messages since given last activity time
-GET {{url}}/users/me/updates
+GET {{url}}/users/me/updates?lastActivityTime={{$datetime iso8601 -15 d}}
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
-
-{
-    "lastActivityTime": "{{$datetime iso8601 -15 d}}"
-}
 
 ### Get information about another user
 @myUserId = 00000000-0000-0000-0000-000000000001
@@ -145,7 +141,6 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "sendFromId": "{{myUserId}}",
     "text": "hello"
 }
 

@@ -14,5 +14,4 @@ public class UserNotExistsException : CustomException
     public UserNotExistsException(Guid userId) : base($"User with id {userId} does not exist.")
     {
     }
-
 }

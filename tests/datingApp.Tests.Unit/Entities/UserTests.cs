@@ -106,15 +106,18 @@ public class UserTests
         Assert.IsType<InvalidUsernameException>(exception);
     }
 
-    [Theory]
-    [InlineData("2020-02-02")]
-    [InlineData("2005-12-31")]
-    [InlineData("1922-01-18")]
-    public void user_age_below_18_or_aboce_100_should_throw_exception(string dateString)
+    public static TheoryData<DateTime> BadUserAgeData => new()
     {
-        var invalidDob = DateTime.Parse(dateString);
-        var invalidDob2 = new DateOnly(invalidDob.Year, invalidDob.Month, invalidDob.Day);
-        var exception = Record.Exception(() =>new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "janusz", invalidDob2, Sex.Male, null, properUserSettings));
+        { new DateTime(DateTime.Now.Year - 18, DateTime.Now.Month, DateTime.Now.Day + 1)},
+        { new DateTime(DateTime.Now.Year - 101, DateTime.Now.Month, DateTime.Now.Day)},
+    };
+
+    [Theory]
+    [MemberData(nameof(BadUserAgeData))]
+    public void user_age_below_18_or_aboce_100_should_throw_exception(DateTime date)
+    {
+        var invalidDob = new DateOnly(date.Year, date.Month, date.Day);
+        var exception = Record.Exception(() =>new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "janusz", invalidDob, Sex.Male, null, properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDateOfBirthException>(exception);
     }

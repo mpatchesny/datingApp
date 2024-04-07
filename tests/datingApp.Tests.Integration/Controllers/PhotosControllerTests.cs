@@ -180,7 +180,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         var notExistingPhotoFilename = Guid.NewGuid().ToString() + ".jpg";
         var response = await Client.GetAsync($"/storage/{notExistingPhotoFilename}");
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); ;
     }
 
     private async Task<User> CreateUserAsync(string email, string phone = null)

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
+using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using Newtonsoft.Json;
 using Xunit;
@@ -150,8 +151,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
     }
 
-    [Fact (Skip = "FIXME")]
-    public async Task get_storage_returns_200_OK_and_base_64_encoded_photo()
+    [Fact]
+    public async Task get_storage_returns_200_OK_and_photo_binary()
     {
         var user = await CreateUserAsync("test@test.com");
 
@@ -164,16 +165,12 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
 
         var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
-        var response = await Client.GetAsync($"{photoDto.Url}");
+        var response = await Client.GetAsync(photoDto.Url.Substring(1));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        Assert.Equal(photoBase64, responseContent);
-
-        // TODO: remove photos from disk
+        Assert.Equal(photoBase64, Convert.ToBase64String(await response.Content.ReadAsByteArrayAsync()));
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async Task given_physical_file_not_exists_get_storage_returns_404_not_found()
     {
         var user = await CreateUserAsync("test@test.com");
@@ -182,7 +179,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
         var notExistingPhotoFilename = Guid.NewGuid().ToString() + ".jpg";
-        var response = await Client.GetAsync($"~/storage/{notExistingPhotoFilename}");
+        var response = await Client.GetAsync($"/storage/{notExistingPhotoFilename}");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -213,6 +210,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
     public void Dispose()
     {
+        var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");
+        System.IO.Directory.Delete(tempFolder, true);
         _testDb?.Dispose();
     }
 }

@@ -10,6 +10,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Controllers;
 
+[Collection("Integration tests")]
 public class PassControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]

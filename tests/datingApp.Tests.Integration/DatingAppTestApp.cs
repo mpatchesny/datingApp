@@ -17,10 +17,11 @@ internal sealed class DatingAppTestApp : WebApplicationFactory<Program>
     public HttpClient Client { get; }
     public DatingAppTestApp(Action<IServiceCollection> services = null)
     {
+        var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");
+        System.IO.Directory.CreateDirectory(tempFolder);
         Client = base.WithWebHostBuilder(builder => 
         {
             builder.UseEnvironment("test");
-            var tempFolder = Path.GetTempPath();
             if (services is not null)
             {
                 builder.UseSetting("Storage:StoragePath", tempFolder);

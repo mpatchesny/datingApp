@@ -6,7 +6,7 @@ using datingApp.Application.Services;
 using datingApp.Infrastructure.Services;
 using Xunit;
 
-namespace datingApp.Tests.Integration;
+namespace datingApp.Tests.Integration.Services;
 
 [Collection("Integration tests")]
 public class DbFileStorageTests : IDisposable

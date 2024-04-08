@@ -20,22 +20,14 @@ namespace datingApp.Application
         {
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
             services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
+
+            services.Scan(s => s.FromCallingAssembly()
+                .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
-            services.AddScoped<ICommandHandler<SignUp>, SignUpHandler>();
-            services.AddScoped<ICommandHandler<ChangeUser>, ChangeUserHandler>();
-            services.AddScoped<ICommandHandler<AddPhoto>, AddPhotoHandler>();
-            services.AddScoped<ICommandHandler<ChangePhotoOridinal>, ChangePhotoOridinalHandler>();
-            services.AddScoped<ICommandHandler<DeletePhoto>, DeletePhotoHandler>();
-            services.AddScoped<ICommandHandler<DeleteMatch>, DeleteMatchHandler>();
-            services.AddScoped<ICommandHandler<SwipeUser>, SwipeUserHandler>();
-            services.AddScoped<ICommandHandler<SendMessage>, SendMessageHandler>();
-            services.AddScoped<ICommandHandler<DeleteUser>, DeleteUserHandler>();
-            services.AddScoped<ICommandHandler<SetMessagesAsDisplayed>, SetMessagesAsDisplayedHandler>();
-            services.AddScoped<ICommandHandler<SetMatchAsDisplayed>, SetMatchAsDisplayedHandler>();
             services.AddSingleton<AccessCodeVerificator, AccessCodeVerificator>();
-            services.AddScoped<ICommandHandler<RequestEmailAccessCode>, RequestEmailAccessCodeHandler>();
-            services.AddScoped<ICommandHandler<SignInByEmail>, SignInByEmailHandler>();
-            services.AddScoped<ICommandHandler<AddMatch>, AddMatchHandler>();
             services.AddSingleton<IEmailGenerator, EmailGenerator>();
             return services;
         }

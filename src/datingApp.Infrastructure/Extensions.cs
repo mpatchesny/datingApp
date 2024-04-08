@@ -17,7 +17,9 @@ using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Scrutor;
 
 namespace datingApp.Infrastructure;
 
@@ -35,16 +37,14 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
-        services.AddScoped<IQueryHandler<GetMatches, PaginatedDataDto>, GetMatchesHandler>();
-        services.AddScoped<IQueryHandler<GetMessages, PaginatedDataDto>, GetMessagesHandler>();
-        services.AddScoped<IQueryHandler<GetPhoto, PhotoDto>, GetPhotoHandler>();
-        services.AddScoped<IQueryHandler<GetMessage, MessageDto>, GetMessageHandler>();
-        services.AddScoped<IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto>, GetIsLikedByOtherUserHandler>();
-        services.AddScoped<IQueryHandler<GetPublicUser, PublicUserDto>, GetPublicUserHandler>();
-        services.AddScoped<IQueryHandler<GetPrivateUser, PrivateUserDto>, GetPrivateUserHandler>();
-        services.AddScoped<IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>, GetSwipeCandidatesHandler>();
+
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
-        services.AddScoped<IQueryHandler<GetMatch, MatchDto>, GetMatchHandler>();
+        services.Scan(s => s.FromCallingAssembly()
+            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>))
+                .Where(t => !t.Name.Equals("GetUpdatesHandler")))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
         services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddScoped<IFileStorage, DbFileStorage>();

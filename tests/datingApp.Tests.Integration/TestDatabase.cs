@@ -9,10 +9,12 @@ namespace datingApp.Tests.Integration;
 internal sealed class TestDatabase : IDisposable
 {
     public DatingAppDbContext DbContext { get; }
-    public TestDatabase()
+    public TestDatabase(bool randomDbName = true)
     {
         var options = new OptionsProvider().Get<DatabaseOptions>("database");
-        DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(options.ConnectionString).Options);
+        var connString = options.ConnectionString;
+        if (randomDbName) connString = String.Format(connString, Guid.NewGuid());
+        DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(connString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();
     }

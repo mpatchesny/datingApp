@@ -353,17 +353,21 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var user4 = await CreateUserAsync("test4@test.com");
         var user5 = await CreateUserAsync("test5@test.com");
         var user6 = await CreateUserAsync("test6@test.com");
+
         _testDb.DbContext.Matches.Add(new Match(Guid.Empty, user.Id, user2.Id, false, false, null, time - TimeSpan.FromSeconds(1)));
         _testDb.DbContext.Matches.Add(new Match(Guid.Empty, user.Id, user3.Id, false, false, null, time - TimeSpan.FromSeconds(1)));
         _testDb.DbContext.Matches.Add(new Match(Guid.Empty, user.Id, user4.Id, false, false, null, time - TimeSpan.FromSeconds(1)));
         _testDb.DbContext.Matches.Add(new Match(Guid.Parse("00000000-0000-0000-0000-000000000011"), user.Id, user5.Id, false, false, null, time - TimeSpan.FromHours(2)));
         _testDb.DbContext.Matches.Add(new Match(Guid.Parse("00000000-0000-0000-0000-000000000012"), user.Id, user6.Id, false, false, null, time - TimeSpan.FromHours(2)));
         await _testDb.DbContext.SaveChangesAsync();
+
         _testDb.DbContext.Messages.Add(new Message(Guid.Empty, Guid.Parse("00000000-0000-0000-0000-000000000011"), user5.Id, "test", false, time - TimeSpan.FromSeconds(1)));
         _testDb.DbContext.Messages.Add(new Message(Guid.Empty, Guid.Parse("00000000-0000-0000-0000-000000000012"), user6.Id, "test", false, time - TimeSpan.FromSeconds(1)));
         await _testDb.DbContext.SaveChangesAsync();
+
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+
         var lastActivityTime = time - TimeSpan.FromHours(1);
         var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
         Assert.NotNull(response);

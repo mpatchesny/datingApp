@@ -74,7 +74,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
     private readonly TestDatabase _testDb;
     public PassControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
-        _testDb = new TestDatabase();
+        _testDb = new TestDatabase(false);
     }
 
     public void Dispose()

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Security
 {
-    [Collection("Integration tests")]
+    
     public class DbAccessCodeStorageTests : IDisposable
     {
         [Fact]

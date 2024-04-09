@@ -9,7 +9,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
-[Collection("Integration tests")]
+
 public class GetUpdatesHandlerTests : IDisposable
 {
     [Fact]

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
-[Collection("Integration tests")]
+
 public class ChangeUserHandlerTests : IDisposable
 {
     [Fact]

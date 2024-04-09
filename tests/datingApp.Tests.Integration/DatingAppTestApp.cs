@@ -19,6 +19,7 @@ internal sealed class DatingAppTestApp : WebApplicationFactory<Program>
     {
         var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");
         System.IO.Directory.CreateDirectory(tempFolder);
+
         Client = base.WithWebHostBuilder(builder => 
         {
             builder.UseEnvironment("test");

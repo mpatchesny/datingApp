@@ -366,7 +366,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     private readonly TestDatabase _testDb;
     public MatchesControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
-        _testDb = new TestDatabase();
+        _testDb = new TestDatabase(false);
     }
 
     public void Dispose()

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Services;
 
-[Collection("Integration tests")]
+
 public class DbFileStorageTests : IDisposable
 {
     [Fact]

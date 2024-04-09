@@ -26,31 +26,13 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (context.Request.Path.ToString().Contains("/storage"))
         {
-            var s = GetFilenameAndFileExtFromUri(context.Request.Path.ToString());
+            var s = context.Request.Path.ToString().Substring("/storage/".Length).Split(".");
             if (s.Length == 2)
             {
                 await GetFileFromDatabaseAndSaveLocallyIfNotExists(s[0], s[1]);
             }
         }
         await next(context);
-    }
-
-    private static string[] GetFilenameAndFileExtFromUri(string uri)
-    {
-        var findText = "/storage";
-        var pos = uri.IndexOf(findText);
-        var filename = "";
-
-        try
-        {
-            var lowerBound = pos + findText.Length + 1;
-            filename = uri.Substring(lowerBound, uri.Length - lowerBound);
-        }
-        catch
-        {}
-
-        var s = filename.Split(".");
-        return s;
     }
 
     private async Task GetFileFromDatabaseAndSaveLocallyIfNotExists(string id, string extension)

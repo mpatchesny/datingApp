@@ -12,7 +12,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
-[Collection("Integration tests")]
+
 public class SingUpHandlerTests : IDisposable
 {
     [Fact]

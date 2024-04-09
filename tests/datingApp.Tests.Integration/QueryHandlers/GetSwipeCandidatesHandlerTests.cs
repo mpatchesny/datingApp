@@ -11,7 +11,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
-[Collection("Integration tests")]
+
 public class GetSwipeCandidatesHandlerTests : IDisposable
 {
     [Theory]

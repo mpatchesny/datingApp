@@ -11,7 +11,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
-[Collection("Integration tests")]
+
 public class GetMessagesHandlerTests : IDisposable
 {
     [Fact]

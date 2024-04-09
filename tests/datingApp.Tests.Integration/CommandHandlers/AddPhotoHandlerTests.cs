@@ -16,7 +16,6 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
-[Collection("Integration tests")]
 public class AddPhotoHandlerTests : IDisposable
 {
     [Fact]

@@ -12,9 +12,8 @@ internal sealed class TestDatabase : IDisposable
     public TestDatabase(bool randomDbName = true)
     {
         var options = new OptionsProvider().Get<DatabaseOptions>("database");
-        string stringSup = randomDbName ? Guid.NewGuid().ToString() : "";
         var connString = options.ConnectionString;
-        connString = String.Format(connString, stringSup);
+        if (randomDbName) connString = String.Format(connString, Guid.NewGuid().ToString());
         DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(connString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();

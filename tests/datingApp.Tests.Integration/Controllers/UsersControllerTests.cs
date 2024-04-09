@@ -424,7 +424,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     private readonly TestDatabase _testDb;
     public UsersControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
-        _testDb = new TestDatabase();
+        _testDb = new TestDatabase(false);
     }
 
     public void Dispose()

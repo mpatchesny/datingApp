@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Controllers;
@@ -74,7 +75,7 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
     private readonly TestDatabase _testDb;
     public LikeControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
-        _testDb = new TestDatabase();
+        _testDb = new TestDatabase(false);
     }
 
     public void Dispose()

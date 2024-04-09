@@ -206,7 +206,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     private readonly TestDatabase _testDb;
     public PhotosControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
-        _testDb = new TestDatabase();
+        _testDb = new TestDatabase(false);
     }
     public void Dispose()
     {

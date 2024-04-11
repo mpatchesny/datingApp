@@ -78,6 +78,10 @@ public class PhotoRepositoryTests : IDisposable
     [Fact]
     public async Task update_photos_should_succeed()
     {
+        var photo = new Photo(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 2);
+        await _testDb.DbContext.Photos.AddAsync(photo);
+        await _testDb.DbContext.SaveChangesAsync();
+
         var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         photos.ElementAt(0).ChangeOridinal(2);
         photos.ElementAt(1).ChangeOridinal(1);
@@ -112,7 +116,6 @@ public class PhotoRepositoryTests : IDisposable
 
         var photos = new List<Photo>{
             new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 2)
         };
         _testDb.DbContext.Photos.AddRange(photos);
         _testDb.DbContext.SaveChanges();

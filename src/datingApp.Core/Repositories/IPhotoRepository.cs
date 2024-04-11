@@ -13,4 +13,5 @@ public interface IPhotoRepository : IRepository
     Task AddAsync(Photo photo);
     Task DeleteAsync(Photo photo);
     Task UpdateAsync(Photo thisPhoto);
+    Task UpdateRangeAsync(Photo[] photos);
 }

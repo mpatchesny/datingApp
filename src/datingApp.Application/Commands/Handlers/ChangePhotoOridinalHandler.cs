@@ -39,7 +39,8 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
         for (int i = 0; i < photoList.Count(); i++)
         {
             photoList[i].ChangeOridinal(i);
-            await _photoRepository.UpdateAsync(photoList[i]);
         }
+
+        await _photoRepository.UpdateRangeAsync(photoList.ToArray());
     }
 }

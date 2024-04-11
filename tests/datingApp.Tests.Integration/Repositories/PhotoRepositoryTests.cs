@@ -76,6 +76,24 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task update_photos_should_succeed()
+    {
+        var photo = new Photo(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 2);
+        await _testDb.DbContext.Photos.AddAsync(photo);
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        photos.ElementAt(0).ChangeOridinal(2);
+        photos.ElementAt(1).ChangeOridinal(1);
+
+        var exception = await Record.ExceptionAsync(async () => await _repository.UpdateRangeAsync(photos.ToArray()));
+        Assert.Null(exception);
+
+        var updatedPhotos = await _testDb.DbContext.Photos.Where(x => x.UserId == Guid.Parse("00000000-0000-0000-0000-000000000001")).ToListAsync();
+        Assert.Equal(photos.OrderBy(x => x.Id), updatedPhotos.OrderBy(x => x.Id));
+    }
+
+    [Fact]
     public async Task delete_existing_photo_should_succeed()
     {
         var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
@@ -96,8 +114,10 @@ public class PhotoRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
-        _testDb.DbContext.Photos.Add(photo);
+        var photos = new List<Photo>{
+            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1),
+        };
+        _testDb.DbContext.Photos.AddRange(photos);
         _testDb.DbContext.SaveChanges();
         _repository = new PostgresPhotoRepository(_testDb.DbContext);
     }

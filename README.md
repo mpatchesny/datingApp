@@ -40,4 +40,4 @@ Please see [REST.http](REST.http) for examples of API calls. You must have [REST
 - [ ] more & better tests (API tests, etc.)
 - [x] eliminate application state
 - [x] some endpoints need fixing
-- [ ] fix async/ await
+- [x] fix async/ await

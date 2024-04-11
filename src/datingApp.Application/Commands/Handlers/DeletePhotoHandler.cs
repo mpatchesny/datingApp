@@ -32,9 +32,9 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             throw new PhotoNotExistsException(command.PhotoId);
         }
 
-        Task[] tasks = new Task[2];
-        tasks[0] = _photoRepository.DeleteAsync(photo);
-        tasks[1] = _fileStorage.DeleteFileAsync(photo.Path);
-        Task.WaitAll(tasks);
+        await Task.WhenAll(
+            _photoRepository.DeleteAsync(photo),
+            _fileStorage.DeleteFileAsync(photo.Path)
+        );
     }
 }

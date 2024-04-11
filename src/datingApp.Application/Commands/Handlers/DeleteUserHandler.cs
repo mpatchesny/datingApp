@@ -26,10 +26,13 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         {
             throw new UserNotExistsException(command.UserId);
         }
-        foreach (var photo in user.Photos)
+
+        Task[] tasks = new Task[user.Photos.Count()+1];
+        for (int i=0; i<user.Photos.Count(); i++)
         {
-            await _fileStorage.DeleteFileAsync(photo.Id.ToString());
+            tasks[i] = _fileStorage.DeleteFileAsync(user.Photos.ElementAt(i).Id.ToString());
         }
-        await _userRepository.DeleteAsync(user);
+        tasks[tasks.Length - 1] = _userRepository.DeleteAsync(user);
+        await Task.WhenAll(tasks);
     }
 }

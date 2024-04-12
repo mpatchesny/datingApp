@@ -16,8 +16,8 @@ internal sealed class StorageMiddleware : IMiddleware
 {
     private readonly ILogger<IMiddleware> _logger;
     private readonly IFileRepository _fileRepository;
-    private readonly FileStorageOptions _diskFileStorageOptions;
-    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository fileRepository, FileStorageOptions diskFileStorageOptions)
+    private readonly FileStorageService _diskFileStorageOptions;
+    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository fileRepository, FileStorageService diskFileStorageOptions)
     {
         _logger = logger;
         _fileRepository = fileRepository;

@@ -6,11 +6,11 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class FileStorageOptions
+internal sealed class FileStorageService
 {
     private readonly IOptions<StorageOptions> _storageOptions;
-    private readonly ILogger<FileStorageOptions> _logger;
-    public FileStorageOptions(IOptions<StorageOptions> storageOptions, ILogger<FileStorageOptions> logger)
+    private readonly ILogger<FileStorageService> _logger;
+    public FileStorageService(IOptions<StorageOptions> storageOptions, ILogger<FileStorageService> logger)
     {
         _storageOptions = storageOptions;
         _logger = logger;
@@ -37,7 +37,7 @@ internal sealed class FileStorageOptions
         }
         catch (Exception ex)
         {
-            var error = $"{nameof(FileStorageOptions)}: Failed to save file to disk: Id: {fileId}, path: {filePath}.";
+            var error = $"{nameof(FileStorageService)}: Failed to save file to disk: Id: {fileId}, path: {filePath}.";
             _logger.LogError(ex, error);
         }
     }
@@ -50,7 +50,7 @@ internal sealed class FileStorageOptions
         {
             return System.IO.File.ReadAllBytes(files[0].FullName);
         }
-        var error = $"{nameof(FileStorageOptions)}: File with id: {fileId} not found.";
+        var error = $"{nameof(FileStorageService)}: File with id: {fileId} not found.";
         _logger.LogError(error);
         return null;
     }
@@ -69,7 +69,7 @@ internal sealed class FileStorageOptions
             }
             catch (Exception ex)
             {
-                var error = $"{nameof(FileStorageOptions)}: Failed to delete file: Id: {fileId}, path: {file.FullName}.";
+                var error = $"{nameof(FileStorageService)}: Failed to delete file: Id: {fileId}, path: {file.FullName}.";
                 _logger.LogError(ex, error);
             }
         }

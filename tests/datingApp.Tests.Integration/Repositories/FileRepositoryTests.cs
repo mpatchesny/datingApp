@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Repositories;
 using datingApp.Application.Services;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;

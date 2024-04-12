@@ -7,6 +7,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Queries;
+using datingApp.Application.Repositories;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Infrastructure.DAL;
@@ -47,7 +48,7 @@ public static class Extensions
 
         services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
-        services.AddScoped<IFileRepository, DbFileStorage>();
+        services.AddScoped<IFileRepository, PostgresFileRepository>();
         services.AddSingleton<FileStorageOptions>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();

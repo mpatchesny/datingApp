@@ -16,12 +16,12 @@ internal sealed class StorageMiddleware : IMiddleware
 {
     private readonly ILogger<IMiddleware> _logger;
     private readonly IFileRepository _fileRepository;
-    private readonly FileStorageService _diskFileStorageOptions;
-    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository fileRepository, FileStorageService diskFileStorageOptions)
+    private readonly FileStorageService _diskFileService;
+    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository fileRepository, FileStorageService diskFileService)
     {
         _logger = logger;
         _fileRepository = fileRepository;
-        _diskFileStorageOptions = diskFileStorageOptions;
+        _diskFileService = diskFileService;
     }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -38,12 +38,12 @@ internal sealed class StorageMiddleware : IMiddleware
 
     private async Task GetFileFromDatabaseAndSaveLocallyIfNotExists(string id, string extension)
     {
-        if (!_diskFileStorageOptions.Exists(id, extension))
+        if (!_diskFileService.Exists(id, extension))
         {
             var file = await _fileRepository.GetByIdAsync(Guid.Parse(id));
             if (file != null)
             {
-                _diskFileStorageOptions.SaveFile(file, id, extension);
+                _diskFileService.SaveFile(file, id, extension);
             }
         }
     }

@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace datingApp.Infrastructure.Services;
+namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class DbFileStorage : IFileRepository
 {

@@ -46,8 +46,8 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<byte[]>("Binary")
                         .IsRequired()
@@ -256,6 +256,15 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("Lat", "Lon");
 
                     b.ToTable("UserSettings");
+                });
+
+            modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
+                {
+                    b.HasOne("datingApp.Core.Entities.Photo", null)
+                        .WithOne()
+                        .HasForeignKey("datingApp.Application.DTO.FileDto", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>

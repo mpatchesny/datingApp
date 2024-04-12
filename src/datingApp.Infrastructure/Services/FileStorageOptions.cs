@@ -75,7 +75,7 @@ internal sealed class FileStorageOptions
         }
     }
 
-    private void BuildPath(string path)
+    private static void BuildPath(string path)
     {
         if (!System.IO.Directory.Exists(path))
         {

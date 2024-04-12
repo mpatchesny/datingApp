@@ -7,10 +7,10 @@ using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
 using Xunit;
 
-namespace datingApp.Tests.Integration.Services;
+namespace datingApp.Tests.Integration.Repositories;
 
 
-public class DbFileStorageTests : IDisposable
+public class FileRepositoryTests : IDisposable
 {
     [Fact]
     public async Task given_file_exists_GetFileAsync_returns_file_binaryAsync()
@@ -117,7 +117,7 @@ public class DbFileStorageTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
-    public DbFileStorageTests()
+    public FileRepositoryTests()
     {
         _testDb = new TestDatabase();
     }

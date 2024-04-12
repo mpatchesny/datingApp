@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class DbFileStorage : IFileRepository
+internal sealed class PostgresFileRepository : IFileRepository
 {
     private readonly DatingAppDbContext _dbContext;
-    public DbFileStorage(DatingAppDbContext dbContext)
+    public PostgresFileRepository(DatingAppDbContext dbContext)
     {
          _dbContext = dbContext;
     }

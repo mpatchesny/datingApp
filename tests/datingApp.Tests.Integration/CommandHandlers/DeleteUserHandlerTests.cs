@@ -41,7 +41,7 @@ public class DeleteUserHandlerTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
         var userRepository = new PostgresUserRepository(_testDb.DbContext);
-        var fileStorage = new DbFileStorage(_testDb.DbContext);
+        var fileStorage = new PostgresFileRepository(_testDb.DbContext);
         _handler = new DeleteUserHandler(userRepository, fileStorage);
     }
 

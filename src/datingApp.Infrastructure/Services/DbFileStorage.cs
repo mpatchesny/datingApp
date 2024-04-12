@@ -16,14 +16,9 @@ internal sealed class DbFileStorage : IFileStorage
          _dbContext = dbContext;
     }
 
-    public async Task DeleteFileAsync(string identification)
+    public async Task<bool> ExistsAsync(string identification)
     {
-        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == identification);
-        if (file != null)
-        {
-            _dbContext.Files.Remove(file);
-            await _dbContext.SaveChangesAsync();
-        }
+        return await _dbContext.Files.AnyAsync(x => x.Id == identification);
     }
 
     public async Task<byte[]> GetFileAsync(string identification)
@@ -54,4 +49,15 @@ internal sealed class DbFileStorage : IFileStorage
         }
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task DeleteFileAsync(string identification)
+    {
+        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == identification);
+        if (file != null)
+        {
+            _dbContext.Files.Remove(file);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
+
 }

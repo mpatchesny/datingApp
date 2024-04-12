@@ -56,6 +56,27 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task delete_photo_deletes_associated_file()
+    {
+        var file = new Application.DTO.FileDto {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Extension = "txt",
+            Binary = new byte[] { byte.MinValue, 0, byte.MaxValue }
+        };
+        _testDb.DbContext.Files.Add(file);
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var photo = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        await _repository.DeleteAsync(photo);
+
+        var photos = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Empty(photos);
+
+        var fileDto = await _testDb.DbContext.Files.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.Null(fileDto);
+    }
+
+    [Fact]
     public async Task add_photo_with_existing_id_should_throw_exception()
     {
         var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);

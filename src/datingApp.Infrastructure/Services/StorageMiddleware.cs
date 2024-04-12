@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Repositories;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
 using datingApp.Infrastructure.Services;
@@ -14,12 +15,12 @@ namespace datingApp.Infrastructure.Exceptions;
 internal sealed class StorageMiddleware : IMiddleware
 {
     private readonly ILogger<IMiddleware> _logger;
-    private readonly IFileRepository _dbFileStorage;
+    private readonly IFileRepository _fileRepository;
     private readonly FileStorageOptions _diskFileStorageOptions;
-    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository dbFileStorage, FileStorageOptions diskFileStorageOptions)
+    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository fileRepository, FileStorageOptions diskFileStorageOptions)
     {
         _logger = logger;
-        _dbFileStorage = dbFileStorage;
+        _fileRepository = fileRepository;
         _diskFileStorageOptions = diskFileStorageOptions;
     }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -39,7 +40,7 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (!_diskFileStorageOptions.Exists(id, extension))
         {
-            var file = await _dbFileStorage.GetByIdAsync(id);
+            var file = await _fileRepository.GetByIdAsync(id);
             if (file != null)
             {
                 _diskFileStorageOptions.SaveFile(file, id, extension);

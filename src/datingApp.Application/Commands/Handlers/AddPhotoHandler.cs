@@ -17,16 +17,16 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
-    private readonly IFileRepository _fileStorage;
+    private readonly IFileRepository _fileRepository;
     public AddPhotoHandler(IPhotoRepository photoRepository,
                             IUserRepository userRepository,
                             IPhotoService photoService,
-                            IFileRepository fileStorage)
+                            IFileRepository fileRepository)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
         _photoService = photoService;
-        _fileStorage = fileStorage;
+        _fileRepository = fileRepository;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -46,7 +46,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         _photoService.ValidatePhoto(bytes);
 
         var extension = _photoService.GetImageFileFormat(bytes);
-        await _fileStorage.SaveFileAsync(bytes, command.PhotoId, extension);
+        await _fileRepository.SaveFileAsync(bytes, command.PhotoId, extension);
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();

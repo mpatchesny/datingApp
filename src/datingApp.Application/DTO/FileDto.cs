@@ -7,7 +7,7 @@ namespace datingApp.Application.DTO;
 
 public class FileDto
 {
-    public String Id { get; set; }
+    public Guid Id { get; set; }
     public String Extension { get; set; }
     public byte[] Binary { get; set; }
 }

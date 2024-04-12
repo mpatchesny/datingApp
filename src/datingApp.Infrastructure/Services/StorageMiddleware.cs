@@ -40,7 +40,7 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (!_diskFileStorageOptions.Exists(id, extension))
         {
-            var file = await _fileRepository.GetByIdAsync(id);
+            var file = await _fileRepository.GetByIdAsync(Guid.Parse(id));
             if (file != null)
             {
                 _diskFileStorageOptions.SaveFile(file, id, extension);

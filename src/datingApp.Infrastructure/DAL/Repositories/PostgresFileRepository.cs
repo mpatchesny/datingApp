@@ -17,12 +17,12 @@ internal sealed class PostgresFileRepository : IFileRepository
          _dbContext = dbContext;
     }
 
-    public async Task<bool> ExistsAsync(string fileId)
+    public async Task<bool> ExistsAsync(Guid fileId)
     {
         return await _dbContext.Files.AnyAsync(x => x.Id == fileId);
     }
 
-    public async Task<byte[]> GetByIdAsync(string fileId)
+    public async Task<byte[]> GetByIdAsync(Guid fileId)
     {
         var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         if (file != null)
@@ -32,7 +32,7 @@ internal sealed class PostgresFileRepository : IFileRepository
         return null;
     }
 
-    public async Task SaveFileAsync(byte[] photo, string fileId, string extension)
+    public async Task SaveFileAsync(byte[] photo, Guid fileId, string extension)
     {
         var file = new FileDto {
             Id = fileId,
@@ -51,7 +51,7 @@ internal sealed class PostgresFileRepository : IFileRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(string fileId)
+    public async Task DeleteAsync(Guid fileId)
     {
         var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         if (file != null)

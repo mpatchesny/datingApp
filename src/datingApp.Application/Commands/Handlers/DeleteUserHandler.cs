@@ -31,9 +31,9 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         Task[] tasks = new Task[user.Photos.Count()+1];
         for (int i=0; i<user.Photos.Count(); i++)
         {
-            tasks[i] = _fileStorage.DeleteAsync(user.Photos.ElementAt(i).Id.ToString());
+            tasks[i] = _fileStorage.DeleteAsync(user.Photos.ElementAt(i).Id);
         }
-        tasks[tasks.Length - 1] = _userRepository.DeleteAsync(user);
+        tasks[^1] = _userRepository.DeleteAsync(user);
         await Task.WhenAll(tasks);
     }
 }

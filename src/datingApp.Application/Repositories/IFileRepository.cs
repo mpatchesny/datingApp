@@ -7,8 +7,8 @@ namespace datingApp.Application.Repositories;
 
 public interface IFileRepository
 {
-    public Task<bool> ExistsAsync(string fileId);
-    public Task SaveFileAsync(byte[] photo, string fileId, string extension);
-    public Task<byte[]> GetByIdAsync(string fileId);
-    public Task DeleteAsync(string fileId);
+    public Task<bool> ExistsAsync(Guid fileId);
+    public Task SaveFileAsync(byte[] photo, Guid fileId, string extension);
+    public Task<byte[]> GetByIdAsync(Guid fileId);
+    public Task DeleteAsync(Guid fileId);
 }

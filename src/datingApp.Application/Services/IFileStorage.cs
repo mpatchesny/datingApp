@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface IFileStorage
+public interface IFileRepository
 {
     public Task<bool> ExistsAsync(string fileId);
     public Task SaveFileAsync(byte[] photo, string fileId, string extension);
-    public Task<byte[]> GetFileAsync(string fileId);
-    public Task DeleteFileAsync(string fileId);
+    public Task<byte[]> GetByIdAsync(string fileId);
+    public Task DeleteAsync(string fileId);
 }

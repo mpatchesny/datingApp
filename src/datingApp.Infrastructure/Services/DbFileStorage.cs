@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class DbFileStorage : IFileStorage
+internal sealed class DbFileStorage : IFileRepository
 {
     private readonly DatingAppDbContext _dbContext;
     public DbFileStorage(DatingAppDbContext dbContext)
@@ -21,7 +21,7 @@ internal sealed class DbFileStorage : IFileStorage
         return await _dbContext.Files.AnyAsync(x => x.Id == fileId);
     }
 
-    public async Task<byte[]> GetFileAsync(string fileId)
+    public async Task<byte[]> GetByIdAsync(string fileId)
     {
         var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         if (file != null)
@@ -50,7 +50,7 @@ internal sealed class DbFileStorage : IFileStorage
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteFileAsync(string fileId)
+    public async Task DeleteAsync(string fileId)
     {
         var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         if (file != null)

@@ -27,8 +27,8 @@ public class DbFileStorageTests : IDisposable
         _testDb.DbContext.Files.Add(file);
         await _testDb.DbContext.SaveChangesAsync();
 
-        IFileStorage storage = new DbFileStorage(_testDb.DbContext);
-        var fileBinary = await storage.GetFileAsync("identif");
+        IFileRepository storage = new DbFileStorage(_testDb.DbContext);
+        var fileBinary = await storage.GetByIdAsync("identif");
         Assert.NotNull(fileBinary);
         Assert.Same(fileBinary, data);
     }
@@ -36,8 +36,8 @@ public class DbFileStorageTests : IDisposable
     [Fact]
     public async Task given_file_not_exists_GetFileAsync_returns_null()
     {
-        IFileStorage storage = new DbFileStorage(_testDb.DbContext);
-        var file = await storage.GetFileAsync("identif");
+        IFileRepository storage = new DbFileStorage(_testDb.DbContext);
+        var file = await storage.GetByIdAsync("identif");
         Assert.Null(file);
     }
 
@@ -49,10 +49,10 @@ public class DbFileStorageTests : IDisposable
         data[1] = 0;
         data[2] = byte.MaxValue;
 
-        IFileStorage storage = new DbFileStorage(_testDb.DbContext);
+        IFileRepository storage = new DbFileStorage(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(data, "identif" , "txt"));
         Assert.Null(exception);
-        var file = await storage.GetFileAsync("identif");
+        var file = await storage.GetByIdAsync("identif");
         Assert.NotNull(file);
     }
 
@@ -76,10 +76,10 @@ public class DbFileStorageTests : IDisposable
         data[1] = byte.MaxValue;
         data[2] = byte.MaxValue;
 
-        IFileStorage storage = new DbFileStorage(_testDb.DbContext);
+        IFileRepository storage = new DbFileStorage(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(data, "identif" , "txt"));
         Assert.Null(exception);
-        var fileBinary = await storage.GetFileAsync("identif");
+        var fileBinary = await storage.GetByIdAsync("identif");
         Assert.NotNull(fileBinary);
         Assert.Same(data, fileBinary);
     }
@@ -100,8 +100,8 @@ public class DbFileStorageTests : IDisposable
         _testDb.DbContext.Files.Add(file);
         await _testDb.DbContext.SaveChangesAsync();
 
-        IFileStorage storage = new DbFileStorage(_testDb.DbContext);
-        await storage.DeleteFileAsync("identif");
+        IFileRepository storage = new DbFileStorage(_testDb.DbContext);
+        await storage.DeleteAsync("identif");
         file = _testDb.DbContext.Files.FirstOrDefault(x => x.Id == "identif");
         Assert.Null(file);
     }
@@ -109,8 +109,8 @@ public class DbFileStorageTests : IDisposable
     [Fact]
     public async Task given_file_notexists_DeleteFileAsync_not_throws_exepction()
     {
-        IFileStorage storage = new DbFileStorage(_testDb.DbContext);
-        var exception = await Record.ExceptionAsync(async () => await storage.DeleteFileAsync("identif"));
+        IFileRepository storage = new DbFileStorage(_testDb.DbContext);
+        var exception = await Record.ExceptionAsync(async () => await storage.DeleteAsync("identif"));
         Assert.Null(exception);
     }
 

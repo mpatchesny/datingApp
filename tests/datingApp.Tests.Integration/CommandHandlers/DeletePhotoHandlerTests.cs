@@ -51,7 +51,7 @@ public class DeletePhotoHandlerTests : IDisposable
 
         var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
         var photoService = new DummyPhotoService();
-        var mockedFileStorage = new Mock<IFileStorage>();
+        var mockedFileStorage = new Mock<IFileRepository>();
         _handler = new DeletePhotoHandler(photoRepository, photoService, mockedFileStorage.Object);
     }
 

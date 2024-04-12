@@ -47,7 +47,7 @@ public static class Extensions
 
         services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
-        services.AddScoped<IFileStorage, DbFileStorage>();
+        services.AddScoped<IFileRepository, DbFileStorage>();
         services.AddSingleton<FileStorageOptions>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();

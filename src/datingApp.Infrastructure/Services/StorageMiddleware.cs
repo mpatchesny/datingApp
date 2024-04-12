@@ -14,9 +14,9 @@ namespace datingApp.Infrastructure.Exceptions;
 internal sealed class StorageMiddleware : IMiddleware
 {
     private readonly ILogger<IMiddleware> _logger;
-    private readonly IFileStorage _dbFileStorage;
+    private readonly IFileRepository _dbFileStorage;
     private readonly FileStorageOptions _diskFileStorageOptions;
-    public StorageMiddleware(ILogger<IMiddleware> logger, IFileStorage dbFileStorage, FileStorageOptions diskFileStorageOptions)
+    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository dbFileStorage, FileStorageOptions diskFileStorageOptions)
     {
         _logger = logger;
         _dbFileStorage = dbFileStorage;
@@ -39,7 +39,7 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (!_diskFileStorageOptions.Exists(id, extension))
         {
-            var file = await _dbFileStorage.GetFileAsync(id);
+            var file = await _dbFileStorage.GetByIdAsync(id);
             if (file != null)
             {
                 _diskFileStorageOptions.SaveFile(file, id, extension);

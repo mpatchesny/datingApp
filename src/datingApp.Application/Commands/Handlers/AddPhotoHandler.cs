@@ -16,11 +16,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
-    private readonly IFileStorage _fileStorage;
+    private readonly IFileRepository _fileStorage;
     public AddPhotoHandler(IPhotoRepository photoRepository,
                             IUserRepository userRepository,
                             IPhotoService photoService,
-                            IFileStorage fileStorage)
+                            IFileRepository fileStorage)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;

@@ -12,8 +12,8 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IFileStorage _fileStorage;
-    public DeleteUserHandler(IUserRepository userRepository, IFileStorage fileStorage)
+    private readonly IFileRepository _fileStorage;
+    public DeleteUserHandler(IUserRepository userRepository, IFileRepository fileStorage)
     {
         _userRepository = userRepository;
         _fileStorage = fileStorage;
@@ -30,7 +30,7 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         Task[] tasks = new Task[user.Photos.Count()+1];
         for (int i=0; i<user.Photos.Count(); i++)
         {
-            tasks[i] = _fileStorage.DeleteFileAsync(user.Photos.ElementAt(i).Id.ToString());
+            tasks[i] = _fileStorage.DeleteAsync(user.Photos.ElementAt(i).Id.ToString());
         }
         tasks[tasks.Length - 1] = _userRepository.DeleteAsync(user);
         await Task.WhenAll(tasks);

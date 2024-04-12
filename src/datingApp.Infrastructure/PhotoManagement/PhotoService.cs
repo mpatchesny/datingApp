@@ -28,11 +28,10 @@ internal sealed class PhotoService : IPhotoService
     {
         // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
         byte[] bytes = new byte[((Base64Bytes.Length * 3) + 3) / 4 -
-            (Base64Bytes.Length > 0 && Base64Bytes[Base64Bytes.Length - 1] == '=' ?
-                Base64Bytes.Length > 1 && Base64Bytes[Base64Bytes.Length - 2] == '=' ?
+            (Base64Bytes.Length > 0 && Base64Bytes[^1] == '=' ?
+                Base64Bytes.Length > 1 && Base64Bytes[^2] == '=' ?
                     2 : 1 : 0)];
-
-        if (!Convert.TryFromBase64String(Base64Bytes, bytes, out int bytesWritten))
+        if (!Convert.TryFromBase64String(Base64Bytes, bytes, out _))
         {
             throw new FailToConvertBase64StringToArrayOfBytes();
         }
@@ -50,7 +49,7 @@ internal sealed class PhotoService : IPhotoService
         {
             for (int i = 0; i < item.Key.Length; i++)
             {
-                match = (photo[i] == item.Key[i]);
+                match = photo[i] == item.Key[i];
                 if (!match) break;
             }
 
@@ -69,11 +68,11 @@ internal sealed class PhotoService : IPhotoService
         int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
         int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
 
-        if (photo.Count() > _options.Value.MaxPhotoSizeBytes)
+        if (photo.Length > _options.Value.MaxPhotoSizeBytes)
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
-        if (photo.Count() < _options.Value.MinPhotoSizeBytes)
+        if (photo.Length < _options.Value.MinPhotoSizeBytes)
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }

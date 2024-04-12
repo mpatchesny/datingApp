@@ -16,14 +16,14 @@ internal sealed class DbFileStorage : IFileStorage
          _dbContext = dbContext;
     }
 
-    public async Task<bool> ExistsAsync(string identification)
+    public async Task<bool> ExistsAsync(string fileId)
     {
-        return await _dbContext.Files.AnyAsync(x => x.Id == identification);
+        return await _dbContext.Files.AnyAsync(x => x.Id == fileId);
     }
 
-    public async Task<byte[]> GetFileAsync(string identification)
+    public async Task<byte[]> GetFileAsync(string fileId)
     {
-        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == identification);
+        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         if (file != null)
         {
             return file.Binary;
@@ -31,16 +31,16 @@ internal sealed class DbFileStorage : IFileStorage
         return null;
     }
 
-    public async Task SaveFileAsync(byte[] photo, string identification, string extension)
+    public async Task SaveFileAsync(byte[] photo, string fileId, string extension)
     {
         var file = new FileDto {
-            Id = identification,
+            Id = fileId,
             Extension = extension,
             Binary = photo
         };
-        if (await _dbContext.Files.AnyAsync(x => x.Id == identification))
+        if (await _dbContext.Files.AnyAsync(x => x.Id == fileId))
         {
-            var originalFile = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == identification);
+            var originalFile = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
             _dbContext.Entry(originalFile).CurrentValues.SetValues(file);
         }
         else
@@ -50,9 +50,9 @@ internal sealed class DbFileStorage : IFileStorage
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteFileAsync(string identification)
+    public async Task DeleteFileAsync(string fileId)
     {
-        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == identification);
+        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
         if (file != null)
         {
             _dbContext.Files.Remove(file);

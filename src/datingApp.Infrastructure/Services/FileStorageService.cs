@@ -18,9 +18,7 @@ internal sealed class FileStorageService
 
     public bool Exists(string fileId, string extension)
     {
-        string filename = $"{fileId}.{extension}";
-        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, filename);
-        return File.Exists(filePath);
+        return System.IO.File.Exists(System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}"));
     }
 
     public void SaveFile(byte[] file, string fileId, string extension)
@@ -37,39 +35,34 @@ internal sealed class FileStorageService
         }
         catch (Exception ex)
         {
-            var error = $"{nameof(FileStorageService)}: Failed to save file to disk: Id: {fileId}, path: {filePath}.";
+            var error = $"{nameof(FileStorageService)}: Failed to save file to disk: id: {fileId}, path: {filePath}.";
             _logger.LogError(ex, error);
         }
     }
 
-    public byte[] GetFile(string fileId)
+    public byte[] GetFile(string fileId, string extension)
     {
-        var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);
-        var files = storage.GetFiles(fileId + ".*");
-        if (files.Length > 0)
+        if (Exists(fileId, extension))
         {
-            return System.IO.File.ReadAllBytes(files[0].FullName);
+            return System.IO.File.ReadAllBytes(System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}"));
         }
-        var error = $"{nameof(FileStorageService)}: File with id: {fileId} not found.";
+        var error = $"{nameof(FileStorageService)}: File id {fileId} not found.";
         _logger.LogError(error);
         return null;
     }
 
-    public void DeleteFile(string fileId)
+    public void DeleteFile(string fileId, string extension)
     {
-        var storage = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath);
-        var files = storage.GetFiles(fileId + ".*");
-        if (files.Length == 0) return;
-
-        foreach (var file in files)
+        if (Exists(fileId, extension))
         {
+            string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}");
             try
             {
-                file.Delete();
+                System.IO.File.Delete(filePath);
             }
             catch (Exception ex)
             {
-                var error = $"{nameof(FileStorageService)}: Failed to delete file: Id: {fileId}, path: {file.FullName}.";
+                var error = $"{nameof(FileStorageService)}: Failed to delete file: id: {fileId}, path: {filePath}.";
                 _logger.LogError(ex, error);
             }
         }

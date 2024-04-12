@@ -16,11 +16,7 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_exists_GetFileAsync_returns_file_binaryAsync()
     {
-        byte[] data = new byte[3];
-        data[0] = byte.MinValue;
-        data[1] = 0;
-        data[2] = byte.MaxValue;
-
+        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var file = new Application.DTO.FileDto {
             Id = Guid.NewGuid(),
             Extension = "txt",
@@ -46,12 +42,9 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_not_exists_SaveFileAsync_saves_file()
     {
-        byte[] data = new byte[3];
-        data[0] = byte.MinValue;
-        data[1] = 0;
-        data[2] = byte.MaxValue;
-
+        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var fileId = Guid.NewGuid();
+
         IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(data, fileId , "txt"));
         Assert.Null(exception);
@@ -63,11 +56,7 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_exists_SaveFileAsync_updates_file()
     {
-        byte[] data = new byte[3];
-        data[0] = byte.MinValue;
-        data[1] = 0;
-        data[2] = byte.MaxValue;
-
+        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var file = new Application.DTO.FileDto {
             Id = Guid.NewGuid(),
             Extension = "txt",
@@ -83,6 +72,7 @@ public class FileRepositoryTests : IDisposable
         IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(data, file.Id , "txt"));
         Assert.Null(exception);
+
         var fileBinary = await storage.GetByIdAsync(file.Id);
         Assert.NotNull(fileBinary);
         Assert.Same(data, fileBinary);
@@ -91,11 +81,7 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_exists_DeleteFileAsync_deletes_files()
     {
-        byte[] data = new byte[3];
-        data[0] = byte.MinValue;
-        data[1] = 0;
-        data[2] = byte.MaxValue;
-
+        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var file = new Application.DTO.FileDto {
             Id = Guid.NewGuid(),
             Extension = "txt",

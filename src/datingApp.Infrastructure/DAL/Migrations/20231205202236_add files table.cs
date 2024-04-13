@@ -14,7 +14,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 name: "Files",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Extension = table.Column<string>(type: "text", nullable: false),
                     Binary = table.Column<byte[]>(type: "bytea", nullable: false)
                 },

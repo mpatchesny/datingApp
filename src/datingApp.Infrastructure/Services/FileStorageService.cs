@@ -96,4 +96,4 @@ internal sealed class FileStorageService : IFileStorageService
             System.IO.Directory.CreateDirectory(path);
         }
     }
-
+}

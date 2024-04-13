@@ -67,7 +67,7 @@ public class FileStorageServiceTests : IDisposable
     }
 
     [Fact]
-    public void given_file_exists_delete_file_deletes_file()
+    public void given_file_exists_delete_file_by_file_id_and_extension_deletes_file()
     {
         var filePath = System.IO.Path.Combine(_storagePath, "test.txt");
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
@@ -79,9 +79,31 @@ public class FileStorageServiceTests : IDisposable
     }
 
     [Fact]
-    public void given_file_exists_delete_file_not_throws_exception()
+    public void given_file_exists_delete_file_by_file_id_and_extension_not_throws_exception()
     {
         var exception = Record.Exception(() => _storageService.DeleteFile("test", "txt"));
+        Assert.Null(exception);
+
+        var exists = _storageService.Exists("test", "txt");
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public void given_file_exists_delete_file_by_file_id_deletes_file()
+    {
+        var filePath = System.IO.Path.Combine(_storagePath, "test.txt");
+        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
+        System.IO.File.WriteAllBytes(filePath, data);
+
+        _storageService.DeleteFile("test");
+        var exists = _storageService.Exists("test", "txt");
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public void given_file_exists_delete_file_by_file_id_not_throws_exception()
+    {
+        var exception = Record.Exception(() => _storageService.DeleteFile("test"));
         Assert.Null(exception);
 
         var exists = _storageService.Exists("test", "txt");

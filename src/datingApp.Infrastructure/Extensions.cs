@@ -49,7 +49,7 @@ public static class Extensions
         services.AddSingleton<IEmailSender, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddScoped<IFileRepository, PostgresFileRepository>();
-        services.AddSingleton<FileStorageService>();
+        services.AddSingleton<IFileStorageService, FileStorageService>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();
         return services;

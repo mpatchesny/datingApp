@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class FileStorageService
+internal sealed class FileStorageService : IFileStorageService
 {
     private readonly IOptions<StorageOptions> _storageOptions;
     private readonly ILogger<FileStorageService> _logger;

@@ -46,11 +46,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         _photoService.ValidatePhoto(bytes);
 
         var extension = _photoService.GetImageFileFormat(bytes);
-        await _fileRepository.SaveFileAsync(bytes, command.PhotoId, extension);
-
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
         var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);
         await _photoRepository.AddAsync(photo);
+
+        await _fileRepository.SaveFileAsync(bytes, command.PhotoId, extension);
     }
 }

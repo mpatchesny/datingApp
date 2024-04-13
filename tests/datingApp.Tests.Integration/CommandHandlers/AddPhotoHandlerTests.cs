@@ -7,6 +7,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Repositories;
 using datingApp.Application.Services;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
@@ -73,7 +74,7 @@ public class AddPhotoHandlerTests : IDisposable
 
         var mockedPhotoService = new Mock<IPhotoService>();
         mockedPhotoService.Setup(m => m.GetImageFileFormat(It.IsAny<byte[]>())).Returns("jpg");
-        var mockedFileStorage = new Mock<IFileStorage>();
+        var mockedFileStorage = new Mock<IFileRepository>();
         _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object, mockedFileStorage.Object);
     }
 

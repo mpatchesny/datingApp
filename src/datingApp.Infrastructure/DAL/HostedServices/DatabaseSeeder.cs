@@ -23,7 +23,7 @@ namespace datingApp.Infrastructure.DAL.HostedServices
             var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
             dbContext.Database.EnsureCreated();
 
-            if (dbContext.Users.Count() == 0)
+            if (!dbContext.Users.Any())
             {
                 List<User> users = new List<User>{
                     new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "012345678", "test@test.com", "Maciej", new DateOnly(1999,1,1), Sex.Male, null, new UserSettings(Guid.NewGuid(), Sex.Female | Sex.Male, 18, 99, 100, 0.0, 0.0), bio: "Lubie zapach kawy o poranku"),
@@ -51,7 +51,7 @@ namespace datingApp.Infrastructure.DAL.HostedServices
                 
             };
 
-            if (dbContext.Photos.Count() == 0)
+            if (!dbContext.Photos.Any())
             {
                 List<Photo> photos = new List<Photo> {
                     new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "deprecated", "./storage/00000000-0000-0000-0000-000000000001.jpg", 0),
@@ -77,14 +77,14 @@ namespace datingApp.Infrastructure.DAL.HostedServices
                 await dbContext.SaveChangesAsync();
             };
 
-            if (dbContext.Swipes.Count() == 0)
+            if (!dbContext.Swipes.Any())
             {
                 var swipe = new Swipe(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow);
                 dbContext.Swipes.Add(swipe);
                 await dbContext.SaveChangesAsync();
             };
 
-            if (dbContext.Matches.Count() == 0)
+            if (!dbContext.Matches.Any())
             {
                 List<Match> matches = new List<Match> {
                     new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow)
@@ -93,7 +93,7 @@ namespace datingApp.Infrastructure.DAL.HostedServices
                 dbContext.SaveChanges();
             };
 
-            if (dbContext.Messages.Count() == 0)
+            if (!dbContext.Messages.Any())
             {
                 List<Message> messages = new List<Message> {
                     new Message(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "Cześć, co słychać?", false, DateTime.UtcNow - TimeSpan.FromMinutes(20)),

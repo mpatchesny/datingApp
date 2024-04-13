@@ -14,9 +14,11 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IPhotoRepository _photoRepository;
-    public DeletePhotoHandler(IPhotoRepository photoRepository)
+    private readonly IFileStorageService _fileStorageService;
+    public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService)
     {
         _photoRepository = photoRepository;
+        _fileStorageService = fileStorageService;
     }
 
     public async Task HandleAsync(DeletePhoto command)
@@ -26,6 +28,9 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
+
+        _fileStorageService.DeleteFile(photo.Id.ToString());
+
         await _photoRepository.DeleteAsync(photo);
     }
 }

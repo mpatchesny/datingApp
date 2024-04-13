@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Services;
 using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
@@ -50,6 +51,26 @@ internal sealed class FileStorageService : IFileStorageService
         _logger.LogError(error);
         return null;
     }
+ 
+    public void DeleteFile(string fileId)
+    {
+        var files = (new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath)).GetFiles($"{fileId}.*");
+        if (files.Any())
+        {
+            foreach (var file in files)
+            {
+                try
+                {
+                    System.IO.File.Delete(file.FullName);
+                }
+                catch (Exception ex)
+                {
+                    var error = $"{nameof(FileStorageService)}: Failed to delete file: id: {fileId}, path: {file.FullName}.";
+                    _logger.LogError(ex, error);
+                }
+            }
+        }
+    }
 
     public void DeleteFile(string fileId, string extension)
     {
@@ -75,4 +96,4 @@ internal sealed class FileStorageService : IFileStorageService
             System.IO.Directory.CreateDirectory(path);
         }
     }
-}
+

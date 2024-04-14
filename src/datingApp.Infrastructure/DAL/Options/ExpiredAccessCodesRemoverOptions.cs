@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Infrastructure.DAL.Options;
 
-public class ExpiredAccessCodesRemoverOptions
+internal sealed class ExpiredAccessCodesRemoverOptions
 {
     public TimeSpan LoopDelay { get; set; }
 }

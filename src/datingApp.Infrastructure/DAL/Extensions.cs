@@ -12,7 +12,8 @@ namespace datingApp.Infrastructure.DAL;
 internal static class Extensions
 {
     private const string DbOptionsSectionName = "database";
-    
+    private const string ExpiredAccessCodesRemoverSectionName = "ExpiredAccessCodesRemover";
+
     public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
@@ -28,6 +29,8 @@ internal static class Extensions
         {
             services.AddHostedService<DatabaseSeeder>();
         }
+        services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
+        services.AddHostedService<ExpiredAccessCodesRemover>();
 
         // EF Core + Npgsql issue
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

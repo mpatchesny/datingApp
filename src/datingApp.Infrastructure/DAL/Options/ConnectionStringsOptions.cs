@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Infrastructure.DAL.Options;
 
-internal sealed class DatabaseOptions
+internal sealed class ConnectionStringsOptions
 {
-    public bool SeedSampleData { get; set; }
+    public string datingApp { get; set; }
 }

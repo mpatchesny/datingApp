@@ -11,15 +11,15 @@ namespace datingApp.Infrastructure.DAL.HostedServices
 {
     internal sealed class DatabaseSeeder : IHostedService
     {
-        private readonly IServiceProvider _serviceProdivder;
+        private readonly IServiceProvider _serviceProvider;
         public DatabaseSeeder(IServiceProvider serviceProvider)
         {
-            _serviceProdivder = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var scope = _serviceProdivder.CreateScope();
+            var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
             dbContext.Database.EnsureCreated();
 

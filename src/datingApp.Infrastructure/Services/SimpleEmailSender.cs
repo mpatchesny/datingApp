@@ -32,7 +32,7 @@ internal sealed class SimpleEmailSender : IEmailSender
         {
             var error = $"{nameof(SimpleEmailSender)}: port {_options.Value.ServerPort} cannot be cast to integer.";
             _logger.LogError(error);
-            new InvalidCastException($"Port {_options.Value.ServerPort} cannot be cast to integer.");
+            throw new InvalidCastException($"Port {_options.Value.ServerPort} cannot be cast to integer.");
         }
 
         using (var client = new SmtpClient(_options.Value.ServerAddress, port))

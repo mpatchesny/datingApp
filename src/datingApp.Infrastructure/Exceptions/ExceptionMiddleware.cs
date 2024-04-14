@@ -28,7 +28,15 @@ internal sealed class ExceptionMiddleware : IMiddleware
         catch (Exception exception)
         {
             await HandleExceptionAsync(exception, context);
-            _logger.LogError(exception.ToString());
+            string error = exception.ToString();
+            if (exception is CustomException) 
+            {
+                _logger.LogInformation(error);
+            }
+            else
+            {
+                _logger.LogError(error);
+            };
         }
     }
 

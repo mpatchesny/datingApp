@@ -6,25 +6,29 @@ using datingApp.Infrastructure.DAL.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using datingApp.Infrastructure.DAL.Options;
 
 namespace datingApp.Infrastructure.DAL;
 
 internal static class Extensions
 {
+    private const string ConnectionStringsOptionsSectionName = "ConnectionStrings";
     private const string DbOptionsSectionName = "database";
     private const string ExpiredAccessCodesRemoverSectionName = "ExpiredAccessCodesRemover";
 
     public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
-        var postgresOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);
-        services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(postgresOptions.ConnectionString));
+        var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);
+        services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
         services.AddScoped<IUserRepository, PostgresUserRepository>();
         services.AddScoped<IPhotoRepository, PostgresPhotoRepository>();
         services.AddScoped<ISwipeRepository, PostgresSwipeRepository>();
         services.AddScoped<IMatchRepository, PostgresMatchRepository>();
         services.AddScoped<IMessageRepository, PostgresMessageRepository>();
         services.AddHostedService<DatabaseInitializer>();
+
+        var postgresOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);
         if (postgresOptions.SeedSampleData)
         {
             services.AddHostedService<DatabaseSeeder>();

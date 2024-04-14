@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace datingApp.Infrastructure.DAL.HostedServices
+namespace datingApp.Infrastructure.DAL.BackgroundServices
 {
     internal sealed class DatabaseInitializer : IHostedService
     {

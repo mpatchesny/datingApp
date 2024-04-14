@@ -2,7 +2,7 @@ using datingApp.Core.Repositories;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Repositories;
-using datingApp.Infrastructure.DAL.HostedServices;
+using datingApp.Infrastructure.DAL.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Infrastructure.DAL.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.DAL.BackgroundServices;
 
-public class ExpiredAccessCodesRemover : BackgroundService
+internal sealed class ExpiredAccessCodesRemover : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<ExpiredAccessCodesRemoverOptions> _options;

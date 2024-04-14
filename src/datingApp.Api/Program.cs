@@ -18,15 +18,10 @@ builder.Services.AddCore();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddCors();
-builder.Host.UseSerilog((context, loggerConfiguration) =>
-{
-    loggerConfiguration.WriteTo
-        .Console();
-    // .WriteTo
-    // .File("logs.txt")
-    // .WriteTo
-    // .Seq("http://localhost:5341");
-});
+
+builder.Host.UseSerilog((context, logConfig) => logConfig
+        .ReadFrom.Configuration(context.Configuration)
+);
 
 var app = builder.Build();
 

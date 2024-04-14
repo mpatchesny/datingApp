@@ -14,12 +14,10 @@ namespace datingApp.Infrastructure.Exceptions;
 
 internal sealed class StorageMiddleware : IMiddleware
 {
-    private readonly ILogger<IMiddleware> _logger;
     private readonly IFileRepository _fileRepository;
     private readonly IFileStorageService _diskFileService;
-    public StorageMiddleware(ILogger<IMiddleware> logger, IFileRepository fileRepository, IFileStorageService diskFileService)
+    public StorageMiddleware(IFileRepository fileRepository, IFileStorageService diskFileService)
     {
-        _logger = logger;
         _fileRepository = fileRepository;
         _diskFileService = diskFileService;
     }

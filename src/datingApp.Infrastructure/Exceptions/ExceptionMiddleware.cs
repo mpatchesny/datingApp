@@ -6,11 +6,19 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Core.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace datingApp.Infrastructure.Exceptions;
 
 internal sealed class ExceptionMiddleware : IMiddleware
 {
+    private readonly ILogger<ExceptionMiddleware> _logger;
+
+    public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger)
+    {
+        _logger = logger;
+    }
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
@@ -20,6 +28,15 @@ internal sealed class ExceptionMiddleware : IMiddleware
         catch (Exception exception)
         {
             await HandleExceptionAsync(exception, context);
+            string error = exception.ToString();
+            if (exception is CustomException) 
+            {
+                _logger.LogInformation(error);
+            }
+            else
+            {
+                _logger.LogError(error);
+            };
         }
     }
 
@@ -42,7 +59,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
 
     private record Error(string Code, string Reason);
 
-    private string GetPrettyExeptionName(string exceptionName)
+    private static string GetPrettyExeptionName(string exceptionName)
     {
         var re = new Regex("([A-Z])");
         var ex = exceptionName.Replace("Exception", "");

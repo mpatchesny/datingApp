@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace datingApp.Infrastructure.DAL;
+namespace datingApp.Infrastructure.DAL.Options;
 
-public class ExpiredAccessCodesRemoverOptions
+internal sealed class ExpiredAccessCodesRemoverOptions
 {
     public TimeSpan LoopDelay { get; set; }
 }

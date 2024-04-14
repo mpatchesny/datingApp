@@ -59,7 +59,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
 
     private record Error(string Code, string Reason);
 
-    private string GetPrettyExeptionName(string exceptionName)
+    private static string GetPrettyExeptionName(string exceptionName)
     {
         var re = new Regex("([A-Z])");
         var ex = exceptionName.Replace("Exception", "");

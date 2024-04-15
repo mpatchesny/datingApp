@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
 
 namespace datingApp.Application.Notifications;
@@ -15,16 +16,15 @@ public class EmailGenerator : IEmailGenerator
     }
     public Email Generate(string ReceiverEmailAddress, Dictionary<string, string> kwargs)
     {
-        var email = new Email();
-        email.Receiver = ReceiverEmailAddress;
-        email.Subject = _options.Value.SubjectTemplate;
-        email.Body = _options.Value.BodyTemplate;
+        string receiver = ReceiverEmailAddress;
+        string subject = _options.Value.SubjectTemplate;
+        string body = _options.Value.BodyTemplate;
 
         foreach (var key in kwargs.Keys)
         {
-            email.Subject = email.Subject.Replace($"{key}", kwargs[key]);
-            email.Body = email.Body.Replace($"{key}", kwargs[key]);
+            subject = subject.Replace($"{key}", kwargs[key]);
+            body = body.Replace($"{key}", kwargs[key]);
         }
-        return email;
+        return new Email(receiver, subject, body);
     }
 }

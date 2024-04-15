@@ -31,7 +31,7 @@ public class RequestEmailAccessCodeHandlerTests
         var codeGenerator = new Mock<IAccessCodeGenerator>();
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
-        var emailSender = new Mock<IEmailSender>();
+        var emailSender = new Mock<INotificationSender>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
         var emailMsg = new Email();
@@ -63,7 +63,7 @@ public class RequestEmailAccessCodeHandlerTests
         var codeGenerator = new Mock<IAccessCodeGenerator>();
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
-        var emailSender = new Mock<IEmailSender>();
+        var emailSender = new Mock<INotificationSender>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
         var emailMsg = new Email();
@@ -95,7 +95,7 @@ public class RequestEmailAccessCodeHandlerTests
         var codeGenerator = new Mock<IAccessCodeGenerator>();
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
-        var emailSender = new Mock<IEmailSender>();
+        var emailSender = new Mock<INotificationSender>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
         var emailMsg = new Email();

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface IEmailSender
+public interface INotificationSender
 {
     public Task SendAsync(Email email);
 }

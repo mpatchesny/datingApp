@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface INotificationSender<in T> where T : class, INotificationMessage
+public interface INotificationMessage
 {
-    public Task SendAsync(T notification);
+    
 }

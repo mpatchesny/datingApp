@@ -46,7 +46,7 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        services.AddSingleton<INotificationSender, DummyEmailSender>();
+        services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddScoped<IFileRepository, PostgresFileRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

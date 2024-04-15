@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public class Email
+public class Email : INotificationMessage
 {
     public string Receiver { get; set; }
     public string Subject { get; set; }

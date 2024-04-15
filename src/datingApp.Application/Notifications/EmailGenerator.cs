@@ -14,9 +14,9 @@ public class EmailGenerator : INotificationMessageGenerator<Email>
     {
         _options = options;
     }
-    public Email Generate(string ReceiverEmailAddress, Dictionary<string, string> kwargs)
+    public Email Generate(string Receiver, Dictionary<string, string> kwargs)
     {
-        string receiver = ReceiverEmailAddress;
+        string receiver = Receiver;
         string subject = _options.Value.SubjectTemplate;
         string body = _options.Value.BodyTemplate;
 

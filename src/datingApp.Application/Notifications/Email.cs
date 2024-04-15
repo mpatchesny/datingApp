@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace datingApp.Application.Services;
+namespace datingApp.Application.Notifications;
 
 public class Email : INotificationMessage
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Application.Services;
+namespace datingApp.Application.Notifications;
 
 public class EmailGenerator : IEmailGenerator
 {

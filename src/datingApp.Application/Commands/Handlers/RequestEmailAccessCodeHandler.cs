@@ -16,11 +16,11 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
 {
     private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IAccessCodeStorage _codeStorage;
-    private readonly IEmailSender _emailSender;
+    private readonly INotificationSender _emailSender;
     private readonly IEmailGenerator _emailGenerator;
     public RequestEmailAccessCodeHandler(IAccessCodeGenerator codeGenerator,
                         IAccessCodeStorage codeStorage,
-                        IEmailSender emailSender,
+                        INotificationSender emailSender,
                         IEmailGenerator emailGenerator)
     {
         _codeGenerator = codeGenerator;

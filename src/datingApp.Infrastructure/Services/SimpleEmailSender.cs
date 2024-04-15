@@ -8,12 +8,12 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class SimpleEmailSender : IEmailSender
+internal sealed class SimpleEmailSender : INotificationSender
 {
     private readonly IOptions<EmailSenderOptions> _options;
-    private readonly ILogger<IEmailSender> _logger;
+    private readonly ILogger<INotificationSender> _logger;
     public SimpleEmailSender(IOptions<EmailSenderOptions> options,
-                            ILogger<IEmailSender> logger)
+                            ILogger<INotificationSender> logger)
     {
         _options = options;
         _logger = logger;

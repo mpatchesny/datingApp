@@ -7,5 +7,4 @@ namespace datingApp.Application.Notifications;
 
 public interface INotificationMessage
 {
-    
 }

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Application.Notifications;
 
-public class EmailGenerator : IEmailGenerator
+public class EmailGenerator : INotificationMessageGenerator<Email>
 {
     private readonly IOptions<EmailGeneratorOptions> _options;
     public EmailGenerator(IOptions<EmailGeneratorOptions> options)

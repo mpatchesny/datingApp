@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using datingApp.Application.Notifications;
 using datingApp.Application.Services;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Infrastructure.Services;
+namespace datingApp.Infrastructure.Notifications;
 
 internal sealed class SimpleEmailSender : INotificationSender<Email>
 {

@@ -5,4 +5,4 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Notifications;
 
-public sealed record SMS(string receiver, string body) : INotificationMessage;
+public sealed record SMS(string Receiver, string Body) : INotificationMessage;

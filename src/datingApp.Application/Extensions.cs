@@ -17,10 +17,12 @@ namespace datingApp.Application
     public static class Extensions
     {
         private const string EmailGeneratorOptionsName = "AccessCodeEmail";
+        private const string SmsGeneratorOptionsName = "AccessCodeSMS";
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
             services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
+            services.Configure<SMSGeneratorOptions>(configuration.GetRequiredSection(SmsGeneratorOptionsName));
 
             services.Scan(s => s.FromCallingAssembly()
                 .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)))

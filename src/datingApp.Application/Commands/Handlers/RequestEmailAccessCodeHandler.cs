@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Notifications;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Core.Entities;
@@ -16,12 +17,12 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
 {
     private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IAccessCodeStorage _codeStorage;
-    private readonly IEmailSender _emailSender;
-    private readonly IEmailGenerator _emailGenerator;
+    private readonly INotificationSender<Email> _emailSender;
+    private readonly INotificationMessageGenerator<Email> _emailGenerator;
     public RequestEmailAccessCodeHandler(IAccessCodeGenerator codeGenerator,
                         IAccessCodeStorage codeStorage,
-                        IEmailSender emailSender,
-                        IEmailGenerator emailGenerator)
+                        INotificationSender<Email> emailSender,
+                        INotificationMessageGenerator<Email> emailGenerator)
     {
         _codeGenerator = codeGenerator;
         _codeStorage = codeStorage;

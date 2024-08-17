@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Notifications;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Queries;
 using datingApp.Application.Repositories;
@@ -14,6 +15,7 @@ using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
+using datingApp.Infrastructure.Notifications;
 using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
@@ -46,7 +48,7 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        services.AddSingleton<IEmailSender, DummyEmailSender>();
+        services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddScoped<IFileRepository, PostgresFileRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

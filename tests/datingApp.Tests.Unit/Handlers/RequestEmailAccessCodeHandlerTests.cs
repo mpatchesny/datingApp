@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.DTO;
+using datingApp.Application.Notifications;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using Moq;
@@ -31,11 +32,11 @@ public class RequestEmailAccessCodeHandlerTests
         var codeGenerator = new Mock<IAccessCodeGenerator>();
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
-        var emailSender = new Mock<IEmailSender>();
+        var emailSender = new Mock<INotificationSender<Email>>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
-        var emailMsg = new Email();
-        var emailGenerator = new Mock<IEmailGenerator>();
+        var emailMsg = new Email("receiver", "subject", "body");
+        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
         emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
@@ -63,11 +64,11 @@ public class RequestEmailAccessCodeHandlerTests
         var codeGenerator = new Mock<IAccessCodeGenerator>();
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
-        var emailSender = new Mock<IEmailSender>();
+        var emailSender = new Mock<INotificationSender<Email>>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
-        var emailMsg = new Email();
-        var emailGenerator = new Mock<IEmailGenerator>();
+        var emailMsg = new Email("receiver", "subject", "body");
+        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
         emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
@@ -95,11 +96,11 @@ public class RequestEmailAccessCodeHandlerTests
         var codeGenerator = new Mock<IAccessCodeGenerator>();
         codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
 
-        var emailSender = new Mock<IEmailSender>();
+        var emailSender = new Mock<INotificationSender<Email>>();
         emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
 
-        var emailMsg = new Email();
-        var emailGenerator = new Mock<IEmailGenerator>();
+        var emailMsg = new Email("receiver", "subject", "body");
+        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
         emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";

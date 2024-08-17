@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using datingApp.Application.Notifications;
 using datingApp.Application.Services;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Infrastructure.Services;
+namespace datingApp.Infrastructure.Notifications;
 
-internal sealed class SimpleEmailSender : IEmailSender
+internal sealed class SimpleEmailSender : INotificationSender<Email>
 {
     private readonly IOptions<EmailSenderOptions> _options;
-    private readonly ILogger<IEmailSender> _logger;
+    private readonly ILogger<INotificationSender<Email>> _logger;
     public SimpleEmailSender(IOptions<EmailSenderOptions> options,
-                            ILogger<IEmailSender> logger)
+                            ILogger<INotificationSender<Email>> logger)
     {
         _options = options;
         _logger = logger;

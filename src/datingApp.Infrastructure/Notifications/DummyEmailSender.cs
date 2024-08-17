@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Notifications;
 using datingApp.Application.Services;
 
-namespace datingApp.Infrastructure.Services;
+namespace datingApp.Infrastructure.Notifications;
 
-internal sealed class DummyEmailSender : IEmailSender
+internal sealed class DummyEmailSender : INotificationSender<Email>
 {
     public Task SendAsync(Email email)
     {

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
+using datingApp.Application.Notifications;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
@@ -16,10 +17,12 @@ namespace datingApp.Application
     public static class Extensions
     {
         private const string EmailGeneratorOptionsName = "AccessCodeEmail";
+        private const string SmsGeneratorOptionsName = "AccessCodeSMS";
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
             var applicationAssembly = typeof(ICommandHandler<>).Assembly;
             services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
+            services.Configure<SMSGeneratorOptions>(configuration.GetRequiredSection(SmsGeneratorOptionsName));
 
             services.Scan(s => s.FromCallingAssembly()
                 .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<>)))
@@ -28,7 +31,7 @@ namespace datingApp.Application
 
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
             services.AddSingleton<AccessCodeVerificator, AccessCodeVerificator>();
-            services.AddSingleton<IEmailGenerator, EmailGenerator>();
+            services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
             return services;
         }
     }

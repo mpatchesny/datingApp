@@ -16,10 +16,11 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
     private readonly IFileStorageService _fileStorageService;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     
-    public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService)
+    public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository)
     {
         _userRepository = userRepository;
         _fileStorageService = fileStorageService;
+        _deletedEntityRepository = deletedEntityRepository;
     }
 
     public async Task HandleAsync(DeleteUser command)

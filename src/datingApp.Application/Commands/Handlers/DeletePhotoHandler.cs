@@ -16,10 +16,11 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IFileStorageService _fileStorageService;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
-    public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService)
+    public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository)
     {
         _photoRepository = photoRepository;
         _fileStorageService = fileStorageService;
+        _deletedEntityRepository = deletedEntityRepository;
     }
 
     public async Task HandleAsync(DeletePhoto command)

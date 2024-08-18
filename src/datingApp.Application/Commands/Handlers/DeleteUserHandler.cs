@@ -45,5 +45,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         }
 
         await _userRepository.DeleteAsync(user);
+        await _deletedEntityRepository.AddAsync(user.Id);
     }
 }

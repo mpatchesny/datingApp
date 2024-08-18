@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
@@ -22,6 +23,7 @@ public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
     {
         var match = await _matchRepository.GetByIdAsync(command.MatchId);
         if (match == null)
+        {
             if (await _deletedEntityRepository.ExistsAsync(command.MatchId))
             {
                 throw new MatchAlreadyDeletedException(command.MatchId);
@@ -30,9 +32,9 @@ public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
             {
                 throw new MatchNotExistsException(command.MatchId);
             }
-        {
-            
         }
+        
         await _matchRepository.DeleteAsync(match);
+        await _deletedEntityRepository.AddAsync(match.Id);
     }
 }

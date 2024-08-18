@@ -13,10 +13,22 @@ namespace datingApp.Infrastructure.Exceptions;
 internal sealed class ExceptionMiddleware : IMiddleware
 {
     private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly Dictionary<Type, int> _exceptionToHttpStatusCode;
 
     public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger)
     {
         _logger = logger;
+        _exceptionToHttpStatusCode = new Dictionary<Type, int>()
+        {
+            {typeof(UnauthorizedException), StatusCodes.Status403Forbidden},
+            {typeof(PhotoNotExistsException), StatusCodes.Status404NotFound},
+            {typeof(PhotoAlreadyDeletedException), StatusCodes.Status410Gone},
+            {typeof(UserNotExistsException), StatusCodes.Status404NotFound},
+            {typeof(UserAlreadyDeletedException), StatusCodes.Status410Gone},
+            {typeof(MatchNotExistsException), StatusCodes.Status404NotFound},
+            {typeof(MatchAlreadyDeletedException), StatusCodes.Status410Gone},
+            {typeof(CustomException), StatusCodes.Status400BadRequest},
+        };
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -42,16 +54,12 @@ internal sealed class ExceptionMiddleware : IMiddleware
 
     private async Task HandleExceptionAsync(Exception exception, HttpContext context)
     {
-        var (statusCode, error) = exception switch 
+        var statusCode = _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType(), StatusCodes.Status500InternalServerError);
+        var error = new Error("error", "Something went wrong.");
+        if (statusCode != StatusCodes.Status500InternalServerError)
         {
-            UnauthorizedException => (StatusCodes.Status403Forbidden, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
-            PhotoNotExistsException => (StatusCodes.Status404NotFound, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
-            UserNotExistsException => (StatusCodes.Status404NotFound, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
-            PhotoAlreadyDeletedException => (StatusCodes.Status410Gone, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
-            UserAlreadyDeletedException => (StatusCodes.Status410Gone, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
-            CustomException => (StatusCodes.Status400BadRequest, new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message)),
-            _ => (StatusCodes.Status500InternalServerError, new Error("error", "Something went wrong.")),
-        };
+            error = new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message);
+        }
 
         context.Response.StatusCode = statusCode;
         await context.Response.WriteAsJsonAsync(error);

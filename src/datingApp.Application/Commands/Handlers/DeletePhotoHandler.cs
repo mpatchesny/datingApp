@@ -15,6 +15,7 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IFileStorageService _fileStorageService;
+    private readonly IDeletedEntityRepository _deletedEntityRepository;
     public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService)
     {
         _photoRepository = photoRepository;
@@ -26,7 +27,14 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         var photo = await _photoRepository.GetByIdAsync(command.PhotoId);
         if (photo == null)
         {
-            throw new PhotoNotExistsException(command.PhotoId);
+            if (await _deletedEntityRepository.ExistsAsync(command.PhotoId))
+            {
+                throw new PhotoAlreadyDeletedException(command.PhotoId);
+            }
+            else
+            {
+                throw new PhotoNotExistsException(command.PhotoId);
+            }
         }
 
         _fileStorageService.DeleteFile(photo.Id.ToString());

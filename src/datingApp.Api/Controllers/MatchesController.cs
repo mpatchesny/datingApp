@@ -46,7 +46,8 @@ public class MatchesController : ApiControllerBase
     [HttpGet("{matchId:guid}")]
     public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
     {
-        var query = new GetMatch { MatchId = matchId };
+        // FIXME magic number
+        var query = new GetMatch { MatchId = matchId, HowManyMessages = 10 };
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
         var match = await _getMatchHandler.HandleAsync(query);

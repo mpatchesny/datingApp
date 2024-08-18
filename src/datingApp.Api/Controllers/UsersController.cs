@@ -67,6 +67,7 @@ public class UserController : ApiControllerBase
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
+        // FIXME: magic number
         var command = Authenticate(new GetSwipeCandidates { UserId = AuthenticatedUserId, HowMany = 10 });
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }

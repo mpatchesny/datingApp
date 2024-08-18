@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,12 @@ internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, Priv
                                 .Include(x => x.Settings)
                                 .Include(x => x.Photos)
                                 .FirstOrDefaultAsync(x => x.Id == query.UserId);
-        return user?.AsPrivateDto();
+
+        if (user == null)
+        {
+            throw new UserNotExistsException(query.UserId);
+        }
+
+        return user.AsPrivateDto();
     }
 }

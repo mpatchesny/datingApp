@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,12 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
         var photo = await _dbContext.Photos
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(x => x.Id == query.PhotoId);
-        return photo?.AsDto();
+        
+        if (photo == null)
+        {
+            throw new PhotoNotExistsException(query.PhotoId);
+        }
+
+        return photo.AsDto();
     }
 }

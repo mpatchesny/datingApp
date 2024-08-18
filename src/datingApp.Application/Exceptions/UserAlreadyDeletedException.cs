@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class UserAlreadyDeletedException : CustomException
 {
-    public UserAlreadyDeletedException() : base($"User is deleted permanently.")
+    public UserAlreadyDeletedException(Guid userId) : base($"User {userId} is deleted permanently.")
     {
     }
 }

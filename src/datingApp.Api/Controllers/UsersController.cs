@@ -67,6 +67,7 @@ public class UserController : ApiControllerBase
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
+        // FIXME: magic number
         var command = Authenticate(new GetSwipeCandidates { UserId = AuthenticatedUserId, HowMany = 10 });
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
@@ -88,10 +89,6 @@ public class UserController : ApiControllerBase
     {
         var query = Authenticate(new GetPublicUser { UserId = userId, UserRequestedId = AuthenticatedUserId });
         var user = await _getPublicUserHandler.HandleAsync(query);
-        if (user is null)
-        {
-            return NotFound();
-        }
         return user;
     }
 

@@ -6,9 +6,9 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Application.Exceptions;
 
-public class MessageNotExistsException : NotExistsException
+public class NotExistsException : CustomException
 {
-    public MessageNotExistsException(Guid messageId) : base($"Message with id {messageId} does not exist.")
+    public NotExistsException(string message) : base(message)
     {
     }
 }

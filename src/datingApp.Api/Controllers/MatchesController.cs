@@ -46,14 +46,11 @@ public class MatchesController : ApiControllerBase
     [HttpGet("{matchId:guid}")]
     public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
     {
-        var query = new GetMatch { MatchId = matchId };
+        // FIXME magic number
+        var query = new GetMatch { MatchId = matchId, HowManyMessages = 10 };
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
         var match = await _getMatchHandler.HandleAsync(query);
-        if (match == null)
-        {
-            return NotFound();
-        }
         return Ok(match);
     }
 
@@ -71,10 +68,6 @@ public class MatchesController : ApiControllerBase
     {
         var query = Authenticate(new GetMessage { MessageId = messageId });
         var message = await _getMessageHandler.HandleAsync(query);
-        if (message == null)
-        {
-            return NotFound();
-        }
         return message;
     }
 

@@ -6,7 +6,7 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Application.Exceptions;
 
-public class MatchAlreadyDeletedException : CustomException
+public class MatchAlreadyDeletedException : AlreadyDeletedException
 {
     public MatchAlreadyDeletedException(Guid matchId) :base($"Match {matchId} is deleted permanently.")
     {

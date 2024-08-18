@@ -23,7 +23,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
                             .AsNoTracking()
                             .Where(x => x.MatchId == query.MatchId)
                             .OrderByDescending(x => x.CreatedAt);
-                            
+
         var data = await dbQuery
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)

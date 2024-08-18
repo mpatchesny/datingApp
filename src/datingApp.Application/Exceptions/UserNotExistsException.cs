@@ -6,7 +6,7 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Application.Exceptions;
 
-public class UserNotExistsException : CustomException
+public class UserNotExistsException : NotExistsException
 {
     public UserNotExistsException() : base($"User with given phone/email does not exist.")
     {

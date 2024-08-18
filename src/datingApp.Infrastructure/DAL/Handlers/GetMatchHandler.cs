@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,16 +34,19 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         var data = await dbQuery
                         .AsNoTracking()
                         .FirstOrDefaultAsync();
-        if (data == null) return null;
+        
+        if (data == null) 
+        {
+            throw new MatchNotExistsException(query.MatchId);
+        }
 
         return new MatchDto
-            {
-                Id = data.Match.Id,
-                User = data.User.AsPublicDto(0),
-                IsDisplayed = (data.Match.UserId1 == query.UserId) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
-                // FIXME: magic string
-                Messages = data.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(10).OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
-                CreatedAt = data.Match.CreatedAt
-            }; 
+        {
+            Id = data.Match.Id,
+            User = data.User.AsPublicDto(0),
+            IsDisplayed = (data.Match.UserId1 == query.UserId) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
+            Messages = data.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(query.HowManyMessages).OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
+            CreatedAt = data.Match.CreatedAt
+        }; 
     }
 }

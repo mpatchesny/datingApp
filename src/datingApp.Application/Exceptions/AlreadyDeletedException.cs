@@ -6,9 +6,9 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Application.Exceptions;
 
-public class MessageNotExistsException : NotExistsException
+public class AlreadyDeletedException : CustomException
 {
-    public MessageNotExistsException(Guid messageId) : base($"Message with id {messageId} does not exist.")
+    public AlreadyDeletedException(String message) : base(message)
     {
     }
 }

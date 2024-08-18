@@ -32,7 +32,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(photo.Id, response.Id);
     }
 
-    [Fact (Skip ="FIXME")]
+    [Fact]
     public async Task given_photo_not_exists_get_photo_returns_404_not_found_and_proper_error_reason()
     {
         var user = await CreateUserAsync("test@test.com");

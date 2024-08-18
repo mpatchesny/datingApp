@@ -6,7 +6,7 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Application.Exceptions;
 
-public class PhotoNotExistsException : CustomException
+public class PhotoNotExistsException : NotExistsException
 {
     public PhotoNotExistsException(Guid photoId) : base($"Photo with id {photoId} does not exist.")
     {

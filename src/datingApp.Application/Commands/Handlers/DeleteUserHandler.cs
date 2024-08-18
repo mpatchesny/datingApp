@@ -14,19 +14,29 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
     private readonly IFileStorageService _fileStorageService;
+    private readonly IDeletedEntityRepository _deletedEntityRepository;
     
-    public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService)
+    public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository)
     {
         _userRepository = userRepository;
         _fileStorageService = fileStorageService;
+        _deletedEntityRepository = deletedEntityRepository;
     }
 
     public async Task HandleAsync(DeleteUser command)
     {
+
         var user = await _userRepository.GetByIdAsync(command.UserId);
         if (user == null)
         {
-            throw new UserNotExistsException(command.UserId);
+            if (await _deletedEntityRepository.ExistsAsync(command.UserId))
+            {
+                throw new UserAlreadyDeletedException(command.UserId);
+            }
+            else
+            {
+                throw new UserNotExistsException(command.UserId);
+            }
         }
 
         foreach (var photo in user.Photos)
@@ -35,5 +45,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         }
 
         await _userRepository.DeleteAsync(user);
+        await _deletedEntityRepository.AddAsync(user.Id);
     }
 }

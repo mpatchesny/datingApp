@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class PhotoAlreadyDeletedException : CustomException
 {
-    public PhotoAlreadyDeletedException() : base($"Photo is deleted permanently.")
+    public PhotoAlreadyDeletedException(Guid photoId) : base($"Photo {photoId} is deleted permanently.")
     {
     }
 }

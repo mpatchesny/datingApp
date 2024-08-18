@@ -127,7 +127,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(message.Id, response.Id);
     }
 
-    [Fact (Skip = "FIXME!!!")]
+    [Fact (Skip = "FIXME!")]
     public async void given_message_not_exists_get_message_returns_404_not_found_with_reason_message_does_not_exist()
     {
         var user1 = await CreateUserAsync("test1@test.com");
@@ -304,7 +304,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async void given_match_not_exists_delete_returns_404_not_found()
     {
         var user1 = await CreateUserAsync("test1@test.com");
@@ -317,11 +317,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var response = await Client.DeleteAsync($"matches/{notExistingMatchId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
-        // var error = await response.Content.ReadFromJsonAsync<Error>();
-        // Assert.Equal($"Match with id {notExistingMatchId} does not exist.", error.Reason);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"Match with id {notExistingMatchId} does not exist.", error.Reason);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async void given_match_was_already_deleted_delete_returns_410_gone()
     {
         var user1 = await CreateUserAsync("test1@test.com");
@@ -330,9 +330,14 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var notExistingMatchId = Guid.NewGuid();
-        var response = await Client.DeleteAsync($"matches/{notExistingMatchId}");
+        var deletedMatch = await CreateMatchAsync(user1, user2);
+        await DeleteMatchAsync(deletedMatch);
+
+        var response = await Client.DeleteAsync($"matches/{deletedMatch.Id}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"Match {deletedMatch.Id} is deleted permanently.", error.Reason);
     }
 
     private async Task<User> CreateUserAsync(string email, string phone = null)
@@ -361,6 +366,13 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.Messages.AddAsync(message);
         await _testDb.DbContext.SaveChangesAsync();
         return message;
+    }
+
+    private async Task DeleteMatchAsync(Match match)
+    {
+        _testDb.DbContext.Matches.Remove(match);
+        await _testDb.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id });
+        await _testDb.DbContext.SaveChangesAsync();
     }
 
     private readonly TestDatabase _testDb;

@@ -237,15 +237,21 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async Task given_user_was_alread_deleted_delete_users_returns_410_gone()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
+        await DeleteUserAsync(user);
+
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
-        var response = await Client.DeleteAsync($"users/{Guid.NewGuid()}");
+        
+        var response = await Client.DeleteAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"User {user.Id} is deleted permanently.", error.Reason);
     }
 
     [Fact]
@@ -423,6 +429,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.Users.AddAsync(user);
         await _testDb.DbContext.SaveChangesAsync();
         return user;
+    }
+
+    private async Task DeleteUserAsync(User user)
+    {
+        _testDb.DbContext.Users.Remove(user);
+        await _testDb.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = user.Id });
+        await _testDb.DbContext.SaveChangesAsync();
     }
 
     private readonly TestDatabase _testDb;

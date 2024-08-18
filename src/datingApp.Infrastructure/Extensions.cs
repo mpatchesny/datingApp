@@ -51,6 +51,7 @@ public static class Extensions
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
         services.AddScoped<IFileRepository, PostgresFileRepository>();
+        services.AddScoped<IDeletedEntityRepository, PostgresDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();

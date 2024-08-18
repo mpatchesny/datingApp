@@ -6,9 +6,9 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Application.Exceptions;
 
-public class UserAlreadyDeletedException : CustomException
+public class MatchAlreadyDeletedException : CustomException
 {
-    public UserAlreadyDeletedException(Guid userId) : base($"User {userId} is deleted permanently.")
+    public MatchAlreadyDeletedException(Guid matchId) :base($"Match {matchId} is deleted permanently.")
     {
     }
 }

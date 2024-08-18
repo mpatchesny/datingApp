@@ -139,16 +139,21 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async Task given_photo_was_alread_deleted_delete_photo_post_photo_returns_410_gone()
     {
         var user = await CreateUserAsync("test@test.com");
+        var photo = await CreatePhotoAsync(user);
+        await DeletePhotoAsync(photo);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
 
-        var response = await Client.DeleteAsync($"/photos/{Guid.NewGuid()}");
+        var response = await Client.DeleteAsync($"/photos/{photo.Id}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
+
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+        Assert.Equal($"Photo {photo.Id} is deleted permanently.", error.Reason);
     }
 
     [Fact]
@@ -201,6 +206,13 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.Photos.AddAsync(photo);
         await _testDb.DbContext.SaveChangesAsync();
         return photo;
+    }
+
+    private async Task DeletePhotoAsync(Photo photo)
+    {
+        _testDb.DbContext.Photos.Remove(photo);
+        await _testDb.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
+        await _testDb.DbContext.SaveChangesAsync();
     }
 
     private readonly TestDatabase _testDb;

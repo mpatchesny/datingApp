@@ -13,9 +13,10 @@ public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
 {
     private readonly IMatchRepository _matchRepository;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
-    public DeleteMatchHandler(IMatchRepository matchRepository)
+    public DeleteMatchHandler(IMatchRepository matchRepository, IDeletedEntityRepository deletedEntityRepository)
     {
         _matchRepository = matchRepository;
+        _deletedEntityRepository = deletedEntityRepository;
     }
     public async Task HandleAsync(DeleteMatch command)
     {

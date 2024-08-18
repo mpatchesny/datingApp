@@ -21,13 +21,8 @@ internal sealed class ExceptionMiddleware : IMiddleware
         _exceptionToHttpStatusCode = new Dictionary<Type, int>()
         {
             {typeof(UnauthorizedException), StatusCodes.Status403Forbidden},
-            {typeof(PhotoNotExistsException), StatusCodes.Status404NotFound},
-            {typeof(PhotoAlreadyDeletedException), StatusCodes.Status410Gone},
-            {typeof(UserNotExistsException), StatusCodes.Status404NotFound},
-            {typeof(UserAlreadyDeletedException), StatusCodes.Status410Gone},
-            {typeof(MatchNotExistsException), StatusCodes.Status404NotFound},
-            {typeof(MatchAlreadyDeletedException), StatusCodes.Status410Gone},
-            {typeof(MessageNotExistsException), StatusCodes.Status404NotFound},
+            {typeof(NotExistsException), StatusCodes.Status404NotFound},
+            {typeof(AlreadyDeletedException), StatusCodes.Status410Gone},
             {typeof(CustomException), StatusCodes.Status400BadRequest},
         };
     }

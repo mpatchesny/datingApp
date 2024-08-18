@@ -44,13 +44,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<StorageMiddleware>();
 
+var storagePath = Path.GetFullPath(String.Format(builder.Environment.StoragePath(builder.Configuration), builder.Environment.ContentRootPath));
+
 app.UseStaticFiles(new StaticFileOptions
     {
-        FileProvider = new PhysicalFileProvider(
-            Path.GetFullPath(
-                String.Format(builder.Environment.StoragePath(builder.Configuration), builder.Environment.ContentRootPath)
-            )
-        ),
+        FileProvider = new PhysicalFileProvider(storagePath),
         RequestPath = "/storage",
     }
 );

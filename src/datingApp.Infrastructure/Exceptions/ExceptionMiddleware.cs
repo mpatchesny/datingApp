@@ -27,6 +27,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
             {typeof(UserAlreadyDeletedException), StatusCodes.Status410Gone},
             {typeof(MatchNotExistsException), StatusCodes.Status404NotFound},
             {typeof(MatchAlreadyDeletedException), StatusCodes.Status410Gone},
+            {typeof(MessageNotExistsException), StatusCodes.Status404NotFound},
             {typeof(CustomException), StatusCodes.Status400BadRequest},
         };
     }
@@ -54,7 +55,8 @@ internal sealed class ExceptionMiddleware : IMiddleware
 
     private async Task HandleExceptionAsync(Exception exception, HttpContext context)
     {
-        var statusCode = _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType(), StatusCodes.Status500InternalServerError);
+        var statusCode = _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType(), 
+            _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType().BaseType, StatusCodes.Status500InternalServerError));
         var error = new Error("error", "Something went wrong.");
         if (statusCode != StatusCodes.Status500InternalServerError)
         {

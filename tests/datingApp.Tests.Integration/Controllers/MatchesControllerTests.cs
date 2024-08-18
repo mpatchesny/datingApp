@@ -30,11 +30,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(match.Id, response.Id);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async void given_match_not_exists_get_match_returns_404_not_found_with_match_not_exist_reason()
     {
         var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
@@ -127,7 +126,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(message.Id, response.Id);
     }
 
-    [Fact (Skip = "FIXME!")]
+    [Fact]
     public async void given_message_not_exists_get_message_returns_404_not_found_with_reason_message_does_not_exist()
     {
         var user1 = await CreateUserAsync("test1@test.com");

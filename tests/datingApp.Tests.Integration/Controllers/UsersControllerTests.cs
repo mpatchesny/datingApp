@@ -180,7 +180,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(user.Id, response.Id);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async Task given_user_with_given_id_not_exists_get_users_returns_404_not_found_and_proper_error_reason()
     {
         var email = "test@test.com";

@@ -22,6 +22,7 @@ internal sealed class PostgresDeletedEntityRepository : IDeletedEntityRepository
             Id = id,
         };
         await _dbContext.AddAsync(deletedEntity);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<bool> ExistsAsync(Guid id)

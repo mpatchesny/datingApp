@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CF05E99-D18
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Api", "src\datingApp.Api\datingApp.Api.csproj", "{284722E2-6B87-49FD-B870-9F4DBC5B331A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Core", "src\datingApp.Core\datingApp.Core.csproj", "{152D0135-A2E4-4863-915A-EA3C98AB379A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Tests.Unit", "tests\datingApp.Tests.Unit\datingApp.Tests.Unit.csproj", "{323BED9E-60AB-4870-BD74-0D0BC088E9C7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Application", "src\datingApp.Application\datingApp.Application.csproj", "{94B20964-0E14-4898-BEFB-3E2004B1E98D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Infrastructure", "src\datingApp.Infrastructure\datingApp.Infrastructure.csproj", "{12B5BD11-83F2-43D0-B8F3-346ED38BC7F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Core", "src\datingApp.Core\datingApp.Core.csproj", "{152D0135-A2E4-4863-915A-EA3C98AB379A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Tests.Unit", "tests\datingApp.Tests.Unit\datingApp.Tests.Unit.csproj", "{323BED9E-60AB-4870-BD74-0D0BC088E9C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "datingApp.Tests.Integration", "tests\datingApp.Tests.Integration\datingApp.Tests.Integration.csproj", "{C773EF1D-31CC-4C5E-A633-FDBD4992B347}"
 EndProject
@@ -54,10 +54,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{284722E2-6B87-49FD-B870-9F4DBC5B331A} = {6CF05E99-D187-4777-9D22-E528449D5C70}
 		{152D0135-A2E4-4863-915A-EA3C98AB379A} = {6CF05E99-D187-4777-9D22-E528449D5C70}
-		{323BED9E-60AB-4870-BD74-0D0BC088E9C7} = {29EBFFF6-F62B-47E5-8132-25FF18834D9E}
 		{94B20964-0E14-4898-BEFB-3E2004B1E98D} = {6CF05E99-D187-4777-9D22-E528449D5C70}
 		{12B5BD11-83F2-43D0-B8F3-346ED38BC7F8} = {6CF05E99-D187-4777-9D22-E528449D5C70}
-		{C773EF1D-31CC-4C5E-A633-FDBD4992B347} = {29EBFFF6-F62B-47E5-8132-25FF18834D9E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {02530A94-95A4-49B3-90A6-0727DC85A716}

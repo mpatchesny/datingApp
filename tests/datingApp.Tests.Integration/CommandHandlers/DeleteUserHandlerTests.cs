@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
+using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Services;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 using Xunit.Sdk;
@@ -19,11 +21,12 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class DeleteUserHandlerTests : IDisposable
 {
     [Fact]
-    public async void delete_existing_user_should_succeed()
+    public async void delete_existing_user_should_succeed_and_add_user_id_to_deleted_entities()
     {
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(Guid.Parse("00000000-0000-0000-0000-000000000001"))));
+        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(userId)));
         Assert.Null(exception);
-
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == userId));
         _mockFileStorageService.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never);
     }
 
@@ -57,6 +60,20 @@ public class DeleteUserHandlerTests : IDisposable
         _mockFileStorageService.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never);
     }
 
+    [Fact]
+    public async void given_user_id_exists_in_deleted_entities_repository_delete_user_should_throw_already_deleted_exception()
+    {
+        var alreadyDeletedUser = new DeletedEntityDto()
+        {
+            Id = new Guid()
+        };
+        await _testDb.DbContext.DeletedEntities.AddAsync(alreadyDeletedUser);
+        await _testDb.DbContext.SaveChangesAsync();
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new DeleteUser(alreadyDeletedUser.Id)));
+        Assert.NotNull(exception);
+        Assert.IsType<UserAlreadyDeletedException>(exception);
+    }
+
     // Arrange
     private readonly DeleteUserHandler _handler;
     private readonly TestDatabase _testDb;
@@ -70,9 +87,10 @@ public class DeleteUserHandlerTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var userRepository = new PostgresUserRepository(_testDb.DbContext);
+        var deletedEntitiesRepository = new PostgresDeletedEntityRepository(_testDb.DbContext);
         _mockFileStorageService = new Mock<IFileStorageService>();
         _mockFileStorageService.Setup(m => m.DeleteFile(It.IsAny<string>()));
-        _handler = new DeleteUserHandler(userRepository, _mockFileStorageService.Object);
+        _handler = new DeleteUserHandler(userRepository, _mockFileStorageService.Object, deletedEntitiesRepository);
     }
 
     // Teardown

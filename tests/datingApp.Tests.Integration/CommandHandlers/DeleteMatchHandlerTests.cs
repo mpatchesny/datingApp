@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
+using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
@@ -14,11 +17,13 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class DeleteMatchHandlerTests : IDisposable
 {
     [Fact]
-    public async Task delete_existing_match_should_succeed()
+    public async Task delete_existing_match_should_succeed_and_add_deleted_match_id_to_deleted_entities()
     {
-        var command = new DeleteMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var command = new DeleteMatch(matchId);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == matchId));
     }
     
     [Fact]
@@ -27,6 +32,21 @@ public class DeleteMatchHandlerTests : IDisposable
         var command = new DeleteMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task given_match_id_exists_in_deleted_entities_repository_delete_user_should_throw_already_deleted_exception()
+    {
+        var alreadyDeletedMatch = new DeletedEntityDto()
+        {
+            Id = Guid.NewGuid()
+        };
+        await _testDb.DbContext.DeletedEntities.AddAsync(alreadyDeletedMatch);
+        await _testDb.DbContext.SaveChangesAsync();
+        var command = new DeleteMatch(alreadyDeletedMatch.Id);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<MatchAlreadyDeletedException>(exception);
     }
     
     // Arrange
@@ -50,7 +70,8 @@ public class DeleteMatchHandlerTests : IDisposable
         _testDb.DbContext.SaveChanges();
 
         var matchRepository = new PostgresMatchRepository(_testDb.DbContext);
-        _handler = new DeleteMatchHandler(matchRepository);
+        var deletedEntitiesRepository = new PostgresDeletedEntityRepository(_testDb.DbContext);
+        _handler = new DeleteMatchHandler(matchRepository, deletedEntitiesRepository);
     }
 
     // Teardown

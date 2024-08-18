@@ -36,10 +36,6 @@ public class PhotosController : ApiControllerBase
     {
         var query = Authenticate(new GetPhoto { PhotoId = photoId});
         var photo = await _getPhotoHandler.HandleAsync(query);
-        if (photo == null)
-        {
-            return NotFound();
-        }
         return photo;
     }
 

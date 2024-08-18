@@ -51,10 +51,6 @@ public class MatchesController : ApiControllerBase
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
         var match = await _getMatchHandler.HandleAsync(query);
-        if (match == null)
-        {
-            return NotFound();
-        }
         return Ok(match);
     }
 
@@ -72,10 +68,6 @@ public class MatchesController : ApiControllerBase
     {
         var query = Authenticate(new GetMessage { MessageId = messageId });
         var message = await _getMessageHandler.HandleAsync(query);
-        if (message == null)
-        {
-            return NotFound();
-        }
         return message;
     }
 

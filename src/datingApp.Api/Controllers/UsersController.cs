@@ -89,10 +89,6 @@ public class UserController : ApiControllerBase
     {
         var query = Authenticate(new GetPublicUser { UserId = userId, UserRequestedId = AuthenticatedUserId });
         var user = await _getPublicUserHandler.HandleAsync(query);
-        if (user is null)
-        {
-            return NotFound();
-        }
         return user;
     }
 

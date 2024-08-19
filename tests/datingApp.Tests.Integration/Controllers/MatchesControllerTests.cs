@@ -212,7 +212,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         }
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async void given_match_not_exists_get_messages_returns_404_not_found_with_reason_match_not_exists()
     {
         var user1 = await CreateUserAsync("test1@test.com");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Handlers;
@@ -22,10 +23,11 @@ public class GetPhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void get_nonexisting_photo_should_return_null()
+    public async void get_nonexisting_photo_should_return_photo_not_exists_exception()
     {
-        var photo = await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.Parse("00000000-0000-0000-0000-000000000002") });
-        Assert.Null(photo);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.Parse("00000000-0000-0000-0000-000000000002") }));
+        Assert.NotNull(exception);
+        Assert.IsType<PhotoNotExistsException>(exception);
     }
 
     // Arrange

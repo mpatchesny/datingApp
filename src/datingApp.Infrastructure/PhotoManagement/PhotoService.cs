@@ -24,14 +24,20 @@ internal sealed class PhotoService : IPhotoService
         _options = options;
     }
 
-    public byte[] ConvertToArrayOfBytes(string Base64Bytes)
+    public byte[] ConvertToArrayOfBytes(string base64Bytes)
     {
+        if (base64Bytes is null)
+        {
+            throw new EmptyBase64StringException();
+        }
+
         // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
-        byte[] bytes = new byte[((Base64Bytes.Length * 3) + 3) / 4 -
-            (Base64Bytes.Length > 0 && Base64Bytes[^1] == '=' ?
-                Base64Bytes.Length > 1 && Base64Bytes[^2] == '=' ?
+        byte[] bytes = new byte[((base64Bytes.Length * 3) + 3) / 4 -
+            (base64Bytes.Length > 0 && base64Bytes[^1] == '=' ?
+                base64Bytes.Length > 1 && base64Bytes[^2] == '=' ?
                     2 : 1 : 0)];
-        if (!Convert.TryFromBase64String(Base64Bytes, bytes, out _))
+
+        if (!Convert.TryFromBase64String(base64Bytes, bytes, out _))
         {
             throw new FailToConvertBase64StringToArrayOfBytes();
         }

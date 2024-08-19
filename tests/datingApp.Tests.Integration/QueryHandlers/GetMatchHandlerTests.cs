@@ -117,7 +117,6 @@ public class GetMatchHandlerTests : IDisposable
         }
         await _testDb.DbContext.SaveChangesAsync();
 
-
         int howManyMessages = 5;
         var handler = new GetMatchHandler(_testDb.DbContext);
         var query = new GetMatch{ MatchId = match.Id, UserId = user.Id, HowManyMessages = howManyMessages };

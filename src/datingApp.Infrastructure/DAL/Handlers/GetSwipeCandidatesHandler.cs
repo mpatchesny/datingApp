@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.Spatial;
@@ -69,6 +70,11 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
+        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        {
+            throw new UserNotExistsException(query.UserId);
+        }
+
         var settings = await _dbContext.UserSettings
                                 .AsNoTracking()
                                 .Where(x => x.UserId == query.UserId)
@@ -76,6 +82,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         if (settings == null) return null;
         var initialCandidates = GetInitialCandidatesToSwipe(settings, query.UserId);
         var candidates = await GetCandidatesAsync(initialCandidates);
+
         // we want candidates within range of user who requested
         return candidates
                 .Select(u => u.AsPublicDto(_spatial.CalculateDistance(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))

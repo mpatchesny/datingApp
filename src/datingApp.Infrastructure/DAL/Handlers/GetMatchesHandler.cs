@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,11 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
+        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        {
+            throw new UserNotExistsException(query.UserId);
+        }
+
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)

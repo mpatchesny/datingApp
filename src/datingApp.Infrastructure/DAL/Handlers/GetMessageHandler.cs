@@ -23,12 +23,12 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
         var message = await _dbContext.Messages
                                     .AsNoTracking()
                                     .SingleOrDefaultAsync(x => x.Id == query.MessageId);
-        
+
         if (message == null) 
         {
             throw new MessageNotExistsException(query.MessageId);
         }
-        
+
         return message.AsDto();
     }
 }

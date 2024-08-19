@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +46,11 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
+        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        {
+            throw new UserNotExistsException(query.UserId);
+        }
+
         var usersMatches = GetMatchesIdByUserId(query.UserId);
         var newMessagesMatchId = GetMessagesPastGivenActivityTime(usersMatches, query.LastActivityTime);
         var newMatchesId = GetMatchesPastGivenActivityTime(usersMatches, query.LastActivityTime);

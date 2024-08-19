@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Handlers;
@@ -262,6 +263,18 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var candidates = await _handler.HandleAsync(query);
         Assert.Equal(query.HowMany, candidates.Count());
+    }
+
+    [Fact]
+    public async Task given_user_who_requested_swipe_candidates_not_exists_get_swipe_candidates_returns_user_not_exists_exception()
+    {
+        var query = new GetSwipeCandidates();
+        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        query.HowMany = 2;
+
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     // Arrange

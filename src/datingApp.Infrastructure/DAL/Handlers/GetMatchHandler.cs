@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -23,8 +24,9 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
             where match.Id == query.MatchId
+            where match.UserId1 == user.Id || match.UserId2 == user.Id 
+            where user.Id != query.UserId
             select new 
             {
                 Match = match,

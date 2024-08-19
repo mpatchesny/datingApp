@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Handlers;
@@ -24,12 +25,13 @@ public class GetMessageHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task query_messages_by_nonexisting_message_id_should_return_null()
+    public async Task query_messages_by_nonexisting_message_id_should_return_message_not_exists_exception()
     {
         var query = new GetMessage();
         query.MessageId = Guid.Parse("00000000-0000-0000-0000-000000000000");
-        var message = await _handler.HandleAsync(query);
-        Assert.Null(message);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<MessageNotExistsException>(exception);
     }
 
     // Arrange

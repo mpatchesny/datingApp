@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
@@ -28,13 +29,14 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task query_nonexisting_user_should_return_null()
+    public async Task query_nonexisting_user_should_user_not_exists_exception()
     {
         var query = new GetPublicUser();
         query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
         query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var user = await _handler.HandleAsync(query);
-        Assert.Null(user);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     [Fact]

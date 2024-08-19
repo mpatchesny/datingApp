@@ -212,7 +212,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         }
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async void given_match_not_exists_get_messages_returns_404_not_found_with_reason_match_not_exists()
     {
         var user1 = await CreateUserAsync("test1@test.com");
@@ -268,12 +268,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal("test", messageDto.Text);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async void given_match_not_exists_send_message_returns_404_not_found_with_reason_match_not_exists()
     {
         var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
         var notExistingMatchId = Guid.NewGuid();
 
         var token = Authorize(user1.Id);

@@ -23,7 +23,7 @@ public class SendMessageHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task send_message_within_nonexistsing_match_should_throw_error()
+    public async Task send_message_within_nonexistsing_match_should_throw_match_not_exsits_exception()
     {
         var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));

@@ -16,7 +16,7 @@ internal static class Extensions
     private const string DbOptionsSectionName = "database";
     private const string ExpiredAccessCodesRemoverSectionName = "ExpiredAccessCodesRemover";
 
-    public static IServiceCollection AddPostgres(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
         var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);

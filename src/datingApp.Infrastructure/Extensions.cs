@@ -33,7 +33,7 @@ public static class Extensions
     private const string StorageOptionsSectionName = "Storage";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddPostgres(configuration);
+        services.AddDatabase(configuration);
         services.AddAuth(configuration);
         services.AddHttpContextAccessor();
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));

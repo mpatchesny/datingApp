@@ -41,6 +41,54 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
+    public async Task given_null_email_provided_sign_in_by_email_should_throw_exception()
+    {
+        var userRepository = new Mock<IUserRepository>();
+        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+
+        var codeStorage = new Mock<IAccessCodeStorage>();
+        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
+
+        var tokenStorage = new Mock<ITokenStorage>();
+        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+
+        var authenticator = new Mock<IAuthenticator>();
+        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+
+        var verificator = new Mock<AccessCodeVerificator>();
+
+        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
+        SignInByEmail command = new SignInByEmail(null, "ABC");
+        var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<NoEmailProvidedException>(exception);
+    }
+
+    [Fact]
+    public async Task given_null_access_code_provided_sign_in_by_email_should_throw_exception()
+    {
+        var userRepository = new Mock<IUserRepository>();
+        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+
+        var codeStorage = new Mock<IAccessCodeStorage>();
+        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
+
+        var tokenStorage = new Mock<ITokenStorage>();
+        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+
+        var authenticator = new Mock<IAuthenticator>();
+        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+
+        var verificator = new Mock<AccessCodeVerificator>();
+
+        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
+        SignInByEmail command = new SignInByEmail("test@test.com", null);
+        var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<NoAccessCodeProvidedException>(exception);
+    }
+
+    [Fact]
     public async Task given_no_access_code_in_storage_sign_in_by_email_should_throw_exception()
     {
         var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 18, 100, 100, 0.0, 0.0);

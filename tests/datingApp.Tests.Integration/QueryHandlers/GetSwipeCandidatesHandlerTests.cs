@@ -284,8 +284,8 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     {
         _testDb = new TestDatabase();
         var mockedSpatial = new Mock<ISpatial>();
-        mockedSpatial.Setup(m => m.CalculateDistance(0.0, 0.0, 0.0, 0.0)).Returns(25);
-        mockedSpatial.Setup(m => m.CalculateDistance(1.0, 1.0, 1.0, 1.0)).Returns(26);
+        mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(25);
+        mockedSpatial.Setup(m => m.CalculateDistanceInKms(1.0, 1.0, 1.0, 1.0)).Returns(26);
 
         double north = (2.0);
         double south = (-1.0);

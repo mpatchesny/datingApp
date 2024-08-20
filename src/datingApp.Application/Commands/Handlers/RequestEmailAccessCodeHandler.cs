@@ -32,6 +32,10 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
 
     public async Task HandleAsync(RequestEmailAccessCode command)
     {
+        if (command.Email is null)
+        {
+            throw new NoEmailProvidedException();
+        }
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());
         _codeStorage.Set(code);
 

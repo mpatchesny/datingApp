@@ -11,7 +11,7 @@ public class Spatial : ISpatial
     private const double equator = 40075; // kilometers
     private const double toRadMultiplier = Math.PI/180;
     private const double latDegrees = 0.008983;
-    public int CalculateDistance(double fromLat, double fromLon, double toLat, double toLon)
+    public int CalculateDistanceInKms(double fromLat, double fromLon, double toLat, double toLon)
     {
         var fromLatRad = fromLat * toRadMultiplier;
         var fromLonRad = fromLon * toRadMultiplier;

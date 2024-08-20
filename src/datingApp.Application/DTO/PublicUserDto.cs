@@ -11,7 +11,7 @@ public class PublicUserDto
     public string Name { get; set; }
     public int Age { get; set; }
     public int Sex { get; set; }
-    public int Distance { get; set; }
+    public int DistanceInKms { get; set; }
     public string Job { get; set; }
     public string Bio { get; set; }
     public IEnumerable<PhotoDto> Photos { get; set; }

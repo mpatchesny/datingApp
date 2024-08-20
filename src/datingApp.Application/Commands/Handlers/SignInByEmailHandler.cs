@@ -32,12 +32,22 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
 
     public async Task HandleAsync(SignInByEmail command)
     {
+        if (command.Email is null)
+        {
+            throw new NoEmailProvidedException();
+        }
+
+        if (command.AccessCode is null)
+        {
+            throw new NoAccessCodeProvidedException();
+        }
+
         var user = await _userRepository.GetByEmailAsync(command.Email);
         if (user == null)
         {
             throw new InvalidCredentialsException();
         }
-        
+
         var accessCode = _codeStorage.Get(command.Email);
         if (accessCode == null)
         {

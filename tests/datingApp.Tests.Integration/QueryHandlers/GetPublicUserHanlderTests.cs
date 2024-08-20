@@ -61,7 +61,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _testDb.DbContext.SaveChanges();
         
         var mockedSpatial = new Mock<ISpatial>();
-        mockedSpatial.Setup(m => m.CalculateDistance(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
         _handler = new GetPublicUserHandler(_testDb.DbContext, mockedSpatial.Object);
     }
 

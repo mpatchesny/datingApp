@@ -22,6 +22,6 @@ public struct Coords
 
 public interface ISpatial
 {
-    public int CalculateDistance(double lat1, double lon1, double lat2, double lon2);
+    public int CalculateDistanceInKms(double lat1, double lon1, double lat2, double lon2);
     public Coords GetApproxSquareAroundPoint(double lat, double lon, int distance);
 }

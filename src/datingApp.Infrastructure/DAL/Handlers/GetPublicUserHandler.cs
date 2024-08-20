@@ -42,6 +42,6 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UserNotExistsException(query.UserId);
         }
 
-        return user.AsPublicDto(_spatial.CalculateDistance(userRequested.Lat, userRequested.Lon, user.Settings.Lat, user.Settings.Lon));
+        return user.AsPublicDto(_spatial.CalculateDistanceInKms(userRequested.Lat, userRequested.Lon, user.Settings.Lat, user.Settings.Lon));
     }
 }

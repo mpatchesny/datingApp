@@ -85,8 +85,8 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
         // we want candidates within range of user who requested
         return candidates
-                .Select(u => u.AsPublicDto(_spatial.CalculateDistance(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))
-                .Where(u => u.Distance <= settings.DiscoverRange)
+                .Select(u => u.AsPublicDto(_spatial.CalculateDistanceInKms(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))
+                .Where(u => u.DistanceInKms <= settings.DiscoverRange)
                 .Take(query.HowMany)
                 .ToList();
     }

@@ -16,7 +16,7 @@ public class SpatialTests
     public void given_two_points_spatial_returns_proper_calculated_distance_in_kilometers(double lat1, double lon1, double lat2, double lon2, int expectedDistance)
     {
         var spatial = new Infrastructure.Spatial.Spatial();
-        Assert.Equal(expectedDistance, spatial.CalculateDistance(lat1, lon1, lat2, lon2));
+        Assert.Equal(expectedDistance, spatial.CalculateDistanceInKms(lat1, lon1, lat2, lon2));
     }
 
     [Theory]

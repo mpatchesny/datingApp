@@ -15,7 +15,7 @@ internal static class Extensions
         {
             Id = entity.Id,
             Age = entity.GetAge(),
-            Distance = distance,
+            DistanceInKms = distance,
             Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,

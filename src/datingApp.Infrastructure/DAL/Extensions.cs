@@ -28,8 +28,8 @@ internal static class Extensions
         services.AddScoped<IMessageRepository, DbMessageRepository>();
         services.AddHostedService<DatabaseInitializer>();
 
-        var postgresOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);
-        if (postgresOptions.SeedSampleData)
+        var databaseOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);
+        if (databaseOptions.SeedSampleData)
         {
             services.AddHostedService<DatabaseSeeder>();
         }

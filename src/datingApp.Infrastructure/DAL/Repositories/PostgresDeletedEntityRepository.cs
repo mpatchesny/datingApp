@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class PostgresDeletedEntityRepository : IDeletedEntityRepository
+internal sealed class DbDeletedEntityRepository : IDeletedEntityRepository
 {
     DatingAppDbContext _dbContext;
-    public PostgresDeletedEntityRepository(DatingAppDbContext dbContext)
+    public DbDeletedEntityRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

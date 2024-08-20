@@ -51,8 +51,8 @@ public class SendMessageHandlerTests : IDisposable
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 
-        var messageRepository = new PostgresMessageRepository(_testDb.DbContext);
-        var matchRepository = new PostgresMatchRepository(_testDb.DbContext);
+        var messageRepository = new DbMessageRepository(_testDb.DbContext);
+        var matchRepository = new DbMatchRepository(_testDb.DbContext);
         _handler = new SendMessageHandler(messageRepository, matchRepository);
     }
 

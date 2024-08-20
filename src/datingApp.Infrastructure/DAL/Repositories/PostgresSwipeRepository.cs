@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class PostgresSwipeRepository : ISwipeRepository
+internal sealed class DbSwipeRepository : ISwipeRepository
 {
     private readonly DatingAppDbContext _dbContext;
-    public PostgresSwipeRepository(DatingAppDbContext dbContext)
+    public DbSwipeRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

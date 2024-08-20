@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class PostgresMatchRepository : IMatchRepository
+internal sealed class DbMatchRepository : IMatchRepository
 {
     private readonly DatingAppDbContext _dbContext;
-    public PostgresMatchRepository(DatingAppDbContext dbContext)
+    public DbMatchRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

@@ -140,7 +140,7 @@ public class PhotoRepositoryTests : IDisposable
         };
         _testDb.DbContext.Photos.AddRange(photos);
         _testDb.DbContext.SaveChanges();
-        _repository = new PostgresPhotoRepository(_testDb.DbContext);
+        _repository = new DbPhotoRepository(_testDb.DbContext);
     }
 
     // Teardown

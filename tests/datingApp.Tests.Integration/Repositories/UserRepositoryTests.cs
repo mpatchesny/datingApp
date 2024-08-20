@@ -125,7 +125,7 @@ public class UserRepositoryTests : IDisposable
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
-        _userRepository = new PostgresUserRepository(_testDb.DbContext);
+        _userRepository = new DbUserRepository(_testDb.DbContext);
     }
 
     // Teardown

@@ -167,7 +167,7 @@ public class MessageRepositoryTests : IDisposable
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 
-        _repository = new PostgresMessageRepository(_testDb.DbContext);
+        _repository = new DbMessageRepository(_testDb.DbContext);
     }
 
     // Teardown

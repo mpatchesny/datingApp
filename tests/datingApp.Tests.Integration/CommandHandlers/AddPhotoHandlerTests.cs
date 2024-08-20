@@ -69,8 +69,8 @@ public class AddPhotoHandlerTests : IDisposable
         _testDb.DbContext.Photos.Add(photo);
         _testDb.DbContext.SaveChanges();
 
-        var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
-        var userRepository = new PostgresUserRepository(_testDb.DbContext);
+        var photoRepository = new DbPhotoRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_testDb.DbContext);
 
         var mockedPhotoService = new Mock<IPhotoService>();
         mockedPhotoService.Setup(m => m.GetImageFileFormat(It.IsAny<byte[]>())).Returns("jpg");

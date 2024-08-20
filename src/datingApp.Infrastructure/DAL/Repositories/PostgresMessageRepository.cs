@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class PostgresMessageRepository : IMessageRepository
+internal sealed class DbMessageRepository : IMessageRepository
 {
     private readonly DatingAppDbContext _dbContext;
-    public PostgresMessageRepository(DatingAppDbContext dbContext)
+    public DbMessageRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

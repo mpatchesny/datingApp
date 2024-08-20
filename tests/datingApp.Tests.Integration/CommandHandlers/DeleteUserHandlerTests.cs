@@ -86,8 +86,8 @@ public class DeleteUserHandlerTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
 
-        var userRepository = new PostgresUserRepository(_testDb.DbContext);
-        var deletedEntitiesRepository = new PostgresDeletedEntityRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_testDb.DbContext);
+        var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
         _mockFileStorageService = new Mock<IFileStorageService>();
         _mockFileStorageService.Setup(m => m.DeleteFile(It.IsAny<string>()));
         _handler = new DeleteUserHandler(userRepository, _mockFileStorageService.Object, deletedEntitiesRepository);

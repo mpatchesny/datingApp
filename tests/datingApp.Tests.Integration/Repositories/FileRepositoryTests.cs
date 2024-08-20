@@ -22,7 +22,7 @@ public class FileRepositoryTests : IDisposable
         var photo = await CreatePhotoAsync();
         var file = await CreateFileAsync(photo.Id);
 
-        IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
+        IFileRepository storage = new DbFileRepository(_testDb.DbContext);
         var fileBinary = await storage.GetByIdAsync(file.Id);
         Assert.Same(fileBinary, file.Binary);
     }
@@ -30,7 +30,7 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_not_exists_GetFileAsync_returns_null()
     {
-        IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
+        IFileRepository storage = new DbFileRepository(_testDb.DbContext);
         var file = await storage.GetByIdAsync(Guid.NewGuid());
         Assert.Null(file);
     }
@@ -42,7 +42,7 @@ public class FileRepositoryTests : IDisposable
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var fileId = photo.Id;
 
-        IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
+        IFileRepository storage = new DbFileRepository(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(data, fileId , "txt"));
         Assert.Null(exception);
 
@@ -60,7 +60,7 @@ public class FileRepositoryTests : IDisposable
         file.Binary[1] = byte.MaxValue;
         file.Binary[2] = byte.MaxValue;
 
-        IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
+        IFileRepository storage = new DbFileRepository(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(file.Binary, file.Id , "txt"));
         Assert.Null(exception);
 
@@ -75,7 +75,7 @@ public class FileRepositoryTests : IDisposable
         var file = await CreateFileAsync(photo.Id);
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
 
-        IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
+        IFileRepository storage = new DbFileRepository(_testDb.DbContext);
         await storage.DeleteAsync(file.Id);
 
         file = _testDb.DbContext.Files.FirstOrDefault(x => x.Id == file.Id);
@@ -85,7 +85,7 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_notexists_DeleteFileAsync_not_throws_exepction()
     {
-        IFileRepository storage = new PostgresFileRepository(_testDb.DbContext);
+        IFileRepository storage = new DbFileRepository(_testDb.DbContext);
         var exception = await Record.ExceptionAsync(async () => await storage.DeleteAsync(Guid.NewGuid()));
         Assert.Null(exception);
     }

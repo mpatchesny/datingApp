@@ -60,7 +60,7 @@ public class SingUpHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();
-        var userRepository = new PostgresUserRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_testDb.DbContext);
         _handler = new SignUpHandler(userRepository);
     }
 

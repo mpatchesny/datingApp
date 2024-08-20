@@ -53,7 +53,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 
-        var messageRepository = new PostgresMessageRepository(_testDb.DbContext);
+        var messageRepository = new DbMessageRepository(_testDb.DbContext);
         _handler = new SetMessagesAsDisplayedHandler(messageRepository);
     }
 

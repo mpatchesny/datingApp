@@ -117,7 +117,7 @@ public class SwipeRepositoryTests : IDisposable
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
-        _repository = new PostgresSwipeRepository(_testDb.DbContext);
+        _repository = new DbSwipeRepository(_testDb.DbContext);
     }
 
     // Teardown

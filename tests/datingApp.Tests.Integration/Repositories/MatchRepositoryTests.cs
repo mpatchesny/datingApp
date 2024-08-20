@@ -137,7 +137,7 @@ public class MatchRepositoryTests : IDisposable
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.Matches.Add(match2);
         _testDb.DbContext.SaveChanges();
-        _repository = new PostgresMatchRepository(_testDb.DbContext);
+        _repository = new DbMatchRepository(_testDb.DbContext);
     }
 
     // Teardown

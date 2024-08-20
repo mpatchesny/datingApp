@@ -51,7 +51,7 @@ public class SetMatchAsDisplayedHandlerTests : IDisposable
         _testDb.DbContext.Matches.Add(match);
         _testDb.DbContext.SaveChanges();
 
-        var matchRepository = new PostgresMatchRepository(_testDb.DbContext);
+        var matchRepository = new DbMatchRepository(_testDb.DbContext);
         _handler = new SetMatchAsDisplayedHandler(matchRepository);
     }
 

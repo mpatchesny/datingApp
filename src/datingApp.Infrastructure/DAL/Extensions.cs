@@ -21,11 +21,11 @@ internal static class Extensions
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
         var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);
         services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
-        services.AddScoped<IUserRepository, PostgresUserRepository>();
-        services.AddScoped<IPhotoRepository, PostgresPhotoRepository>();
-        services.AddScoped<ISwipeRepository, PostgresSwipeRepository>();
-        services.AddScoped<IMatchRepository, PostgresMatchRepository>();
-        services.AddScoped<IMessageRepository, PostgresMessageRepository>();
+        services.AddScoped<IUserRepository, DbUserRepository>();
+        services.AddScoped<IPhotoRepository, DbPhotoRepository>();
+        services.AddScoped<ISwipeRepository, DbSwipeRepository>();
+        services.AddScoped<IMatchRepository, DbMatchRepository>();
+        services.AddScoped<IMessageRepository, DbMessageRepository>();
         services.AddHostedService<DatabaseInitializer>();
 
         var postgresOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);

@@ -63,7 +63,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
         mockedPhotoOrderer.Setup(m => m.OrderPhotos(It.IsAny<List<Photo>>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .Returns((List<Photo> x, Guid y, int z) => x);
 
-        var photoRepository = new PostgresPhotoRepository(_testDb.DbContext);
+        var photoRepository = new DbPhotoRepository(_testDb.DbContext);
         _handler = new ChangePhotoOridinalHandler(photoRepository, mockedPhotoOrderer.Object);
     }
 

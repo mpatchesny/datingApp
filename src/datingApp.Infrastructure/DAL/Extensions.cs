@@ -27,12 +27,7 @@ internal static class Extensions
         services.AddScoped<IMatchRepository, DbMatchRepository>();
         services.AddScoped<IMessageRepository, DbMessageRepository>();
         services.AddHostedService<DatabaseInitializer>();
-
-        var databaseOptions = configuration.GetOptions<DatabaseOptions>(DbOptionsSectionName);
-        if (databaseOptions.SeedSampleData)
-        {
-            services.AddHostedService<DatabaseSeeder>();
-        }
+        services.AddHostedService<DatabaseSeeder>();
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
         services.AddHostedService<ExpiredAccessCodesRemover>();
 

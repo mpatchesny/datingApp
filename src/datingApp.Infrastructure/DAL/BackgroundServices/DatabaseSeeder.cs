@@ -3,22 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure.DAL.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.DAL.BackgroundServices;
 
 internal sealed class DatabaseSeeder : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
-    public DatabaseSeeder(IServiceProvider serviceProvider)
+    private readonly IOptions<DatabaseOptions> _options;
+    public DatabaseSeeder(IServiceProvider serviceProvider, IOptions<DatabaseOptions> options)
     {
         _serviceProvider = serviceProvider;
+        _options = options;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (!_options.Value.SeedSampleData)
+        {
+            return;
+        }
+
         var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DatingAppDbContext>();
         dbContext.Database.EnsureCreated();

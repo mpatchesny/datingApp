@@ -14,7 +14,7 @@ internal static class Extensions
 {
     private const string ConnectionStringsOptionsSectionName = "ConnectionStrings";
     private const string DbOptionsSectionName = "database";
-    private const string ExpiredAccessCodesRemoverSectionName = "ExpiredAccessCodesRemover";
+    private const string ExpiredAccessCodesRemoverSectionName = "ExpiredDataRemover";
 
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {

@@ -30,7 +30,8 @@ internal sealed class ExpiredAccessCodesRemover : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            _ = await dbContext.AccessCodes.Where(x => x.ExpirationTime < DateTime.UtcNow).ExecuteDeleteAsync(cancellationToken: stoppingToken);
+            dbContext.AccessCodes.RemoveRange(dbContext.AccessCodes.Where(x => x.ExpirationTime < DateTime.UtcNow));
+            await dbContext.SaveChangesAsync(stoppingToken);
             await Task.Delay(loopDelayInMilliseconds, stoppingToken);
         }
     }

@@ -12,7 +12,23 @@ services:
       - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
+  mysql:
+    image: mysql:latest
+    shm_size: '4gb'
+    container_name: datingapp_mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_USER=f2125
+      - MYSQL_PASSWORD=4KHH2pigU0
+      - MYSQL_DATABASE=db_f2125
+      - MYSQL_ROOT_PASSWORD=dupa
+    volumes:
+      - mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
 
 volumes:
   postgres:
+    driver: local
+  mysql:
     driver: local

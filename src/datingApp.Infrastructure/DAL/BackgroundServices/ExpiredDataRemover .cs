@@ -10,11 +10,11 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.DAL.BackgroundServices;
 
-internal sealed class ExpiredAccessCodesRemover : BackgroundService
+internal sealed class ExpiredDataRemover : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<ExpiredAccessCodesRemoverOptions> _options;
-    public ExpiredAccessCodesRemover(IServiceProvider serviceProvider, IOptions<ExpiredAccessCodesRemoverOptions> options)
+    public ExpiredDataRemover(IServiceProvider serviceProvider, IOptions<ExpiredAccessCodesRemoverOptions> options)
     {
         _serviceProvider = serviceProvider;
         _options = options;

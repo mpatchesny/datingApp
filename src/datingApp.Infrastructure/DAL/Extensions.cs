@@ -29,7 +29,7 @@ internal static class Extensions
         services.AddHostedService<DatabaseInitializer>();
         services.AddHostedService<DatabaseSeeder>();
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
-        services.AddHostedService<ExpiredAccessCodesRemover>();
+        services.AddHostedService<ExpiredDataRemover>();
 
         // EF Core + Npgsql issue
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

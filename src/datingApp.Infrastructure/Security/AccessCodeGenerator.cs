@@ -20,16 +20,13 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
 
     public AccessCodeDto GenerateCode(string emailOrPhone)
     {
-        char[] code = new char[6];
-        for (int i = 0; i < code.Length; i++)
-        {
-            var randInt = rand.Next(0, seed.Length);
-            code[i] = seed[randInt];
-        }
+        string code = Enumerable.Range(0, 6)
+            .Select(_ => seed[rand.Next(seed.Length)])
+            .ToString();
 
         return new AccessCodeDto
         { 
-            AccessCode = new string(code),
+            AccessCode = code,
             EmailOrPhone = emailOrPhone,
             Expiry = _expiry,
             ExpirationTime = DateTime.UtcNow + _expiry

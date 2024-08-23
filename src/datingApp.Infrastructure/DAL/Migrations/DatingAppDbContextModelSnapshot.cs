@@ -41,7 +41,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("EmailOrPhone");
 
-                    b.ToTable("AccessCodes");
+                    b.ToTable("AccessCodes", (string)null);
 
                     NpgsqlEntityTypeBuilderExtensions.IsUnlogged(b, true);
                 });
@@ -56,7 +56,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("DeletedEntities");
+                    b.ToTable("DeletedEntityDto", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
@@ -76,22 +76,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("Files");
-                });
-
-            modelBuilder.Entity("datingApp.Application.DTO.JwtDto", b =>
-                {
-                    b.Property<string>("AccessToken")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ExpirationTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("AccessToken");
-
-                    b.HasIndex("AccessToken");
-
-                    b.ToTable("RevokedTokens");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
@@ -121,7 +106,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("UserId1", "UserId2", "CreatedAt");
 
-                    b.ToTable("Matches");
+                    b.ToTable("Matches", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Message", b =>
@@ -153,7 +138,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("MatchId", "CreatedAt");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Photo", b =>
@@ -179,7 +164,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("UserId", "Oridinal");
 
-                    b.ToTable("Photos");
+                    b.ToTable("Photos", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
@@ -207,7 +192,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("SwipedById", "SwipedWhoId", "Like");
 
-                    b.ToTable("Swipes");
+                    b.ToTable("Swipes", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.User", b =>
@@ -255,7 +240,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("Sex", "DateOfBirth");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.UserSettings", b =>
@@ -285,7 +270,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("Lat", "Lon");
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>

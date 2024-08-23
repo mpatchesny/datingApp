@@ -14,18 +14,18 @@ namespace datingApp.Infrastructure.Security;
 
 internal sealed class Authenticator : IAuthenticator
 {
-    private readonly string _issuer;
-    private readonly TimeSpan _expiry;
-    private readonly string _audience;
-    private readonly SigningCredentials _signingCredentials;
+    private readonly string _accessTokenIssuer;
+    private readonly TimeSpan _accessTokenExpiry;
+    private readonly string _accessTokenAudience;
+    private readonly SigningCredentials _accessTokenSigningCredentials;
     private readonly JwtSecurityTokenHandler _jwtSecurityToken = new JwtSecurityTokenHandler();
 
     public Authenticator(IOptions<AuthOptions> options)
     {
-        _issuer = options.Value.AccessToken.Issuer;
-        _audience = options.Value.AccessToken.Audience;
-        _expiry = options.Value.AccessToken.Expiry ?? TimeSpan.FromHours(1);
-        _signingCredentials = new SigningCredentials(new SymmetricSecurityKey(
+        _accessTokenIssuer = options.Value.AccessToken.Issuer;
+        _accessTokenAudience = options.Value.AccessToken.Audience;
+        _accessTokenExpiry = options.Value.AccessToken.Expiry ?? TimeSpan.FromHours(1);
+        _accessTokenSigningCredentials = new SigningCredentials(new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(options.Value.AccessToken.SigningKey)),
                 SecurityAlgorithms.HmacSha256);
     }
@@ -39,8 +39,8 @@ internal sealed class Authenticator : IAuthenticator
             new(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
         };
 
-        var expires = now.Add(_expiry);
-        var jwt = new JwtSecurityToken(_issuer, _audience, claims, now, expires, _signingCredentials);
+        var expires = now.Add(_accessTokenExpiry);
+        var jwt = new JwtSecurityToken(_accessTokenIssuer, _accessTokenAudience, claims, now, expires, _accessTokenSigningCredentials);
         var token = _jwtSecurityToken.WriteToken(jwt);
 
         return new JwtDto { AccessToken = token, ExpirationTime = expires };

@@ -14,35 +14,65 @@ namespace datingApp.Infrastructure.Security;
 
 internal sealed class Authenticator : IAuthenticator
 {
-    private readonly string _accessTokenIssuer;
-    private readonly TimeSpan _accessTokenExpiry;
-    private readonly string _accessTokenAudience;
-    private readonly SigningCredentials _accessTokenSigningCredentials;
+    private record TokenOptions(
+        string Issuer,
+        TimeSpan Expirty,
+        string Audience,
+        SigningCredentials Credentials
+    );
+
+    private readonly List<TokenOptions> _tokenOptionsList;
     private readonly JwtSecurityTokenHandler _jwtSecurityToken = new JwtSecurityTokenHandler();
 
     public Authenticator(IOptions<AuthOptions> options)
     {
-        _accessTokenIssuer = options.Value.AccessToken.Issuer;
-        _accessTokenAudience = options.Value.AccessToken.Audience;
-        _accessTokenExpiry = options.Value.AccessToken.Expiry ?? TimeSpan.FromHours(1);
-        _accessTokenSigningCredentials = new SigningCredentials(new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(options.Value.AccessToken.SigningKey)),
-                SecurityAlgorithms.HmacSha256);
+        _tokenOptionsList = new List<TokenOptions>();
+        foreach (var tokenOption in new [] { options.Value.AccessToken, options.Value.RefreshToken })
+        {
+            var opts = new TokenOptions(
+                tokenOption.Issuer,
+                tokenOption.Expiry,
+                tokenOption.Audience,
+                new SigningCredentials(
+                    new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(tokenOption.SigningKey)
+                    ),
+                    SecurityAlgorithms.HmacSha256
+                    )
+                );
+            _tokenOptionsList.Add(opts);
+        }
     }
 
     public JwtDto CreateToken(Guid userId)
     {
-        var now = DateTime.UtcNow;
-        var claims = new List<Claim>
+        var tokens = new List<Tuple<string, DateTime>>();
+        foreach (var tokenOption in _tokenOptionsList)
         {
-            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
+            var now = DateTime.UtcNow;
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
+            };
+
+            var expires = now.Add(tokenOption.Expirty);
+            var jwt = new JwtSecurityToken(
+                tokenOption.Issuer,
+                tokenOption.Audience,
+                claims,
+                now,
+                expires,
+                tokenOption.Credentials
+            );
+            var token = _jwtSecurityToken.WriteToken(jwt);
+            tokens.Add(new Tuple<string, DateTime> (token, expires));
+        }
+
+        return new JwtDto
+        {
+            AccessToken = new TokenDto(tokens[0].Item1, tokens[0].Item2),
+            RefreshToken = new TokenDto(tokens[1].Item1, tokens[1].Item2)
         };
-
-        var expires = now.Add(_accessTokenExpiry);
-        var jwt = new JwtSecurityToken(_accessTokenIssuer, _accessTokenAudience, claims, now, expires, _accessTokenSigningCredentials);
-        var token = _jwtSecurityToken.WriteToken(jwt);
-
-        return new JwtDto { AccessToken = new TokenDto(token, expires), RefreshToken = new TokenDto(null, new DateTime()) };
     }
 }

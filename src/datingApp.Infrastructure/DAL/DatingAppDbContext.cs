@@ -19,7 +19,6 @@ internal sealed class DatingAppDbContext : DbContext
     public DbSet<AccessCodeDto> AccessCodes { get; set; }
     public DbSet<FileDto> Files { get; set; }
     public DbSet<DeletedEntityDto> DeletedEntities { get; set; }
-    public DbSet<JwtDto> RevokedTokens { get; set; }
 
     public DatingAppDbContext(DbContextOptions<DatingAppDbContext> options) : base(options)
     {

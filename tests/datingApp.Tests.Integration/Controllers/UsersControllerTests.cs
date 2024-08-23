@@ -138,8 +138,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.AccessCodes.AddAsync(code);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var invalidAccessCode = "12345";
-        var command = new SignInByEmail(email, invalidAccessCode);
+        var expiredAccessCode = "12345";
+        var command = new SignInByEmail(email, expiredAccessCode);
 
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

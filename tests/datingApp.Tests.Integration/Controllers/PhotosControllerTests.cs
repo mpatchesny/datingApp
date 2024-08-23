@@ -25,7 +25,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var photo = await CreatePhotoAsync(user);
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PhotoDto>($"photos/{photo.Id}");
         Assert.NotNull(response);
@@ -37,7 +37,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     {
         var user = await CreateUserAsync("test@test.com");
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingPhotoId = Guid.NewGuid();
         var response = await Client.GetAsync($"photos/{notExistingPhotoId}");
@@ -53,7 +53,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
         var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
@@ -70,7 +70,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var command = new AddPhoto(Guid.Empty, user.Id, "");
         var response = await Client.PostAsJsonAsync("/photos", command);
@@ -84,7 +84,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var photo = await CreatePhotoAsync(user);
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var command = new ChangePhotoOridinal(photo.Id, 1);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
@@ -98,7 +98,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingPhotoId = Guid.NewGuid();
         var command = new ChangePhotoOridinal(notExistingPhotoId, 0);
@@ -117,7 +117,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var photo = await CreatePhotoAsync(user);
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"/photos/{photo.Id}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -129,7 +129,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingPhotoId = Guid.NewGuid();
         var response = await Client.DeleteAsync($"/photos/{notExistingPhotoId}");
@@ -147,7 +147,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         await DeletePhotoAsync(photo);
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"/photos/{photo.Id}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
@@ -162,7 +162,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
         var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
@@ -181,7 +181,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingPhotoFilename = Guid.NewGuid().ToString() + ".jpg";
         var response = await Client.GetAsync($"/storage/{notExistingPhotoFilename}");

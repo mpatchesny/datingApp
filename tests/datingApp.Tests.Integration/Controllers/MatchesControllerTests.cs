@@ -24,7 +24,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await CreateMatchAsync(user1, user2);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<MatchDto>($"matches/{match.Id}");
         Assert.Equal(match.Id, response.Id);
@@ -36,7 +36,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user1 = await CreateUserAsync("test1@test.com");
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingMatchId = Guid.NewGuid();
         var response = await Client.GetAsync($"matches/{notExistingMatchId}");
@@ -54,7 +54,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await CreateMatchAsync(user1, user2);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches");
         Assert.Single(response.Data);
@@ -73,7 +73,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         }
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches?pageSize={5}");
         Assert.Equal(5, response.Data.Count);
@@ -92,7 +92,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         }
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var allMatchesDtoIds = new List<Guid>();
         for (int i=1; i<=3; i++)
@@ -120,7 +120,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var message = await CreateMessageAsync(match);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<MessageDto>($"matches/{match.Id}/messages/{message.Id}");
         Assert.Equal(message.Id, response.Id);
@@ -134,7 +134,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await CreateMatchAsync(user1, user2);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistsingMessageId = Guid.NewGuid();
         var response = await Client.GetAsync($"matches/{match.Id}/messages/{notExistsingMessageId}");
@@ -153,7 +153,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var message = await CreateMessageAsync(match);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id}/messages");
         Assert.Single(response.Data);
@@ -173,7 +173,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         }
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id}/messages?pageSize=5");
         Assert.Equal(5, response.Data.Count);
@@ -193,7 +193,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         }
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var allMessagesDtoIds = new List<Guid>();
         for (int i=1; i<=3; i++)
@@ -218,7 +218,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user1 = await CreateUserAsync("test1@test.com");
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingMatchId = Guid.NewGuid();
         var response = await Client.GetAsync($"matches/{notExistingMatchId}/messages");
@@ -236,7 +236,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await CreateMatchAsync(user1, user2);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var command = new SendMessage(Guid.Empty, match.Id, user1.Id, "test");
 
@@ -256,7 +256,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await CreateMatchAsync(user1, user2);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var command = new SendMessage(Guid.Empty, match.Id, Guid.Empty, "test");
 
@@ -275,7 +275,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var notExistingMatchId = Guid.NewGuid();
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var command = new SendMessage(Guid.Empty, notExistingMatchId, user1.Id, "test");
 
@@ -294,7 +294,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await CreateMatchAsync(user1, user2);
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"matches/{match.Id}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -306,7 +306,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user1 = await CreateUserAsync("test1@test.com");
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingMatchId = Guid.NewGuid();
         var response = await Client.DeleteAsync($"matches/{notExistingMatchId}");
@@ -323,7 +323,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user2 = await CreateUserAsync("test2@test.com");
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var deletedMatch = await CreateMatchAsync(user1, user2);
         await DeleteMatchAsync(deletedMatch);

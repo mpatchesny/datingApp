@@ -22,11 +22,11 @@ internal sealed class Authenticator : IAuthenticator
 
     public Authenticator(IOptions<AuthOptions> options)
     {
-        _issuer = options.Value.Issuer;
-        _audience = options.Value.Audience;
-        _expiry = options.Value.Expiry ?? TimeSpan.FromHours(1);
+        _issuer = options.Value.AccessToken.Issuer;
+        _audience = options.Value.AccessToken.Audience;
+        _expiry = options.Value.AccessToken.Expiry ?? TimeSpan.FromHours(1);
         _signingCredentials = new SigningCredentials(new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(options.Value.SigningKey)),
+                Encoding.UTF8.GetBytes(options.Value.AccessToken.SigningKey)),
                 SecurityAlgorithms.HmacSha256);
     }
 

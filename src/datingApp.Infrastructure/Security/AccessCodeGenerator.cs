@@ -20,9 +20,9 @@ internal sealed class AccessCodeGenerator : IAccessCodeGenerator
 
     public AccessCodeDto GenerateCode(string emailOrPhone)
     {
-        string code = Enumerable.Range(0, 6)
+        string code = string.Join("", Enumerable.Range(0, 6)
             .Select(_ => seed[rand.Next(seed.Length)])
-            .ToString();
+            .ToList());
 
         return new AccessCodeDto
         { 

@@ -45,7 +45,7 @@ Content-Type: application/json
     "accessCode": "{{accessCode}}"
 }
 ###
-@accessToken = {{sign_in.response.body.$.accessToken}}
+@accessToken = {{sign_in.response.body.$.accessToken.token}}
 
 ### Get full information about your profile
 GET {{url}}/users/me

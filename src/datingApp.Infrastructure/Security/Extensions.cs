@@ -13,34 +13,55 @@ internal static class Extensions
 {
     private const string OptionsSectionName = "auth";
     private const string AccessCodeOptionsSectionName = "AccessCode";
-    
-    public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+
+    public static IServiceCollection AddAuth(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var options = configuration.GetOptions<AuthOptions>(OptionsSectionName);
 
         services.AddMemoryCache();
         services.Configure<AuthOptions>(configuration.GetRequiredSection(OptionsSectionName));
-        services.Configure<AccessCodeOptions>(configuration.GetRequiredSection(AccessCodeOptionsSectionName));
+        services.Configure<AccessCodeOptions>(
+            configuration.GetRequiredSection(AccessCodeOptionsSectionName)
+        );
         services.AddScoped<IAccessCodeStorage, DbAccessCodeStorage>();
         services.AddSingleton<IAccessCodeGenerator, AccessCodeGenerator>();
         services.AddSingleton<IAuthenticator, Authenticator>();
         services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
-        services.AddAuthentication(o =>
+        services
+            .AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(o =>
+            {
+                o.Audience = options.AccessToken.Audience;
+                o.IncludeErrorDetails = true;
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(o =>
+                    ValidIssuer = options.AccessToken.Issuer,
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(options.AccessToken.SigningKey)
+                    )
+                };
+            })
+            .AddJwtBearer("RefreshTokenScheme", o =>
+            {
+                o.Audience = options.RefreshToken.Audience;
+                o.IncludeErrorDetails = true;
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    o.Audience = options.Audience;
-                    o.IncludeErrorDetails = true;
-                    o.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = options.Issuer,
-                        ClockSkew = TimeSpan.Zero,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey))
-                    };
-                });
+                    ValidIssuer = options.RefreshToken.Issuer,
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(options.RefreshToken.SigningKey)
+                    )
+                };
+            });
         return services;
     }
 }

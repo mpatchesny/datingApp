@@ -129,6 +129,16 @@ public class UserController : ApiControllerBase
     }
 
     [AllowAnonymous]
+    [HttpPost("auth/refresh")]
+    public async Task<ActionResult<JwtDto>> RefreshToken()
+    {
+        var command = Authenticate(new RefreshToken());
+        // await _refreshTokenHandler.HandleAsync(command);
+        var jwt = _tokenStorage.Get();
+        return jwt;
+    }
+
+    [AllowAnonymous]
     [HttpPost("sign-in")]
     public async Task<ActionResult<JwtDto>> SingIn(SignInByEmail command)
     {

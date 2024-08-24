@@ -14,7 +14,7 @@ public class MessageTests
     [InlineData("")]
     public void empty_message_string_should_throw_exception(string message)
     {
-        var exception = Record.Exception(() =>new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "", false, DateTime.UtcNow));
+        var exception = Record.Exception(() =>new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), message, false, DateTime.UtcNow));
         Assert.NotNull(exception);
         Assert.IsType<InvalidMessageException>(exception);
     }

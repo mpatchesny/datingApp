@@ -14,8 +14,8 @@ public class MatchTests
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
         match.SetDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.Equal(match.IsDisplayedByUser1, true);
-        Assert.Equal(match.IsDisplayedByUser2, false);
+        Assert.True(match.IsDisplayedByUser1);
+        Assert.False(match.IsDisplayedByUser2);
     }
 
     [Fact]
@@ -23,8 +23,8 @@ public class MatchTests
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
         match.SetDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000002"));
-        Assert.Equal(match.IsDisplayedByUser2, true);
-        Assert.Equal(match.IsDisplayedByUser1, false);
+        Assert.True(match.IsDisplayedByUser2);
+        Assert.False(match.IsDisplayedByUser1);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class MatchTests
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
         match.SetDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000003"));
-        Assert.Equal(match.IsDisplayedByUser2, false);
-        Assert.Equal(match.IsDisplayedByUser1, false);
+        Assert.False(match.IsDisplayedByUser2);
+        Assert.False(match.IsDisplayedByUser1);
     }
 }

@@ -11,14 +11,11 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
 {
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
-    private readonly AccessCodeVerificator _verificator;
     public RefreshTokenHandler(IAuthenticator authenticator,
-                                ITokenStorage tokenStorage,
-                                AccessCodeVerificator verificator)
+                                ITokenStorage tokenStorage)
     {
         _authenticator = authenticator;
         _tokenStorage = tokenStorage;
-        _verificator = verificator;
     }
     public async Task HandleAsync(RefreshToken command)
     {

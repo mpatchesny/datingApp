@@ -29,6 +29,7 @@ public class UserController : ApiControllerBase
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IQueryHandler<GetUpdates, IEnumerable<MatchDto>> _getUpdatesHandler;
+    private readonly ICommandHandler<RefreshToken> _refreshTokenHandler;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
@@ -40,7 +41,8 @@ public class UserController : ApiControllerBase
                             ICommandHandler<SignInByEmail> signInHandler,
                             ITokenStorage tokenStorage,
                             IAccessCodeStorage codeStorage,
-                            IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler)
+                            IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler,
+                            ICommandHandler<RefreshToken> refreshTokenHandler)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
@@ -53,6 +55,7 @@ public class UserController : ApiControllerBase
         _tokenStorage = tokenStorage;
         _codeStorage = codeStorage;
         _getUpdatesHandler = getUpdatesHandler;
+        _refreshTokenHandler = refreshTokenHandler;
     }
 
     [HttpGet("me")]
@@ -133,7 +136,7 @@ public class UserController : ApiControllerBase
     public async Task<ActionResult<JwtDto>> RefreshToken()
     {
         var command = Authenticate(new RefreshToken());
-        // await _refreshTokenHandler.HandleAsync(command);
+        await _refreshTokenHandler.HandleAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;
     }

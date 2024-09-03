@@ -169,6 +169,19 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_valid_refresh_token_get_users_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var token = Authorize(user.Id);
+        var badToken = token.RefreshToken.Token;
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
+
+        var response = await Client.GetAsync($"users/{user.Id}");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
     {
         var email = "test@test.com";

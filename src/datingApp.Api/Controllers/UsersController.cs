@@ -131,8 +131,8 @@ public class UserController : ApiControllerBase
         return Ok(response);
     }
 
-    [AllowAnonymous]
-    [HttpPost("auth/refresh")]
+    [Authorize(AuthenticationSchemes = "RefreshTokenScheme")]
+    [HttpGet("auth/refresh")]
     public async Task<ActionResult<JwtDto>> RefreshToken()
     {
         var command = Authenticate(new RefreshToken());

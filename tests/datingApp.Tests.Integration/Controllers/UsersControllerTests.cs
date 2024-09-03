@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
@@ -165,6 +166,44 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var response = await Client.GetAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var badToken = Authorize(user.Id).AccessToken;
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
+
+        var response = await Client.GetAsync($"users/auth/refresh");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_valid_refresh_token_auth_refresh_returns_200_with_new_access_and_refresh_tokens()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokens = Authorize(user.Id);
+        var accessToken = tokens.AccessToken.Token;
+        var refreshToken = tokens.RefreshToken.Token;
+
+        // workaround: sleep 500 milliseconds so that newly generated token
+        // is not the same as the old token
+        Thread.Sleep(500);
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+
+        var response = await Client.GetAsync($"users/auth/refresh");
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    
+        var responseJson = await response.Content.ReadFromJsonAsync<JwtDto>();
+        Assert.NotNull(responseJson.AccessToken);
+        Assert.NotNull(responseJson.RefreshToken);
+        Assert.NotEqual(responseJson.AccessToken.Token, accessToken);
+        Assert.NotEqual(responseJson.RefreshToken.Token, refreshToken);
     }
 
     [Fact]

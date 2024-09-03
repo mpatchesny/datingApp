@@ -46,6 +46,14 @@ Content-Type: application/json
 }
 ###
 @accessToken = {{sign_in.response.body.$.accessToken.token}}
+@refreshToken =  {{sign_in.response.body.$.refreshToken.token}}
+
+### Get new token
+# @name refresh-token
+
+GET {{url}}/users/auth/refresh
+Authorization: Bearer {{refreshToken}}
+###
 
 ### Get full information about your profile
 GET {{url}}/users/me

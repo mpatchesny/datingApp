@@ -173,7 +173,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
-        var badToken = Authorize(user.Id).AccessToken;
+        var badToken = Authorize(user.Id).AccessToken.Token;
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
 
         var response = await Client.GetAsync($"users/auth/refresh");

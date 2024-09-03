@@ -207,6 +207,25 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_expired_refresh_token_auth_refresh_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokenExpirtaionTimeInMilliseconds = 1000;
+        var tokens = Authorize(user.Id, refreshTokenExpirtyTime: TimeSpan.FromMilliseconds(tokenExpirtaionTimeInMilliseconds));
+        var refreshToken = tokens.RefreshToken.Token;
+
+        // more time due to jwt's time precision
+        var sleepTimeInMilliseconds = tokenExpirtaionTimeInMilliseconds + 1000;
+        Thread.Sleep(sleepTimeInMilliseconds);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+
+        var response = await Client.GetAsync($"users/auth/refresh");
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task get_users_returns_200_ok_and_public_user()
     {
         var email = "test@test.com";

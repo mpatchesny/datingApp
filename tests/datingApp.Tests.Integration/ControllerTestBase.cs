@@ -24,6 +24,16 @@ namespace datingApp.Tests.Integration
             return token;
         }
 
+        protected JwtDto Authorize(Guid userId, TimeSpan? accessTokenExpiryTime = null, TimeSpan? refreshTokenExpirtyTime = null)
+        {
+            accessTokenExpiryTime ??= TimeSpan.FromHours(1);
+            refreshTokenExpirtyTime ??= TimeSpan.FromHours(1);
+            _authOptions.AccessToken.Expiry = (TimeSpan)accessTokenExpiryTime;
+            _authOptions.RefreshToken.Expiry = (TimeSpan)refreshTokenExpirtyTime;
+            var token = _authenticator.CreateToken(userId);
+            return token;
+        }
+
         protected record Error(string Code, string Reason);
         private AuthOptions _authOptions;
 

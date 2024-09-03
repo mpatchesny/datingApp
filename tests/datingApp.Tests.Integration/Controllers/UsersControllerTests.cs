@@ -219,6 +219,29 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotEqual(responseJson.RefreshToken.Token, refreshToken);
     }
 
+    [Fact (Skip = "not yet implemented")]
+    public async Task given_valid_refresh_token_used_more_than_once_auth_refresh_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokens = Authorize(user.Id);
+        var refreshToken = tokens.RefreshToken.Token;
+
+        // workaround: sleep 500 milliseconds so that newly generated token
+        // is not the same as the old token
+        Thread.Sleep(500);
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+        var response = await Client.GetAsync($"users/auth/refresh");
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+        var secondResponse = await Client.GetAsync($"users/auth/refresh");
+        Assert.NotNull(secondResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
     [Fact]
     public async Task given_expired_refresh_token_auth_refresh_returns_401_unauthorized()
     {

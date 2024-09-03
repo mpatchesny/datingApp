@@ -25,11 +25,12 @@ namespace datingApp.Tests.Integration
         }
 
         protected record Error(string Code, string Reason);
+        private AuthOptions _authOptions;
 
         public ControllerTestBase(OptionsProvider optionsProvider)
         {
-            var authOptions = optionsProvider.Get<AuthOptions>("auth");
-            _authenticator = new Authenticator(new OptionsWrapper<AuthOptions>(authOptions));
+            _authOptions = optionsProvider.Get<AuthOptions>("auth");
+            _authenticator = new Authenticator(new OptionsWrapper<AuthOptions>(_authOptions));
 
             var app = new DatingAppTestApp(ConfigureServices);
             Client = app.Client;

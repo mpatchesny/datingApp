@@ -24,7 +24,7 @@ namespace datingApp.Tests.Integration
 
         protected JwtDto Authorize(Guid userId, TimeSpan? accessTokenExpiryTime = null, TimeSpan? refreshTokenExpirtyTime = null)
         {
-            if (accessTokenExpiryTime != null | refreshTokenExpirtyTime != null)
+            if (accessTokenExpiryTime != null || refreshTokenExpirtyTime != null)
             {
                 accessTokenExpiryTime ??= TimeSpan.FromHours(1);
                 refreshTokenExpirtyTime ??= TimeSpan.FromHours(1);

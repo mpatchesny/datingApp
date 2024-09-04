@@ -31,6 +31,7 @@ internal sealed class ExpiredDataRemover : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             dbContext.AccessCodes.RemoveRange(dbContext.AccessCodes.Where(x => x.ExpirationTime < DateTime.UtcNow));
+            dbContext.RevokedRefreshTokens.RemoveRange(dbContext.RevokedRefreshTokens.Where(x => x.ExpirationTime < DateTime.UtcNow));
             _ = await dbContext.SaveChangesAsync(stoppingToken);
             await Task.Delay(loopDelayInMilliseconds, stoppingToken);
         }

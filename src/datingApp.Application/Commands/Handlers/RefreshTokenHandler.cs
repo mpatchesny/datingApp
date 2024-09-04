@@ -37,6 +37,6 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
         _tokenStorage.Set(jwt);
 
         TokenDto tokenToRevoke = new TokenDto(command.Token, DateTime.UtcNow + TimeSpan.FromDays(180));
-        await _revokedRefreshTokensRepository.DeleteAsync(tokenToRevoke);
+        await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
     }
 }

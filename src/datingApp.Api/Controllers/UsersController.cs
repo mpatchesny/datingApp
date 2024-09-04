@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
@@ -8,6 +9,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
 using datingApp.Infrastructure.DAL.Handlers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -135,7 +137,9 @@ public class UserController : ApiControllerBase
     [HttpGet("auth/refresh")]
     public async Task<ActionResult<JwtDto>> RefreshToken()
     {
-        var command = Authenticate(new RefreshToken());
+        string refreshToken = HttpContext.Request.Headers["Authorization"];
+        refreshToken = refreshToken.Substring(7);
+        var command = Authenticate(new RefreshToken(Token: refreshToken));
         await _refreshTokenHandler.HandleAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;

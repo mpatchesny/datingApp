@@ -139,7 +139,7 @@ public class UserController : ApiControllerBase
     {
         string refreshToken = HttpContext.Request.Headers["Authorization"];
         refreshToken = refreshToken.Substring(7);
-        var command = Authenticate(new RefreshToken(Token: refreshToken));
+        var command = Authenticate(new RefreshToken(refreshToken));
         await _refreshTokenHandler.HandleAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;

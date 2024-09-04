@@ -9,5 +9,5 @@ namespace datingApp.Application.Repositories;
 public interface IRevokedRefreshTokensRepository
 {
     public Task<bool> ExistsAsync(string token);
-    public Task DeleteAsync(TokenDto token);
+    public Task AddAsync(TokenDto token);
 }

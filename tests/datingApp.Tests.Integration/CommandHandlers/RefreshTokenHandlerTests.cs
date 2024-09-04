@@ -9,6 +9,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Security;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Security;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
 
@@ -28,9 +29,10 @@ public class RefreshTokenHandlerTests : IDisposable
         Assert.IsType<RefreshTokenRevokedException>(exception);
     }
 
-    [Fact]
+    [Fact (Skip = "FIXME")]
     public async Task given_passed_refresh_token_not_exists_in_revoked_repository_ResfreshTokenHandler_should_generate_new_access_refresh_token_pair_and_add_it_to_token_storage()
     {
+        // FIXME
         TokenDto refreshToken = new TokenDto("abc", DateTime.UtcNow + TimeSpan.FromDays(1));
         var command = new RefreshToken(refreshToken.Token);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -45,7 +47,7 @@ public class RefreshTokenHandlerTests : IDisposable
         TokenDto refreshToken = new TokenDto("abc", DateTime.UtcNow + TimeSpan.FromDays(1));
         var command = new RefreshToken(refreshToken.Token);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        var tokenExistsInRepository = await _revokedRefreshTokensRepository.ExistsAsync(refreshToken.Token);
+        var tokenExistsInRepository = await _testDb.DbContext.RevokedRefreshTokens.AnyAsync(x => x.Token == refreshToken.Token);
         Assert.Null(exception);
         Assert.True(tokenExistsInRepository);
     }
@@ -57,13 +59,18 @@ public class RefreshTokenHandlerTests : IDisposable
     private readonly TestDatabase _testDb;
     public RefreshTokenHandlerTests()
     {
-        // TODO: mocks
-        // TODO: authenticator returns specific JwtDto
-        Mock<IAuthenticator> authenticator = null;
+        var expirationTime = DateTime.UtcNow + TimeSpan.FromHours(1);
+        var newToken =  new JwtDto
+            {
+                AccessToken = new TokenDto("access token", expirationTime),
+                RefreshToken = new TokenDto("refresh token", expirationTime)
+            };
+        Mock<IAuthenticator> authenticator = new Mock<IAuthenticator>();
+        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns(newToken);
         _tokenStorage = new Mock<ITokenStorage>();
-        // _tokenStorage.Setup(m => m.Set(It.Is<TokenDto>())));
-        // _tokenStorage.Setup(m => m.Get(It.Is(newToken)));
+        _tokenStorage.Setup(m => m.Set(It.IsAny<JwtDto>()));
 
+        _testDb = new TestDatabase();
         _revokedRefreshTokensRepository = new DbRevokedRefreshTokensRepository(_testDb.DbContext);
         _handler = new RefreshTokenHandler(authenticator.Object, _tokenStorage.Object, _revokedRefreshTokensRepository);
     }

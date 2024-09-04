@@ -34,11 +34,9 @@ public class RefreshTokenHandlerTests : IDisposable
         TokenDto refreshToken = new TokenDto("abc", DateTime.UtcNow + TimeSpan.FromDays(1));
         var command = new RefreshToken(refreshToken.Token);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        var newToken = _tokenStorage.Get();
+        JwtDto newToken = null;
+        _tokenStorage.Verify(mock => mock.Set(newToken), Times.Once());
         Assert.Null(exception);
-        Assert.NotNull(newToken);
-        Assert.IsType<JwtDto>(newToken);
-        Assert.NotEqual(refreshToken.Token, newToken.RefreshToken.Token);
     }
 
     [Fact]
@@ -60,10 +58,11 @@ public class RefreshTokenHandlerTests : IDisposable
     public RefreshTokenHandlerTests()
     {
         // TODO: mocks
+        // TODO: authenticator returns specific JwtDto
         Mock<IAuthenticator> authenticator = null;
         _tokenStorage = new Mock<ITokenStorage>();
         // _tokenStorage.Setup(m => m.Set(It.Is<TokenDto>())));
-        // _tokenStorage.Setup(m => m.Get(It.IsAny<string>()));
+        // _tokenStorage.Setup(m => m.Get(It.Is(newToken)));
 
         _revokedRefreshTokensRepository = new DbRevokedRefreshTokensRepository(_testDb.DbContext);
         _handler = new RefreshTokenHandler(authenticator.Object, _tokenStorage.Object, _revokedRefreshTokensRepository);

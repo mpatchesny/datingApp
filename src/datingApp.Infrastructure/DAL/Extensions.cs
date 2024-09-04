@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using datingApp.Infrastructure.DAL.Options;
+using datingApp.Application.Repositories;
 
 namespace datingApp.Infrastructure.DAL;
 
@@ -26,6 +27,7 @@ internal static class Extensions
         services.AddScoped<ISwipeRepository, DbSwipeRepository>();
         services.AddScoped<IMatchRepository, DbMatchRepository>();
         services.AddScoped<IMessageRepository, DbMessageRepository>();
+        services.AddScoped<IRevokedRefreshTokensRepository, DbRevokedRefreshTokensRepository>();
         services.AddHostedService<DatabaseInitializer>();
         services.AddHostedService<DatabaseSeeder>();
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));

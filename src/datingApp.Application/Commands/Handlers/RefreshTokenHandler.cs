@@ -11,7 +11,7 @@ using datingApp.Application.Security;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
+public sealed class RefreshTokenHandler : ICommandHandler<RefreshJWT>
 {
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
@@ -25,7 +25,7 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
         _tokenStorage = tokenStorage;
         _revokedRefreshTokensRepository = revokedRefreshTokensRepository;
     }
-    public async Task HandleAsync(RefreshToken command)
+    public async Task HandleAsync(RefreshJWT command)
     {
         bool isTokenRevoked = await _revokedRefreshTokensRepository.ExistsAsync(command.Token);
         if (isTokenRevoked)
@@ -38,7 +38,9 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
             throw new InvalidRefreshTokenException();
         }
 
-        var jwt = _authenticator.CreateToken(command.AuthenticatedUserId);
+        // FIXME: get authenticatedUserId from validated token claim
+        Guid authenticatedUserId = new Guid();
+        var jwt = _authenticator.CreateToken(authenticatedUserId);
         _tokenStorage.Set(jwt);
         // FIXME: magic number
         TokenDto tokenToRevoke = new TokenDto(command.Token, DateTime.UtcNow + TimeSpan.FromDays(180));

@@ -24,7 +24,7 @@ public class RefreshTokenHandlerTests : IDisposable
         await _testDb.DbContext.RevokedRefreshTokens.AddAsync(refreshToken);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var command = new RefreshToken(refreshToken.Token);
+        var command = new RefreshJWT(refreshToken.Token);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<RefreshTokenRevokedException>(exception);
@@ -34,7 +34,7 @@ public class RefreshTokenHandlerTests : IDisposable
     public async Task given_passed_refresh_token_not_exists_in_revoked_repository_ResfreshTokenHandler_should_add_passed_token_to_revoked_tokens_repository()
     {
         TokenDto refreshToken = new TokenDto("abc", DateTime.UtcNow + TimeSpan.FromDays(1));
-        var command = new RefreshToken(refreshToken.Token);
+        var command = new RefreshJWT(refreshToken.Token);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         var tokenExistsInRepository = await _testDb.DbContext.RevokedRefreshTokens.AnyAsync(x => x.Token == refreshToken.Token);
         Assert.Null(exception);

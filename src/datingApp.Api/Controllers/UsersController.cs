@@ -31,7 +31,7 @@ public class UserController : ApiControllerBase
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IQueryHandler<GetUpdates, IEnumerable<MatchDto>> _getUpdatesHandler;
-    private readonly ICommandHandler<RefreshToken> _refreshTokenHandler;
+    private readonly ICommandHandler<RefreshJWT> _refreshTokenHandler;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
@@ -44,7 +44,7 @@ public class UserController : ApiControllerBase
                             ITokenStorage tokenStorage,
                             IAccessCodeStorage codeStorage,
                             IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler,
-                            ICommandHandler<RefreshToken> refreshTokenHandler)
+                            ICommandHandler<RefreshJWT> refreshTokenHandler)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
@@ -135,7 +135,7 @@ public class UserController : ApiControllerBase
 
     [AllowAnonymous]
     [HttpPost("auth/refresh")]
-    public async Task<ActionResult<JwtDto>> RefreshToken(RefreshToken command)
+    public async Task<ActionResult<JwtDto>> RefreshToken(RefreshJWT command)
     {
         await _refreshTokenHandler.HandleAsync(command);
         var jwt = _tokenStorage.Get();

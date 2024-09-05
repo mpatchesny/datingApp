@@ -21,24 +21,13 @@ public class RefreshTokenHandlerTests : IDisposable
     public async Task given_passed_refresh_token_exists_in_revoked_repository_ResfreshTokenHandler_should_throw_RefreshTokenRevokedException()
     {
         TokenDto refreshToken = new TokenDto("abc", DateTime.UtcNow + TimeSpan.FromDays(1));
-        await _revokedRefreshTokensRepository.AddAsync(refreshToken);
+        await _testDb.DbContext.RevokedRefreshTokens.AddAsync(refreshToken);
+        await _testDb.DbContext.SaveChangesAsync();
 
         var command = new RefreshToken(refreshToken.Token);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<RefreshTokenRevokedException>(exception);
-    }
-
-    [Fact (Skip = "FIXME")]
-    public async Task given_passed_refresh_token_not_exists_in_revoked_repository_ResfreshTokenHandler_should_generate_new_access_refresh_token_pair_and_add_it_to_token_storage()
-    {
-        // FIXME
-        TokenDto refreshToken = new TokenDto("abc", DateTime.UtcNow + TimeSpan.FromDays(1));
-        var command = new RefreshToken(refreshToken.Token);
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        JwtDto newToken = null;
-        _tokenStorage.Verify(mock => mock.Set(newToken), Times.Once());
-        Assert.Null(exception);
     }
 
     [Fact]

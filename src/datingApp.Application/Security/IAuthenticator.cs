@@ -8,5 +8,6 @@ namespace datingApp.Application.Security;
 
 public interface IAuthenticator
 {
+    bool ValidateRefreshToken(string refreshToken);
     JwtDto CreateToken(Guid userId);
 }

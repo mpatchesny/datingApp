@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Security;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,14 +22,14 @@ internal sealed class Authenticator : IAuthenticator
         SigningCredentials Credentials
     );
 
-    private TokenOptions _accessTokenOptions;
-    private TokenOptions _refreshTokenOptions;
+    private readonly TokenOptions _accessTokenOptions;
+    private readonly TokenOptions _refreshTokenOptions;
     private readonly JwtSecurityTokenHandler _jwtSecurityToken = new JwtSecurityTokenHandler();
 
     public Authenticator(IOptions<AuthOptions> options)
     {
-        _accessTokenOptions = CrateTokenOptions(options.Value.AccessToken);
-        _refreshTokenOptions = CrateTokenOptions(options.Value.RefreshToken);
+        _accessTokenOptions = CreateTokenOptions(options.Value.AccessToken);
+        _refreshTokenOptions = CreateTokenOptions(options.Value.RefreshToken);
     }
 
     public JwtDto CreateToken(Guid userId)
@@ -43,7 +44,32 @@ internal sealed class Authenticator : IAuthenticator
         };
     }
 
-    private static TokenOptions CrateTokenOptions(AuthOptions.Token tokenOptions)
+    public bool ValidateRefreshToken(string refreshToken)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = _refreshTokenOptions.Issuer,
+            ValidateAudience = true,
+            ValidAudience = _refreshTokenOptions.Audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = _refreshTokenOptions.Credentials.Key
+        };
+
+        try
+        {
+            ClaimsPrincipal principal = _jwtSecurityToken.ValidateToken(refreshToken, tokenValidationParameters, out SecurityToken validatedToken);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private static TokenOptions CreateTokenOptions(AuthOptions.Token tokenOptions)
     {
         return new TokenOptions(
             tokenOptions.Issuer,

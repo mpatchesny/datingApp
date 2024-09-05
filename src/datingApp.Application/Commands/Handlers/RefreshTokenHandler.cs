@@ -33,9 +33,13 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshToken>
             throw new RefreshTokenRevokedException();
         }
 
+        if (!_authenticator.ValidateRefreshToken(command.Token))
+        {
+            throw new InvalidRefreshTokenException();
+        }
+
         var jwt = _authenticator.CreateToken(command.AuthenticatedUserId);
         _tokenStorage.Set(jwt);
-
         // FIXME: magic number
         TokenDto tokenToRevoke = new TokenDto(command.Token, DateTime.UtcNow + TimeSpan.FromDays(180));
         await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);

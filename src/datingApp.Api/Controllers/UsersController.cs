@@ -133,13 +133,10 @@ public class UserController : ApiControllerBase
         return Ok(response);
     }
 
-    [Authorize(AuthenticationSchemes = "RefreshTokenScheme")]
-    [HttpGet("auth/refresh")]
-    public async Task<ActionResult<JwtDto>> RefreshToken()
+    [AllowAnonymous]
+    [HttpPost("auth/refresh")]
+    public async Task<ActionResult<JwtDto>> RefreshToken(RefreshToken command)
     {
-        string refreshToken = HttpContext.Request.Headers["Authorization"];
-        refreshToken = refreshToken.Substring(7);
-        var command = Authenticate(new RefreshToken(refreshToken));
         await _refreshTokenHandler.HandleAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;

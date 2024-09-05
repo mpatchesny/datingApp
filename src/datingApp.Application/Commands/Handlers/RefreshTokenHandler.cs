@@ -11,13 +11,13 @@ using datingApp.Application.Security;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public sealed class RefreshTokenHandler : ICommandHandler<RefreshJWT>
+public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
 {
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
     private readonly IRevokedRefreshTokensRepository _revokedRefreshTokensRepository;
 
-    public RefreshTokenHandler(IAuthenticator authenticator,
+    public RefreshJWTHandler(IAuthenticator authenticator,
                                 ITokenStorage tokenStorage,
                                 IRevokedRefreshTokensRepository revokedRefreshTokensRepository)
     {
@@ -27,13 +27,13 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshJWT>
     }
     public async Task HandleAsync(RefreshJWT command)
     {
-        bool isTokenRevoked = await _revokedRefreshTokensRepository.ExistsAsync(command.Token);
+        bool isTokenRevoked = await _revokedRefreshTokensRepository.ExistsAsync(command.RefreshToken);
         if (isTokenRevoked)
         {
             throw new RefreshTokenRevokedException();
         }
 
-        if (!_authenticator.ValidateRefreshToken(command.Token))
+        if (!_authenticator.ValidateRefreshToken(command.RefreshToken))
         {
             throw new InvalidRefreshTokenException();
         }
@@ -43,7 +43,7 @@ public sealed class RefreshTokenHandler : ICommandHandler<RefreshJWT>
         var jwt = _authenticator.CreateToken(authenticatedUserId);
         _tokenStorage.Set(jwt);
         // FIXME: magic number
-        TokenDto tokenToRevoke = new TokenDto(command.Token, DateTime.UtcNow + TimeSpan.FromDays(180));
+        TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, DateTime.UtcNow + TimeSpan.FromDays(180));
         await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
     }
 }

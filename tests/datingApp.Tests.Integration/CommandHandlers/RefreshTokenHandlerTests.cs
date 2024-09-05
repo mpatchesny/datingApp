@@ -42,7 +42,7 @@ public class RefreshTokenHandlerTests : IDisposable
     }
 
     // Arrange
-    private readonly RefreshTokenHandler _handler;
+    private readonly RefreshJWTHandler _handler;
     private readonly Mock<ITokenStorage> _tokenStorage;
     private readonly DbRevokedRefreshTokensRepository _revokedRefreshTokensRepository;
     private readonly TestDatabase _testDb;
@@ -61,7 +61,7 @@ public class RefreshTokenHandlerTests : IDisposable
 
         _testDb = new TestDatabase();
         _revokedRefreshTokensRepository = new DbRevokedRefreshTokensRepository(_testDb.DbContext);
-        _handler = new RefreshTokenHandler(authenticator.Object, _tokenStorage.Object, _revokedRefreshTokensRepository);
+        _handler = new RefreshJWTHandler(authenticator.Object, _tokenStorage.Object, _revokedRefreshTokensRepository);
     }
 
     // Teardown

@@ -23,7 +23,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
             {typeof(UnauthorizedException), StatusCodes.Status403Forbidden},
             {typeof(NotExistsException), StatusCodes.Status404NotFound},
             {typeof(AlreadyDeletedException), StatusCodes.Status410Gone},
-            {typeof(RefreshTokenRevokedException), StatusCodes.Status401Unauthorized},
+            {typeof(InvalidRefreshTokenException), StatusCodes.Status401Unauthorized},
             {typeof(CustomException), StatusCodes.Status400BadRequest},
         };
     }

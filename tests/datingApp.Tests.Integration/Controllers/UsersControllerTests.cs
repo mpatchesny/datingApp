@@ -162,9 +162,22 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
         var badToken = token.AccessToken.Token + "x";
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
 
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
         var response = await Client.GetAsync($"users/{user.Id}");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_valid_refresh_token_used_to_authorize_instead_of_access_token_should_return_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokens = Authorize(user.Id);
+        var refreshToken = tokens.RefreshToken.Token;
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+        var response = await Client.GetAsync($"users/me");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 

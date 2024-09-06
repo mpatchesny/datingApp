@@ -168,31 +168,18 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    public async Task given_invalid_refresh_token_get_users_returns_401_unauthorized()
-    {
-        var email = "test@test.com";
-        var user = await CreateUserAsync(email);
-        var token = Authorize(user.Id);
-        var badToken = token.RefreshToken.Token;
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
-
-        var response = await Client.GetAsync($"users/{user.Id}");
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact (Skip ="FIXME")]
+    [Fact]
     public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var badToken = Authorize(user.Id).AccessToken.Token;
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
-
-        var response = await Client.GetAsync($"users/auth/refresh");
+        var command = new RefreshJWT(badToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    [Fact (Skip ="FIXME")]
+    [Fact]
     public async Task given_valid_refresh_token_auth_refresh_returns_200_with_new_access_and_refresh_tokens()
     {
         var email = "test@test.com";
@@ -205,9 +192,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         // is not the same as the old token
         Thread.Sleep(500);
 
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
-
-        var response = await Client.GetAsync($"users/auth/refresh");
+        var command = new RefreshJWT(refreshToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     
@@ -218,7 +204,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotEqual(responseJson.RefreshToken.Token, refreshToken);
     }
 
-    [Fact (Skip ="FIXME")]
+    [Fact]
     public async Task given_valid_refresh_token_used_more_than_once_auth_refresh_returns_401_unauthorized()
     {
         var email = "test@test.com";
@@ -226,17 +212,17 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var tokens = Authorize(user.Id);
         var refreshToken = tokens.RefreshToken.Token;
 
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
-        var response = await Client.GetAsync($"users/auth/refresh");
+        var command = new RefreshJWT(refreshToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var secondResponse = await Client.GetAsync($"users/auth/refresh");
+        var secondResponse = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.NotNull(secondResponse);
         Assert.Equal(HttpStatusCode.Unauthorized, secondResponse.StatusCode);
     }
 
-    [Fact (Skip ="FIXME")]
+    [Fact]
     public async Task given_expired_refresh_token_auth_refresh_returns_401_unauthorized()
     {
         var email = "test@test.com";
@@ -248,9 +234,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         // more time due to jwt's time precision
         var sleepTimeInMilliseconds = tokenExpirtaionTimeInMilliseconds + 1000;
         Thread.Sleep(sleepTimeInMilliseconds);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
 
-        var response = await Client.GetAsync($"users/auth/refresh");
+        var command = new RefreshJWT(refreshToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }

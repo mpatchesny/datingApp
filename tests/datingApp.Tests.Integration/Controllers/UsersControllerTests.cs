@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
@@ -97,7 +98,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var token = await response.Content.ReadFromJsonAsync<JwtDto>();
         Assert.NotNull(token);
-        Assert.False(string.IsNullOrWhiteSpace(token.AccessToken));
+        Assert.False(string.IsNullOrWhiteSpace(token.AccessToken.Token));
     }
 
     [Fact]
@@ -138,8 +139,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.AccessCodes.AddAsync(code);
         await _testDb.DbContext.SaveChangesAsync();
 
-        var invalidAccessCode = "12345";
-        var command = new SignInByEmail(email, invalidAccessCode);
+        var expiredAccessCode = "12345";
+        var command = new SignInByEmail(email, expiredAccessCode);
 
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -160,10 +161,96 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        var badToken = token.AccessToken + "x";
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
+        var badToken = token.AccessToken.Token + "x";
 
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
         var response = await Client.GetAsync($"users/{user.Id}");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_valid_refresh_token_used_to_authorize_instead_of_access_token_should_return_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokens = Authorize(user.Id);
+        var refreshToken = tokens.RefreshToken.Token;
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+        var response = await Client.GetAsync($"users/me");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var badToken = Authorize(user.Id).AccessToken.Token;
+        var command = new RefreshJWT(badToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_valid_refresh_token_auth_refresh_returns_200_with_new_access_and_refresh_tokens()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokens = Authorize(user.Id);
+        var accessToken = tokens.AccessToken.Token;
+        var refreshToken = tokens.RefreshToken.Token;
+
+        // workaround: sleep 500 milliseconds so that newly generated token
+        // is not the same as the old token
+        Thread.Sleep(500);
+
+        var command = new RefreshJWT(refreshToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    
+        var responseJson = await response.Content.ReadFromJsonAsync<JwtDto>();
+        Assert.NotNull(responseJson.AccessToken);
+        Assert.NotNull(responseJson.RefreshToken);
+        Assert.NotEqual(responseJson.AccessToken.Token, accessToken);
+        Assert.NotEqual(responseJson.RefreshToken.Token, refreshToken);
+    }
+
+    [Fact]
+    public async Task given_valid_refresh_token_used_more_than_once_auth_refresh_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokens = Authorize(user.Id);
+        var refreshToken = tokens.RefreshToken.Token;
+
+        var command = new RefreshJWT(refreshToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var secondResponse = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        Assert.NotNull(secondResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, secondResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_expired_refresh_token_auth_refresh_returns_401_unauthorized()
+    {
+        var email = "test@test.com";
+        var user = await CreateUserAsync(email);
+        var tokenExpirtaionTimeInMilliseconds = 1000;
+        var tokens = Authorize(user.Id, refreshTokenExpirtyTime: TimeSpan.FromMilliseconds(tokenExpirtaionTimeInMilliseconds));
+        var refreshToken = tokens.RefreshToken.Token;
+
+        // more time due to jwt's time precision
+        var sleepTimeInMilliseconds = tokenExpirtaionTimeInMilliseconds + 1000;
+        Thread.Sleep(sleepTimeInMilliseconds);
+
+        var command = new RefreshJWT(refreshToken);
+        var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -173,7 +260,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user.Id}");
         Assert.NotNull(response);
@@ -186,7 +273,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.GetAsync($"users/{notExistingUserId}");
@@ -202,7 +289,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/me");
         Assert.NotNull(response);
@@ -215,7 +302,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -227,7 +314,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.DeleteAsync($"users/{notExistingUserId}");
@@ -245,7 +332,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await DeleteUserAsync(user);
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         
         var response = await Client.DeleteAsync($"users/{user.Id}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
@@ -260,7 +347,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
         Assert.NotNull(response);
     }
@@ -275,7 +362,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
             await CreateUserAsync($"test{i}@test.com");
         }
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
         Assert.NotNull(response);
         Assert.Equal(10, response.Count);
@@ -287,7 +374,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
         Assert.NotNull(response);
     }
@@ -343,7 +430,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.SaveChangesAsync();
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
         Assert.NotNull(response);
         Assert.Equal(100, response.Count);
@@ -372,7 +459,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.SaveChangesAsync();
 
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var lastActivityTime = time - TimeSpan.FromHours(1);
         var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
@@ -386,7 +473,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var command = new ChangeUser(user.Id);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{user.Id}", payload);
@@ -399,7 +486,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{user.Id}", content);
@@ -412,7 +499,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
         var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{Guid.NewGuid()}", content);

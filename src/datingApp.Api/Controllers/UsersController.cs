@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
@@ -8,12 +9,14 @@ using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
 using datingApp.Infrastructure.DAL.Handlers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace datingApp.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("users")]
 public class UserController : ApiControllerBase
 {
@@ -28,6 +31,7 @@ public class UserController : ApiControllerBase
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IQueryHandler<GetUpdates, IEnumerable<MatchDto>> _getUpdatesHandler;
+    private readonly ICommandHandler<RefreshJWT> _refreshTokenHandler;
 
     public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
                             ICommandHandler<SignUp> signUpHandler,
@@ -39,7 +43,8 @@ public class UserController : ApiControllerBase
                             ICommandHandler<SignInByEmail> signInHandler,
                             ITokenStorage tokenStorage,
                             IAccessCodeStorage codeStorage,
-                            IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler)
+                            IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler,
+                            ICommandHandler<RefreshJWT> refreshTokenHandler)
     {
         _getPublicUserHandler = getUserHandler;
         _signUpHandler = signUpHandler;
@@ -52,9 +57,9 @@ public class UserController : ApiControllerBase
         _tokenStorage = tokenStorage;
         _codeStorage = codeStorage;
         _getUpdatesHandler = getUpdatesHandler;
+        _refreshTokenHandler = refreshTokenHandler;
     }
 
-    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
@@ -63,7 +68,6 @@ public class UserController : ApiControllerBase
         return user;
     }
 
-    [Authorize]
     [HttpGet("me/recommendations")]
     public async Task<ActionResult<IEnumerable<PublicUserDto>>> GetSwipeCandidates()
     {
@@ -72,7 +76,6 @@ public class UserController : ApiControllerBase
         return Ok(await _getSwipesCandidatesHandler.HandleAsync(command));
     }
 
-    [Authorize]
     [HttpGet("me/updates")]
     public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates([FromQuery(Name = "lastActivityTime")] DateTime lastActivityTime)
     {
@@ -83,7 +86,6 @@ public class UserController : ApiControllerBase
         return Ok(await _getUpdatesHandler.HandleAsync(query));
     }
 
-    [Authorize]
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
@@ -92,7 +94,6 @@ public class UserController : ApiControllerBase
         return user;
     }
 
-    [Authorize]
     [HttpPatch("{userId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
     {
@@ -102,7 +103,6 @@ public class UserController : ApiControllerBase
         return NoContent();
     }
 
-    [Authorize]
     [HttpDelete("{userId:guid}")]
     public async Task<ActionResult> Delete(Guid userId)
     {
@@ -131,6 +131,15 @@ public class UserController : ApiControllerBase
         var code = _codeStorage.Get(command.Email);
         var response = new { SendTo = command.Email, Code = code.AccessCode };
         return Ok(response);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("auth/refresh")]
+    public async Task<ActionResult<JwtDto>> RefreshToken(RefreshJWT command)
+    {
+        await _refreshTokenHandler.HandleAsync(command);
+        var jwt = _tokenStorage.Get();
+        return jwt;
     }
 
     [AllowAnonymous]

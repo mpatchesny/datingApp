@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.DTO;
 
+public record TokenDto (string Token, DateTime ExpirationTime);
+
 public class JwtDto
 {
-    public string AccessToken { get; set; }
+    public TokenDto AccessToken { get; set; }
+    public TokenDto RefreshToken { get; set; }
 }

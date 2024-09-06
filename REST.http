@@ -45,7 +45,19 @@ Content-Type: application/json
     "accessCode": "{{accessCode}}"
 }
 ###
-@accessToken = {{sign_in.response.body.$.accessToken}}
+@accessToken = {{sign_in.response.body.$.accessToken.token}}
+@refreshToken =  {{sign_in.response.body.$.refreshToken.token}}
+
+### Get new token
+# @name refresh-token
+
+POST {{url}}/users/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+###
 
 ### Get full information about your profile
 GET {{url}}/users/me

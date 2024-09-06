@@ -20,7 +20,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         var user2 = await CreateUserAsync("test2@test.com");
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"pass/{user2.Id}", null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -34,7 +34,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         var user1 = await CreateUserAsync("test@test.com");
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"pass/{Guid.NewGuid}", null);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -51,7 +51,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         await _testDb.DbContext.SaveChangesAsync();
 
         var token = Authorize(user1.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken}");
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"pass/{user2.Id}", null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

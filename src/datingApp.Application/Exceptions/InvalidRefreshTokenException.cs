@@ -11,4 +11,8 @@ public class InvalidRefreshTokenException : CustomException
     public InvalidRefreshTokenException() : base("Provided refresh token is invalid.")
     {
     }
+
+    public InvalidRefreshTokenException(string errMessage) : base(errMessage)
+    {
+    }
 }

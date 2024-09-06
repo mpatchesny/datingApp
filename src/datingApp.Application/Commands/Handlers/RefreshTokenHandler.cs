@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
@@ -33,14 +34,17 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
             throw new RefreshTokenRevokedException();
         }
 
-        if (!_authenticator.ValidateRefreshToken(command.RefreshToken))
+        ClaimsPrincipal knownUser = _authenticator.ValidateRefreshToken(command.RefreshToken);
+        Guid userId = !string.IsNullOrWhiteSpace(knownUser?.Identity?.Name) ? 
+            Guid.Parse(knownUser.Identity.Name) :
+            Guid.Empty;
+
+        if (userId == Guid.Empty)
         {
             throw new InvalidRefreshTokenException();
         }
 
-        // FIXME: get authenticatedUserId from validated token claim
-        Guid authenticatedUserId = new Guid();
-        var jwt = _authenticator.CreateToken(authenticatedUserId);
+        var jwt = _authenticator.CreateToken(userId);
         _tokenStorage.Set(jwt);
         // FIXME: magic number
         TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, DateTime.UtcNow + TimeSpan.FromDays(180));

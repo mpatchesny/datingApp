@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class UnauthorizedException : CustomException
 {
-    public UnauthorizedException() : base("Unauthorized.")
+    public UnauthorizedException() : base("You don't have permission to perform this action.")
     {
     }
 }

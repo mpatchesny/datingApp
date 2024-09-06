@@ -44,7 +44,7 @@ internal sealed class Authenticator : IAuthenticator
         };
     }
 
-    public bool ValidateRefreshToken(string refreshToken)
+    public ClaimsPrincipal ValidateRefreshToken(string refreshToken)
     {
         var tokenValidationParameters = new TokenValidationParameters
         {
@@ -60,12 +60,11 @@ internal sealed class Authenticator : IAuthenticator
 
         try
         {
-            ClaimsPrincipal principal = _jwtSecurityToken.ValidateToken(refreshToken, tokenValidationParameters, out SecurityToken validatedToken);
-            return true;
+            return _jwtSecurityToken.ValidateToken(refreshToken, tokenValidationParameters, out SecurityToken validatedToken);
         }
         catch (Exception)
         {
-            return false;
+            return null;
         }
     }
 

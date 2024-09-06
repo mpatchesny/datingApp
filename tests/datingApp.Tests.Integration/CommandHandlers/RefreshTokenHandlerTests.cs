@@ -69,12 +69,13 @@ public class RefreshTokenHandlerTests : IDisposable
         var authenticator = new Mock<IAuthenticator>();
         authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns(newToken);
         var userId = Guid.NewGuid();
-        var claimPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
-            new List<Claim>
+        var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
-            }));
+            };
+        var identity = new ClaimsIdentity(claims, authenticationType: string.Empty, nameType: JwtRegisteredClaimNames.Sub, roleType: string.Empty);
+        var claimPrincipal = new ClaimsPrincipal(identity);
         authenticator.Setup(m => m.ValidateRefreshToken(It.IsAny<string>())).Returns(claimPrincipal);
         
         var tokenStorage = new Mock<ITokenStorage>();
@@ -100,13 +101,13 @@ public class RefreshTokenHandlerTests : IDisposable
         var authenticator = new Mock<IAuthenticator>();
         authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns(newToken);
         var userId = Guid.NewGuid();
-        var claimPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
-            new List<Claim>
-        
+        var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
-            }));
+            };
+        var identity = new ClaimsIdentity(claims, authenticationType: string.Empty, nameType: JwtRegisteredClaimNames.Sub, roleType: string.Empty);
+        var claimPrincipal = new ClaimsPrincipal(identity);
         authenticator.Setup(m => m.ValidateRefreshToken(It.IsAny<string>())).Returns(claimPrincipal);
         
         var tokenStorage = new Mock<ITokenStorage>();

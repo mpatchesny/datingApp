@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Infrastructure.Security;
 
-public class AccessCodeVerificator
+internal sealed class AccessCodeVerificator
 {
     public bool Verify(AccessCodeDto accessCode, string userGivenAccessCode, string userEmail)
     {

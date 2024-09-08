@@ -7,5 +7,5 @@ namespace datingApp.Application.Security;
 
 public interface IResourceAuthorizationService
 {
-    public Task<bool> AuthorizeAsync(Guid userId, object? resource);
+    public Task<bool> AuthorizeAsync(Guid userId, object resource);
 }

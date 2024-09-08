@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
@@ -201,9 +202,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var accessToken = tokens.AccessToken.Token;
         var refreshToken = tokens.RefreshToken.Token;
 
-        // workaround: sleep 500 milliseconds so that newly generated token
+        // workaround: sleep 1000 milliseconds so that newly generated token
         // is not the same as the old token
-        Thread.Sleep(500);
+        Thread.Sleep(1000);
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
@@ -494,7 +495,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_user_not_exists_patch_users_404_not_found()
+    public async Task given_user_not_exists_patch_users_returns_404_not_found()
     {
         var email = "test@test.com";
         var user = await CreateUserAsync(email);
@@ -503,6 +504,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{Guid.NewGuid()}", content);
+        Debug.Print($"users/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 

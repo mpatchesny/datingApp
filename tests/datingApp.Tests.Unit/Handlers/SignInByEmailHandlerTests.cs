@@ -9,6 +9,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure.Security;
 using Moq;
 using Xunit;
 

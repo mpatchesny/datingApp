@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Application.Security;
 
 namespace datingApp.Infrastructure.Security;
 
-internal sealed class AccessCodeVerificator
+internal sealed class AccessCodeVerificator : IAccessCodeVerificator
 {
     public bool Verify(AccessCodeDto accessCode, string userGivenAccessCode, string userEmail)
     {

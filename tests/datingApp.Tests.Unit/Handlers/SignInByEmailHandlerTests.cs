@@ -32,7 +32,7 @@ public class SignUpByEmailHandlerTests
         var authenticator = new Mock<IAuthenticator>();
         authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
 
-        var verificator = new Mock<AccessCodeVerificator>();
+        var verificator = new Mock<IAccessCodeVerificator>();
 
         SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", "ABC");
@@ -56,7 +56,7 @@ public class SignUpByEmailHandlerTests
         var authenticator = new Mock<IAuthenticator>();
         authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
 
-        var verificator = new Mock<AccessCodeVerificator>();
+        var verificator = new Mock<IAccessCodeVerificator>();
 
         SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
         SignInByEmail command = new SignInByEmail(null, "ABC");
@@ -80,7 +80,7 @@ public class SignUpByEmailHandlerTests
         var authenticator = new Mock<IAuthenticator>();
         authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
 
-        var verificator = new Mock<AccessCodeVerificator>();
+        var verificator = new Mock<IAccessCodeVerificator>();
 
         SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", null);
@@ -106,7 +106,7 @@ public class SignUpByEmailHandlerTests
         var authenticator = new Mock<IAuthenticator>();
         authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
 
-        var verificator = new Mock<AccessCodeVerificator>();
+        var verificator = new Mock<IAccessCodeVerificator>();
 
         SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", "ABC");

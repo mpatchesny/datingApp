@@ -39,7 +39,8 @@ app.UseCors(
         .AllowAnyMethod()
 );
 
-app.UseHttpsRedirection();
+// https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-ubuntu#http-redirection-to-https-causes-err_invalid_redirect-on-the-cors-preflight-request
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<StorageMiddleware>();

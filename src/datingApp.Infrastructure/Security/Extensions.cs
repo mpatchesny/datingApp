@@ -27,6 +27,7 @@ internal static class Extensions
         services.AddSingleton<IAccessCodeGenerator, AccessCodeGenerator>();
         services.AddSingleton<IAuthenticator, Authenticator>();
         services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
+        services.AddSingleton<AccessCodeVerificator, AccessCodeVerificator>();
         services
             .AddAuthentication(o =>
             {

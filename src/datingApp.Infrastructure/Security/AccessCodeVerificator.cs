@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
 
-namespace datingApp.Application.Security;
+namespace datingApp.Infrastructure.Security;
 
 public class AccessCodeVerificator
 {

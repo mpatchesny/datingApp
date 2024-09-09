@@ -23,6 +23,7 @@ internal sealed class AuthorizationService : IDatingAppAuthorizationService
         if (user.Identity?.Name != userId.ToString())
         {
             // FIXME: czy to sie kiedykolwiek wydarzy?
+            // FIXME: zmienić exception na inny, np. authenticated user different than context user exception???
             throw new UnauthorizedAccessException();
         }
 

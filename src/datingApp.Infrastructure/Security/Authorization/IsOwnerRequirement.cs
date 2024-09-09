@@ -10,6 +10,7 @@ internal sealed class IsOwnerRequirement : IAuthorizationRequirement
 {
     public IsOwnerRequirement()
     {
-        // TODO
+        // TODO: sprawdzić, czy Requirement musi mieć jakieś dane
+        // to jest chyba coś jak Command/Query
     }
 }

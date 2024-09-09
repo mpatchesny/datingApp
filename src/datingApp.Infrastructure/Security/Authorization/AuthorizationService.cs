@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace datingApp.Infrastructure.Security.Authorization;
 
-public class AuthorizationService : IResourceAuthorizationService
+public class AuthorizationService : IDatingAppAuthorizationService
 {
     private readonly HttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;

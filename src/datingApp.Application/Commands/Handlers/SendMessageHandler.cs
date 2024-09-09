@@ -17,9 +17,9 @@ public sealed class SendMessageHandler : ICommandHandler<SendMessage>
 {
     private readonly IMessageRepository _messageRepository;
     private readonly IMatchRepository _matchRepository;
-    private readonly IResourceAuthorizationService  _authorizationService;
+    private readonly IDatingAppAuthorizationService  _authorizationService;
 
-    public SendMessageHandler(IMessageRepository messageRepository, IMatchRepository matchRepository, IResourceAuthorizationService authorizationService)
+    public SendMessageHandler(IMessageRepository messageRepository, IMatchRepository matchRepository, IDatingAppAuthorizationService authorizationService)
     {
         _messageRepository = messageRepository;
         _matchRepository = matchRepository;

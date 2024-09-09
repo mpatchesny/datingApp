@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace datingApp.Application.Security;
 
-public interface IResourceAuthorizationService
+public interface IDatingAppAuthorizationService
 {
     public Task<AuthorizationResult> AuthorizeAsync(Guid userId, object resource, string policyName);
 }

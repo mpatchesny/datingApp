@@ -34,8 +34,8 @@ public sealed class SendMessageHandler : ICommandHandler<SendMessage>
             throw new MatchNotExistsException(command.MatchId);
         }
 
-        bool isAuthorized = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, match);
-        if (!isAuthorized)
+        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, match, "OwnerPolicy");
+        if (!authorizationResult.Succeeded)
         {
             throw new UnauthorizedException();
         }

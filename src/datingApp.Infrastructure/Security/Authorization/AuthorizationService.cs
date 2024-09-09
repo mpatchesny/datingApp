@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Security;
 using Microsoft.AspNetCore.Authorization;
 
-namespace datingApp.Infrastructure.Security;
+namespace datingApp.Infrastructure.Security.Authorization;
 
 public class AuthorizationService : IResourceAuthorizationService
 {

@@ -25,6 +25,7 @@ public class AuthorizationService : IDatingAppAuthorizationService
             // FIXME: czy to sie kiedykolwiek wydarzy?
             throw new UnauthorizedAccessException();
         }
+
         return _authorizationService.AuthorizeAsync(user, resource, policyName);
     }
 }

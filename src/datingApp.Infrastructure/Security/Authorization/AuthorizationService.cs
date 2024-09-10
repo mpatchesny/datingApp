@@ -20,13 +20,12 @@ internal sealed class AuthorizationService : IDatingAppAuthorizationService
     public Task<AuthorizationResult> AuthorizeAsync(Guid userId, object resource, string policyName)
     {
         var user = _httpContextAccessor.HttpContext.User;
-        if (user.Identity?.Name != userId.ToString())
+        if (user?.Identity?.Name != userId.ToString())
         {
             // FIXME: czy to sie kiedykolwiek wydarzy?
             // FIXME: zmienić exception na inny, np. authenticated user different than context user exception???
             throw new UnauthorizedAccessException();
         }
-
         return _authorizationService.AuthorizeAsync(user, resource, policyName);
     }
 }

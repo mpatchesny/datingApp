@@ -3,38 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using datingApp.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 
 namespace datingApp.Infrastructure.Security.Authorization;
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0
-internal sealed class PermissionHandler : IAuthorizationHandler
+internal sealed class PermissionHandler : AuthorizationHandler<IsOwnerRequirement, Match>
 {
-    public Task HandleAsync(AuthorizationHandlerContext context)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsOwnerRequirement requirement, Match resource)
     {
-        // FIXME: przejrzeć, spr czy coś jeszcze potrzeba tutaj
-        // żeby działało
-        var pendingRequirements = context.PendingRequirements.ToList();
-
-        foreach (var requirement in pendingRequirements)
+        if (context.User?.Identity?.Name == resource.UserId1.ToString() || context.User?.Identity?.Name == resource.UserId2.ToString())
         {
-            switch (requirement)
-            {
-                case IsOwnerRequirement:
-                    if (IsOwner(context.User, context.Resource)) 
-                    {
-                        context.Succeed(requirement);
-                    }
-                    break;
-                default:
-                    break;
-            }
+            context.Succeed(requirement);
         }
         return Task.CompletedTask;
-    }
-    private static bool IsOwner(ClaimsPrincipal user, object? resource)
-    {
-        // TODO
-        return true;
     }
 }

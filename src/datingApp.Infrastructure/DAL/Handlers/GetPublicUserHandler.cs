@@ -46,7 +46,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UserNotExistsException(query.UserId);
         }
 
-        // user who requested information about other user must have match with other user
+        // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
                         .AsNoTracking()
                         .FirstOrDefaultAsync(m => (m.UserId1 == userRequested.Id || m.UserId2 == userRequested.Id) && 

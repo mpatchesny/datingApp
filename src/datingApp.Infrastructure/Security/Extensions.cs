@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Security;
+using datingApp.Application.Security.Authorization;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.Security.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,7 +57,7 @@ internal static class Extensions
                 policy.Requirements.Add(new IsOwnerRequirement()));
         });
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+        services.AddSingleton<IAuthorizationHandler, MatchPermissionHandler>();
         services.AddSingleton<IDatingAppAuthorizationService, AuthorizationServiceWrapper>();
         return services;
     }

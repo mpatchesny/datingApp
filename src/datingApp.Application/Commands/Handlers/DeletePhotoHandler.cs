@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Repositories;
+using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Core.Repositories;
 
@@ -16,11 +17,14 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IFileStorageService _fileStorageService;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
-    public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository)
+    private readonly IDatingAppAuthorizationService _authorizationService;
+
+    public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
     {
         _photoRepository = photoRepository;
         _fileStorageService = fileStorageService;
         _deletedEntityRepository = deletedEntityRepository;
+        _authorizationService = authorizationService;
     }
 
     public async Task HandleAsync(DeletePhoto command)
@@ -36,6 +40,12 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             {
                 throw new PhotoNotExistsException(command.PhotoId);
             }
+        }
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, photo, "OwnerPolicy");
+        if (!authorizationResult.Succeeded)
+        {
+            throw new UnauthorizedException();
         }
 
         _fileStorageService.DeleteFile(photo.Id.ToString());

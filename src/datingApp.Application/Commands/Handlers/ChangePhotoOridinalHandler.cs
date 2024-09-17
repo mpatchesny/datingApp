@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -14,10 +15,13 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IPhotoOrderer _photoOrderer;
-    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, IPhotoOrderer photoOrderer)
+    private readonly IDatingAppAuthorizationService _authorizationService;
+
+    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, IPhotoOrderer photoOrderer, IDatingAppAuthorizationService authorizationService)
     {
         _photoRepository = photoRepository;
         _photoOrderer = photoOrderer;
+        _authorizationService = authorizationService;
     }
 
     public async Task HandleAsync(ChangePhotoOridinal command)
@@ -27,7 +31,13 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
-        
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, thisPhoto, "OwnerPolicy");
+        if (!authorizationResult.Succeeded)
+        {
+            throw new UnauthorizedException();
+        }
+
         if (thisPhoto.Oridinal == command.NewOridinal)
         {
             return;

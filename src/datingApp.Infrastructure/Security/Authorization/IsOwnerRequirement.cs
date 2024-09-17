@@ -8,7 +8,4 @@ namespace datingApp.Infrastructure.Security.Authorization;
 
 internal sealed class IsOwnerRequirement : IAuthorizationRequirement
 {
-    public IsOwnerRequirement()
-    {
-    }
 }

@@ -6,6 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace datingApp.Application.Security.Authorization;
 
-internal sealed class IsOwnerRequirement : IAuthorizationRequirement
+public class IsOwnerRequirement : IAuthorizationRequirement
 {
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Application.Security.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
 namespace datingApp.Infrastructure.Security.Authorization;

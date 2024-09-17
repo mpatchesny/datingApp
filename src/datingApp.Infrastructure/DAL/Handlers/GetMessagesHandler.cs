@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -13,16 +14,26 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedDataDto>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetMessagesHandler(DatingAppDbContext dbContext)
+    private readonly IDatingAppAuthorizationService _authorizationService;
+
+    public GetMessagesHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
     {
         _dbContext = dbContext;
+        _authorizationService = authorizationService;
     }
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
-        if (!await _dbContext.Matches.AnyAsync(x => x.Id == query.MatchId))
+        var match = _dbContext.Matches.FirstOrDefault(x => x.Id == query.MatchId);
+        if (match == null)
         {
             throw new MatchNotExistsException(query.MatchId);
+        }
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
+        if (!authorizationResult.Succeeded)
+        {
+            throw new UnauthorizedException();
         }
 
         var dbQuery = _dbContext.Messages

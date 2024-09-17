@@ -11,7 +11,7 @@ namespace datingApp.Infrastructure.Security.Authorization;
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-8.0
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/resourcebased?view=aspnetcore-8.0
-internal sealed class PermissionHandler : AuthorizationHandler<IsOwnerRequirement, Match>
+internal sealed class MatchPermissionHandler : AuthorizationHandler<IsOwnerRequirement, Match>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsOwnerRequirement requirement, Match resource)
     {

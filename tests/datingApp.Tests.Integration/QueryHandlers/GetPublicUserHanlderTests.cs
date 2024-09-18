@@ -24,7 +24,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
-        var user = await CreateUserAsync();
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var query = new GetPublicUser() { UserId = user.Id, UserRequestedId = user.Id };
         var userDto = await _handler.HandleAsync(query);
 
@@ -38,7 +38,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
-        var user = await CreateUserAsync();
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var query = new GetPublicUser() { UserId = Guid.NewGuid(), UserRequestedId = user.Id };
         var userDto = await _handler.HandleAsync(query);
 
@@ -53,7 +53,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
-        var user = await CreateUserAsync();
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var query = new GetPublicUser() { UserId = user.Id, UserRequestedId = Guid.NewGuid() };
 
         var userDto = await _handler.HandleAsync(query);
@@ -66,26 +66,12 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
-        var user = await CreateUserAsync();
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var query = new GetPublicUser() { UserId = user.Id, UserRequestedId = Guid.NewGuid() };
 
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
-    }
-
-    private async Task<User> CreateUserAsync(string email = null, string phone = null)
-    {
-        if (email == null) email = Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
-        Random random = new Random();
-        if (phone == null) phone = random.Next(100000000, 999999999).ToString();
-
-        var settings = new UserSettings(Guid.NewGuid(), Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-
-        await _testDb.DbContext.Users.AddAsync(user);
-        await _testDb.DbContext.SaveChangesAsync();
-        return user;
     }
 
     // Arrange

@@ -90,9 +90,9 @@ public class GetPublicUserHanlderTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly GetPublicUserHandler _handler;
     private readonly Mock<ISpatial> _mockedSpatial;
     private readonly Mock<IDatingAppAuthorizationService> _mockedAuthService;
-    private readonly GetPublicUserHandler _handler;
     public GetPublicUserHanlderTests()
     {
         _testDb = new TestDatabase();

@@ -59,13 +59,15 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         Assert.True(isLikedByOtherUser.IsLikedByOtherUser);
     }
 
-    private async Task<User> CreateUserAsync(string email, string phone = null)
+    private async Task<User> CreateUserAsync(string email = null, string phone = null)
     {
-        var userId = Guid.NewGuid();
-        var settings = new UserSettings(userId, Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        if (email == null) email = Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
         Random random = new Random();
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
-        var user = new User(userId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        var settings = new UserSettings(Guid.NewGuid(), Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
         await _testDb.DbContext.Users.AddAsync(user);
         await _testDb.DbContext.SaveChangesAsync();
         return user;

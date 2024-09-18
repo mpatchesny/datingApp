@@ -19,9 +19,9 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPublicUserHanlderTests : IDisposable
 {
     [Fact]
-    public async Task given_authorization_serivce_result_success_GetPublicUser_query_existing_user_should_return_public_user_dto()
+    public async Task given_authorization_serivce_success_query_existing_user_should_return_public_user_dto()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Success);
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await CreateUserAsync();
@@ -35,7 +35,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task query_nonexisting_user_should_user_not_exists_exception()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Success);
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await CreateUserAsync();
@@ -50,7 +50,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task request_by_nonexisting_user_should_return_null()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Success);
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await CreateUserAsync();
@@ -63,7 +63,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task given_authorization_serivce_fail_GetPublicUser_throws_UnauthorizedException()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Failed);
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await CreateUserAsync();

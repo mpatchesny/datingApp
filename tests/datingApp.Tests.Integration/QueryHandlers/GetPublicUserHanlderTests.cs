@@ -5,35 +5,43 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.Spatial;
+using Microsoft.AspNetCore.Authorization;
 using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
-
 public class GetPublicUserHanlderTests : IDisposable
 {
     [Fact]
-    public async Task query_existing_user_should_return_public_user_dto()
+    public async Task given_authorization_serivce_result_success_GetPublicUser_query_existing_user_should_return_public_user_dto()
     {
-        var query = new GetPublicUser();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var user = await _handler.HandleAsync(query);
-        Assert.NotNull(user);
-        Assert.IsType<PublicUserDto>(user);
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Success);
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+
+        var user = await CreateUserAsync();
+        var query = new GetPublicUser() { UserId = user.Id, UserRequestedId = user.Id };
+        var userDto = await _handler.HandleAsync(query);
+
+        Assert.NotNull(userDto);
+        Assert.IsType<PublicUserDto>(userDto);
     }
 
     [Fact]
     public async Task query_nonexisting_user_should_user_not_exists_exception()
     {
-        var query = new GetPublicUser();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
-        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Success);
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+
+        var user = await CreateUserAsync();
+        var query = new GetPublicUser() { UserId = Guid.NewGuid(), UserRequestedId = user.Id };
+        var userDto = await _handler.HandleAsync(query);
+
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -42,27 +50,55 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task request_by_nonexisting_user_should_return_null()
     {
-        var query = new GetPublicUser();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000005");
-        var user = await _handler.HandleAsync(query);
-        Assert.Null(user);
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Success);
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+
+        var user = await CreateUserAsync();
+        var query = new GetPublicUser() { UserId = user.Id, UserRequestedId = Guid.NewGuid() };
+
+        var userDto = await _handler.HandleAsync(query);
+        Assert.Null(userDto);
+    }
+
+    [Fact]
+    public async Task given_authorization_serivce_fail_GetPublicUser_throws_UnauthorizedException()
+    {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(AuthorizationResult.Failed);
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+
+        var user = await CreateUserAsync();
+        var query = new GetPublicUser() { UserId = user.Id, UserRequestedId = Guid.NewGuid() };
+
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
+    }
+
+    private async Task<User> CreateUserAsync(string email = null, string phone = null)
+    {
+        if (email == null) email = Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
+        Random random = new Random();
+        if (phone == null) phone = random.Next(100000000, 999999999).ToString();
+
+        var settings = new UserSettings(Guid.NewGuid(), Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+
+        await _testDb.DbContext.Users.AddAsync(user);
+        await _testDb.DbContext.SaveChangesAsync();
+        return user;
     }
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly Mock<ISpatial> _mockedSpatial;
+    private readonly Mock<IDatingAppAuthorizationService> _mockedAuthService;
     private readonly GetPublicUserHandler _handler;
     public GetPublicUserHanlderTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
-        
-        var mockedSpatial = new Mock<ISpatial>();
-        mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
-        _handler = new GetPublicUserHandler(_testDb.DbContext, mockedSpatial.Object);
+        _mockedSpatial = new Mock<ISpatial>();
+        _mockedAuthService = new Mock<IDatingAppAuthorizationService>();
+        _handler = new GetPublicUserHandler(_testDb.DbContext, _mockedSpatial.Object, _mockedAuthService.Object);
     }
 
     // Teardown

@@ -117,7 +117,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
+        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -150,7 +150,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
+        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -169,7 +169,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i=0; i<15; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id);
         }
 
         var token = Authorize(user1.Id);
@@ -188,7 +188,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var allMessagesGuid = new List<Guid>();
         for (int i=0; i<45; i++)
         {
-            var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
+            var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id);
             allMessagesGuid.Add(message.Id);
         }
 

@@ -49,9 +49,9 @@ internal static class IntegrationTestHelper
         return match;
     }
 
-    internal static async Task<Message> CreateMessageAsync(TestDatabase database, Guid matchId, Guid sendFromId, string text, DateTime? createdAt = null)
+    internal static async Task<Message> CreateMessageAsync(TestDatabase database, Guid matchId, Guid sendFromId, DateTime? createdAt = null)
     {
-        var message = new Message(Guid.NewGuid(), matchId, sendFromId, text, false, createdAt ?? DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), matchId, sendFromId, "test", false, createdAt ?? DateTime.UtcNow);
         await database.DbContext.Messages.AddAsync(message);
         await database.DbContext.SaveChangesAsync();
         return message;

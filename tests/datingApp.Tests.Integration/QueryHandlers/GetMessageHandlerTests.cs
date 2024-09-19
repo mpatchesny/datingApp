@@ -71,7 +71,6 @@ public class GetMessageHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _authService = new Mock<IDatingAppAuthorizationService>();
         _handler = new GetMessageHandler(_testDb.DbContext, _authService.Object);
-        // TODO: add test to check unaothorized
     }
 
     // Teardown

@@ -23,4 +23,12 @@ internal static class IntegrationTestHelper
         await database.DbContext.SaveChangesAsync();
         return user;
     }
+
+    internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId)
+    {
+        var photo = new Photo(Guid.NewGuid(), userId, "abc", "abc", 1);
+        await database.DbContext.Photos.AddAsync(photo);
+        await database.DbContext.SaveChangesAsync();
+        return photo;
+    }
 }

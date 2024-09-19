@@ -22,10 +22,10 @@ public class GetUpdatesHandlerTests : IDisposable
         var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, DateTime.UtcNow);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, DateTime.UtcNow);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user2.Id, user3.Id, DateTime.UtcNow);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user3.Id, user4.Id, DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user2.Id, user3.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user3.Id, user4.Id, createdAt: DateTime.UtcNow);
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
@@ -40,9 +40,9 @@ public class GetUpdatesHandlerTests : IDisposable
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
         var timeAfterLastActivityTime = DateTime.UtcNow - TimeSpan.FromHours(1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, timeAfterLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: timeAfterLastActivityTime);
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
@@ -58,8 +58,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var timeBeforeLastActivityTime = DateTime.UtcNow - TimeSpan.FromHours(1);
-        var match1 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, timeBeforeLastActivityTime);
-        var match2 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, timeBeforeLastActivityTime);
+        var match1 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: timeBeforeLastActivityTime);
+        var match2 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
 
         var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromHours(1);
         _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match1.Id, user2.Id, "test", timeAfterLastActivityTime);
@@ -79,10 +79,10 @@ public class GetUpdatesHandlerTests : IDisposable
         var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var time1 = DateTime.UtcNow - TimeSpan.FromMinutes(1);
-        var time2 = DateTime.UtcNow + TimeSpan.FromMinutes(1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user2.Id, user3.Id, time1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user3.Id, user4.Id, time2);
+        var timeBeforeLastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user2.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
+        var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromMinutes(1);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user3.Id, user4.Id, createdAt: timeAfterLastActivityTime);
 
         var query = new GetUpdates{ UserId = userWithNotMatch.Id, LastActivityTime = DateTime.UtcNow};
         var result = await _handler.HandleAsync(query);

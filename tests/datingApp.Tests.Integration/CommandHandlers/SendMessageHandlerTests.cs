@@ -26,11 +26,12 @@ public class SendMessageHandlerTests : IDisposable
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
-        var command = new SendMessage(match.Id, user1.Id, user2.Id, "hello");
+        var command = new SendMessage(Guid.NewGuid(), match.Id, user1.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
 
+    [Fact]
     public async Task given_authorization_fail_send_message_within_existsing_match_should_throw_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
@@ -38,7 +39,7 @@ public class SendMessageHandlerTests : IDisposable
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
-        var command = new SendMessage(match.Id, user1.Id, user2.Id, "hello");
+        var command = new SendMessage(Guid.NewGuid(), match.Id, user1.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
@@ -51,7 +52,7 @@ public class SendMessageHandlerTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var command = new SendMessage(Guid.NewGuid(), user1.Id, user2.Id, "hello");
+        var command = new SendMessage(Guid.NewGuid(), Guid.NewGuid(), user1.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);

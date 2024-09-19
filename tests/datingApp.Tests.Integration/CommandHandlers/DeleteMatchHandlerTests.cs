@@ -6,10 +6,14 @@ using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
@@ -19,17 +23,36 @@ public class DeleteMatchHandlerTests : IDisposable
     [Fact]
     public async Task delete_existing_match_should_succeed_and_add_deleted_match_id_to_deleted_entities()
     {
-        var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var command = new DeleteMatch(matchId);
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var command = new DeleteMatch(match.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == matchId));
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == match.Id));
+    }
+
+    [Fact]
+    public async Task given_authorization_fail_delete_existing_match_should_return_UnauthorizedException()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var command = new DeleteMatch(match.Id);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
     }
     
     [Fact]
     public async Task delete_nonexisting_match_should_throw_exception()
     {
-        var command = new DeleteMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var command = new DeleteMatch(Guid.NewGuid());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -37,41 +60,32 @@ public class DeleteMatchHandlerTests : IDisposable
     [Fact]
     public async Task given_match_id_exists_in_deleted_entities_repository_delete_user_should_throw_already_deleted_exception()
     {
-        var alreadyDeletedMatch = new DeletedEntityDto()
-        {
-            Id = Guid.NewGuid()
-        };
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var alreadyDeletedMatch = new DeletedEntityDto() { Id = match.Id };
         await _testDb.DbContext.DeletedEntities.AddAsync(alreadyDeletedMatch);
         await _testDb.DbContext.SaveChangesAsync();
-        var command = new DeleteMatch(alreadyDeletedMatch.Id);
+
+        var command = new DeleteMatch(match.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<MatchAlreadyDeletedException>(exception);
     }
     
     // Arrange
-    private readonly DeleteMatchHandler _handler;
     private readonly TestDatabase _testDb;
+    private readonly DeleteMatchHandler _handler;
+    private readonly Mock<IDatingAppAuthorizationService> _authService;
     public DeleteMatchHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
-
-        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
-
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Matches.Add(match);
-        _testDb.DbContext.SaveChanges();
-
         var matchRepository = new DbMatchRepository(_testDb.DbContext);
         var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
-        _handler = new DeleteMatchHandler(matchRepository, deletedEntitiesRepository);
+        _authService = new Mock<IDatingAppAuthorizationService>();
+        _handler = new DeleteMatchHandler(matchRepository, deletedEntitiesRepository, _authService.Object);
     }
 
     // Teardown

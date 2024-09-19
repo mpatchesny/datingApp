@@ -19,9 +19,9 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_match_returns_200_ok_and_match_dto()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -33,7 +33,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_match_not_exists_get_match_returns_404_not_found_with_match_not_exist_reason()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -49,9 +49,9 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_matches_returns_200_ok_and_list_of_match_dto_in_paginated_data_dto()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -65,11 +65,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_matches_respects_provided_page_size()
     {
-        var user1 = await CreateUserAsync($"test@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         for (int i=0; i<20; i++)
         {
-            var user2 = await CreateUserAsync($"test{i}@test.com");
-            await CreateMatchAsync(user1, user2);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
         }
 
         var token = Authorize(user1.Id);
@@ -82,13 +82,13 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_matches_respects_provided_page()
     {
-        var user1 = await CreateUserAsync($"test@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var allMatchesGuid = new List<Guid>();
         for (int i=0; i<45; i++)
         {
-            var user2 = await CreateUserAsync($"test{i}@test.com");
-            var match = await CreateMatchAsync(user1, user2);
-            allMatchesGuid.Add(match.Id);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            var tempMatch = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            allMatchesGuid.Add(tempMatch.Id);
         }
 
         var token = Authorize(user1.Id);
@@ -114,10 +114,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_message_returns_200_ok_and_message_dto()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
-        var message = await CreateMessageAsync(match);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -129,9 +129,9 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_message_not_exists_get_message_returns_404_not_found_with_reason_message_does_not_exist()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -147,10 +147,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_messages_returns_200_ok_and_list_of_message_dto_in_paginated_data_dto()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
-        var message = await CreateMessageAsync(match);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -164,12 +164,12 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_messages_respects_provided_page_size()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i=0; i<15; i++)
         {
-            await CreateMessageAsync(match);
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
         }
 
         var token = Authorize(user1.Id);
@@ -182,13 +182,13 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void get_messages_respects_provided_page()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         var allMessagesGuid = new List<Guid>();
         for (int i=0; i<45; i++)
         {
-            var message = await CreateMessageAsync(match);
+            var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, "abc");
             allMessagesGuid.Add(message.Id);
         }
 
@@ -215,7 +215,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_match_not_exists_get_messages_returns_404_not_found_with_reason_match_not_exists()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -231,9 +231,9 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void send_message_returns_204_created_and_message_dto()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -251,9 +251,9 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_empty_send_from_user_id_send_message_returns_204_created_and_message_dto()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -271,7 +271,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_match_not_exists_send_message_returns_404_not_found_with_reason_match_not_exists()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var notExistingMatchId = Guid.NewGuid();
 
         var token = Authorize(user1.Id);
@@ -289,9 +289,9 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact ]
     public async void delete_existing_match_returns_204_no_content()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
-        var match = await CreateMatchAsync(user1, user2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -303,7 +303,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_match_not_exists_delete_returns_404_not_found()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -319,57 +319,20 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async void given_match_was_already_deleted_delete_returns_410_gone()
     {
-        var user1 = await CreateUserAsync("test1@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var deletedMatch = await CreateMatchAsync(user1, user2);
-        await DeleteMatchAsync(deletedMatch);
+        var deletedMatch = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        await IntegrationTestHelper.DeleteMatchAsync(_testDb, deletedMatch);
 
         var response = await Client.DeleteAsync($"matches/{deletedMatch.Id}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
         Assert.Equal($"Match {deletedMatch.Id} is deleted permanently.", error.Reason);
-    }
-
-    private async Task<User> CreateUserAsync(string email = null, string phone = null)
-    {
-        if (email == null) email = Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
-        Random random = new Random();
-        if (phone == null) phone = random.Next(100000000, 999999999).ToString();
-
-        var settings = new UserSettings(Guid.NewGuid(), Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-
-        await _testDb.DbContext.Users.AddAsync(user);
-        await _testDb.DbContext.SaveChangesAsync();
-        return user;
-    }
-
-    private async Task<Match> CreateMatchAsync(User user1, User user2)
-    {
-        var match = new Match(Guid.NewGuid(), user1.Id, user2.Id, false, false, null, DateTime.UtcNow);
-        await _testDb.DbContext.Matches.AddAsync(match);
-        await _testDb.DbContext.SaveChangesAsync();
-        return match;
-    }
-
-    private async Task<Message> CreateMessageAsync(Match match)
-    {
-        var message = new Message(Guid.NewGuid(), match.Id, match.UserId1, "test", false, DateTime.UtcNow);
-        await _testDb.DbContext.Messages.AddAsync(message);
-        await _testDb.DbContext.SaveChangesAsync();
-        return message;
-    }
-
-    private async Task DeleteMatchAsync(Match match)
-    {
-        _testDb.DbContext.Matches.Remove(match);
-        await _testDb.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id });
-        await _testDb.DbContext.SaveChangesAsync();
     }
 
     private readonly TestDatabase _testDb;

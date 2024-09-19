@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;
+using Microsoft.AspNetCore.Authorization;
+using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
@@ -18,6 +22,7 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task query_messages_by_existing_match_id_should_return_nonempty_collection_of_messages_dto()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
@@ -33,8 +38,24 @@ public class GetMessagesHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task given_authorization_serivce_returns_fail_GetMessages_throws_UnauthorizedException()
+    {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+
+        var query = new GetMessages() { MatchId = match.Id };
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
+    }
+
+    [Fact]
     public async Task query_messages_by_nonexisting_match_id_should_return_match_not_exists_exception()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var query = new GetMessages() { MatchId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
@@ -44,6 +65,7 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task returned_messages_count_is_lower_or_equal_to_page_size()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
@@ -61,6 +83,7 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task proper_number_of_messages_are_returned_when_page_is_above_1()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
@@ -80,6 +103,7 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_page_count()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
@@ -98,6 +122,7 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_of_page_size()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
@@ -116,6 +141,7 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_page()
     {
+        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
@@ -134,10 +160,12 @@ public class GetMessagesHandlerTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetMessagesHandler _handler;
+    private readonly Mock<IDatingAppAuthorizationService> _mockedAuthService;
     public GetMessagesHandlerTests()
     {
         _testDb = new TestDatabase();
-        _handler = new GetMessagesHandler(_testDb.DbContext);
+        _mockedAuthService = new Mock<IDatingAppAuthorizationService>();
+        _handler = new GetMessagesHandler(_testDb.DbContext, _mockedAuthService.Object);
     }
 
     // Teardown

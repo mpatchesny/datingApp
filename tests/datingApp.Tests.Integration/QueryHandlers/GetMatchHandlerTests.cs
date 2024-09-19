@@ -24,13 +24,27 @@ public class GetMatchHandlerTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
-        var query = new GetMatch{ MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001"), UserId = Guid.Parse("00000000-0000-0000-0000-000000000001")};
+        var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var result = await _handler.HandleAsync(query);
         Assert.NotNull(result);
         Assert.IsType<MatchDto>(result);
         Assert.NotNull(result.User);
+    }
+
+    [Fact]
+    public async Task given_match_exists_and_auth_service_fail_get_match_handler_should_return_Unauthorized_exception()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     [Fact]
@@ -39,10 +53,10 @@ public class GetMatchHandlerTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user2.Id);
 
-        var query = new GetMatch{ MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001"), UserId = Guid.Parse("00000000-0000-0000-0000-000000000001")};
+        var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var result = await _handler.HandleAsync(query);
         Assert.NotNull(result);
         Assert.Single(result.User.Photos);

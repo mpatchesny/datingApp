@@ -10,7 +10,7 @@ namespace datingApp.Tests.Integration;
 
 internal static class IntegrationTestHelper
 {
-    public static async Task<User> CreateUserAsync(TestDatabase database, string email = null, string phone = null)
+    internal static async Task<User> CreateUserAsync(TestDatabase database, string email = null, string phone = null)
     {
         Random random = new Random();
         if (email == null) email = "test_" + random.Next(1, 9).ToString() + "@test.com";
@@ -30,5 +30,13 @@ internal static class IntegrationTestHelper
         await database.DbContext.Photos.AddAsync(photo);
         await database.DbContext.SaveChangesAsync();
         return photo;
+    }
+   
+    internal static async Task<Match> CreateMatchAsync(TestDatabase database, Guid userId1, Guid userId2, DateTime? createdAt = null)
+    {
+        var match = new Match(Guid.NewGuid(), userId1, userId2, false, false, null, createdAt ?? DateTime.UtcNow);
+        await database.DbContext.Matches.AddAsync(match);
+        await database.DbContext.SaveChangesAsync();
+        return match;
     }
 }

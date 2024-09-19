@@ -78,4 +78,11 @@ internal static class IntegrationTestHelper
         await database.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = user.Id });
         await database.DbContext.SaveChangesAsync();
     }
+
+    internal static async Task DeletePhotoAsync(TestDatabase database, Photo photo)
+    {
+        database.DbContext.Photos.Remove(photo);
+        await database.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
+        await database.DbContext.SaveChangesAsync();
+    }
 }

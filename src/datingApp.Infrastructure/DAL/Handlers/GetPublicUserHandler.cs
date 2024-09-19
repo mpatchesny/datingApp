@@ -27,30 +27,30 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
 
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
-        var userRequested = await _dbContext.Users
+        var requestedWho = await _dbContext.Users
                                         .AsNoTracking()
-                                        .Where(x => x.Id == query.UserRequestedId)
+                                        .Where(x => x.Id == query.RequestWhoUserId)
                                         .Include(u => u.Settings)
                                         .FirstOrDefaultAsync();
 
-        if (userRequested == null) return null;
+        if (requestedWho == null) return null;
 
-        var userWhoRequested = await _dbContext.Users
+        var requestedBy = await _dbContext.Users
                             .AsNoTracking()
                             .Include(x => x.Settings)
                             .Include(x => x.Photos)
-                            .FirstOrDefaultAsync(x => x.Id == query.UserId);
+                            .FirstOrDefaultAsync(x => x.Id == query.RequestByUserId);
 
-        if (userWhoRequested == null)
+        if (requestedBy == null)
         {
-            throw new UserNotExistsException(query.UserId);
+            throw new UserNotExistsException(query.RequestByUserId);
         }
 
         // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(m => (m.UserId1 == userRequested.Id || m.UserId2 == userRequested.Id) && 
-                            (m.UserId1 == userWhoRequested.Id || m.UserId2 == userWhoRequested.Id));
+                        .FirstOrDefaultAsync(m => (m.UserId1 == requestedBy.Id || m.UserId2 == requestedBy.Id) && 
+                            (m.UserId1 == requestedWho.Id || m.UserId2 == requestedWho.Id));
 
         var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
@@ -58,7 +58,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UnauthorizedException();
         }
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(userRequested.Settings.Lat, userRequested.Settings.Lon, userWhoRequested.Settings.Lat, userWhoRequested.Settings.Lon);
-        return userWhoRequested.AsPublicDto(distanceInKms);
+        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Lat, requestedBy.Settings.Lon, requestedWho.Settings.Lat, requestedWho.Settings.Lon);
+        return requestedWho.AsPublicDto(distanceInKms);
     }
 }

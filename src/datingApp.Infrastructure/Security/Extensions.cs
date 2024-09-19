@@ -4,7 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Security;
+using datingApp.Application.Security.Authorization;
+using datingApp.Core.Entities;
+using datingApp.Infrastructure.Security.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace datingApp.Infrastructure.Security;
@@ -27,6 +31,7 @@ internal static class Extensions
         services.AddSingleton<IAccessCodeGenerator, AccessCodeGenerator>();
         services.AddSingleton<IAuthenticator, Authenticator>();
         services.AddSingleton<ITokenStorage, HttpContextTokenStorage>();
+        services.AddSingleton<IAccessCodeVerificator, AccessCodeVerificator>();
         services
             .AddAuthentication(o =>
             {
@@ -45,20 +50,17 @@ internal static class Extensions
                         Encoding.UTF8.GetBytes(options.AccessToken.SigningKey)
                     )
                 };
-            })
-            .AddJwtBearer("RefreshTokenScheme", o =>
-            {
-                o.Audience = options.RefreshToken.Audience;
-                o.IncludeErrorDetails = true;
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidIssuer = options.RefreshToken.Issuer,
-                    ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(options.RefreshToken.SigningKey)
-                    )
-                };
             });
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("OwnerPolicy", policy =>
+                policy.Requirements.Add(new IsOwnerRequirement()));
+        });
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddSingleton<IAuthorizationHandler, MatchPermissionHandler>();
+        services.AddSingleton<IAuthorizationHandler, UserPermissionHandler>();
+        services.AddSingleton<IAuthorizationHandler, PhotoPermissionHandler>();
+        services.AddSingleton<IDatingAppAuthorizationService, AuthorizationServiceWrapper>();
         return services;
     }
 }

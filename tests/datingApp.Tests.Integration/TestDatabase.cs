@@ -2,6 +2,7 @@
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Options;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -14,7 +15,7 @@ internal sealed class TestDatabase : IDisposable
     {
         var options = new OptionsProvider().Get<ConnectionStringsOptions>("ConnectionStrings");
         var connString = options.datingApp;
-        if (randomDbName) connString = String.Format(connString, Guid.NewGuid().ToString());
+        if (randomDbName) connString = string.Format(connString, Guid.NewGuid().ToString());
         DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(connString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();

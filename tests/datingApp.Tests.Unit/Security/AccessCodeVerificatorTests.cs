@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Security;
+using datingApp.Infrastructure.Security;
 using Xunit;
 
 namespace datingApp.Tests.Unit.Security;

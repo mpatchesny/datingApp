@@ -5,64 +5,84 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.Spatial;
+using Microsoft.AspNetCore.Authorization;
 using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
-
 public class GetPublicUserHanlderTests : IDisposable
 {
     [Fact]
-    public async Task query_existing_user_should_return_public_user_dto()
+    public async Task given_authorization_serivce_success_query_existing_user_should_return_public_user_dto()
     {
-        var query = new GetPublicUser();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var user = await _handler.HandleAsync(query);
-        Assert.NotNull(user);
-        Assert.IsType<PublicUserDto>(user);
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var query = new GetPublicUser() { RequestByUserId = user1.Id, RequestWhoUserId = user2.Id };
+        var userDto = await _handler.HandleAsync(query);
+
+        Assert.NotNull(userDto);
+        Assert.IsType<PublicUserDto>(userDto);
     }
 
     [Fact]
-    public async Task query_nonexisting_user_should_user_not_exists_exception()
+    public async Task query_nonexisting_user_should_return_null()
     {
-        var query = new GetPublicUser();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
-        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
+        var userDto = await _handler.HandleAsync(query);
+        Assert.Null(userDto);
+    }
+
+    [Fact]
+    public async Task request_by_nonexisting_user_should_not_exists_exception()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var query = new GetPublicUser() { RequestByUserId = Guid.NewGuid(), RequestWhoUserId = user.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
 
     [Fact]
-    public async Task request_by_nonexisting_user_should_return_null()
+    public async Task given_authorization_serivce_fail_GetPublicUser_throws_UnauthorizedException()
     {
-        var query = new GetPublicUser();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.UserRequestedId = Guid.Parse("00000000-0000-0000-0000-000000000005");
-        var user = await _handler.HandleAsync(query);
-        Assert.Null(user);
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = user.Id };
+
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
     }
 
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetPublicUserHandler _handler;
+    private readonly Mock<ISpatial> _mockedSpatial;
+    private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetPublicUserHanlderTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
-        
-        var mockedSpatial = new Mock<ISpatial>();
-        mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
-        _handler = new GetPublicUserHandler(_testDb.DbContext, mockedSpatial.Object);
+        _mockedSpatial = new Mock<ISpatial>();
+        _authService = new Mock<IDatingAppAuthorizationService>();
+        _handler = new GetPublicUserHandler(_testDb.DbContext, _mockedSpatial.Object, _authService.Object);
     }
 
     // Teardown

@@ -30,7 +30,6 @@ namespace datingApp.Application
                 .WithScopedLifetime());
 
             services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
-            services.AddSingleton<AccessCodeVerificator, AccessCodeVerificator>();
             services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
             return services;
         }

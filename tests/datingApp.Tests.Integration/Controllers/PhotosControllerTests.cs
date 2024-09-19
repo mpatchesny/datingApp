@@ -21,8 +21,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_photo_returns_200_ok_and_photo_dto()
     {
-        var user = await CreateUserAsync("test@test.com");
-        var photo = await CreatePhotoAsync(user);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -35,7 +35,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_photo_not_exists_get_photo_returns_404_not_found_and_proper_error_reason()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
@@ -50,7 +50,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_valid_payload_post_photo_returns_201_created_and_photo_dto()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -67,7 +67,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_empty_base64_photo_post_photo_returns_400_bad_request()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -80,8 +80,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_valid_payload_patch_photo_post_photo_returns_204_no_content()
     {
-        var user = await CreateUserAsync("test@test.com");
-        var photo = await CreatePhotoAsync(user);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -95,7 +95,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_photo_not_exists_patch_photo_post_photo_returns_404_not_found_and_proper_error_reason()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -113,8 +113,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_photo_exists_delete_photo_post_photo_returns_204_no_content()
     {
-        var user = await CreateUserAsync("test@test.com");
-        var photo = await CreatePhotoAsync(user);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -126,7 +126,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_photo_not_exists_delete_photo_post_photo_returns_404_not_found_and_proper_error_reason()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -142,9 +142,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_photo_was_alread_deleted_delete_photo_post_photo_returns_410_gone()
     {
-        var user = await CreateUserAsync("test@test.com");
-        var photo = await CreatePhotoAsync(user);
-        await DeletePhotoAsync(photo);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        await IntegrationTestHelper.DeletePhotoAsync(_testDb, photo);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -159,7 +159,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_storage_returns_200_OK_and_photo_binary()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -178,7 +178,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_physical_file_not_exists_get_storage_returns_404_not_found()
     {
-        var user = await CreateUserAsync("test@test.com");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -188,38 +188,12 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); ;
     }
 
-    private async Task<User> CreateUserAsync(string email, string phone = null)
-    {
-        var userId = Guid.NewGuid();
-        var settings = new UserSettings(userId, Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
-        Random random = new Random();
-        if (phone == null) phone = random.Next(100000000, 999999999).ToString();
-        var user = new User(userId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        await _testDb.DbContext.Users.AddAsync(user);
-        await _testDb.DbContext.SaveChangesAsync();
-        return user;
-    }
-
-    private async Task<Photo> CreatePhotoAsync(User user)
-    {
-        var photo = new Photo(Guid.Empty, user.Id, "path", "url", 0);
-        await _testDb.DbContext.Photos.AddAsync(photo);
-        await _testDb.DbContext.SaveChangesAsync();
-        return photo;
-    }
-
-    private async Task DeletePhotoAsync(Photo photo)
-    {
-        _testDb.DbContext.Photos.Remove(photo);
-        await _testDb.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
-        await _testDb.DbContext.SaveChangesAsync();
-    }
-
     private readonly TestDatabase _testDb;
     public PhotosControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
         _testDb = new TestDatabase(false);
     }
+
     public void Dispose()
     {
         var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");

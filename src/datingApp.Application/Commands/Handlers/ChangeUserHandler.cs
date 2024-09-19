@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -12,9 +13,12 @@ namespace datingApp.Application.Commands.Handlers;
 public class ChangeUserHandler : ICommandHandler<ChangeUser>
 {
     private readonly IUserRepository _userRepository;
-    public ChangeUserHandler(IUserRepository userRepository)
+    private readonly IDatingAppAuthorizationService _authorizationService;
+
+    public ChangeUserHandler(IUserRepository userRepository, IDatingAppAuthorizationService authorizationService)
     {
         _userRepository = userRepository;
+        _authorizationService = authorizationService;
     }
 
     public async Task HandleAsync(ChangeUser command)
@@ -23,6 +27,12 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         if (user == null)
         {
             throw new UserNotExistsException(command.UserId);
+        }
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy");
+        if (!authorizationResult.Succeeded)
+        {
+            throw new UnauthorizedException();
         }
 
         if (command.Bio != null) user.ChangeBio(command.Bio);

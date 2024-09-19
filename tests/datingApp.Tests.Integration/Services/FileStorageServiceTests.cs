@@ -16,6 +16,7 @@ public class FileStorageServiceTests : IDisposable
     {
         var filePath = System.IO.Path.Combine(_storagePath, "test.txt");
         System.IO.File.Create(filePath);
+
         var result = _storageService.Exists("test", "txt");
         Assert.True(result);
     }
@@ -43,6 +44,7 @@ public class FileStorageServiceTests : IDisposable
     {
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         _storageService.SaveFile(data, "test", "txt");
+
         var exists = _storageService.Exists("test", "txt");
         Assert.True(exists);
     }
@@ -112,12 +114,14 @@ public class FileStorageServiceTests : IDisposable
 
     private readonly FileStorageService _storageService;
     private readonly string _storagePath;
+    private readonly DirectoryInfo _dir;
     public FileStorageServiceTests()
     {
-        var guid = Guid.NewGuid();
-        _storagePath = System.IO.Path.Combine(Path.GetTempPath(), $"datingapptest_{guid}");
-        var dir = new System.IO.DirectoryInfo(_storagePath);
-        dir.Create();
+        _storagePath = System.IO.Path.Combine(
+                Path.GetTempPath(), $"datingapptest_{Guid.NewGuid()}"
+            );
+        _dir = new DirectoryInfo(_storagePath);
+        _dir.Create();
 
         var options = new StorageOptions { StoragePath = _storagePath };
         ILogger<FileStorageService> logger = new Logger<FileStorageService>(new LoggerFactory());
@@ -127,7 +131,6 @@ public class FileStorageServiceTests : IDisposable
     public async void Dispose()
     {
         await Task.Delay(1000);
-        var dir = new System.IO.DirectoryInfo(_storagePath);
-        dir.Delete(true);
+        _dir.Delete(true);
     }
 }

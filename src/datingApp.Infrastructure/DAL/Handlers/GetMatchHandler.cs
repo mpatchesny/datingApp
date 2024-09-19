@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,12 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetMatchHandler(DatingAppDbContext dbContext)
+    private readonly IDatingAppAuthorizationService _authorizationService;
+
+    public GetMatchHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
     {
         _dbContext = dbContext;
+        _authorizationService = authorizationService;
     }
 
     public async Task<MatchDto> HandleAsync(GetMatch query)
@@ -40,6 +44,12 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         if (data == null) 
         {
             throw new MatchNotExistsException(query.MatchId);
+        }
+
+        var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, data.Match, "OwnerPolicy");
+        if (!authorizationResult.Succeeded)
+        {
+            throw new UnauthorizedException();
         }
 
         return new MatchDto

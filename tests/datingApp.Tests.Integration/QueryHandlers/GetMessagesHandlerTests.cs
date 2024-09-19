@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;
+using Microsoft.AspNetCore.Authorization;
+using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
@@ -18,18 +22,41 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task query_messages_by_existing_match_id_should_return_nonempty_collection_of_messages_dto()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 5; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        }
+
+        var query = new GetMessages() { MatchId = match.Id};
         var messages = await _handler.HandleAsync(query);
         Assert.NotEmpty(messages.Data);
         Assert.IsType<MessageDto>(messages.Data.First());
     }
 
     [Fact]
+    public async Task given_authorization_serivce_returns_fail_GetMessages_throws_UnauthorizedException()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+
+        var query = new GetMessages() { MatchId = match.Id };
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
+    }
+
+    [Fact]
     public async Task query_messages_by_nonexisting_match_id_should_return_match_not_exists_exception()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000000");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var query = new GetMessages() { MatchId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);
@@ -38,41 +65,73 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task returned_messages_count_is_lower_or_equal_to_page_size()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 10; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        }
+
+        var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(5);
-        var matches = await _handler.HandleAsync(query);
-        Assert.InRange(matches.Data.Count(), 0, query.PageSize);
+        var messages = await _handler.HandleAsync(query);
+        Assert.InRange(messages.Data.Count(), 0, query.PageSize);
     }
 
     [Fact]
     public async Task proper_number_of_messages_are_returned_when_page_is_above_1()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 9; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        }
+
+        var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(5);
         query.SetPage(2);
-        var matches = await _handler.HandleAsync(query);
-        Assert.NotEmpty(matches.Data);
-        Assert.Equal(4, matches.Data.Count());
+        var messages = await _handler.HandleAsync(query);
+        Assert.NotEmpty(messages.Data);
+        Assert.Equal(4, messages.Data.Count());
     }
 
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_page_count()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 9; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        }
+
+        var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(1);
         query.SetPage(1);
-        var matches = await _handler.HandleAsync(query);
-        Assert.Equal(9, matches.PageCount);
+        var messages = await _handler.HandleAsync(query);
+        Assert.Equal(9, messages.PageCount);
     }
 
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_of_page_size()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 9; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        }
+
+        var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(1);
         query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
@@ -82,8 +141,16 @@ public class GetMessagesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_page()
     {
-        var query = new GetMessages();
-        query.MatchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 9; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        }
+
+        var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(1);
         query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
@@ -93,32 +160,12 @@ public class GetMessagesHandlerTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly GetMessagesHandler _handler;
+    private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetMessagesHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var match = new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
-        
-        var messages = new List<Message>{
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000006"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000007"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000008"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow),
-            new Message(Guid.Parse("00000000-0000-0000-0000-000000000009"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello", false, DateTime.UtcNow)
-        };
-        
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Matches.Add(match);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Messages.AddRange(messages);
-        _testDb.DbContext.SaveChanges();
-        _handler = new GetMessagesHandler(_testDb.DbContext);
+        _authService = new Mock<IDatingAppAuthorizationService>();
+        _handler = new GetMessagesHandler(_testDb.DbContext, _authService.Object);
     }
 
     // Teardown

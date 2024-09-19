@@ -16,12 +16,12 @@ public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
     private readonly IAccessCodeStorage _codeStorage;
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
-    private readonly AccessCodeVerificator _verificator;
+    private readonly IAccessCodeVerificator _verificator;
     public SignInByEmailHandler(IUserRepository userRepository,
                                 IAccessCodeStorage codeStorage,
                                 IAuthenticator authenticator,
                                 ITokenStorage tokenStorage,
-                                AccessCodeVerificator verificator)
+                                IAccessCodeVerificator verificator)
     {
         _userRepository = userRepository;
         _codeStorage = codeStorage;

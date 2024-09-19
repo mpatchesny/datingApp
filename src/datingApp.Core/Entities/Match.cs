@@ -26,7 +26,7 @@ public class Match
         UserId1 = userId1;
         UserId2 = userId2;
         IsDisplayedByUser1 = isDisplayedByUser1;
-        IsDisplayedByUser1 = isDisplayedByUser1;
+        IsDisplayedByUser2 = isDisplayedByUser2;
         Messages = messages;
         CreatedAt = createdAt;
     }

@@ -22,7 +22,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task get_photo_returns_200_ok_and_photo_dto()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await CreatePhotoAsync(user);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -81,7 +81,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task given_valid_payload_patch_photo_post_photo_returns_204_no_content()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await CreatePhotoAsync(user);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -114,7 +114,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task given_photo_exists_delete_photo_post_photo_returns_204_no_content()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await CreatePhotoAsync(user);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -143,8 +143,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task given_photo_was_alread_deleted_delete_photo_post_photo_returns_410_gone()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await CreatePhotoAsync(user);
-        await DeletePhotoAsync(photo);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        await IntegrationTestHelper.DeletePhotoAsync(_testDb, photo);
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -188,26 +188,12 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); ;
     }
 
-    private async Task<Photo> CreatePhotoAsync(User user)
-    {
-        var photo = new Photo(Guid.Empty, user.Id, "path", "url", 0);
-        await _testDb.DbContext.Photos.AddAsync(photo);
-        await _testDb.DbContext.SaveChangesAsync();
-        return photo;
-    }
-
-    private async Task DeletePhotoAsync(Photo photo)
-    {
-        _testDb.DbContext.Photos.Remove(photo);
-        await _testDb.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
-        await _testDb.DbContext.SaveChangesAsync();
-    }
-
     private readonly TestDatabase _testDb;
     public PhotosControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
         _testDb = new TestDatabase(false);
     }
+
     public void Dispose()
     {
         var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore.Storage;
 using Xunit.Sdk;
@@ -62,5 +63,12 @@ internal static class IntegrationTestHelper
         await database.DbContext.Swipes.AddAsync(swipe);
         await database.DbContext.SaveChangesAsync();
         return swipe;
+    }
+
+    internal static async Task DeleteMatchAsync(TestDatabase database, Match match)
+    {
+        database.DbContext.Matches.Remove(match);
+        await database.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id });
+        await database.DbContext.SaveChangesAsync();
     }
 }

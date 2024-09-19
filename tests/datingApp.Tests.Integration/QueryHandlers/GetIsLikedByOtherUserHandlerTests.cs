@@ -57,13 +57,6 @@ public class GetIsLikedByOtherUserHandlerTests : IDisposable
     public GetIsLikedByOtherUserHandlerTests()
     {
         _testDb = new TestDatabase();
-        // var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
-        // var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        // var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 45.5, 45.5);
-        // var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Karyna", new DateOnly(2000,1,1), Sex.Female, null, settings2);
-        // _testDb.DbContext.Users.Add(user);
-        // _testDb.DbContext.Users.Add(user2);
-        // _testDb.DbContext.SaveChanges();
         _handler = new GetIsLikedByOtherUserHandler(_testDb.DbContext);
     }
 

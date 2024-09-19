@@ -27,23 +27,23 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
 
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
-        var requestedWho = await _dbContext.Users
-                                        .AsNoTracking()
-                                        .Where(x => x.Id == query.RequestWhoUserId)
-                                        .Include(u => u.Settings)
-                                        .FirstOrDefaultAsync();
+        // alternative flow: user requested information about himself
+        var skipAuthorization = (query.RequestWhoUserId == query.RequestByUserId);
 
+        var users = await _dbContext.Users
+                            .AsNoTracking()
+                            .Include(x => x.Settings)
+                            .Include(x => x.Photos)
+                            .Where(x => x.Id == query.RequestByUserId || x.Id == query.RequestWhoUserId)
+                            .ToListAsync();
+
+        var requestedWho = users.FirstOrDefault(x => x.Id == query.RequestWhoUserId);
         if (requestedWho == null) 
         {
             return null;
         };
 
-        var requestedBy = await _dbContext.Users
-                            .AsNoTracking()
-                            .Include(x => x.Settings)
-                            .Include(x => x.Photos)
-                            .FirstOrDefaultAsync(x => x.Id == query.RequestByUserId);
-
+        var requestedBy = users.FirstOrDefault(x => x.Id == query.RequestByUserId);
         if (requestedBy == null)
         {
             throw new UserNotExistsException(query.RequestByUserId);

@@ -256,19 +256,21 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task get_users_returns_200_ok_and_public_user()
+    public async Task given_two_users_have_match_get_users_returns_200_ok_and_public_user()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var token = Authorize(user.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user.Id}");
+        var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user2.Id}");
         Assert.NotNull(response);
-        Assert.Equal(user.Id, response.Id);
+        Assert.Equal(user2.Id, response.Id);
     }
 
     [Fact]
-    public async Task given_user_with_given_id_not_exists_get_users_returns_404_not_found_and_proper_error_reason()
+    public async Task given_requested_user_not_exists_get_users_returns_no_content()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var token = Authorize(user.Id);
@@ -276,10 +278,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.GetAsync($"users/{notExistingUserId}");
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-        var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
     [Fact]

@@ -24,8 +24,9 @@ public class GetPublicUserHanlderTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = user.Id };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var query = new GetPublicUser() { RequestByUserId = user1.Id, RequestWhoUserId = user2.Id };
         var userDto = await _handler.HandleAsync(query);
 
         Assert.NotNull(userDto);

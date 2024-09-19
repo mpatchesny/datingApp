@@ -33,7 +33,10 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
                                         .Include(u => u.Settings)
                                         .FirstOrDefaultAsync();
 
-        if (requestedWho == null) return null;
+        if (requestedWho == null) 
+        {
+            return null;
+        };
 
         var requestedBy = await _dbContext.Users
                             .AsNoTracking()

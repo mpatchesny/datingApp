@@ -34,7 +34,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_exists_and_auth_service_fail_get_match_handler_should_return_Unauthorized_exception()
+    public async Task given_match_exists_and_auth_service_fail_get_match_handler_should_return_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -44,7 +44,7 @@ public class GetMatchHandlerTests : IDisposable
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
-        Assert.IsType<UserNotExistsException>(exception);
+        Assert.IsType<UnauthorizedException>(exception);
     }
 
     [Fact]

@@ -27,9 +27,6 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
 
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
-        // alternative flow: user requested information about himself
-        var skipAuthorization = (query.RequestWhoUserId == query.RequestByUserId);
-
         var users = await _dbContext.Users
                             .AsNoTracking()
                             .Include(x => x.Settings)

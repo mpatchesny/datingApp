@@ -270,6 +270,17 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_user_get_himself_get_users_returns_403_forbidden()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var response = await Client.GetAsync($"users/{user1.Id}");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
     public async Task given_requested_user_not_exists_get_users_returns_no_content()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

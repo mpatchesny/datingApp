@@ -68,16 +68,13 @@ public class DeletePhotoHandlerTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        await IntegrationTestHelper.DeletePhotoAsync(_testDb, photo);
 
-        var alreadyDeletedPhoto = new DeletedEntityDto() { Id = photo.Id };
-        await _testDb.DbContext.DeletedEntities.AddAsync(alreadyDeletedPhoto);
-        await _testDb.DbContext.SaveChangesAsync();
-
-        var command = new DeletePhoto(alreadyDeletedPhoto.Id);
+        var command = new DeletePhoto(photo.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<PhotoAlreadyDeletedException>(exception);
-        _mockFileStorageService.Verify(x => x.DeleteFile(alreadyDeletedPhoto.Id.ToString()), Times.Never);
+        _mockFileStorageService.Verify(x => x.DeleteFile(photo.Id.ToString()), Times.Never);
     }
         
     // Arrange

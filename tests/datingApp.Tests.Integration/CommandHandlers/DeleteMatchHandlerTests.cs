@@ -64,10 +64,7 @@ public class DeleteMatchHandlerTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-
-        var alreadyDeletedMatch = new DeletedEntityDto() { Id = match.Id };
-        await _testDb.DbContext.DeletedEntities.AddAsync(alreadyDeletedMatch);
-        await _testDb.DbContext.SaveChangesAsync();
+        await IntegrationTestHelper.DeleteMatchAsync(_testDb, match);
 
         var command = new DeleteMatch(match.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));

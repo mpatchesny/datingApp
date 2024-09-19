@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore.Storage;
+using Xunit.Sdk;
 
 namespace datingApp.Tests.Integration;
 
@@ -38,5 +39,13 @@ internal static class IntegrationTestHelper
         await database.DbContext.Matches.AddAsync(match);
         await database.DbContext.SaveChangesAsync();
         return match;
+    }
+
+    internal static async Task<Message> CreateMessageAsync(TestDatabase database, Guid matchId, Guid sendFromId, string text, DateTime? createdAt = null)
+    {
+        var message = new Message(Guid.NewGuid(), matchId, sendFromId, text, false, createdAt ?? DateTime.UtcNow);
+        await database.DbContext.Messages.AddAsync(message);
+        await database.DbContext.SaveChangesAsync();
+        return message;
     }
 }

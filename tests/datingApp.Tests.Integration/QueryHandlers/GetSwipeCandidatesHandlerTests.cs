@@ -23,20 +23,16 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_candidates_with_proper_sex_exist_returns_nonempty_list(Sex userLookingForSex, Sex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), userLookingForSex, 18, 100, 100, 0.0, 0.0);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, 18, 100, 100, 0.0, 0.0);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings1);
 
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 0.0, 0.0);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
+        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
 
-        var query = new GetSwipeCandidates();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.HowMany = 2;
-
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.Single(candidates);
     }
@@ -47,20 +43,16 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_no_candidates_with_proper_sex_returns_empty_list(Sex userLookingForSex, Sex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), userLookingForSex, 18, 100, 100, 0.0, 0.0);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, 18, 100, 100, 0.0, 0.0);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings1);
 
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 21, 20, 0.0, 0.0);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
+        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
 
-        var query = new GetSwipeCandidates();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.HowMany = 2;
-
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.Empty(candidates);
     }
@@ -74,22 +66,18 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_candidates_with_proper_age_exists_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+        var settings1 = new UserSettings(Guid.NewGuid(), Sex.Female, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Female, null, settings1);
 
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 0.0, 0.0);
-        var now = DateTime.UtcNow;
-        var dob = new DateOnly(now.Year - candidateAge, now.Month, now.Day);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings2);
+        int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
+        var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
+        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, Sex.Female, null, settings2);
+        
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
 
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-
-        var query = new GetSwipeCandidates();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.HowMany = 2;
-
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.Single(candidates);
     }
@@ -103,22 +91,18 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_no_candidates_with_proper_age_returns_empty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+        var settings1 = new UserSettings(Guid.NewGuid(), Sex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings1);
 
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 0.0, 0.0);
-        var now = DateTime.UtcNow;
-        var dob = new DateOnly(now.Year - candidateAge, now.Month, now.Day);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", dob, Sex.Male, null, settings2);
+        int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
+        var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
+        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Male, 18, 100, 100, 0.0, 0.0);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, Sex.Male, null, settings2);
 
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
 
-        var query = new GetSwipeCandidates();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.HowMany = 2;
-
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.Empty(candidates);
     }
@@ -126,21 +110,11 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task when_candidates_within_range_exist_returns_nonempty_list()
     {
-        // FIXME: mocked spatial setup
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 100, 25, 0.0, 0.0);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+        SetMockedSpatialDefaultReturnValues(_spatial);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 0.0, 0.0);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings2);
-
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-
-        var query = new GetSwipeCandidates();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.HowMany = 2;
-
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.Single(candidates);
     }
@@ -148,21 +122,15 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [Fact]
     public async Task when_no_candidates_within_range_returns_empty_list()
     {
-        // FIXME: mocked spatial setup
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 18, 100, 25, 1.0, 1.0);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings);
+        _spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(999);
+        var mockedCoordsResult = new Coords(northLat: 100.0d, southLat: -100.0d, eastLon: 100.0d, westLon: -100.0d);
+        _spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
+            .Returns((double x, double y, int z) => mockedCoordsResult);
 
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 1.0, 1.0);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings2);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-
-        var query = new GetSwipeCandidates();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.HowMany = 2;
-
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.Empty(candidates);
     }
@@ -250,14 +218,8 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
     private void SetMockedSpatialDefaultReturnValues(Mock<ISpatial> spatial)
     {
-        spatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(25);
-        spatial.Setup(m => m.CalculateDistanceInKms(1.0, 1.0, 1.0, 1.0)).Returns(26);
-
-        double north = 2.0d;
-        double south = -1.0d;
-        double east =  2.0d;
-        double west = -1.0d;
-        var mockedCoordsResult = new Coords(north, south, east, west);
+        spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
+        var mockedCoordsResult = new Coords(northLat: 100.0d, southLat: -100.0d, eastLon: 100.0d, westLon: -100.0d);
         spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
             .Returns((double x, double y, int z) => mockedCoordsResult);
     }

@@ -21,7 +21,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task given_authorization_serivce_success_query_existing_user_should_return_public_user_dto()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -35,7 +35,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task query_nonexisting_user_should_user_not_exists_exception()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -50,7 +50,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task request_by_nonexisting_user_should_return_null()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -63,7 +63,7 @@ public class GetPublicUserHanlderTests : IDisposable
     [Fact]
     public async Task given_authorization_serivce_fail_GetPublicUser_throws_UnauthorizedException()
     {
-        _mockedAuthService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -78,13 +78,13 @@ public class GetPublicUserHanlderTests : IDisposable
     private readonly TestDatabase _testDb;
     private readonly GetPublicUserHandler _handler;
     private readonly Mock<ISpatial> _mockedSpatial;
-    private readonly Mock<IDatingAppAuthorizationService> _mockedAuthService;
+    private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetPublicUserHanlderTests()
     {
         _testDb = new TestDatabase();
         _mockedSpatial = new Mock<ISpatial>();
-        _mockedAuthService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetPublicUserHandler(_testDb.DbContext, _mockedSpatial.Object, _mockedAuthService.Object);
+        _authService = new Mock<IDatingAppAuthorizationService>();
+        _handler = new GetPublicUserHandler(_testDb.DbContext, _mockedSpatial.Object, _authService.Object);
     }
 
     // Teardown

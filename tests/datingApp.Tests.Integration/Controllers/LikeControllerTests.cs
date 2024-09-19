@@ -17,8 +17,8 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_other_user_not_liked_put_like_returns_200_status_code_and_false_content()
     {
-        var user1 = await CreateUserAsync("test@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -32,7 +32,7 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_other_user_not_exists_put_like_returns_404_status_code()
     {
-        var user1 = await CreateUserAsync("test@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -44,8 +44,8 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_other_user_liked_put_like_returns_200_status_code_and_true_content()
     {
-        var user1 = await CreateUserAsync("test@test.com");
-        var user2 = await CreateUserAsync("test2@test.com");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
         var swipe = new Swipe(Guid.Empty, user2.Id, user1.Id, Like.Like, DateTime.UtcNow);
         _testDb.DbContext.Swipes.Add(swipe);
@@ -58,20 +58,6 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
         Assert.True(isLikedByOtherUser.IsLikedByOtherUser);
-    }
-
-    private async Task<User> CreateUserAsync(string email = null, string phone = null)
-    {
-        if (email == null) email = Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
-        Random random = new Random();
-        if (phone == null) phone = random.Next(100000000, 999999999).ToString();
-
-        var settings = new UserSettings(Guid.NewGuid(), Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-
-        await _testDb.DbContext.Users.AddAsync(user);
-        await _testDb.DbContext.SaveChangesAsync();
-        return user;
     }
 
     private readonly TestDatabase _testDb;

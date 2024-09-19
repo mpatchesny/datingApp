@@ -16,20 +16,22 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task query_matches_by_existing_user_id_should_return_nonempty_collection_of_matches_dto()
+    public async Task GetMatchesHandler_by_existing_user_id_should_return_nonempty_collection_of_matches_dto()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
         Assert.NotEmpty(matches.Data);
         Assert.IsType<MatchDto>(matches.Data.First());
     }
 
     [Fact]
-    public async Task query_matches_by_nonexisting_user_id_should_return_user_not_exists_exception()
+    public async Task GetMatchesHandler_matches_by_nonexisting_user_id_should_return_user_not_exists_exception()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000000");
+        var query = new GetMatches() { UserId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -38,18 +40,32 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task returned_matches_count_is_lower_or_equal_to_page_size()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+        }
+
+        var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
         var matches = await _handler.HandleAsync(query);
         Assert.InRange(matches.Data.Count(), 0, query.PageSize);
     }
 
     [Fact]
-    public async Task returns_proper_number_of_messages_when_page_above_1()
+    public async Task returns_proper_number_of_matches_when_page_above_1()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var matchesToCreate = 9;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+        }
+
+        var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
         query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
@@ -60,17 +76,23 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task returned_match_dto_user_is_not_the_user_who_make_request()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000002"), matches.Data.First().User.Id);
+        Assert.Equal(user2.Id, matches.Data.First().User.Id);
     }
 
     [Fact]
-    public async Task returned_match_dto_is_displayed_returns_is_displayed_by_the_user_who_make_request()
+    public async Task given_match_is_displayed_GetMatches_returns_is_displayed_by_the_user_who_make_request()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, true);
+
+        var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
         Assert.Equal(matches.Data.First().IsDisplayed, true);
     }
@@ -78,8 +100,15 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_page_count()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var matchesToCreate = 9;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+        }
+
+        var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(1);
         query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
@@ -89,9 +118,16 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_of_page_size()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        query.SetPageSize(1);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var matchesToCreate = 9;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+        }
+
+        var query = new GetMatches() { UserId = user1.Id };
+        query.SetPageSize(9);
         query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
         Assert.Equal(1, matches.PageSize);
@@ -100,8 +136,15 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_page()
     {
-        var query = new GetMatches();
-        query.UserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+        }
+
+        var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(1);
         query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
@@ -113,29 +156,7 @@ public class GetMatchesHandlerTests : IDisposable
     private readonly GetMatchesHandler _handler;
     public GetMatchesHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Male, 18, 21, 20, 45.5, 45.5);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "222222222", "test2@test.com", "Karyna", new DateOnly(2000,1,1), Sex.Female, null, settings);
-        var matches = new List<Core.Entities.Match>
-        {
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), true, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000006"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000007"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000008"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow),
-            new Core.Entities.Match(Guid.Parse("00000000-0000-0000-0000-000000000009"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow)
-        };
-        
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Matches.AddRange(matches);
-        _testDb.DbContext.SaveChanges();
         _handler = new GetMatchesHandler(_testDb.DbContext);
     }
 

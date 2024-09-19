@@ -45,11 +45,11 @@ public class GetMessageHandlerTests : IDisposable
         var query = new GetMessage() { MessageId = message.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
-        Assert.IsType<MatchNotExistsException>(exception);
+        Assert.IsType<UnauthorizedException>(exception);
     }
 
     [Fact]
-    public async Task query_messages_by_nonexisting_message_id_should_return_message_not_exists_exception()
+    public async Task given_message_not_exists_GetMessageHandler_returns_message_not_exists_exception()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

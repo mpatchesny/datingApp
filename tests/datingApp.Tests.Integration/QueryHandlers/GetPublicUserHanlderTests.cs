@@ -33,31 +33,28 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task query_nonexisting_user_should_user_not_exists_exception()
+    public async Task query_nonexisting_user_should_return_null()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
-
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
         var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
         var userDto = await _handler.HandleAsync(query);
-
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
-        Assert.NotNull(exception);
-        Assert.IsType<UserNotExistsException>(exception);
+        Assert.Null(userDto);
     }
 
     [Fact]
-    public async Task request_by_nonexisting_user_should_return_null()
+    public async Task request_by_nonexisting_user_should_not_exists_exception()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
-
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var query = new GetPublicUser() { RequestByUserId = Guid.NewGuid(), RequestWhoUserId = user.Id };
 
-        var userDto = await _handler.HandleAsync(query);
-        Assert.Null(userDto);
+        var query = new GetPublicUser() { RequestByUserId = Guid.NewGuid(), RequestWhoUserId = user.Id };
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     [Fact]

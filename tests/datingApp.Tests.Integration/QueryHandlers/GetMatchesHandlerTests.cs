@@ -119,7 +119,7 @@ public class GetMatchesHandlerTests : IDisposable
     public async Task paginated_data_dto_returns_proper_number_of_page_size()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var matchesToCreate = 9;
+        var matchesToCreate = 15;
         for (int i = 0; i < matchesToCreate; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -130,7 +130,7 @@ public class GetMatchesHandlerTests : IDisposable
         query.SetPageSize(9);
         query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(1, matches.PageSize);
+        Assert.Equal(9, matches.PageSize);
     }
 
     [Fact]

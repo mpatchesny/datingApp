@@ -34,7 +34,7 @@ public class SetMatchAsDisplayedHandlerTests : IDisposable
     [Fact]
     public async Task given_authorization_fail_set_existsing_match_as_displayed_should_return_UnauthorizedException()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);

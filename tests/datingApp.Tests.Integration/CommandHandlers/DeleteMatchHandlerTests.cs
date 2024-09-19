@@ -54,7 +54,8 @@ public class DeleteMatchHandlerTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var command = new DeleteMatch(Guid.NewGuid());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        Assert.Null(exception);
+        Assert.NotNull(exception);
+        Assert.IsType<MatchNotExistsException>(exception);
     }
 
     [Fact]

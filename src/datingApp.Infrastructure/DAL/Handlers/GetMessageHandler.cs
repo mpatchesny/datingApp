@@ -26,20 +26,22 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
     {
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
-            from message in _dbContext.Messages
-            where match.Id == message.MatchId
-            where message.Id == query.MessageId
+            where match.Messages.Any(m => m.Id == query.MessageId)
             select new
             {
                 Match = match,
-                Message = message
+                Message = match.Messages.FirstOrDefault(m => m.Id == query.MessageId)
             };
 
         var data = await dbQuery
                         .AsNoTracking()
                         .FirstOrDefaultAsync();
 
-        if (data.Message == null) 
+        if (data == null)
+        {
+            throw new MessageNotExistsException(query.MessageId);
+        }
+        else if (data.Message == null)
         {
             throw new MessageNotExistsException(query.MessageId);
         }

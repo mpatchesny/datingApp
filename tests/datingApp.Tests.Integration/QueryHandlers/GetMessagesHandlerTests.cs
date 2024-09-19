@@ -28,7 +28,7 @@ public class GetMessagesHandlerTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i = 0; i < 5; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
         }
 
         var query = new GetMessages() { MatchId = match.Id};
@@ -44,7 +44,7 @@ public class GetMessagesHandlerTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
 
         var query = new GetMessages() { MatchId = match.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
@@ -71,7 +71,7 @@ public class GetMessagesHandlerTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i = 0; i < 10; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
         }
 
         var query = new GetMessages() { MatchId = match.Id };
@@ -89,7 +89,7 @@ public class GetMessagesHandlerTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
         }
 
         var query = new GetMessages() { MatchId = match.Id };
@@ -109,7 +109,7 @@ public class GetMessagesHandlerTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
         }
 
         var query = new GetMessages() { MatchId = match.Id };
@@ -128,7 +128,7 @@ public class GetMessagesHandlerTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
         }
 
         var query = new GetMessages() { MatchId = match.Id };
@@ -147,7 +147,7 @@ public class GetMessagesHandlerTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, "test");
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
         }
 
         var query = new GetMessages() { MatchId = match.Id };

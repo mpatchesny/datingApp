@@ -62,8 +62,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var match2 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
 
         var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromHours(1);
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match1.Id, user2.Id, "test", timeAfterLastActivityTime);
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match2.Id, user3.Id, "test", timeAfterLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match1.Id, user2.Id, timeAfterLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match2.Id, user3.Id, timeAfterLastActivityTime);
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow};
         var result = await _handler.HandleAsync(query);

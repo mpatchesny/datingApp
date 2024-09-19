@@ -17,15 +17,20 @@ public class GetPhotoHandlerTests : IDisposable
     [Fact]
     public async void get_existing_photo_should_return_photo_dto()
     {
-        var photo = await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.Parse("00000000-0000-0000-0000-000000000001") });
-        Assert.NotNull(photo);
-        Assert.IsType<PhotoDto>(photo);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var photoDto = await _handler.HandleAsync(new GetPhoto { PhotoId = photo.Id });
+        Assert.NotNull(photoDto);
+        Assert.IsType<PhotoDto>(photoDto);
     }
 
     [Fact]
     public async void get_nonexisting_photo_should_return_photo_not_exists_exception()
     {
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.Parse("00000000-0000-0000-0000-000000000002") }));
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.NewGuid() }));
         Assert.NotNull(exception);
         Assert.IsType<PhotoNotExistsException>(exception);
     }
@@ -35,18 +40,7 @@ public class GetPhotoHandlerTests : IDisposable
     private readonly GetPhotoHandler _handler;
     public GetPhotoHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 21, 20, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        
-        var photos = new List<Photo>{
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1)
-        };
-        
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Photos.AddRange(photos);
-        _testDb.DbContext.SaveChanges();
         _handler = new GetPhotoHandler(_testDb.DbContext);
     }
 

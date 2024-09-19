@@ -39,7 +39,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var query = new GetPublicUser() { RequestByUserId = Guid.NewGuid(), RequestWhoUserId = user.Id };
+        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
         var userDto = await _handler.HandleAsync(query);
 
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
@@ -54,7 +54,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
+        var query = new GetPublicUser() { RequestByUserId = Guid.NewGuid(), RequestWhoUserId = user.Id };
 
         var userDto = await _handler.HandleAsync(query);
         Assert.Null(userDto);
@@ -67,7 +67,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
 
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
+        var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = user.Id };
 
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);

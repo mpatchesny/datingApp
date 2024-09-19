@@ -89,7 +89,7 @@ public class UserController : ApiControllerBase
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
-        var query = Authenticate(new GetPublicUser { UserId = userId, UserRequestedId = AuthenticatedUserId });
+        var query = Authenticate(new GetPublicUser { RequestByUserId = AuthenticatedUserId, RequestWhoUserId = userId });
         var user = await _getPublicUserHandler.HandleAsync(query);
         return user;
     }

@@ -20,11 +20,17 @@ internal sealed class AuthorizationServiceWrapper : IDatingAppAuthorizationServi
 
     public Task<AuthorizationResult> AuthorizeAsync(Guid userId, object resource, string policyName)
     {
+        if (resource is null)
+        {
+            throw new UnauthorizedException();
+        }
+
         var user = _httpContextAccessor.HttpContext.User;
         if (user?.Identity?.Name != userId.ToString())
         {
             throw new UnauthorizedException();
         }
+
         return _authorizationService.AuthorizeAsync(user, resource, policyName);
     }
 }

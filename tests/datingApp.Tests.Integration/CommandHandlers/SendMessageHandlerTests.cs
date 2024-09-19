@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
@@ -17,43 +21,53 @@ public class SendMessageHandlerTests : IDisposable
     [Fact]
     public async Task send_message_within_existsing_match_should_succeed()
     {
-        var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var command = new SendMessage(match.Id, user1.Id, user2.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
+    }
+
+    public async Task given_authorization_fail_send_message_within_existsing_match_should_throw_UnauthorizedException()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var command = new SendMessage(match.Id, user1.Id, user2.Id, "hello");
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
     }
 
     [Fact]
     public async Task send_message_within_nonexistsing_match_should_throw_match_not_exsits_exception()
     {
-        var command = new SendMessage(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "hello");
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var command = new SendMessage(Guid.NewGuid(), user1.Id, user2.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);
     }
 
     // Arrange
-    private readonly SendMessageHandler _handler;
     private readonly TestDatabase _testDb;
+    private readonly SendMessageHandler _handler;
+    private readonly Mock<IDatingAppAuthorizationService> _authService;
     public SendMessageHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
-
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings2);
-
-        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
-
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Matches.Add(match);
-        _testDb.DbContext.SaveChanges();
-
+        _authService = new Mock<IDatingAppAuthorizationService>();
         var messageRepository = new DbMessageRepository(_testDb.DbContext);
         var matchRepository = new DbMatchRepository(_testDb.DbContext);
-        _handler = new SendMessageHandler(messageRepository, matchRepository);
+        _handler = new SendMessageHandler(messageRepository, matchRepository, _authService.Object);
     }
 
     // Teardown

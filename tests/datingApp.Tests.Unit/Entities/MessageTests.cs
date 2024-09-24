@@ -20,6 +20,15 @@ public class MessageTests
     }
 
     [Fact]
+    public void empty_message_string_should_throw_exception2()
+    {
+        string message = new string('a', 0);
+        var exception = Record.Exception(() =>new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), message, false, DateTime.UtcNow));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidMessageException>(exception);
+    }
+
+    [Fact]
     public void message_length_above_255_should_throw_exception()
     {
         string message = new string('a', 256);

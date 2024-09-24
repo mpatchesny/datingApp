@@ -19,13 +19,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task code_generator_generate_code_method_should_be_called_once()
     {
-        var code = new AccessCodeDto() {
-            AccessCode = "12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
+        var code = CreateCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -44,13 +38,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task code_storage_set_method_should_be_called_once()
     {
-        var code = new AccessCodeDto() {
-            AccessCode = "12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
+        var code = CreateCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -69,13 +57,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task given_email_address_is_null_NoEmailProvidedException_is_raised()
     {
-        var code = new AccessCodeDto() {
-            AccessCode = "12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
+        var code = CreateCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -95,13 +77,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task email_sender_sendasync_method_should_be_called_once()
     {
-        var code = new AccessCodeDto() {
-            AccessCode = "12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
+        var code = CreateCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -114,6 +90,16 @@ public class RequestEmailAccessCodeHandlerTests
         var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
         _emailNotificationSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
+    }
+
+    private static AccessCodeDto CreateCodeDto()
+    {
+        return new AccessCodeDto() {
+            AccessCode = "12345",
+            EmailOrPhone = "test@test.com",
+            ExpirationTime = DateTime.UtcNow,
+            Expiry = TimeSpan.FromMinutes(15)
+        };
     }
 
     private readonly Mock<IAccessCodeStorage> _accessCodeStorage;

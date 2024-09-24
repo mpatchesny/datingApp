@@ -13,8 +13,8 @@ public class PhotoOrderer : IPhotoOrderer
     {
         // deep copy
         var orderedPhotos = photos.Select(photo => 
-            new Photo(photo.Id, photo.UserId, photo.Path, photo.Url, photo.Oridinal)
-        ).ToList();
+                new Photo(photo.Id, photo.UserId, photo.Path, photo.Url, photo.Oridinal)
+            ).ToList();
         var thisPhoto = orderedPhotos.FirstOrDefault(x => x.Id == photoToChangeId);
 
         if (newOridinal >= orderedPhotos.Count - 1)

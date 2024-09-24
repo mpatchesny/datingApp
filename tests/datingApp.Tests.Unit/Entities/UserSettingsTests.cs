@@ -42,7 +42,7 @@ public class UserSettingsTests
     [InlineData(6)]
     [InlineData(7)]
     [InlineData(8)]
-    public void invalid_user_settings_discovery_sex_should_throw_exception(int discoverySex)
+    public void invalid_user_settings_discovery_sex_should_throw_InvalidUserDiscoverySexException(int discoverySex)
     {
         var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), (Sex) discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.NotNull(exception);
@@ -52,7 +52,7 @@ public class UserSettingsTests
     [Theory]
     [InlineData(17, 18)]
     [InlineData(18, 101)]
-    public void user_settings_age_range_below_18_or_above_100_should_throw_exception(int minAge, int maxAge)
+    public void user_settings_age_range_below_18_or_above_100_should_throw_InvalidDiscoveryAgeException(int minAge, int maxAge)
     {
         var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
         Assert.NotNull(exception);
@@ -60,7 +60,7 @@ public class UserSettingsTests
     }
     [Theory]
     [InlineData(21, 20)]
-    public void user_settings_age_range_with_age_to_below_age_from_should_throw_exception(int minAge, int maxAge)
+    public void user_settings_age_range_with_age_to_below_age_from_should_throw_InvalidDiscoveryAgeException(int minAge, int maxAge)
     {
         var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
         Assert.NotNull(exception);
@@ -70,7 +70,7 @@ public class UserSettingsTests
     [Theory]
     [InlineData(0)]
     [InlineData(101)]
-    public void user_settings_discovery_range_below_1_or_above_100_should_throw_exception(int range)
+    public void user_settings_discovery_range_below_1_or_above_100_should_throw_InvalidDiscoveryRangeException(int range)
     {
         var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, range, 45.5, 45.5));
         Assert.NotNull(exception);
@@ -82,7 +82,7 @@ public class UserSettingsTests
     [InlineData(0.0, 180.1)]
     [InlineData(90.1, 0.0)]
     [InlineData(-90.1, 0.0)]
-    public void user_settings_invalid_location_should_throw_exception(double lat, double lon)
+    public void user_settings_invalid_location_should_throw_InvalidLocationException(double lat, double lon)
     {
         var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, 20, lat, lon));
         Assert.NotNull(exception);

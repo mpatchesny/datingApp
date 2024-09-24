@@ -17,8 +17,7 @@ public class AddMatchHandlerTests
     [Fact]
     public async Task add_match_should_invoke_repository_add_match_once_when_match_not_exists()
     {
-        var command = new AddMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
-
+        var command = new AddMatch(Guid.NewGuid(), Guid.NewGuid());
         var matchRepository = new Mock<IMatchRepository>();
         matchRepository.Setup(m => m.ExistsAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(false);
 
@@ -30,8 +29,7 @@ public class AddMatchHandlerTests
     [Fact]
     public async Task add_match_should_not_invoke_repository_add_match_when_match_exists()
     {
-        var command = new AddMatch(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
-
+        var command = new AddMatch(Guid.NewGuid(), Guid.NewGuid());
         var matchRepository = new Mock<IMatchRepository>();
         matchRepository.Setup(m => m.ExistsAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
 

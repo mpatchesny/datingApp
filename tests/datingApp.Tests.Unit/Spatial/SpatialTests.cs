@@ -22,6 +22,7 @@ public class SpatialTests
 
     [Theory]
     [InlineData(54.366695479526186, 18.63460484458315, 5, 54.41165312664063)]
+    [InlineData(0.0, 0.0, 165, 1.478489)]
     public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lat_north_of_given_point(double lat, double lon, int distance, double expectedResult)
     {
         var spatial = new Infrastructure.Spatial.Spatial();
@@ -31,6 +32,7 @@ public class SpatialTests
 
     [Theory]
     [InlineData(54.366696858946625, 18.63460484458315, 5, 54.32173024559643)]
+    [InlineData(0.0, 0.0, 10, -0.090001)]
     public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lat_south_of_given_point(double lat, double lon, int distance, double expectedResult)
     {
         var spatial = new Infrastructure.Spatial.Spatial();
@@ -40,6 +42,7 @@ public class SpatialTests
 
     [Theory]
     [InlineData(54.36669417264167, 18.63460484458315, 5, 18.710897077720062)]
+    [InlineData(0.0, 0.0, 20, 0.179684)]
     public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lon_east_of_given_point(double lat, double lon, int distance, double expectedResult)
     {
         var spatial = new Infrastructure.Spatial.Spatial();
@@ -49,6 +52,7 @@ public class SpatialTests
 
     [Theory]
     [InlineData(54.36669417264167, 18.63460484458315, 5, 18.55736143705559)]
+    [InlineData(0.0, 0.0, 22, -0.198374)]
     public void given_point_and_distance_in_km_spatial_returns_proper_approximation_of_lon_west_of_given_point(double lat, double lon, int distance, double expectedResult)
     {
         var spatial = new Infrastructure.Spatial.Spatial();

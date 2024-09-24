@@ -15,7 +15,16 @@ public class PhotoTests
     [InlineData("")]
     public void empty_or_null_photo_path_should_throw_exception(string path)
     {
-        var exception = Record.Exception(() =>new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), path, "abc", 1));
+        var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
+        Assert.NotNull(exception);
+        Assert.IsType<PhotoEmptyPathException>(exception);
+    }
+
+    [Fact]
+    public void empty_or_null_photo_path_should_throw_exception2()
+    {
+        string path = new string('a', 0);
+        var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
         Assert.NotNull(exception);
         Assert.IsType<PhotoEmptyPathException>(exception);
     }

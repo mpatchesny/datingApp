@@ -14,7 +14,7 @@ public class UserSettingsTests
     public void user_settings_should_accept_male_female_discovery_sex()
     {
         var discoverySex = Sex.Male | Sex.Female;
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.Null(exception);
     }
 
@@ -22,7 +22,7 @@ public class UserSettingsTests
     public void user_settings_should_accept_male_discovery_sex()
     {
         var discoverySex = Sex.Male;
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.Null(exception);
     }
 
@@ -30,7 +30,7 @@ public class UserSettingsTests
     public void user_settings_should_accept_female_discovery_sex()
     {
         var discoverySex = Sex.Female;
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.Null(exception);
     }
 
@@ -44,7 +44,7 @@ public class UserSettingsTests
     [InlineData(8)]
     public void invalid_user_settings_discovery_sex_should_throw_exception(int discoverySex)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), (Sex) discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), (Sex) discoverySex, 20, 21, 20, 45.5, 45.5));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUserDiscoverySexException>(exception);
     }
@@ -54,15 +54,15 @@ public class UserSettingsTests
     [InlineData(18, 101)]
     public void user_settings_age_range_below_18_or_above_100_should_throw_exception(int minAge, int maxAge)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDiscoveryAgeException>(exception);
     }
     [Theory]
     [InlineData(21, 20)]
-    public void user_settings_age_range_where_age_to_is_below_age_from_should_throw_exception(int minAge, int maxAge)
+    public void user_settings_age_range_with_age_to_below_age_from_should_throw_exception(int minAge, int maxAge)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, minAge, maxAge, 20, 45.5, 45.5));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDiscoveryAgeException>(exception);
     }
@@ -72,7 +72,7 @@ public class UserSettingsTests
     [InlineData(101)]
     public void user_settings_discovery_range_below_1_or_above_100_should_throw_exception(int range)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 20, 25, range, 45.5, 45.5));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, range, 45.5, 45.5));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDiscoveryRangeException>(exception);
     }
@@ -82,9 +82,9 @@ public class UserSettingsTests
     [InlineData(0.0, 180.1)]
     [InlineData(90.1, 0.0)]
     [InlineData(-90.1, 0.0)]
-    public void user_location_invalid_location_should_throw_exception(double lat, double lon)
+    public void user_settings_invalid_location_should_throw_exception(double lat, double lon)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 20, 25, 20, lat, lon));
+        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, 20, lat, lon));
         Assert.NotNull(exception);
         Assert.IsType<InvalidLocationException>(exception);
     }
@@ -92,26 +92,26 @@ public class UserSettingsTests
     [Fact]
     public void user_settings_location_change_should_take_effect()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 20, 25, 20, 40.5, 40.5);
+        var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, 20, 40.5, 40.5);
         settings.ChangeLocation(45.5, 46.5);
-        Assert.Equal(settings.Lat, 45.5);
-        Assert.Equal(settings.Lon, 46.5);
+        Assert.Equal(45.5, settings.Lat);
+        Assert.Equal(46.5, settings.Lon);
     }
 
     [Fact]
     public void user_settings_discovery_age_range_change_should_take_effect()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 20, 25, 20, 40.5, 40.5);
+        var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, 20, 40.5, 40.5);
         settings.ChangeDiscoverAge(18, 60);
-        Assert.Equal(settings.DiscoverAgeFrom, 18);
-        Assert.Equal(settings.DiscoverAgeTo, 60);
+        Assert.Equal(18, settings.DiscoverAgeFrom);
+        Assert.Equal(60, settings.DiscoverAgeTo);
     }
 
     [Fact]
     public void user_settings_change_range_should_take_effect()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Male, 20, 25, 20, 40.5, 40.5);
+        var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 20, 25, 20, 40.5, 40.5);
         settings.ChangeDiscoverRange(40);
-        Assert.Equal(settings.DiscoverRange, 40);
+        Assert.Equal(40, settings.DiscoverRange);
     }
 }

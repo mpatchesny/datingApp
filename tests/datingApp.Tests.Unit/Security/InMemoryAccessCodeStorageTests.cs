@@ -14,11 +14,11 @@ namespace datingApp.Tests.Unit.Security;
 public class InMemoryAccessCodeStorageTests
 {
     [Fact]
-    public void if_access_code_with_given_email_exists_storage_should_return_code()
+    public void given_access_code_with_given_email_exists_storage_should_return_code()
     {
-        string email = "test@test.com";
+        var email = "test@test.com";
         var code = new AccessCodeDto() {
-            AccessCode ="12345",
+            AccessCode = "12345",
             EmailOrPhone = email,
             ExpirationTime = DateTime.UtcNow,
             Expiry = TimeSpan.FromMinutes(15)
@@ -30,11 +30,11 @@ public class InMemoryAccessCodeStorageTests
     }
 
     [Fact]
-    public void if_access_code_with_given_email_exists_storage_should_return_null_after_expiration_time()
+    public void given_access_code_with_given_email_exists_storage_should_return_null_after_expiration_time()
     {
-        string email = "test@test.com";
+        var email = "test@test.com";
         var code = new AccessCodeDto() {
-            AccessCode ="12345",
+            AccessCode = "12345",
             EmailOrPhone = email,
             ExpirationTime = DateTime.UtcNow,
             Expiry = TimeSpan.FromSeconds(1)
@@ -49,17 +49,17 @@ public class InMemoryAccessCodeStorageTests
     }
 
     [Fact]
-    public void if_access_code_with_given_email_not_exists_storage_should_return_null()
+    public void given_access_code_with_given_email_not_exists_storage_should_return_null()
     {
-        string email = "test@test.com";
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
+        var email = "test@test.com";
+        _ = new AccessCodeDto() {
+            AccessCode = "12345",
             EmailOrPhone = email,
             ExpirationTime = DateTime.UtcNow,
             Expiry = TimeSpan.FromMinutes(15)
         };
 
-        string badEmail = "test1@test.com";
+        var badEmail = "test1@test.com";
         var storage = new InMemoryAccessCodeStorage(_memoryCache);
         Assert.Null(storage.Get(badEmail));
     }

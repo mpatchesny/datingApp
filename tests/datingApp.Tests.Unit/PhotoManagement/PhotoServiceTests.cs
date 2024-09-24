@@ -13,23 +13,25 @@ namespace datingApp.Tests.Unit.PhotoManagement;
 public class PhotoServiceTests
 {
     [Fact]
-    public void get_image_file_format_returns_null_if_unkown_format()
+    public void get_image_file_format_returns_null_if_unknown_format()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
+
         var ext = service.GetImageFileFormat(photo);
         Assert.Null(ext);
     }
 
     [Fact]
-    public void given_invalid_unknown_file_format_validate_should_throw_exception()
+    public void given_invalid_or_unknown_file_format_validate_should_throw_InvalidPhotoException()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
         byte[] photo = new byte[] {0x74, 0x65, 0x73, 0x74};
         options.Value.MaxPhotoSizeBytes=10000;
         options.Value.MinPhotoSizeBytes=1;
+
         var exception = Record.Exception(() => service.ValidatePhoto(photo));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoException>(exception);
@@ -41,6 +43,7 @@ public class PhotoServiceTests
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
         byte[] photo = new byte[] {0xFF, 0xD8, 0xFF};
+
         var ext = service.GetImageFileFormat(photo);
         Assert.Equal("jpg", ext);
     }
@@ -52,6 +55,7 @@ public class PhotoServiceTests
         var service = new PhotoService(options);
         options.Value.MaxPhotoSizeBytes=10000;
         options.Value.MinPhotoSizeBytes=100;
+
         byte[] photo = new byte[] {0x42, 0x4D};
         var ext = service.GetImageFileFormat(photo);
         Assert.Equal("bmp", ext);
@@ -63,6 +67,7 @@ public class PhotoServiceTests
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
         byte[] photo = new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+
         var ext = service.GetImageFileFormat(photo);
         Assert.Equal("png", ext);
     }
@@ -73,42 +78,46 @@ public class PhotoServiceTests
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
         string Base64Bytes = "dGVzdA==";
+
         var exception = Record.Exception(() => service.ConvertToArrayOfBytes(Base64Bytes));
         Assert.Null(exception);
     }
 
     [Fact]
-    public void given_invalid_base64_encoded_string_convert_to_array_of_bytes_should_throw_exception()
+    public void given_invalid_base64_encoded_string_convert_to_array_of_bytes_should_throw_FailToConvertBase64StringToArrayOfBytes()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
         string Base64Bytes = "sd";
+
         var exception = Record.Exception(() => service.ConvertToArrayOfBytes(Base64Bytes));
         Assert.NotNull(exception);
         Assert.IsType<FailToConvertBase64StringToArrayOfBytes>(exception);
     }
 
     [Fact]
-    public void too_small_photo_should_throw_exception()
+    public void too_small_photo_should_throw_InvalidPhotoSizeException()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
-        options.Value.MaxPhotoSizeBytes=10000;
-        options.Value.MinPhotoSizeBytes=100;
-        var service = new PhotoService(options);
+        options.Value.MaxPhotoSizeBytes = 10000;
+        options.Value.MinPhotoSizeBytes = 100;
         byte[] photo = new byte[99];
+
+        var service = new PhotoService(options);
         var exception = Record.Exception(() => service.ValidatePhoto(photo));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoSizeException>(exception);
     }
 
     [Fact]
-    public void too_big_photo_should_throw_exception()
+    public void too_large_photo_should_throw_InvalidPhotoSizeException()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
-        options.Value.MaxPhotoSizeBytes=100;
-        options.Value.MinPhotoSizeBytes=99;
-        var service = new PhotoService(options);
+        options.Value.MaxPhotoSizeBytes = 100;
+        options.Value.MinPhotoSizeBytes = 99;
         byte[] photo = new byte[101];
+
+        var service = new PhotoService(options);
         var exception = Record.Exception(() => service.ValidatePhoto(photo));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoSizeException>(exception);

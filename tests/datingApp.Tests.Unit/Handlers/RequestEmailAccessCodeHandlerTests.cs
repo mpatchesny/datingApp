@@ -19,94 +19,53 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task code_generator_generate_code_method_should_be_called_once()
     {
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
-
-        codeGenerator.Verify(mock => mock.GenerateCode(email), Times.Once());
+        _accessCodeGenerator.Verify(mock => mock.GenerateCode(email), Times.Once());
     }
 
     [Fact]
     public async Task code_storage_set_method_should_be_called_once()
     {
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
-
-        codeStorage.Verify(mock => mock.Set(code), Times.Once());
+        _accessCodeStorage.Verify(mock => mock.Set(code), Times.Once());
     }
 
     [Fact]
-    public async Task given_provided_email_is_null_no_email_provided_exception_is_raised()
+    public async Task given_email_address_is_null_throws_NoEmailProvidedException()
     {
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = null;
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<NoEmailProvidedException>(exception);
@@ -115,32 +74,40 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task email_sender_sendasync_method_should_be_called_once()
     {
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
+        var emailMsg = new Email("receiver", "subject", "body");
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+
+        string email = "test@test.com";
+        var command = new RequestEmailAccessCode(email);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
+        await handler.HandleAsync(command);
+        _emailNotificationSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
+    }
+
+    private static AccessCodeDto CreateAccessCodeDto()
+    {
+        return new AccessCodeDto() {
+            AccessCode = "12345",
             EmailOrPhone = "test@test.com",
             ExpirationTime = DateTime.UtcNow,
             Expiry = TimeSpan.FromMinutes(15)
         };
+    }
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
-        var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
-
-        string email = "test@test.com";
-        var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
-        await handler.HandleAsync(command);
-
-        emailSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
+    private readonly Mock<IAccessCodeStorage> _accessCodeStorage;
+    private readonly Mock<IAccessCodeGenerator> _accessCodeGenerator;
+    private readonly  Mock<INotificationSender<Email>> _emailNotificationSender;
+    private readonly Mock<INotificationMessageGenerator<Email>> _emailMessageGenerator;
+    public RequestEmailAccessCodeHandlerTests()
+    {
+        _accessCodeStorage = new Mock<IAccessCodeStorage>();
+        _accessCodeGenerator = new Mock<IAccessCodeGenerator>();
+        _emailNotificationSender =  new Mock<INotificationSender<Email>>();
+        _emailMessageGenerator = new Mock<INotificationMessageGenerator<Email>>();
     }
 }

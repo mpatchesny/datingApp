@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
@@ -10,26 +11,33 @@ public class PhotoOrderer : IPhotoOrderer
 {
     public List<Photo> OrderPhotos(List<Photo> photos, Guid photoToChangeId, int newOridinal)
     {
-        var thisPhoto = photos.FirstOrDefault(x => x.Id == photoToChangeId);
+        // deep copy
+        var orderedPhotos = photos.Select(photo => 
+                new Photo(photo.Id, photo.UserId, photo.Path, photo.Url, photo.Oridinal)
+            ).ToList();
+        var thisPhoto = orderedPhotos.FirstOrDefault(x => x.Id == photoToChangeId);
 
-        if (newOridinal > photos.Count()-1)
+        if (newOridinal >= orderedPhotos.Count - 1)
         {
-            photos.RemoveAt(thisPhoto.Oridinal);
-            photos.Add(thisPhoto);
+            // insert at the end
+            orderedPhotos.RemoveAt(thisPhoto.Oridinal);
+            orderedPhotos.Add(thisPhoto);
         }
-        else if (newOridinal < 0)
+        else if (newOridinal <= 0)
         {
-            photos.RemoveAt(thisPhoto.Oridinal);
-            photos.Insert(0, thisPhoto);
+            // insert at the beginning
+            orderedPhotos.RemoveAt(thisPhoto.Oridinal);
+            orderedPhotos.Insert(0, thisPhoto);
         }
         else
         {
+            // inesrt in the middle
             if (newOridinal > thisPhoto.Oridinal) newOridinal++;
-            photos.Insert(newOridinal, thisPhoto);
+            orderedPhotos.Insert(newOridinal, thisPhoto);
             int shift = (thisPhoto.Oridinal > newOridinal) ? 1 : 0;
-            photos.RemoveAt(thisPhoto.Oridinal + shift);
+            orderedPhotos.RemoveAt(thisPhoto.Oridinal + shift);
         }
 
-        return photos;
+        return orderedPhotos;
     }
 }

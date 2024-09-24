@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
@@ -18,23 +19,15 @@ namespace datingApp.Tests.Unit.Handlers;
 public class SignUpByEmailHandlerTests
 {
     [Fact]
-    public async Task given_nonexisting_email_sign_in_by_email_should_throw_exception()
+    public async Task given_nonexisting_email_sign_in_by_email_should_throw_InvalidCredentialsException()
     {
-        var userRepository = new Mock<IUserRepository>();
-        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
+        _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+        _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+        _verificator.Setup(m => m.Verify(It.IsAny<AccessCodeDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns((bool) false);
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
-
-        var tokenStorage = new Mock<ITokenStorage>();
-        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
-
-        var authenticator = new Mock<IAuthenticator>();
-        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
-
-        var verificator = new Mock<IAccessCodeVerificator>();
-
-        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
+        SignInByEmailHandler handler = new SignInByEmailHandler(_userRepository.Object, _accessCodeStorage.Object, _authenticator.Object, _tokenStorage.Object, _verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", "ABC");
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -42,23 +35,15 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_null_email_provided_sign_in_by_email_should_throw_exception()
+    public async Task given_null_email_provided_sign_in_by_email_should_throw_NoEmailProvidedException()
     {
-        var userRepository = new Mock<IUserRepository>();
-        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
+        _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+        _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+        _verificator.Setup(m => m.Verify(It.IsAny<AccessCodeDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns((bool) false);
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
-
-        var tokenStorage = new Mock<ITokenStorage>();
-        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
-
-        var authenticator = new Mock<IAuthenticator>();
-        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
-
-        var verificator = new Mock<IAccessCodeVerificator>();
-
-        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
+        SignInByEmailHandler handler = new SignInByEmailHandler(_userRepository.Object, _accessCodeStorage.Object, _authenticator.Object, _tokenStorage.Object, _verificator.Object);
         SignInByEmail command = new SignInByEmail(null, "ABC");
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -66,23 +51,15 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_null_access_code_provided_sign_in_by_email_should_throw_exception()
+    public async Task given_null_access_code_provided_sign_in_by_email_should_throw_NoAccessCodeProvidedException()
     {
-        var userRepository = new Mock<IUserRepository>();
-        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
+        _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+        _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+        _verificator.Setup(m => m.Verify(It.IsAny<AccessCodeDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns((bool) false);
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
-
-        var tokenStorage = new Mock<ITokenStorage>();
-        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
-
-        var authenticator = new Mock<IAuthenticator>();
-        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
-
-        var verificator = new Mock<IAccessCodeVerificator>();
-
-        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
+        SignInByEmailHandler handler = new SignInByEmailHandler(_userRepository.Object, _accessCodeStorage.Object, _authenticator.Object, _tokenStorage.Object, _verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", null);
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -90,25 +67,17 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_no_access_code_in_storage_sign_in_by_email_should_throw_exception()
+    public async Task given_no_access_code_in_storage_sign_in_by_email_should_throw_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var userRepository = new Mock<IUserRepository>();
-        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
+        _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+        _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+        _verificator.Setup(m => m.Verify(It.IsAny<AccessCodeDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns((bool) false);
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
-
-        var tokenStorage = new Mock<ITokenStorage>();
-        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
-
-        var authenticator = new Mock<IAuthenticator>();
-        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
-
-        var verificator = new Mock<IAccessCodeVerificator>();
-
-        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator.Object);
+        SignInByEmailHandler handler = new SignInByEmailHandler(_userRepository.Object, _accessCodeStorage.Object, _authenticator.Object, _tokenStorage.Object, _verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", "ABC");
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -116,31 +85,18 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_negative_access_code_verification_sign_in_by_email_should_throw_exception()
+    public async Task given_negative_access_code_verification_sign_in_by_email_should_throw_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 18, 100, 100, 0.0, 0.0);
-        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var userRepository = new Mock<IUserRepository>();
-        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        var user = new User(settings.UserId, "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+        _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+        _verificator.Setup(m => m.Verify(It.IsAny<AccessCodeDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns((bool) false);
 
-        var code = new AccessCodeDto() {
-            AccessCode ="12345",
-            EmailOrPhone = "test@test.com",
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-
-        var tokenStorage = new Mock<ITokenStorage>();
-        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
-
-        var authenticator = new Mock<IAuthenticator>();
-        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
-
-        var verificator = new AccessCodeVerificator();
-
-        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator);
+        SignInByEmailHandler handler = new SignInByEmailHandler(_userRepository.Object, _accessCodeStorage.Object, _authenticator.Object, _tokenStorage.Object, _verificator.Object);
         SignInByEmail command = new SignInByEmail("test@test.com", "ABC");
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -152,29 +108,40 @@ public class SignUpByEmailHandlerTests
     {
         var settings = new UserSettings(Guid.NewGuid(), Sex.Male, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), Sex.Male, null, settings);
-        var userRepository = new Mock<IUserRepository>();
-        userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
+        _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
+        _verificator.Setup(m => m.Verify(It.IsAny<AccessCodeDto>(), It.IsAny<string>(), It.IsAny<string>())).Returns((bool) true);
 
-        var code = new AccessCodeDto() {
+        SignInByEmailHandler handler = new SignInByEmailHandler(_userRepository.Object, _accessCodeStorage.Object, _authenticator.Object, _tokenStorage.Object, _verificator.Object);
+        SignInByEmail command = new SignInByEmail("test@test.com", "ABC");
+        var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
+        Assert.Null(exception);
+    }
+
+    private static AccessCodeDto CreateAccessCodeDto()
+    {
+        return new AccessCodeDto() {
             AccessCode ="ABC",
             EmailOrPhone = "test@test.com",
             ExpirationTime = DateTime.UtcNow + TimeSpan.FromMinutes(15),
             Expiry = TimeSpan.FromMinutes(15)
         };
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+    }
 
-        var tokenStorage = new Mock<ITokenStorage>();
-        tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
-
-        var authenticator = new Mock<IAuthenticator>();
-        authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns((JwtDto) null);
-
-        var verificator = new AccessCodeVerificator();
-
-        SignInByEmailHandler handler = new SignInByEmailHandler(userRepository.Object, codeStorage.Object, authenticator.Object, tokenStorage.Object, verificator);
-        SignInByEmail command = new SignInByEmail("test@test.com", "ABC");
-        var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
-        Assert.Null(exception);
+    private readonly Mock<IUserRepository> _userRepository;
+    private readonly Mock<IAccessCodeStorage> _accessCodeStorage;
+    private readonly Mock<ITokenStorage> _tokenStorage;
+    private readonly Mock<IAuthenticator> _authenticator;
+    private readonly Mock<IAccessCodeVerificator> _verificator;
+    public SignUpByEmailHandlerTests()
+    {
+        _userRepository = new Mock<IUserRepository>();
+        _accessCodeStorage = new Mock<IAccessCodeStorage>();
+        _tokenStorage = new Mock<ITokenStorage>();
+        _authenticator = new Mock<IAuthenticator>();
+        _verificator = new Mock<IAccessCodeVerificator>();
     }
 }

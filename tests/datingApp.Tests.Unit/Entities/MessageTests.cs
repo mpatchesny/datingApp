@@ -14,7 +14,7 @@ public class MessageTests
     [InlineData("")]
     public void empty_message_string_should_throw_exception(string message)
     {
-        var exception = Record.Exception(() =>new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), message, false, DateTime.UtcNow));
+        var exception = Record.Exception(() =>new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), message, false, DateTime.UtcNow));
         Assert.NotNull(exception);
         Assert.IsType<InvalidMessageException>(exception);
     }
@@ -22,12 +22,8 @@ public class MessageTests
     [Fact]
     public void message_length_above_255_should_throw_exception()
     {
-        string message = "";
-        for (int i=1; i <= 256; i++)
-        {
-            message += "a";
-        }
-        var exception = Record.Exception(() =>new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), message, false, DateTime.UtcNow));
+        string message = new string('a', 256);
+        var exception = Record.Exception(() =>new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), message, false, DateTime.UtcNow));
         Assert.NotNull(exception);
         Assert.IsType<InvalidMessageException>(exception);
     }
@@ -35,8 +31,8 @@ public class MessageTests
     [Fact]
     public void message_set_displayed_should_change_displayed_to_true()
     {
-        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "test", false, DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "test", false, DateTime.UtcNow);
         message.SetDisplayed();
-        Assert.Equal(true, message.IsDisplayed);
+        Assert.True(message.IsDisplayed);
     }
 }

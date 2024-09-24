@@ -19,7 +19,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task code_generator_generate_code_method_should_be_called_once()
     {
-        var code = CreateCodeDto();
+        var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -37,7 +37,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task code_storage_set_method_should_be_called_once()
     {
-        var code = CreateCodeDto();
+        var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -55,7 +55,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task given_email_address_is_null_NoEmailProvidedException_is_raised()
     {
-        var code = CreateCodeDto();
+        var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -74,7 +74,7 @@ public class RequestEmailAccessCodeHandlerTests
     [Fact]
     public async Task email_sender_sendasync_method_should_be_called_once()
     {
-        var code = CreateCodeDto();
+        var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
         _accessCodeStorage.Setup(m => m.Set(code));
         _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
@@ -89,7 +89,7 @@ public class RequestEmailAccessCodeHandlerTests
         _emailNotificationSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
     }
 
-    private static AccessCodeDto CreateCodeDto()
+    private static AccessCodeDto CreateAccessCodeDto()
     {
         return new AccessCodeDto() {
             AccessCode = "12345",

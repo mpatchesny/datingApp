@@ -28,7 +28,6 @@ public class RequestEmailAccessCodeHandlerTests
         _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
-       
         var command = new RequestEmailAccessCode(email);
         var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
@@ -47,7 +46,6 @@ public class RequestEmailAccessCodeHandlerTests
         _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
-
         var command = new RequestEmailAccessCode(email);
         var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
@@ -66,7 +64,6 @@ public class RequestEmailAccessCodeHandlerTests
         _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = null;
-
         var command = new RequestEmailAccessCode(email);
         var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));

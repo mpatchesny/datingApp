@@ -53,7 +53,7 @@ public class RequestEmailAccessCodeHandlerTests
     }
 
     [Fact]
-    public async Task given_email_address_is_null_NoEmailProvidedException_is_raised()
+    public async Task given_email_address_is_null_throws_NoEmailProvidedException()
     {
         var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);

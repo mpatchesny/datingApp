@@ -26,26 +26,19 @@ public class RequestEmailAccessCodeHandlerTests
             Expiry = TimeSpan.FromMinutes(15)
         };
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
        
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
-        codeGenerator.Verify(mock => mock.GenerateCode(email), Times.Once());
+        _accessCodeGenerator.Verify(mock => mock.GenerateCode(email), Times.Once());
     }
 
     [Fact]
@@ -58,26 +51,19 @@ public class RequestEmailAccessCodeHandlerTests
             Expiry = TimeSpan.FromMinutes(15)
         };
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
 
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
-        codeStorage.Verify(mock => mock.Set(code), Times.Once());
+        _accessCodeStorage.Verify(mock => mock.Set(code), Times.Once());
     }
 
     [Fact]
@@ -90,24 +76,17 @@ public class RequestEmailAccessCodeHandlerTests
             Expiry = TimeSpan.FromMinutes(15)
         };
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = null;
 
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<NoEmailProvidedException>(exception);
@@ -123,25 +102,29 @@ public class RequestEmailAccessCodeHandlerTests
             Expiry = TimeSpan.FromMinutes(15)
         };
 
-        var codeStorage = new Mock<IAccessCodeStorage>();
-        codeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
-        codeStorage.Setup(m => m.Set(code));
-
-        var codeGenerator = new Mock<IAccessCodeGenerator>();
-        codeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
-
-        var emailSender = new Mock<INotificationSender<Email>>();
-        emailSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
-
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
         var emailMsg = new Email("receiver", "subject", "body");
-        var emailGenerator = new Mock<INotificationMessageGenerator<Email>>();
-        emailGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
+        _emailMessageGenerator.Setup(m => m.Generate(It.IsAny<string>(), It.IsAny<Dictionary<string,string>>())).Returns(emailMsg);
 
         string email = "test@test.com";
         var command = new RequestEmailAccessCode(email);
-        var handler = new RequestEmailAccessCodeHandler(codeGenerator.Object, codeStorage.Object, emailSender.Object, emailGenerator.Object);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailMessageGenerator.Object);
         await handler.HandleAsync(command);
+        _emailNotificationSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
+    }
 
-        emailSender.Verify(mock => mock.SendAsync(It.IsAny<Email>()), Times.Once());
+    private readonly Mock<IAccessCodeStorage> _accessCodeStorage;
+    private readonly Mock<IAccessCodeGenerator> _accessCodeGenerator;
+    private readonly  Mock<INotificationSender<Email>> _emailNotificationSender;
+    private readonly Mock<INotificationMessageGenerator<Email>> _emailMessageGenerator;
+    public RequestEmailAccessCodeHandlerTests()
+    {
+        _accessCodeStorage = new Mock<IAccessCodeStorage>();
+        _accessCodeGenerator = new Mock<IAccessCodeGenerator>();
+        _emailNotificationSender =  new Mock<INotificationSender<Email>>();
+        _emailMessageGenerator = new Mock<INotificationMessageGenerator<Email>>();
     }
 }

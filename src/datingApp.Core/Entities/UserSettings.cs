@@ -36,7 +36,7 @@ public class UserSettings
         SetPreferredAge(discoverAgeFrom, discoverAgeTo);
     }
 
-    public void ChangeDiscoverRange(int discoverRange)
+    public void ChangePreferredMaxDistance(int discoverRange)
     {
         SetPreferredMaxDistance(discoverRange);
     }

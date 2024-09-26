@@ -112,7 +112,7 @@ public class UserSettingsTests
     public void user_settings_change_range_should_take_effect()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, 40.5, 40.5);
-        settings.ChangeDiscoverRange(40);
+        settings.ChangePreferredMaxDistance(40);
         Assert.Equal(40, settings.PreferredMaxDistance);
     }
 }

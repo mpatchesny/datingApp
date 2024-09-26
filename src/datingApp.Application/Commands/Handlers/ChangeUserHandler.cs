@@ -53,7 +53,7 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         }
         if (command.DiscoverRange != null) 
         {
-            user.Settings.ChangeDiscoverRange((int) command.DiscoverRange);
+            user.Settings.ChangePreferredMaxDistance((int) command.DiscoverRange);
         }
         if (command.DiscoverSex != null) 
         {

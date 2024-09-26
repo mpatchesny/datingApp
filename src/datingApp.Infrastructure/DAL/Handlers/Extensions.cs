@@ -72,8 +72,8 @@ internal static class Extensions
         {
             UserId = entity.UserId,
             PreferredSex = (int) entity.PreferredSex,
-            DiscoverAgeFrom = entity.PreferredAgeFrom,
-            DiscoverAgeTo = entity.PreferredAgeTo,
+            PreferredAgeFrom = entity.PreferredAgeFrom,
+            PreferredAgeTo = entity.PreferredAgeTo,
             DiscoverRange = entity.DiscoverRange,
             Lat = entity.Lat,
             Lon = entity.Lon

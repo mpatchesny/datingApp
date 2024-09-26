@@ -19,8 +19,8 @@ internal static class IntegrationTestHelper
         if (email == null) email = "test_" + random.Next(1, 999999).ToString() + "@test.com";
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
 
-        var settings = new UserSettings(Guid.NewGuid(), Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         await database.DbContext.Users.AddAsync(user);
         await database.DbContext.SaveChangesAsync();

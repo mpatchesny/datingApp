@@ -27,7 +27,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, 18, 100, 100, 0.0, 0.0);
         var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings1);
 
-        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
+        var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 100, 100, 0.0, 0.0);
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
         await IntegrationTestHelper.CreateUserAsync(_testDb, user1);

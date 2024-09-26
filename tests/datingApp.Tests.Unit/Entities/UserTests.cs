@@ -183,7 +183,7 @@ public class UserTests
     }
 
     [Theory]
-    [InlineData(2)]
+    [InlineData(3)]
     [InlineData(0)]
     [InlineData(7)]
     public void invalid_user_sex_should_throw_InvalidUserSexException(int sex)

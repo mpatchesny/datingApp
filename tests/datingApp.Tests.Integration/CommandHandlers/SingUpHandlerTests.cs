@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
@@ -55,8 +56,8 @@ public class SingUpHandlerTests : IDisposable
     private readonly TestDatabase _testDb;
     public SingUpHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), PreferredSex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.SaveChanges();

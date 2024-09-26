@@ -9,6 +9,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Repositories;
 using datingApp.Application.Services;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
@@ -60,8 +61,8 @@ public class AddPhotoHandlerTests : IDisposable
     private readonly TestDatabase _testDb;
     public AddPhotoHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), Sex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, 18, 20, 50, 40.5, 40.5);
+        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
         var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000000"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);

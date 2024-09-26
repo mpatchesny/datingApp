@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Repositories;
 using datingApp.Application.Services;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
@@ -94,8 +95,8 @@ public class FileRepositoryTests : IDisposable
     private async Task<Photo> CreatePhotoAsync()
     {
         var userId = Guid.NewGuid();
-        var settings = new UserSettings(userId, Sex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
-        var user = new User(userId, "123456798", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings);
+        var settings = new UserSettings(userId, PreferredSex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        var user = new User(userId, "123456798", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
         await _testDb.DbContext.Users.AddAsync(user);
         await _testDb.DbContext.SaveChangesAsync();
 

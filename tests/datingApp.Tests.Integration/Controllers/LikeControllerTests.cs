@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

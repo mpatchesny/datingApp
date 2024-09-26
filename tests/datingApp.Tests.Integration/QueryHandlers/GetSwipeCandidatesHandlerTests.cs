@@ -39,8 +39,8 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Theory]
-    [InlineData(Sex.Male, UserSex.Female)]
-    [InlineData(Sex.Female, UserSex.Male)]
+    [InlineData(PreferredSex.Male, UserSex.Female)]
+    [InlineData(PreferredSex.Female, UserSex.Male)]
     public async Task when_no_candidates_with_proper_sex_returns_empty_list(PreferredSex userLookingForSex, UserSex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);

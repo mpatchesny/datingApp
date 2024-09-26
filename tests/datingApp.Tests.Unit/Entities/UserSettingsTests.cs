@@ -113,6 +113,6 @@ public class UserSettingsTests
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, 40.5, 40.5);
         settings.ChangeDiscoverRange(40);
-        Assert.Equal(40, settings.DiscoverRange);
+        Assert.Equal(40, settings.PreferredMaxDistance);
     }
 }

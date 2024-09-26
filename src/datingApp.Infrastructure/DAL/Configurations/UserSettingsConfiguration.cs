@@ -15,7 +15,7 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
         builder.HasKey(x => x.UserId);
         builder.Property(x => x.UserId)
             .IsRequired();
-        builder.Property(x => x.DiscoverRange)
+        builder.Property(x => x.PreferredMaxDistance)
             .IsRequired();
         builder.Property(x => x.PreferredAgeFrom)
             .IsRequired();

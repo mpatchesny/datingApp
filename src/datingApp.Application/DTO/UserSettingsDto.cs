@@ -11,7 +11,7 @@ public class UserSettingsDto
     public int PreferredSex { get; set; }
     public int PreferredAgeFrom { get; set; }
     public int PreferredAgeTo { get; set; }
-    public int DiscoverRange { get; set; }
+    public int PreferredMaxDistance { get; set; }
     public double Lat { get; set; }
     public double Lon { get; set; }
 }

@@ -13,16 +13,16 @@ public class UserSettings
     public PreferredSex PreferredSex { get; private set; }
     public int PreferredAgeFrom { get; private set; }
     public int PreferredAgeTo { get; private set; }
-    public int DiscoverRange { get; private set; }
+    public int PreferredMaxDistance { get; private set; }
     public double Lat { get; private set; }
     public double Lon { get; private set; }
 
-    public UserSettings(Guid userId, PreferredSex preferredSex, int preferredAgeFrom, int preferredAgeTo, int discoverRange, double lat, double lon)
+    public UserSettings(Guid userId, PreferredSex preferredSex, int preferredAgeFrom, int preferredAgeTo, int preferredMaxDistance, double lat, double lon)
     {
         UserId = userId;
         SetPreferredSex(preferredSex);
         SetPreferredAge(preferredAgeFrom, preferredAgeTo);
-        SetDiscoverRange(discoverRange);
+        SetPreferredMaxDistance(preferredMaxDistance);
         SetLocation(lat, lon);
     }
 
@@ -38,7 +38,7 @@ public class UserSettings
 
     public void ChangeDiscoverRange(int discoverRange)
     {
-        SetDiscoverRange(discoverRange);
+        SetPreferredMaxDistance(discoverRange);
     }
 
     public void ChangeLocation(double lat, double lon)
@@ -85,13 +85,13 @@ public class UserSettings
         Lon = lon;
     }
 
-    private void SetDiscoverRange(int discoverRange)
+    private void SetPreferredMaxDistance(int discoverRange)
     {
         if (discoverRange < 1 | discoverRange > 100)
         {
             throw new InvalidDiscoveryRangeException();
         }
-        if (DiscoverRange == discoverRange) return;
-        DiscoverRange = discoverRange;
+        if (PreferredMaxDistance == discoverRange) return;
+        PreferredMaxDistance = discoverRange;
     }
 }

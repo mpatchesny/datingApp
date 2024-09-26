@@ -32,7 +32,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         DateOnly minDob = new DateOnly(now.Year - settings.PreferredAgeTo, now.Month, now.Day);
         DateOnly maxDob = new DateOnly(now.Year - settings.PreferredAgeFrom, now.Month, now.Day);
 
-        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.DiscoverRange + 5);
+        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.PreferredMaxDistance + 5);
 
         var swipedCandidates = 
             _dbContext.Swipes.Where(s => s.SwipedById == userId).Select(x => x.SwipedWhoId);
@@ -87,7 +87,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates within range of user who requested
         return candidates
                 .Select(u => u.AsPublicDto(_spatial.CalculateDistanceInKms(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))
-                .Where(u => u.DistanceInKms <= settings.DiscoverRange)
+                .Where(u => u.DistanceInKms <= settings.PreferredMaxDistance)
                 .Take(query.HowMany)
                 .ToList();
     }

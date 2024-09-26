@@ -74,7 +74,7 @@ internal static class Extensions
             PreferredSex = (int) entity.PreferredSex,
             PreferredAgeFrom = entity.PreferredAgeFrom,
             PreferredAgeTo = entity.PreferredAgeTo,
-            DiscoverRange = entity.DiscoverRange,
+            PreferredMaxDistance = entity.PreferredMaxDistance,
             Lat = entity.Lat,
             Lon = entity.Lon
         };

@@ -31,14 +31,14 @@ public class UserSettings
         SetPreferredSex(sex);
     }
 
-    public void ChangePreferredAge(int discoverAgeFrom, int discoverAgeTo)
+    public void ChangePreferredAge(int preferredAgeFrom, int preferredAgeTo)
     {
-        SetPreferredAge(discoverAgeFrom, discoverAgeTo);
+        SetPreferredAge(preferredAgeFrom, preferredAgeTo);
     }
 
-    public void ChangePreferredMaxDistance(int discoverRange)
+    public void ChangePreferredMaxDistance(int preferredMaxDistance)
     {
-        SetPreferredMaxDistance(discoverRange);
+        SetPreferredMaxDistance(preferredMaxDistance);
     }
 
     public void ChangeLocation(double lat, double lon)
@@ -56,22 +56,22 @@ public class UserSettings
         PreferredSex = sex;
     }
 
-    private void SetPreferredAge(int discoverAgeFrom, int discoverAgeTo)
+    private void SetPreferredAge(int preferredAgeFrom, int preferredAgeTo)
     {
-        if (discoverAgeFrom < 18 | discoverAgeFrom > 100)
+        if (preferredAgeFrom < 18 | preferredAgeFrom > 100)
         {
             throw new InvalidDiscoveryAgeException("minimum discover age must be between 18 and 100");
         }
-        else if (discoverAgeTo < 18 | discoverAgeTo > 100)
+        else if (preferredAgeTo < 18 | preferredAgeTo > 100)
         {
             throw new InvalidDiscoveryAgeException("maximum discover age must be between 18 and 100");
         }
-        else if (discoverAgeFrom > discoverAgeTo)
+        else if (preferredAgeFrom > preferredAgeTo)
         {
             throw new InvalidDiscoveryAgeException("minimum discover age cannot be larger than maximum discover age");
         }
-        PreferredAgeFrom = discoverAgeFrom;
-        PreferredAgeTo = discoverAgeTo;
+        PreferredAgeFrom = preferredAgeFrom;
+        PreferredAgeTo = preferredAgeTo;
     }
 
     private void SetLocation(double lat, double lon)

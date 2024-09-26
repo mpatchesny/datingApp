@@ -49,7 +49,7 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
 
         if (command.DiscoverAgeFrom != null && command.DiscoverAgeTo != null)
         {
-            user.Settings.ChangeDiscoverAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
+            user.Settings.ChangePreferredAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
         }
         if (command.DiscoverRange != null) 
         {

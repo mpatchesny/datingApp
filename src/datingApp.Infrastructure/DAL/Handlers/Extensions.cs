@@ -71,9 +71,9 @@ internal static class Extensions
         return new()
         {
             UserId = entity.UserId,
-            DiscoverSex = (int) entity.PreferredSex,
-            DiscoverAgeFrom = entity.DiscoverAgeFrom,
-            DiscoverAgeTo = entity.DiscoverAgeTo,
+            PreferredSex = (int) entity.PreferredSex,
+            DiscoverAgeFrom = entity.PreferredAgeFrom,
+            DiscoverAgeTo = entity.PreferredAgeTo,
             DiscoverRange = entity.DiscoverRange,
             Lat = entity.Lat,
             Lon = entity.Lon

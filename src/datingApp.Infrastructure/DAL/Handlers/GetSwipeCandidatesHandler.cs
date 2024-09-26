@@ -29,8 +29,8 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates that matches sex, age and are within approx range of user who requested
         // we want candidates that are different from user who requested
         var now = DateTime.UtcNow;
-        DateOnly minDob = new DateOnly(now.Year - settings.DiscoverAgeTo, now.Month, now.Day);
-        DateOnly maxDob = new DateOnly(now.Year - settings.DiscoverAgeFrom, now.Month, now.Day);
+        DateOnly minDob = new DateOnly(now.Year - settings.PreferredAgeTo, now.Month, now.Day);
+        DateOnly maxDob = new DateOnly(now.Year - settings.PreferredAgeFrom, now.Month, now.Day);
 
         var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.DiscoverRange + 5);
 

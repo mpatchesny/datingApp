@@ -11,17 +11,17 @@ public class UserSettings
 {
     public Guid UserId { get; private set; }
     public PreferredSex PreferredSex { get; private set; }
-    public int DiscoverAgeFrom { get; private set; }
-    public int DiscoverAgeTo { get; private set; }
+    public int PreferredAgeFrom { get; private set; }
+    public int PreferredAgeTo { get; private set; }
     public int DiscoverRange { get; private set; }
     public double Lat { get; private set; }
     public double Lon { get; private set; }
 
-    public UserSettings(Guid userId, PreferredSex preferredSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
+    public UserSettings(Guid userId, PreferredSex preferredSex, int preferredAgeFrom, int preferredAgeTo, int discoverRange, double lat, double lon)
     {
         UserId = userId;
         SetPreferredSex(preferredSex);
-        SetDiscoverAge(discoverAgeFrom, discoverAgeTo);
+        SetPreferredAge(preferredAgeFrom, preferredAgeTo);
         SetDiscoverRange(discoverRange);
         SetLocation(lat, lon);
     }
@@ -31,9 +31,9 @@ public class UserSettings
         SetPreferredSex(sex);
     }
 
-    public void ChangeDiscoverAge(int discoverAgeFrom, int discoverAgeTo)
+    public void ChangePreferredAge(int discoverAgeFrom, int discoverAgeTo)
     {
-        SetDiscoverAge(discoverAgeFrom, discoverAgeTo);
+        SetPreferredAge(discoverAgeFrom, discoverAgeTo);
     }
 
     public void ChangeDiscoverRange(int discoverRange)
@@ -56,7 +56,7 @@ public class UserSettings
         PreferredSex = sex;
     }
 
-    private void SetDiscoverAge(int discoverAgeFrom, int discoverAgeTo)
+    private void SetPreferredAge(int discoverAgeFrom, int discoverAgeTo)
     {
         if (discoverAgeFrom < 18 | discoverAgeFrom > 100)
         {
@@ -70,8 +70,8 @@ public class UserSettings
         {
             throw new InvalidDiscoveryAgeException("discover min age cannot be larger than max age");
         }
-        DiscoverAgeFrom = discoverAgeFrom;
-        DiscoverAgeTo = discoverAgeTo;
+        PreferredAgeFrom = discoverAgeFrom;
+        PreferredAgeTo = discoverAgeTo;
     }
 
     private void SetLocation(double lat, double lon)

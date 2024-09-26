@@ -103,9 +103,9 @@ public class UserSettingsTests
     public void user_settings_discovery_age_range_change_should_take_effect()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, 40.5, 40.5);
-        settings.ChangeDiscoverAge(18, 60);
-        Assert.Equal(18, settings.DiscoverAgeFrom);
-        Assert.Equal(60, settings.DiscoverAgeTo);
+        settings.ChangePreferredAge(18, 60);
+        Assert.Equal(18, settings.PreferredAgeFrom);
+        Assert.Equal(60, settings.PreferredAgeTo);
     }
 
     [Fact]

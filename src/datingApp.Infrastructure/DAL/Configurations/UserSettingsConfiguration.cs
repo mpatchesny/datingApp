@@ -21,7 +21,7 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
             .IsRequired();
         builder.Property(x => x.DiscoverAgeTo)
             .IsRequired();
-        builder.Property(x => x.DiscoverSex)
+        builder.Property(x => x.PreferredSex)
             .IsRequired();
         builder.Property(x => x.Lat)
             .IsRequired();

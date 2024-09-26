@@ -57,7 +57,7 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         }
         if (command.DiscoverSex != null) 
         {
-            user.Settings.ChangeDiscoverSex((PreferredSex) command.DiscoverSex);
+            user.Settings.ChangePreferredSex((PreferredSex) command.DiscoverSex);
         }
         if (command.Lat != null && command.Lon != null)
         {

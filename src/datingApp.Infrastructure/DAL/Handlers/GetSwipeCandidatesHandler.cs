@@ -40,7 +40,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         return _dbContext.Users
                     .Where(candidate => candidate.Id != userId)
                     .Where(candidate => !swipedCandidates.Contains(candidate.Id))
-                    .Where(candidate => ((int) candidate.Sex & (int) settings.DiscoverSex) > 0)
+                    .Where(candidate => ((int) candidate.Sex & (int) settings.PreferredSex) > 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
                     .Where(candidate => candidate.DateOfBirth <= maxDob)
                     .Where(x => x.Settings.Lat <= spatialSquare.NorthLat)

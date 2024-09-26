@@ -10,25 +10,25 @@ namespace datingApp.Core.Entities;
 public class UserSettings
 {
     public Guid UserId { get; private set; }
-    public PreferredSex DiscoverSex { get; private set; }
+    public PreferredSex PreferredSex { get; private set; }
     public int DiscoverAgeFrom { get; private set; }
     public int DiscoverAgeTo { get; private set; }
     public int DiscoverRange { get; private set; }
     public double Lat { get; private set; }
     public double Lon { get; private set; }
 
-    public UserSettings(Guid userId, PreferredSex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
+    public UserSettings(Guid userId, PreferredSex preferredSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
     {
         UserId = userId;
-        SetDiscoverSex(discoverSex);
+        SetPreferredSex(preferredSex);
         SetDiscoverAge(discoverAgeFrom, discoverAgeTo);
         SetDiscoverRange(discoverRange);
         SetLocation(lat, lon);
     }
 
-    public void ChangeDiscoverSex(PreferredSex sex)
+    public void ChangePreferredSex(PreferredSex sex)
     {
-        SetDiscoverSex(sex);
+        SetPreferredSex(sex);
     }
 
     public void ChangeDiscoverAge(int discoverAgeFrom, int discoverAgeTo)
@@ -46,14 +46,14 @@ public class UserSettings
         SetLocation(lat, lon);
     }
 
-    private void SetDiscoverSex(PreferredSex sex)
+    private void SetPreferredSex(PreferredSex sex)
     {
         if (!Enum.IsDefined(typeof(PreferredSex), sex))
         {
             throw new InvalidUserDiscoverySexException();
         }
-        if (DiscoverSex == sex) return;
-        DiscoverSex = sex;
+        if (PreferredSex == sex) return;
+        PreferredSex = sex;
     }
 
     private void SetDiscoverAge(int discoverAgeFrom, int discoverAgeTo)

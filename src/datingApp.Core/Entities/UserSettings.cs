@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;
@@ -9,14 +10,14 @@ namespace datingApp.Core.Entities;
 public class UserSettings
 {
     public Guid UserId { get; private set; }
-    public Sex DiscoverSex { get; private set; }
+    public PreferredSex DiscoverSex { get; private set; }
     public int DiscoverAgeFrom { get; private set; }
     public int DiscoverAgeTo { get; private set; }
     public int DiscoverRange { get; private set; }
     public double Lat { get; private set; }
     public double Lon { get; private set; }
 
-    public UserSettings(Guid userId, Sex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
+    public UserSettings(Guid userId, PreferredSex discoverSex, int discoverAgeFrom, int discoverAgeTo, int discoverRange, double lat, double lon)
     {
         UserId = userId;
         SetDiscoverSex(discoverSex);
@@ -25,7 +26,7 @@ public class UserSettings
         SetLocation(lat, lon);
     }
 
-    public void ChangeDiscoverSex(Sex sex)
+    public void ChangeDiscoverSex(PreferredSex sex)
     {
         SetDiscoverSex(sex);
     }
@@ -45,9 +46,9 @@ public class UserSettings
         SetLocation(lat, lon);
     }
 
-    private void SetDiscoverSex(Sex sex)
+    private void SetDiscoverSex(PreferredSex sex)
     {
-        if (sex <= Sex.Undefined || sex > Sex.MaleAndFemale)
+        if (!Enum.IsDefined(typeof(PreferredSex), sex))
         {
             throw new InvalidUserDiscoverySexException();
         }

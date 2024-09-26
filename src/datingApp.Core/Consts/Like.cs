@@ -1,4 +1,4 @@
-namespace datingApp.Core.Entities;
+namespace datingApp.Core.Consts;
 
 public enum Like
 {

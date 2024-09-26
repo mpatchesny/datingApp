@@ -21,7 +21,7 @@ public class Swipe
         if (swipedById == swipedWhoId) throw new InvalidSwipeException();
         SwipedById = swipedById;
         SwipedWhoId = swipedWhoId;
-        if (!Like.IsDefined(like)) throw new LikeValueNotDefinedException((int) like);
+        if (!Enum.IsDefined(typeof(Like), like)) throw new LikeValueNotDefinedException((int) like);
         Like = like;
         CreatedAt = createdAt;
     }

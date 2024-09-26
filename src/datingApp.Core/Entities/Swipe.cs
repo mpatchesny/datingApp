@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;

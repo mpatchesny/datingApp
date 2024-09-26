@@ -4,5 +4,5 @@ namespace datingApp.Core.Consts;
 public enum UserSex
 {
     Male = 1,
-    Female = 2,
+    Female = 2
 }

@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.EntityFrameworkCore;

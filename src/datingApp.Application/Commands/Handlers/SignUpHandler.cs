@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -35,8 +36,8 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
             throw new PhoneAlreadyInUseException(command.Phone);
         }
 
-        var settings = new UserSettings(command.UserId, (Sex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
-        var user = new User(command.UserId, command.Phone, command.Email, command.Name, dob, (Sex) command.Sex, null, settings, command.Job, command.Bio);
+        var settings = new UserSettings(command.UserId, (PreferredSex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
+        var user = new User(command.UserId, command.Phone, command.Email, command.Name, dob, (UserSex) command.Sex, null, settings, command.Job, command.Bio);
         await _userRepository.AddAsync(user);
     }
 }

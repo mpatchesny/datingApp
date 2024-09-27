@@ -37,10 +37,12 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var swipedCandidates = 
             _dbContext.Swipes.Where(s => s.SwipedById == userId).Select(x => x.SwipedWhoId);
 
+        int preferredSex = (int) settings.PreferredSex;
+
         return _dbContext.Users
                     .Where(candidate => candidate.Id != userId)
                     .Where(candidate => !swipedCandidates.Contains(candidate.Id))
-                    .Where(candidate => ((int) candidate.Sex & (int) settings.PreferredSex) > 0)
+                    .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
                     .Where(candidate => candidate.DateOfBirth <= maxDob)
                     .Where(x => x.Settings.Lat <= spatialSquare.NorthLat)
@@ -53,7 +55,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     private Task<List<User>> GetCandidatesAsync(IQueryable<Guid> initialCandidates)
     {
         // we want candidates sorted by number of likes descending
-        // we want only number of candidates equals to HowMany
         return _dbContext.Users
                     .Where(x => initialCandidates.Contains(x.Id))
                     .Select(x => new 

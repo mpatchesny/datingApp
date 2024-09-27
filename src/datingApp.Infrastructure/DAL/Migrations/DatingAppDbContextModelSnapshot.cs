@@ -8,7 +8,7 @@ using datingApp.Infrastructure;
 
 #nullable disable
 
-namespace datingApp.Infrastructure.DAL.Migrations
+namespace datingApp.Infrastructure.Dal.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
     partial class DatingAppDbContextModelSnapshot : ModelSnapshot
@@ -184,8 +184,10 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("SwipedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SwipedWhoId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -194,18 +196,10 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<int>("Like")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("SwipedById")
-                        .HasColumnType("uuid");
+                    b.HasKey("SwipedById", "SwipedWhoId");
 
-                    b.Property<Guid>("SwipedWhoId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SwipedById", "SwipedWhoId")
+                    b.HasIndex("SwipedById", "SwipedWhoId", "Like")
                         .IsUnique();
-
-                    b.HasIndex("SwipedById", "SwipedWhoId", "Like");
 
                     b.ToTable("Swipes");
                 });
@@ -263,23 +257,23 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("DiscoverAgeFrom")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscoverAgeTo")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscoverRange")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscoverSex")
-                        .HasColumnType("integer");
-
                     b.Property<double>("Lat")
                         .HasColumnType("double precision");
 
                     b.Property<double>("Lon")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("PreferredAgeFrom")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredAgeTo")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredMaxDistance")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredSex")
+                        .HasColumnType("integer");
 
                     b.HasKey("UserId");
 

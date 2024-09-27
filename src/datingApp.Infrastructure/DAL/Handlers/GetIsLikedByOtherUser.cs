@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 

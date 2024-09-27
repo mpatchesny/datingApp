@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -47,7 +48,7 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var swipe = new Swipe(Guid.Empty, user2.Id, user1.Id, Like.Like, DateTime.UtcNow);
+        var swipe = new Swipe(user2.Id, user1.Id, Like.Like, DateTime.UtcNow);
         _testDb.DbContext.Swipes.Add(swipe);
         await _testDb.DbContext.SaveChangesAsync();
 

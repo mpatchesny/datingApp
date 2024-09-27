@@ -15,13 +15,13 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
         builder.HasKey(x => x.UserId);
         builder.Property(x => x.UserId)
             .IsRequired();
-        builder.Property(x => x.DiscoverRange)
+        builder.Property(x => x.PreferredMaxDistance)
             .IsRequired();
-        builder.Property(x => x.DiscoverAgeFrom)
+        builder.Property(x => x.PreferredAgeFrom)
             .IsRequired();
-        builder.Property(x => x.DiscoverAgeTo)
+        builder.Property(x => x.PreferredAgeTo)
             .IsRequired();
-        builder.Property(x => x.DiscoverSex)
+        builder.Property(x => x.PreferredSex)
             .IsRequired();
         builder.Property(x => x.Lat)
             .IsRequired();

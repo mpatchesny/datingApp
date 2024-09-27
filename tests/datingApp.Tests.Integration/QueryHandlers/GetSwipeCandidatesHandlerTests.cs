@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.Spatial;
@@ -16,17 +17,17 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetSwipeCandidatesHandlerTests : IDisposable
 {
     [Theory]
-    [InlineData(Sex.Male, Sex.Male)]
-    [InlineData(Sex.Female, Sex.Female)]
-    [InlineData(Sex.Male | Sex.Female, Sex.Female)]
-    [InlineData(Sex.Male | Sex.Female, Sex.Male)]
-    public async Task when_candidates_with_proper_sex_exist_returns_nonempty_list(Sex userLookingForSex, Sex candidateSex)
+    [InlineData(PreferredSex.Male, UserSex.Male)]
+    [InlineData(PreferredSex.Female, UserSex.Female)]
+    [InlineData(PreferredSex.Male | PreferredSex.Female, UserSex.Female)]
+    [InlineData(PreferredSex.Male | PreferredSex.Female, UserSex.Male)]
+    public async Task when_candidates_with_proper_sex_exist_returns_nonempty_list(PreferredSex userLookingForSex, UserSex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, 18, 100, 100, 0.0, 0.0);
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings1);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings1);
 
-        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
+        var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 100, 100, 0.0, 0.0);
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
         await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
@@ -38,15 +39,15 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Theory]
-    [InlineData(Sex.Male, Sex.Female)]
-    [InlineData(Sex.Female, Sex.Male)]
-    public async Task when_no_candidates_with_proper_sex_returns_empty_list(Sex userLookingForSex, Sex candidateSex)
+    [InlineData(PreferredSex.Male, UserSex.Female)]
+    [InlineData(PreferredSex.Female, UserSex.Male)]
+    public async Task when_no_candidates_with_proper_sex_returns_empty_list(PreferredSex userLookingForSex, UserSex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, 18, 100, 100, 0.0, 0.0);
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Male, null, settings1);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings1);
 
-        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
+        var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 100, 100, 0.0, 0.0);
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
         await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
@@ -66,13 +67,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_candidates_with_proper_age_exists_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings1 = new UserSettings(Guid.NewGuid(), Sex.Female, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), Sex.Female, null, settings1);
+        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Female, null, settings1);
 
         int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
         var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
-        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Female, 18, 100, 100, 0.0, 0.0);
-        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, Sex.Female, null, settings2);
+        var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 100, 100, 0.0, 0.0);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, null, settings2);
         
         await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
         await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
@@ -91,13 +92,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_no_candidates_with_proper_age_returns_empty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings1 = new UserSettings(Guid.NewGuid(), Sex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), Sex.Male, null, settings1);
+        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, queryAgeFrom, queryAgeTo, 100, 0.0, 0.0);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), UserSex.Male, null, settings1);
 
         int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
         var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
-        var settings2 = new UserSettings(Guid.NewGuid(), Sex.Male, 18, 100, 100, 0.0, 0.0);
-        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, Sex.Male, null, settings2);
+        var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 18, 100, 100, 0.0, 0.0);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, null, settings2);
 
         await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
         await IntegrationTestHelper.CreateUserAsync(_testDb, user2);

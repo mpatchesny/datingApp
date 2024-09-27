@@ -12,18 +12,16 @@ internal sealed class SwipeConfiguration : IEntityTypeConfiguration<Swipe>
 {
     public void Configure(EntityTypeBuilder<Swipe> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id)
-            .IsRequired();
         builder.Property(x => x.SwipedById)
             .IsRequired();
         builder.Property(x => x.SwipedWhoId)
             .IsRequired();
-        builder.HasIndex(x => new {x.SwipedById, x.SwipedWhoId})
-            .IsUnique();
+        builder.Property(x => x.Like)
+            .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-
-        builder.HasIndex(x => new {x.SwipedById, x.SwipedWhoId, x.Like});
+        builder.HasKey(x => new {x.SwipedById, x.SwipedWhoId});
+        builder.HasIndex(x => new {x.SwipedById, x.SwipedWhoId, x.Like})
+            .IsUnique();
     }
 }

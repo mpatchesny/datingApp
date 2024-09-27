@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.Entities;
@@ -20,7 +21,7 @@ public class User
     public string Email { get; private set; }
     public string Name { get; private set; }
     public DateOnly DateOfBirth { get; private set; }
-    public Sex Sex { get; private set; }
+    public UserSex Sex { get; private set; }
     public string Job { get; private set; }
     public string Bio { get; private set; }
     public IEnumerable<Photo> Photos { get; private set; } = new List<Photo>();
@@ -30,7 +31,7 @@ public class User
     {
         // EF
     }
-    public User(Guid id, string phone, string email, string name, DateOnly dateOfBirth, Sex sex,
+    public User(Guid id, string phone, string email, string name, DateOnly dateOfBirth, UserSex sex,
                 IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
     {
         Id = id;
@@ -160,9 +161,9 @@ public class User
         if (Bio == bio) return;
         Bio = bio;
     }
-    private void SetSex(Sex sex)
+    private void SetSex(UserSex sex)
     {
-        if (!(sex == Sex.Male || sex == Sex.Female))
+        if (!Enum.IsDefined(typeof(UserSex), sex))
         {
             throw new InvalidUserSexException();
         }

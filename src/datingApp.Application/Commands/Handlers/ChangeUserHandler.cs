@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Security;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -48,15 +49,15 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
 
         if (command.DiscoverAgeFrom != null && command.DiscoverAgeTo != null)
         {
-            user.Settings.ChangeDiscoverAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
+            user.Settings.ChangePreferredAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
         }
         if (command.DiscoverRange != null) 
         {
-            user.Settings.ChangeDiscoverRange((int) command.DiscoverRange);
+            user.Settings.ChangePreferredMaxDistance((int) command.DiscoverRange);
         }
         if (command.DiscoverSex != null) 
         {
-            user.Settings.ChangeDiscoverSex((Sex) command.DiscoverSex);
+            user.Settings.ChangePreferredSex((PreferredSex) command.DiscoverSex);
         }
         if (command.Lat != null && command.Lon != null)
         {

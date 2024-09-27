@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.EntityFrameworkCore;
@@ -28,18 +29,20 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates that matches sex, age and are within approx range of user who requested
         // we want candidates that are different from user who requested
         var now = DateTime.UtcNow;
-        DateOnly minDob = new DateOnly(now.Year - settings.DiscoverAgeTo, now.Month, now.Day);
-        DateOnly maxDob = new DateOnly(now.Year - settings.DiscoverAgeFrom, now.Month, now.Day);
+        DateOnly minDob = new DateOnly(now.Year - settings.PreferredAgeTo, now.Month, now.Day);
+        DateOnly maxDob = new DateOnly(now.Year - settings.PreferredAgeFrom, now.Month, now.Day);
 
-        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.DiscoverRange + 5);
+        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.PreferredMaxDistance + 5);
 
         var swipedCandidates = 
             _dbContext.Swipes.Where(s => s.SwipedById == userId).Select(x => x.SwipedWhoId);
 
+        int preferredSex = (int) settings.PreferredSex;
+
         return _dbContext.Users
                     .Where(candidate => candidate.Id != userId)
                     .Where(candidate => !swipedCandidates.Contains(candidate.Id))
-                    .Where(candidate => ((int) candidate.Sex & (int) settings.DiscoverSex) > 0)
+                    .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
                     .Where(candidate => candidate.DateOfBirth <= maxDob)
                     .Where(x => x.Settings.Lat <= spatialSquare.NorthLat)
@@ -52,7 +55,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     private Task<List<User>> GetCandidatesAsync(IQueryable<Guid> initialCandidates)
     {
         // we want candidates sorted by number of likes descending
-        // we want only number of candidates equals to HowMany
         return _dbContext.Users
                     .Where(x => initialCandidates.Contains(x.Id))
                     .Select(x => new 
@@ -86,7 +88,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates within range of user who requested
         return candidates
                 .Select(u => u.AsPublicDto(_spatial.CalculateDistanceInKms(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))
-                .Where(u => u.DistanceInKms <= settings.DiscoverRange)
+                .Where(u => u.DistanceInKms <= settings.PreferredMaxDistance)
                 .Take(query.HowMany)
                 .ToList();
     }

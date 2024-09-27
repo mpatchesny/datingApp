@@ -9,11 +9,11 @@ using datingApp.Infrastructure;
 
 #nullable disable
 
-namespace datingApp.Infrastructure.DAL.Migrations
+namespace datingApp.Infrastructure.Dal.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20231205202236_add files table")]
-    partial class addfilestable
+    [Migration("20240927144301_New migration from scratch")]
+    partial class Newmigrationfromscratch
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,12 +45,27 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("EmailOrPhone");
 
                     b.ToTable("AccessCodes");
+
+                    NpgsqlEntityTypeBuilderExtensions.IsUnlogged(b, true);
+                });
+
+            modelBuilder.Entity("datingApp.Application.DTO.DeletedEntityDto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("DeletedEntities");
                 });
 
             modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<byte[]>("Binary")
                         .IsRequired()
@@ -65,6 +80,21 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("Id");
 
                     b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("datingApp.Application.DTO.TokenDto", b =>
+                {
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpirationTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("Token");
+
+                    b.ToTable("RevokedRefreshTokens");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
@@ -157,8 +187,10 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
             modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("SwipedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SwipedWhoId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -167,18 +199,10 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<int>("Like")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("SwipedById")
-                        .HasColumnType("uuid");
+                    b.HasKey("SwipedById", "SwipedWhoId");
 
-                    b.Property<Guid>("SwipedWhoId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SwipedById", "SwipedWhoId")
+                    b.HasIndex("SwipedById", "SwipedWhoId", "Like")
                         .IsUnique();
-
-                    b.HasIndex("SwipedById", "SwipedWhoId", "Like");
 
                     b.ToTable("Swipes");
                 });
@@ -236,29 +260,38 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("DiscoverAgeFrom")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscoverAgeTo")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscoverRange")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscoverSex")
-                        .HasColumnType("integer");
-
                     b.Property<double>("Lat")
                         .HasColumnType("double precision");
 
                     b.Property<double>("Lon")
                         .HasColumnType("double precision");
 
+                    b.Property<int>("PreferredAgeFrom")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredAgeTo")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredMaxDistance")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredSex")
+                        .HasColumnType("integer");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("Lat", "Lon");
 
                     b.ToTable("UserSettings");
+                });
+
+            modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
+                {
+                    b.HasOne("datingApp.Core.Entities.Photo", null)
+                        .WithOne()
+                        .HasForeignKey("datingApp.Application.DTO.FileDto", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>

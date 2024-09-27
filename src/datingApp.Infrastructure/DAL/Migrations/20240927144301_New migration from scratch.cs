@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace datingApp.Infrastructure.DAL.Migrations
+namespace datingApp.Infrastructure.Dal.Migrations
 {
     /// <inheritdoc />
     public partial class Newmigrationfromscratch : Migration
@@ -11,6 +11,58 @@ namespace datingApp.Infrastructure.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AccessCodes",
+                columns: table => new
+                {
+                    EmailOrPhone = table.Column<string>(type: "text", nullable: false),
+                    AccessCode = table.Column<string>(type: "text", nullable: false),
+                    ExpirationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Expiry = table.Column<TimeSpan>(type: "interval", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccessCodes", x => x.EmailOrPhone);
+                })
+                .Annotation("Npgsql:UnloggedTable", true);
+
+            migrationBuilder.CreateTable(
+                name: "DeletedEntities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeletedEntities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RevokedRefreshTokens",
+                columns: table => new
+                {
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    ExpirationTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RevokedRefreshTokens", x => x.Token);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Swipes",
+                columns: table => new
+                {
+                    SwipedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    SwipedWhoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Like = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Swipes", x => new { x.SwipedById, x.SwipedWhoId });
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -21,7 +73,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     Name = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     Sex = table.Column<int>(type: "integer", nullable: false),
-                    Job = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
+                    Job = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     Bio = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: true)
                 },
                 constraints: table =>
@@ -64,6 +116,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Path = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: true),
                     Oridinal = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -78,41 +131,14 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Swipes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SwipedById = table.Column<Guid>(type: "uuid", nullable: false),
-                    SwipedWhoId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Like = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Swipes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Swipes_Users_SwipedById",
-                        column: x => x.SwipedById,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Swipes_Users_SwipedWhoId",
-                        column: x => x.SwipedWhoId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserSettings",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    DiscoverSex = table.Column<int>(type: "integer", nullable: false),
-                    DiscoverAgeFrom = table.Column<int>(type: "integer", nullable: false),
-                    DiscoverAgeTo = table.Column<int>(type: "integer", nullable: false),
-                    DiscoverRange = table.Column<int>(type: "integer", nullable: false),
+                    PreferredSex = table.Column<int>(type: "integer", nullable: false),
+                    PreferredAgeFrom = table.Column<int>(type: "integer", nullable: false),
+                    PreferredAgeTo = table.Column<int>(type: "integer", nullable: false),
+                    PreferredMaxDistance = table.Column<int>(type: "integer", nullable: false),
                     Lat = table.Column<double>(type: "double precision", nullable: false),
                     Lon = table.Column<double>(type: "double precision", nullable: false)
                 },
@@ -155,10 +181,44 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Files",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Extension = table.Column<string>(type: "text", nullable: false),
+                    Binary = table.Column<byte[]>(type: "bytea", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Files", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Files_Photos_Id",
+                        column: x => x.Id,
+                        principalTable: "Photos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Matches_UserId1",
+                name: "IX_AccessCodes_EmailOrPhone",
+                table: "AccessCodes",
+                column: "EmailOrPhone");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeletedEntities_Id",
+                table: "DeletedEntities",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Files_Id",
+                table: "Files",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Matches_UserId1_UserId2_CreatedAt",
                 table: "Matches",
-                column: "UserId1");
+                columns: new[] { "UserId1", "UserId2", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Matches_UserId2",
@@ -166,9 +226,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 column: "UserId2");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_MatchId",
+                name: "IX_Messages_MatchId_CreatedAt",
                 table: "Messages",
-                column: "MatchId");
+                columns: new[] { "MatchId", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_SendFromId",
@@ -176,19 +236,20 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 column: "SendFromId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_UserId",
+                name: "IX_Photos_UserId_Oridinal",
                 table: "Photos",
-                column: "UserId");
+                columns: new[] { "UserId", "Oridinal" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwipedById",
-                table: "Swipes",
-                column: "SwipedById");
+                name: "IX_RevokedRefreshTokens_Token",
+                table: "RevokedRefreshTokens",
+                column: "Token");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Swipes_SwipedWhoId",
+                name: "IX_Swipes_SwipedById_SwipedWhoId_Like",
                 table: "Swipes",
-                column: "SwipedWhoId");
+                columns: new[] { "SwipedById", "SwipedWhoId", "Like" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -201,22 +262,44 @@ namespace datingApp.Infrastructure.DAL.Migrations
                 table: "Users",
                 column: "Phone",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Sex_DateOfBirth",
+                table: "Users",
+                columns: new[] { "Sex", "DateOfBirth" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSettings_Lat_Lon",
+                table: "UserSettings",
+                columns: new[] { "Lat", "Lon" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AccessCodes");
+
+            migrationBuilder.DropTable(
+                name: "DeletedEntities");
+
+            migrationBuilder.DropTable(
+                name: "Files");
+
+            migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Photos");
+                name: "RevokedRefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "Swipes");
 
             migrationBuilder.DropTable(
                 name: "UserSettings");
+
+            migrationBuilder.DropTable(
+                name: "Photos");
 
             migrationBuilder.DropTable(
                 name: "Matches");

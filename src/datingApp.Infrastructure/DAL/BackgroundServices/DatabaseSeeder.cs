@@ -89,7 +89,7 @@ internal sealed class DatabaseSeeder : IHostedService
 
         if (!dbContext.Swipes.Any())
         {
-            var swipe = new Swipe(Guid.NewGuid(), Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow);
+            var swipe = new Swipe(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Like.Like, DateTime.UtcNow);
             dbContext.Swipes.Add(swipe);
             await dbContext.SaveChangesAsync();
         };

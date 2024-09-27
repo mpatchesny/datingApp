@@ -60,7 +60,7 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Swipe> CreateSwipeAsync(TestDatabase database, Guid swipedById, Guid swipedWhoId, Like like, DateTime? createdAt = null)
     {
-        var swipe = new Swipe(Guid.NewGuid(), swipedById, swipedWhoId, like, createdAt ?? DateTime.UtcNow);
+        var swipe = new Swipe(swipedById, swipedWhoId, like, createdAt ?? DateTime.UtcNow);
         await database.DbContext.Swipes.AddAsync(swipe);
         await database.DbContext.SaveChangesAsync();
         return swipe;

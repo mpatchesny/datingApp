@@ -49,6 +49,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Settings.Lat >= spatialSquare.SouthLat)
                     .Where(x => x.Settings.Lon <= spatialSquare.EastLon)
                     .Where(x => x.Settings.Lon >= spatialSquare.WestLon)
+                    .AsNoTracking()
                     .Select(candidate => candidate.Id);
     }
 
@@ -82,6 +83,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                                 .Where(x => x.UserId == query.UserId)
                                 .FirstOrDefaultAsync();
         if (settings == null) return null;
+
         var initialCandidates = GetInitialCandidatesToSwipe(settings, query.UserId);
         var candidates = await GetCandidatesAsync(initialCandidates);
 

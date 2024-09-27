@@ -17,7 +17,7 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task add_swipe_should_succeed()
     {
-        var swipe = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        var swipe = new Swipe(Guid.NewGuid(), Guid.NewGuid(), Like.Like, DateTime.UtcNow);
 
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(swipe));
         Assert.Null(exception);

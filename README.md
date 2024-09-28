@@ -1,6 +1,6 @@
 # datingApp
 
-Tinder-like dating app created for university assingment.
+Tinder-like dating app created for university assingment and developed further for my portfolio.
 
 ## Note
 

@@ -79,8 +79,8 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         }
 
         var settings = await _dbContext.UserSettings
-                                .AsNoTracking()
                                 .Where(x => x.UserId == query.UserId)
+                                .AsNoTracking()
                                 .FirstOrDefaultAsync();
         if (settings == null) return null;
 

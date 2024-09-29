@@ -36,7 +36,7 @@ public class SwipeUserHandlerTests : IDisposable
     [Theory]
     [InlineData(Like.Like)]
     [InlineData(Like.Pass)]
-    public async Task add_swipe_should_add_IsLikedByOtherUserDto_to_storage_only_once_with_propero_IsLikedByOtherUserValue(Like like)
+    public async Task add_swipe_should_add_IsLikedByOtherUserDto_to_storage_only_once_with_false_IsLikedByOtherUserValue_if_other_users_not_liked(Like like)
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -44,6 +44,22 @@ public class SwipeUserHandlerTests : IDisposable
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
+        // FIXME: powinny byc testy, jakie konkretnie wartości wpadły do metody Set() mocka
+        _isLikedByOtherUserStorage.Verify(x => x.Set(It.IsAny<IsLikedByOtherUserDto>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(Like.Like)]
+    [InlineData(Like.Pass)]
+    public async Task add_swipe_should_add_IsLikedByOtherUserDto_to_storage_only_once_with_true_IsLikedByOtherUserValue_if_other_users_liked(Like like)
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var command = new SwipeUser(user1.Id, user2.Id, (int) like);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.Null(exception);
+        // FIXME: powinny byc testy, jakie konkretnie wartości wpadły do metody Set() mocka
         _isLikedByOtherUserStorage.Verify(x => x.Set(It.IsAny<IsLikedByOtherUserDto>()), Times.Once);
     }
 

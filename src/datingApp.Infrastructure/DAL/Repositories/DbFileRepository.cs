@@ -25,11 +25,7 @@ internal sealed class DbFileRepository : IFileRepository
     public async Task<byte[]> GetByIdAsync(Guid fileId)
     {
         var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
-        if (file != null)
-        {
-            return file.Binary;
-        }
-        return null;
+        return file?.Binary;
     }
 
     public async Task AddAsync(byte[] photo, Guid fileId, string extension)

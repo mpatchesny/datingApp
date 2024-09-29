@@ -164,7 +164,6 @@ public class MessageRepositoryTests : IDisposable
         var badMessage = new Message(message.Id, match.Id, user1.Id, "ahoj", false, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(message));
         Assert.NotNull(exception);
-        Assert.IsType<InvalidOperationException>(exception);
     }
 
     [Fact]

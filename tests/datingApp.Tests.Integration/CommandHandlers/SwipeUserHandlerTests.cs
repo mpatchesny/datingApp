@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
+using Xunit.Sdk;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
@@ -44,8 +45,7 @@ public class SwipeUserHandlerTests : IDisposable
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        // FIXME: powinny byc testy, jakie konkretnie wartości wpadły do metody Set() mocka
-        _isLikedByOtherUserStorage.Verify(x => x.Set(It.IsAny<IsLikedByOtherUserDto>()), Times.Once);
+        _isLikedByOtherUserStorage.Verify(x =>  x.Set(It.Is<IsLikedByOtherUserDto>(i => i.IsLikedByOtherUser == false)), Times.Once);
     }
 
     [Theory]
@@ -55,12 +55,12 @@ public class SwipeUserHandlerTests : IDisposable
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Like);
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        // FIXME: powinny byc testy, jakie konkretnie wartości wpadły do metody Set() mocka
-        _isLikedByOtherUserStorage.Verify(x => x.Set(It.IsAny<IsLikedByOtherUserDto>()), Times.Once);
+        _isLikedByOtherUserStorage.Verify(x =>  x.Set(It.Is<IsLikedByOtherUserDto>(i => i.IsLikedByOtherUser == true)), Times.Once);
     }
 
     [Fact]

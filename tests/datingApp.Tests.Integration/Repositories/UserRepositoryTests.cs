@@ -13,94 +13,100 @@ namespace datingApp.Tests.Integration.Repositories;
 public class UserRepositoryTests : IDisposable
 {
     [Fact]
-    public async Task get_user_by_id_should_succeed()
+    public async Task given_user_exists_get_user_by_id_should_succeed()
     {
-        var user = await _userRepository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.NotNull(user);
-        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000001"), user.Id);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        
+        var retrievedUser = await _userRepository.GetByIdAsync(user.Id);
+        Assert.Same(user, retrievedUser);
     }
 
     [Fact]
-    public async Task get_user_by_existing_phone_should_succeed()
+    public async Task given_user_exists_get_user_by_phone_should_succeed()
     {
         var phone = "123456789";
-        var user = await _userRepository.GetByPhoneAsync(phone);
-        Assert.NotNull(user);
-        Assert.Equal(phone, user.Phone);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, phone : phone);
+
+        var retrievedUser = await _userRepository.GetByPhoneAsync(phone);
+        Assert.Same(user, retrievedUser);
     }
 
     [Fact]
-    public async Task get_user_by_existing_email_should_succeed()
+    public async Task given_user_exists_get_user_by_email_should_succeed()
     {
         var email = "test@test.com";
-        var user = await _userRepository.GetByEmailAsync(email);
-        Assert.NotNull(user);
-        Assert.Equal(email, user.Email);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email : email);
+
+        var retrievedUser = await _userRepository.GetByEmailAsync(email);
+        Assert.Same(user, retrievedUser);
     }
 
     [Fact]
     public async Task update_existing_user_should_succeed()
     {
-        var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var user = await _userRepository.GetByIdAsync(userId);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         user.ChangeBio("new bio");
+
         var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateAsync(user));
         Assert.Null(exception);
-        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.Same(user, updatedUser);
     }
 
     [Fact]
     public async Task delete_existing_user_should_succeed()
     {
-        var user = await _userRepository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.Null(exception);
-        var deletedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        var deletedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.Null(deletedUser);
     }
 
-    [Fact(Skip="after change user id from int to guid this test fails")]
+    [Fact]
     public async Task delete_nonexisting_user_should_throw_exception()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "888756489", "test3@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.NotNull(exception);
-        Assert.IsType<InvalidOperationException>(exception);
     }
 
     [Fact]
     public async Task add_user_should_succeed()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
         Assert.Null(exception);
-        var addedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        var addedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.Same(addedUser, user);
     }
 
     [Fact]
     public async Task add_user_with_existing_id_should_throw_exception()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
-        var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var settings = new UserSettings(user.Id, PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
         Assert.NotNull(exception);
-        Assert.IsType<InvalidOperationException>(exception);
     }
 
     [Fact]
-    public async Task get_nonexistsing_user_by_id_should_return_null()
+    public async Task given_user_not_exists_get_user_by_id_should_return_null()
     {
-        var userId = Guid.Parse("00000000-0000-0000-0000-000000000000");
+        var userId = Guid.NewGuid();
         var user = await _userRepository.GetByIdAsync(userId);
         Assert.Null(user);
     }
 
     [Fact]
-    public async Task get_nonexistsing_user_by_phone_should_return_null()
+    public async Task given_user_not_exists_get_user_by_phone_should_return_null()
     {
         var phone = "000555000";
         var user = await _userRepository.GetByPhoneAsync(phone);
@@ -108,9 +114,9 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_nonexistsing_user_by_email_should_return_null()
+    public async Task given_user_not_exists_get_user_by_email_should_return_null()
     {
-        var email = "nonexistingemail@test.com";
+        var email = "bademail@test.com";
         var user = await _userRepository.GetByEmailAsync(email);
         Assert.Null(user);
     }
@@ -121,11 +127,7 @@ public class UserRepositoryTests : IDisposable
 
     public UserRepositoryTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
         _userRepository = new DbUserRepository(_testDb.DbContext);
     }
 

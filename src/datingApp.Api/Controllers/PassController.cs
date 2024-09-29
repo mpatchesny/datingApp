@@ -31,7 +31,7 @@ public class PassController : ApiControllerBase
     {
         var swipedById = Guid.Parse(User.Identity?.Name);
         var swipedWhoId = userId;
-        var command = Authenticate(new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 1));
+        var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 1));
         await _swipeUserHandler.HandleAsync(command);
 
         var query = Authenticate(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });

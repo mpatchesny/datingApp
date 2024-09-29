@@ -10,7 +10,7 @@ namespace datingApp.Infrastructure.DAL.Repositories;
 
 internal sealed class DbDeletedEntityRepository : IDeletedEntityRepository
 {
-    DatingAppDbContext _dbContext;
+    private readonly DatingAppDbContext _dbContext;
     public DbDeletedEntityRepository(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;

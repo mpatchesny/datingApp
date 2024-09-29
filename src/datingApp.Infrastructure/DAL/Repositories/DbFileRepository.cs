@@ -35,6 +35,7 @@ internal sealed class DbFileRepository : IFileRepository
             Extension = extension,
             Binary = photo
         };
+
         if (await _dbContext.Files.AnyAsync(x => x.Id == fileId))
         {
             var originalFile = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
@@ -50,6 +51,7 @@ internal sealed class DbFileRepository : IFileRepository
     public async Task DeleteAsync(Guid fileId)
     {
         await _dbContext.Files.Where(f => f.Id == fileId).ExecuteDeleteAsync();
+        await _dbContext.SaveChangesAsync();
     }
 
 }

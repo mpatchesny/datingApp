@@ -47,6 +47,7 @@ public class PhotoRepositoryTests : IDisposable
     public async Task after_add_photo_get_photo_by_user_id_returns_plus_one_elements()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var photo = new Photo(Guid.NewGuid(), user.Id, "abc", "abc", 1);
         await _repository.AddAsync(photo);

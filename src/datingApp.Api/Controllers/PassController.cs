@@ -19,7 +19,6 @@ namespace datingApp.Api.Controllers;
 public class PassController : ApiControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
     private readonly IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
 
     public PassController(ICommandHandler<SwipeUser> swipeUserHandler,

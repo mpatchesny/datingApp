@@ -11,6 +11,7 @@ using datingApp.Application.Queries;
 using datingApp.Application.Repositories;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
+using datingApp.Application.Storage;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
@@ -20,6 +21,7 @@ using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
+using datingApp.Infrastructure.Storage;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
@@ -40,16 +42,15 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
-
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>))
                 .Where(t => !t.Name.Equals("GetUpdatesHandler")))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IPhotoService, PhotoService>();
+        services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
         services.AddScoped<IFileRepository, DbFileRepository>();
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

@@ -15,9 +15,10 @@ namespace datingApp.Tests.Integration.Repositories;
 public class MatchRepositoryTests : IDisposable
 {
     [Fact]
-    public async void get_existing_match_by_user_id_should_return_only_users_matches_and_match_messages()
+    public async void given_match_exists_get_match_by_user_id_should_return_only_users_matches_and_match_messages()
     {
         var userId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
         var matches = await _repository.GetByUserIdAsync(userId);
         Assert.Single(matches);
         Assert.Empty(matches.Where(x => x.UserId1 != userId && x.UserId2 != userId));
@@ -26,41 +27,42 @@ public class MatchRepositoryTests : IDisposable
     [Fact]
     public async void get_match_by_nonexisting_user_id_should_return_empty_collection()
     {
-        var matches = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000000"));
+        var matches = await _repository.GetByUserIdAsync(Guid.NewGuid());
         Assert.Empty(matches);
     }
 
     [Fact]
-    public async void get_existing_match_by_id_should_succeed()
+    public async void given_match_exists_get_match_by_id_should_succeed()
     {
         var match = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.NotNull(match);
     }
 
     [Fact]
-    public async void get_nonexisting_match_by_id_should_return_null()
+    public async void given_match_not_exists_get_match_by_id_should_return_null()
     {
-        var match = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000000"));
+        var match = await _repository.GetByIdAsync(Guid.NewGuid());
         Assert.Null(match);
     }
 
     [Fact]
-    public async void get_existsing_match_by_exsits_should_return_true()
+    public async void given_match_exists_get_exsits_should_return_true()
     {
-        var match = await _repository.ExistsAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
-        Assert.True(match);
+        var exists = await _repository.ExistsAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"));
+        Assert.True(exists);
     }
     [Fact]
-    public async void get_nonexistsing_match_by_exsits_should_return_false()
+    public async void given_match_not_exists_get_exsits_should_return_false()
     {
-        var match = await _repository.ExistsAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
-        Assert.False(match);
+        var exists = await _repository.ExistsAsync(Guid.NewGuid(), Guid.NewGuid());
+        Assert.False(exists);
     }
 
     [Fact]
     public async void delete_existing_match_by_id_should_succeed()
     {
         var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
         var match = await _repository.GetByIdAsync(matchId);
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(match));
         Assert.Null(exception);
@@ -69,12 +71,12 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void after_delete_match_get_matches_should_return_minus_one_elements()
+    public async void after_delete_match_get_matches_by_user_id_should_return_minus_one_elements()
     {
         var matchId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
         var match = await _repository.GetByIdAsync(matchId);
         await _repository.DeleteAsync(match);
-        _testDb.DbContext.SaveChanges();
         var matches = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Empty(matches);
     }
@@ -83,6 +85,7 @@ public class MatchRepositoryTests : IDisposable
     public async void add_match_should_succeed()
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
         var addedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000003"));
@@ -94,6 +97,7 @@ public class MatchRepositoryTests : IDisposable
     {
         var match = await _repository.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         match.SetDisplayed(match.UserId1);
+
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(match));
         Assert.Null(exception);
         var updatedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == Guid.Parse("00000000-0000-0000-0000-000000000001"));
@@ -101,26 +105,28 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void add_match_with_existing_id_should_throw_exception()
+    public async void add_match_with_existing_id_should_throw_InvalidOperationException()
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.NotNull(exception);
         Assert.IsType<InvalidOperationException>(exception);
     }
 
     [Fact]
-    public async void after_add_match_get_matches_should_return_plus_one_elements()
+    public async void after_add_match_get_matches_by_user_id_should_return_plus_one_elements()
     {
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), false, false, null, DateTime.UtcNow);
+
         await _repository.AddAsync(match);
         var matches = await _repository.GetByUserIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000001"));
         Assert.Equal(2, matches.Count());
     }
 
     // Arrange
-    private readonly IMatchRepository _repository;
     private readonly TestDatabase _testDb;
+    private readonly IMatchRepository _repository;
     public MatchRepositoryTests()
     {
         _testDb = new TestDatabase();

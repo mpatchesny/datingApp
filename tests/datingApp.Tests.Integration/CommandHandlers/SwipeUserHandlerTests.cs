@@ -55,13 +55,12 @@ public class SwipeUserHandlerTests : IDisposable
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Like);
 
-        var command = new SwipeUser(user1.Id, user2.Id, 1);
+        var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1 == user1.Id && m.UserId2 == user2.Id) || 
-            (m.UserId1 == user2.Id && m.UserId2 == user1.Id) );
+        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => m.UserId1 == user1.Id && m.UserId2 == user2.Id);
         Assert.NotNull(match);
         Assert.Equal(match.UserId1, user1.Id);
-        Assert.Equal(match.UserId2, user1.Id);
+        Assert.Equal(match.UserId2, user2.Id);
     }
 
     [Fact]

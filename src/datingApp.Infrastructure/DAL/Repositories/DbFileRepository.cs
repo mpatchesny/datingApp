@@ -49,12 +49,7 @@ internal sealed class DbFileRepository : IFileRepository
 
     public async Task DeleteAsync(Guid fileId)
     {
-        var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
-        if (file != null)
-        {
-            _dbContext.Files.Remove(file);
-            await _dbContext.SaveChangesAsync();
-        }
+        await _dbContext.Files.Where(f => f.Id == fileId).ExecuteDeleteAsync();
     }
 
 }

@@ -44,7 +44,7 @@ public class FileRepositoryTests : IDisposable
         var fileId = photo.Id;
 
         IFileRepository storage = new DbFileRepository(_testDb.DbContext);
-        var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(data, fileId , "txt"));
+        var exception = await Record.ExceptionAsync(async () => await storage.AddAsync(data, fileId , "txt"));
         Assert.Null(exception);
 
         var file = await storage.GetByIdAsync(fileId);
@@ -62,7 +62,7 @@ public class FileRepositoryTests : IDisposable
         file.Binary[2] = byte.MaxValue;
 
         IFileRepository storage = new DbFileRepository(_testDb.DbContext);
-        var exception = await Record.ExceptionAsync(async () => await storage.SaveFileAsync(file.Binary, file.Id , "txt"));
+        var exception = await Record.ExceptionAsync(async () => await storage.AddAsync(file.Binary, file.Id , "txt"));
         Assert.Null(exception);
 
         var fileBinary = await storage.GetByIdAsync(file.Id);

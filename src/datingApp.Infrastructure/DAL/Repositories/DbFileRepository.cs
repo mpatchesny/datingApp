@@ -32,7 +32,7 @@ internal sealed class DbFileRepository : IFileRepository
         return null;
     }
 
-    public async Task SaveFileAsync(byte[] photo, Guid fileId, string extension)
+    public async Task AddAsync(byte[] photo, Guid fileId, string extension)
     {
         var file = new FileDto {
             Id = fileId,

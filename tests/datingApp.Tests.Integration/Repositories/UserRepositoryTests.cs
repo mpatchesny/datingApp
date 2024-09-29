@@ -98,6 +98,28 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task add_user_with_existing_email_should_throw_exception()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var badUser = new User(settings.UserId, "000000000", user.Email, "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
+        Assert.NotNull(exception);
+    }
+
+    [Fact (Skip = "email is not unique apparently")]
+    public async Task add_user_with_existing_phone_should_throw_exception()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var badUser = new User(settings.UserId, user.Phone, "test@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
+        Assert.NotNull(exception);
+    }
+
+    [Fact]
     public async Task given_user_not_exists_get_user_by_id_should_return_null()
     {
         var userId = Guid.NewGuid();

@@ -22,7 +22,6 @@ internal sealed class AccessCodeConfiguration : IEntityTypeConfiguration<AccessC
         builder.Property(x => x.ExpirationTime)
             .IsRequired();
         builder.HasKey(x => x.EmailOrPhone);
-        builder.HasIndex(x => new {x.EmailOrPhone});
         builder.IsUnlogged();
     }
 }

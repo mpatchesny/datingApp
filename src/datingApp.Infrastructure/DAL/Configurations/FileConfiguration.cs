@@ -20,7 +20,6 @@ internal sealed class FileConfiguration : IEntityTypeConfiguration<FileDto>
         builder.Property(x => x.Binary)
             .IsRequired();
         builder.HasKey(x => x.Id);
-        builder.HasIndex(x => new {x.Id});
         builder.HasOne<Photo>()
                .WithOne()
                .HasForeignKey<FileDto>(x => x.Id);

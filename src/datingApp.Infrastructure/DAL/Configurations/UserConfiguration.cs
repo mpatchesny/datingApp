@@ -15,11 +15,9 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
             .IsRequired();
-        builder.HasIndex(x => x.Email).IsUnique();
         builder.Property(x => x.Email)
             .IsRequired()
             .HasMaxLength(256);
-        builder.HasIndex(x => x.Phone).IsUnique();
         builder.Property(x => x.Phone)
             .IsRequired()
             .HasMaxLength(9);
@@ -35,6 +33,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Sex)
             .IsRequired();
 
+        builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => new {x.Sex, x.DateOfBirth});
     }
 }

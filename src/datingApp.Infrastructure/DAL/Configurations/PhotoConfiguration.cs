@@ -21,7 +21,5 @@ internal sealed class PhotoConfiguration : IEntityTypeConfiguration<Photo>
             .IsRequired();
         builder.Property(x => x.Path)
             .IsRequired();
-
-        builder.HasIndex(x => new {x.UserId, x.Oridinal});
     }
 }

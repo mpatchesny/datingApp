@@ -7,6 +7,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using datingApp.Application.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,12 +19,13 @@ namespace datingApp.Api.Controllers;
 public class PassController : ApiControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
+    private readonly IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
+
     public PassController(ICommandHandler<SwipeUser> swipeUserHandler,
-                        IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> getLikedByOtherUserHandler)
+                        IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
     {
         _swipeUserHandler = swipeUserHandler;
-        _getLikedByOtherUserHandler = getLikedByOtherUserHandler;
+        _isLikedByOtherUserStorage = isLikedByOtherUserStorage;
     }
 
     [HttpPut("{userId:guid}")]
@@ -31,11 +33,10 @@ public class PassController : ApiControllerBase
     {
         var swipedById = Guid.Parse(User.Identity?.Name);
         var swipedWhoId = userId;
-        var command = Authenticate(new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 1));
+        var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 1));
         await _swipeUserHandler.HandleAsync(command);
 
-        var query = Authenticate(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });
-        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(query);
+        var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();
         return isLikedByOtherUser;
     }
 }

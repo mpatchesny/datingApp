@@ -46,10 +46,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);;
-
-        var swipe = new Swipe(user2.Id, user1.Id, Like.Like, DateTime.UtcNow);
-        _testDb.DbContext.Swipes.Add(swipe);
-        await _testDb.DbContext.SaveChangesAsync();
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Like);
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");

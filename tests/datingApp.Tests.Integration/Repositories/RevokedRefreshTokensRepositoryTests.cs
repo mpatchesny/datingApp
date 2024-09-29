@@ -13,7 +13,7 @@ namespace datingApp.Tests.Integration.Repositories;
 public class RevokedRefreshTokensRepositoryTests : IDisposable
 {
     [Fact]
-    public async Task given_token_exists_in_repository_ExistsAsync_should_return_true()
+    public async Task given_token_exists_ExistsAsync_returns_true()
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
         await _testDb.DbContext.RevokedRefreshTokens.AddAsync(token);
@@ -24,7 +24,7 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_token_not_exists_in_repository_ExistsAsync_should_return_false()
+    public async Task given_token_not_exists_ExistsAsync_returns_false()
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
         var exists = await _repository.ExistsAsync(token.Token);
@@ -32,7 +32,7 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task AddAsync_should_add_token_to_repository()
+    public async Task AddAsync_adds_token_to_repository()
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
         await _repository.AddAsync(token);
@@ -40,9 +40,22 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
         Assert.True(exists);
     }
 
+    [Fact]
+    public async Task given_token_exists_add_token_with_same_token_throws_exceptions()
+    {
+        var tokenToken = "abcdef";
+        var token = new TokenDto(tokenToken, DateTime.UtcNow);
+        await _testDb.DbContext.RevokedRefreshTokens.AddAsync(token);
+        await _testDb.DbContext.SaveChangesAsync();
+
+        var badToken = new TokenDto(tokenToken, DateTime.UtcNow);
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(badToken));
+        Assert.NotNull(exception);
+    }
+
     // Arrange
-    private readonly IRevokedRefreshTokensRepository _repository;
     private readonly TestDatabase _testDb;
+    private readonly IRevokedRefreshTokensRepository _repository;
     public RevokedRefreshTokensRepositoryTests()
     {
         _testDb = new TestDatabase();

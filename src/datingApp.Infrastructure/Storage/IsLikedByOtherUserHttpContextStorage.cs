@@ -7,11 +7,11 @@ using datingApp.Application.Storage;
 
 namespace datingApp.Infrastructure.Storage;
 
-internal sealed class IsLikedByOtherUserHttpContextStorage : IIsLikedByOtherUserStorage
+internal sealed class HttpContextIsLikedByOtherUserStorage : IIsLikedByOtherUserStorage
 {
     private const string _key = "is_liked_by_other_user";
     private readonly HttpContextAccessor _httpContextAccessor;
-    public IsLikedByOtherUserHttpContextStorage(HttpContextAccessor httpContextAccessor)
+    public HttpContextIsLikedByOtherUserStorage(HttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }

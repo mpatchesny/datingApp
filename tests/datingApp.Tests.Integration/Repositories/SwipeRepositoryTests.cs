@@ -95,8 +95,8 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     // Arrange
-    private readonly ISwipeRepository _repository;
     private readonly TestDatabase _testDb;
+    private readonly ISwipeRepository _repository;
     
     public SwipeRepositoryTests()
     {

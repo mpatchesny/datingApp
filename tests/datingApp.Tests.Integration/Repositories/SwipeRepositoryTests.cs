@@ -37,18 +37,17 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task get_by_swiped_by_swiped_who_should_return_nonempty_collection()
+    public async Task given_swipe_exists_get_by_swiped_by_swiped_who_returns_swipe()
     {
-        // TODO: fix test name
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
 
         var swipe = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
         Assert.NotNull(swipe);
     }
 
     [Fact]
-    public async Task when_swipes_with_given_id_exsits_swipe_exists_should_return_true()
+    public async Task when_swipes_with_given_id_exsits_exists_returns_true()
     {
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
         var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
@@ -60,7 +59,7 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task when_no_swipes_match_get_by_swiped_by_swiped_who_should_return_empty_collection()
+    public async Task when_no_swipes_match_get_by_swiped_by_swiped_who_returns_null()
     {
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
         var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);

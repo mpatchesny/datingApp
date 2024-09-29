@@ -10,8 +10,8 @@ namespace datingApp.Infrastructure.Storage;
 internal sealed class HttpContextIsLikedByOtherUserStorage : IIsLikedByOtherUserStorage
 {
     private const string _key = "is_liked_by_other_user";
-    private readonly HttpContextAccessor _httpContextAccessor;
-    public HttpContextIsLikedByOtherUserStorage(HttpContextAccessor httpContextAccessor)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public HttpContextIsLikedByOtherUserStorage(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }

@@ -18,7 +18,6 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
-
 public class SwipeUserHandlerTests : IDisposable
 {
     [Theory]

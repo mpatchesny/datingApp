@@ -17,15 +17,9 @@ namespace datingApp.Api.Controllers;
 public class LikeController : ApiControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    private readonly IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> _getLikedByOtherUserHandler;
-    private readonly ICommandHandler<AddMatch> _addMatchHandler;
-    public LikeController(ICommandHandler<SwipeUser> swipeUserHandler,
-                        IQueryHandler<GetIsLikedByOtherUser, IsLikedByOtherUserDto> getLikedByOtherUserHandler,
-                        ICommandHandler<AddMatch> addMatchHandler)
+    public LikeController(ICommandHandler<SwipeUser> swipeUserHandler)
     {
         _swipeUserHandler = swipeUserHandler;
-        _getLikedByOtherUserHandler = getLikedByOtherUserHandler;
-        _addMatchHandler = addMatchHandler;
     }
 
     [HttpPut("{userId:guid}")]
@@ -33,15 +27,8 @@ public class LikeController : ApiControllerBase
     {
         var swipedById = AuthenticatedUserId;
         var swipedWhoId = userId;
-        var command = Authenticate(new SwipeUser(Guid.NewGuid(), swipedById, swipedWhoId, 2));
+        var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 2));
         await _swipeUserHandler.HandleAsync(command);
-
-        var query = Authenticate(new GetIsLikedByOtherUser { SwipedById = swipedWhoId, SwipedWhoId = swipedById });
-        var isLikedByOtherUser = await _getLikedByOtherUserHandler.HandleAsync(query);
-        if (isLikedByOtherUser.IsLikedByOtherUser) 
-        {
-            await _addMatchHandler.HandleAsync(new AddMatch(swipedById, swipedWhoId));
-        }
 
         return isLikedByOtherUser;
     }

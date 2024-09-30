@@ -32,11 +32,13 @@ public class AuthorizationServiceWrapperTests
     }
 
     private readonly IDatingAppAuthorizationService _authorizationServiceWrapper;
+    private readonly Mock<IHttpContextAccessor> _httpContextAccessor;
+    private readonly Mock<IAuthorizationService> _authorizationService;
 
     public AuthorizationServiceWrapperTests()
     {
-        var httpContextAccessor = new Mock<IHttpContextAccessor>();
-        var authorizationService = new Mock<IAuthorizationService>();
+        _httpContextAccessor = new Mock<IHttpContextAccessor>();
+        _authorizationService = new Mock<IAuthorizationService>();
         _authorizationServiceWrapper = new AuthorizationServiceWrapper(httpContextAccessor.Object, authorizationService.Object);
     }
 }

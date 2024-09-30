@@ -41,7 +41,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task change_oridinal_of_nonexisting_photo_should_throw_exception()
+    public async Task change_oridinal_of_nonexisting_photo_throws_PhotoNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var command = new ChangePhotoOridinal(Guid.NewGuid(), 1);
@@ -51,7 +51,7 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_change_oridinal_of_existing_photo_should_throw_UnauthorizedException()
+    public async Task given_authorization_fail_change_oridinal_of_existing_photo_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

@@ -23,7 +23,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class DeleteUserHandlerTests : IDisposable
 {
     [Fact]
-    public async void delete_existing_user_should_succeed_and_add_user_id_to_deleted_entities()
+    public async void given_user_exists_delete_user_should_succeed_and_add_user_id_to_deleted_entities()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -48,7 +48,7 @@ public class DeleteUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void delete_existing_user_should_delete_user_photos_stored_on_disk()
+    public async void given_user_exists_delete_user_should_delete_user_photos_stored_on_disk()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -69,7 +69,7 @@ public class DeleteUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void delete_nonexisting_user_should_throw_exception()
+    public async void given_user_not_exists_delete_user_throws_UserNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
     
@@ -81,7 +81,7 @@ public class DeleteUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_user_id_exists_in_deleted_entities_repository_delete_user_should_throw_already_deleted_exception()
+    public async void given_user_id_exists_in_deleted_entities_repository_delete_user_throws_UserAlreadyDeletedExceptionn()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

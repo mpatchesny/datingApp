@@ -23,7 +23,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class DeletePhotoHandlerTests : IDisposable
 {
     [Fact]
-    public async Task delete_existing_photo_should_succeed_and_add_deleted_photo_id_to_deleted_entities()
+    public async Task given_photo_exists_delete_photo_should_succeed_and_add_deleted_photo_id_to_deleted_entities()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -50,7 +50,7 @@ public class DeletePhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_nonexisting_photo_should_throw_exception()
+    public async Task given_photo_not_exists_delete_photo_throws_PhotoNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var nonExistingPhotoId = Guid.NewGuid();

@@ -15,7 +15,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPhotoHandlerTests : IDisposable
 {
     [Fact]
-    public async void get_existing_photo_should_return_photo_dto()
+    public async void given_photo_exists_get_photo_returns_photo_dto()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
@@ -26,7 +26,7 @@ public class GetPhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void get_nonexisting_photo_should_return_photo_not_exists_exception()
+    public async void given_photo_not_exists_get_photo_returns_PhotoNotExistsException()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 

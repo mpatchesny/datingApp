@@ -18,7 +18,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class ChangeUserHandlerTests : IDisposable
 {
     [Fact]
-    public async Task change_existing_user_should_succeed()
+    public async Task given_user_exists_change_user_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -29,7 +29,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_change_existing_user_should_return_UnauthorizedException()
+    public async Task given_authorization_fail_change_existing_user_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -41,7 +41,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task change_nothing_should_succeed()
+    public async Task given_user_exists_change_nothing_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -52,7 +52,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task change_existing_user_without_changing_date_of_birth_should_succeed()
+    public async Task given_user_exists_change_user_without_changing_date_of_birth_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -63,7 +63,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task change_nonexisting_user_should_throw_exception()
+    public async Task given_user_not_exists_change_user_throws_UserNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
 
@@ -74,7 +74,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_date_change_user_should_throw_exception()
+    public async Task given_invalid_date_change_user_throws_InvalidDateOfBirthFormatException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -86,7 +86,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task change_existing_user_settings_should_succeed()
+    public async Task given_user_exists_change_user_settings_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -97,7 +97,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task change_location_of_existing_user_should_succeed()
+    public async Task given_user_exists_change_user_location_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

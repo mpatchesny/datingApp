@@ -21,7 +21,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class AddPhotoHandlerTests : IDisposable
 {
     [Fact]
-    public async Task add_photo_to_existing_user_should_succeed()
+    public async Task given_user_exists_add_photo_to_user_should_succeed()
     {
         var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -29,7 +29,7 @@ public class AddPhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task add_photo_to_nonexisting_user_should_throw_exception()
+    public async Task given_user_not_exists_add_photo_to_user_throws_UserNotExistsException()
     {
         var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -38,7 +38,7 @@ public class AddPhotoHandlerTests : IDisposable
     }
    
     [Fact]
-    public async Task add_photo_when_user_reached_photo_count_limit_should_throw_exception()
+    public async Task add_photo_when_user_reached_photo_count_limit_throws_UserPhotoLimitException()
     {
         var photos = new List<Photo>
         {

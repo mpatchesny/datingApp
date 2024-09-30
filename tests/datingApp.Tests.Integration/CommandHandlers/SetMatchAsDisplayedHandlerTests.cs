@@ -19,7 +19,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class SetMatchAsDisplayedHandlerTests : IDisposable
 {
     [Fact]
-    public async Task set_existsing_match_as_displayed_should_succeed()
+    public async Task given_match_exists_set_match_as_displayed_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -46,7 +46,7 @@ public class SetMatchAsDisplayedHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task set_nonexistsing_match_as_displayed_should_throw_exception()
+    public async Task given_match_not_exists_set_match_as_displayed_throws_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

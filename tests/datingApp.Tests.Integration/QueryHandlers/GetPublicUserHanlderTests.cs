@@ -19,7 +19,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPublicUserHanlderTests : IDisposable
 {
     [Fact]
-    public async Task given_authorization_serivce_success_query_existing_user_should_return_public_user_dto()
+    public async Task given_user_exists_and_authorization_serivce_success_get_public_user_returns_public_user_dto()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
@@ -34,7 +34,7 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task query_nonexisting_user_should_return_null()
+    public async Task given_user_not_exists_get_public_user_returns_null()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
@@ -46,7 +46,7 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task request_by_nonexisting_user_should_not_exists_exception()
+    public async Task request_by_nonexisting_user_returns_UserNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);

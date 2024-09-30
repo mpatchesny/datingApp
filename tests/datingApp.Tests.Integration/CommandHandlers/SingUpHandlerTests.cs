@@ -17,7 +17,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class SingUpHandlerTests : IDisposable
 {
     [Fact]
-    public async Task signup_user_with_existing_email_should_throw_exception()
+    public async Task given_email_already_exists_signup_user_throws_EmailAlreadyInUseException()
     {
         var command = new SignUp(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "test@test.com", "Janusz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -26,7 +26,7 @@ public class SingUpHandlerTests : IDisposable
     }
     
     [Fact]
-    public async Task signup_user_with_existing_phone_should_throw_exception()
+    public async Task given_phone_already_exists_signup_user_throws_PhoneAlreadyInUseException()
     {
         var command = new SignUp(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "freeemail@test.com", "Janusz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -43,7 +43,7 @@ public class SingUpHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_date_of_birth_singup_should_throw_exception()
+    public async Task given_invalid_date_of_birth_singup_throws_InvalidDateOfBirthFormatException()
     {
         var command = new SignUp(Guid.Parse("00000000-0000-0000-0000-000000000001"), "111111111", "freeemail@test.com", "Januesz", "01.01.2000", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));

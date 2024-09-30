@@ -15,7 +15,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetUpdatesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task get_updates_should_return_matches_for_given_user()
+    public async Task get_updates_returns_matches_for_given_user()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -34,7 +34,7 @@ public class GetUpdatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task get_updates_should_return_matches_after_last_activity_time()
+    public async Task get_updates_returns_matches_after_last_activity_time()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -51,7 +51,7 @@ public class GetUpdatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task get_updates_should_return_matches_that_have_messages_send_after_last_activity_time()
+    public async Task get_updates_returns_matches_that_have_messages_send_after_last_activity_time()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -72,7 +72,7 @@ public class GetUpdatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task when_no_matches_match_criteria_get_updates_should_return_empty_collection()
+    public async Task given_no_matches_match_criteria_get_updates_returns_empty_collection()
     {
         var userWithNotMatch = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -90,7 +90,7 @@ public class GetUpdatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_not_exists_get_updates_returns_user_not_exists_exception()
+    public async Task given_user_not_exists_get_updates_returns_UserNotExistsException()
     {
         var query = new GetUpdates{ UserId = Guid.NewGuid(), LastActivityTime = DateTime.UtcNow};
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));

@@ -13,7 +13,7 @@ using Xunit;
 namespace datingApp.Tests.Integration.CommandHandlers;
 
 
-public class SetMessageAsDisplayedHandlerTests : IDisposable
+public class SetMessagesAsDisplayedHandlerTests : IDisposable
 {
     [Fact]
     public async Task given_message_exists_set_messages_as_displayed_should_succeed()
@@ -34,7 +34,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
     // Arrange
     private readonly SetMessagesAsDisplayedHandler _handler;
     private readonly TestDatabase _testDb;
-    public SetMessageAsDisplayedHandlerTests()
+    public SetMessagesAsDisplayedHandlerTests()
     {
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);

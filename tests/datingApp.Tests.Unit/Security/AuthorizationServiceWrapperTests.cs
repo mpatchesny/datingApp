@@ -20,7 +20,7 @@ public class AuthorizationServiceWrapperTests
     }
 
     [Fact]
-    public void given_IHttpContextAccessor_context_user_name_not_equals_user_id_authorization_throws_UnauthorizedException()
+    public void given_resource_is_not_null_and_IHttpContextAccessor_context_user_name_not_equals_user_id_authorization_throws_UnauthorizedException()
     {
         // TODO
     }

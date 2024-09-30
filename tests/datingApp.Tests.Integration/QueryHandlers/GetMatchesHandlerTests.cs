@@ -16,7 +16,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task GetMatchesHandler_by_existing_user_id_should_return_nonempty_collection_of_matches_dto()
+    public async Task given_user_exists_GetMatchesHandler_by_user_id_should_return_nonempty_collection_of_matches_dto()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -29,7 +29,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task GetMatchesHandler_matches_by_nonexisting_user_id_should_return_user_not_exists_exception()
+    public async Task given_user_not_exists_GetMatchesHandler_by_user_id_should_return_UserNotExistsException()
     {
         var query = new GetMatches() { UserId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
@@ -55,7 +55,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task returns_proper_number_of_matches_when_page_above_1()
+    public async Task given_page_above_1_returns_proper_number_of_matches()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var matchesToCreate = 9;

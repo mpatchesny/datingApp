@@ -16,7 +16,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class SetMessageAsDisplayedHandlerTests : IDisposable
 {
     [Fact]
-    public async Task set_existsing_message_as_displayed_should_succeed()
+    public async Task given_message_exists_set_messages_as_displayed_should_succeed()
     {
         var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -24,7 +24,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task set_non_existsing_messages_as_displayed_should_do_nothing()
+    public async Task given_message_not_exists_set_messages_as_displayed_should_do_nothing()
     {
         var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000099"), Guid.Parse("00000000-0000-0000-0000-000000000099"));
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));

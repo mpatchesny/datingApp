@@ -39,6 +39,6 @@ public class AuthorizationServiceWrapperTests
     {
         _httpContextAccessor = new Mock<IHttpContextAccessor>();
         _authorizationService = new Mock<IAuthorizationService>();
-        _authorizationServiceWrapper = new AuthorizationServiceWrapper(httpContextAccessor.Object, authorizationService.Object);
+        _authorizationServiceWrapper = new AuthorizationServiceWrapper(_httpContextAccessor.Object, _authorizationService.Object);
     }
 }

@@ -33,18 +33,17 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
         {
             var swipe = new Swipe(command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
             await _swipeRepository.AddAsync(swipe);
+        }
 
-            var otherUserSwipe = await _swipeRepository.GetBySwipedBy(command.SwipedWhoId, command.SwipedById);
-            if (otherUserSwipe?.Like == Like.Like)
+        var otherUserSwipe = await _swipeRepository.GetBySwipedBy(command.SwipedWhoId, command.SwipedById);
+        if (otherUserSwipe?.Like == Like.Like)
+        {
+            if ((Like) command.Like == Like.Like)
             {
-                isLikedByOtherUser.IsLikedByOtherUser = true;
-
-                if ((Like) command.Like == Like.Like)
-                {
-                    var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, false, false, null, DateTime.UtcNow);
-                    await _matchRepository.AddAsync(match);
-                }
+                var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, false, false, null, DateTime.UtcNow);
+                await _matchRepository.AddAsync(match);
             }
+            isLikedByOtherUser.IsLikedByOtherUser = true;
         }
 
         _isLikedByOtherUserStorage.Set(isLikedByOtherUser);

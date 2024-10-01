@@ -7,18 +7,22 @@ namespace datingApp.Application.PhotoManagement;
 
 internal sealed class DummyPhotoService : IPhotoService
 {
-    public byte[] ConvertToArrayOfBytes(string base64content)
+    public byte[] GetArrayOfBytes()
     {
-        byte[] bytes = new byte[10];
-        return bytes;
+        throw new NotImplementedException();
     }
 
-    public string GetImageFileFormat(byte[] photo)
+    public string GetImageFileFormat()
     {
         return "jpg";
     }
 
-    public void ValidatePhoto(byte[] photo)
+    public void SetBase64Photo(string base64content)
+    {
+        // do nothing
+    }
+
+    public void ValidatePhoto()
     {
         // do nothing
     }

@@ -28,14 +28,13 @@ internal sealed class DbFileRepository : IFileRepository
     public async Task<byte[]> GetByIdAsync(Guid fileId)
     {
         var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
-        _fileCompressor.Decompress(file?.Binary, out byte[] decompressedBinary);
+        if (file == null) return null;
+        _fileCompressor.Decompress(file.Binary, out byte[] decompressedBinary);
         return decompressedBinary;
     }
 
     public async Task AddAsync(byte[] photo, Guid fileId, string extension)
     {
-        if (photo == null) return;
-
         _fileCompressor.Decompress(photo, out byte[] compressedBinary);
 
         var file = new FileDto {

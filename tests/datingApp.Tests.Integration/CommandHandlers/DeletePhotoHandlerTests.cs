@@ -37,7 +37,7 @@ public class DeletePhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_delete_existing_photo_should_throw_UnauthorizedException()
+    public async Task given_authorization_fail_delete_existing_photo_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -63,7 +63,7 @@ public class DeletePhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_photo_id_exists_in_deleted_entities_repository_delete_user_should_throw_already_deleted_exception()
+    public async Task given_photo_not_exists_and_photo_id_in_deleted_entities_repository_delete_user_throws_PhotoAlreadyDeletedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

@@ -36,7 +36,7 @@ public class DeleteUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_authorization_fail_delete_existing_user_should_throw_UnauthorizedException()
+    public async void given_authorization_fail_delete_existing_user_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -81,7 +81,7 @@ public class DeleteUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_user_id_exists_in_deleted_entities_repository_delete_user_throws_UserAlreadyDeletedExceptionn()
+    public async void given_user_not_exists_and_id_in_deleted_entities_repository_delete_user_throws_UserAlreadyDeletedExceptionn()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

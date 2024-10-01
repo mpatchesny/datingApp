@@ -52,6 +52,7 @@ public class DeleteMatchHandlerTests : IDisposable
     public async Task given_match_not_exists_delete_match_throws_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+
         var command = new DeleteMatch(Guid.NewGuid());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -59,7 +60,7 @@ public class DeleteMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_id_exists_in_deleted_entities_repository_delete_match_should_throw_already_deleted_exception()
+    public async Task given_match_not_exists_and_match_id_in_deleted_entities_repository_delete_match_throws_MatchAlreadyDeletedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

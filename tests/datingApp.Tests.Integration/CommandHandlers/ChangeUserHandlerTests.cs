@@ -29,7 +29,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_change_existing_user_throws_UnauthorizedException()
+    public async Task given_authorization_fail_and_user_exists_change_user_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -74,7 +74,7 @@ public class ChangeUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_invalid_date_change_user_throws_InvalidDateOfBirthFormatException()
+    public async Task given_user_exists_change_user_with_invalid_date_throws_InvalidDateOfBirthFormatException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

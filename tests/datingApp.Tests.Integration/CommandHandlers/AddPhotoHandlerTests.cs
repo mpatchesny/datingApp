@@ -23,7 +23,8 @@ public class AddPhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_user_exists_add_photo_to_user_should_succeed()
     {
-        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "dGVzdA==");
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var command = new AddPhoto(Guid.NewGuid(), user.Id, "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -31,48 +32,36 @@ public class AddPhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_user_not_exists_add_photo_to_user_throws_UserNotExistsException()
     {
-        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), "dGVzdA==");
+        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
    
     [Fact]
-    public async Task add_photo_when_user_reached_photo_count_limit_throws_UserPhotoLimitException()
+    public async Task given_user_reached_photo_count_limit_add_photo_throws_UserPhotoLimitException()
     {
-        var photos = new List<Photo>
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        for (int i = 0; i < PHOTO_COUNT_PER_USER_LIMIT; i++)
         {
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 2),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000002"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 3),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000003"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 4),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000004"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 5),
-            new Photo(Guid.Parse("00000000-0000-0000-0000-000000000005"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 6)
-        };
-        await _testDb.DbContext.Photos.AddRangeAsync(photos);
-        await _testDb.DbContext.SaveChangesAsync();
-        var command = new AddPhoto(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "dGVzdA==");
+            _ = IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, i);
+        }
+        
+        var command = new AddPhoto(Guid.NewGuid(), user.Id, "dGVzdA==");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
     }
     
     // Arrange
+    private readonly int PHOTO_COUNT_PER_USER_LIMIT = 6;
     private readonly AddPhotoHandler _handler;
     private readonly TestDatabase _testDb;
     public AddPhotoHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, 18, 20, 50, 40.5, 40.5);
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
-        var photo = new Photo(Guid.Parse("00000000-0000-0000-0000-000000000000"), Guid.Parse("00000000-0000-0000-0000-000000000001"), "abc", "abc", 1);
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Photos.Add(photo);
-        _testDb.DbContext.SaveChanges();
-
         var photoRepository = new DbPhotoRepository(_testDb.DbContext);
         var userRepository = new DbUserRepository(_testDb.DbContext);
-
         var mockedPhotoService = new Mock<IPhotoService>();
         mockedPhotoService.Setup(m => m.GetImageFileFormat(It.IsAny<byte[]>())).Returns("jpg");
         var mockedFileStorage = new Mock<IFileRepository>();

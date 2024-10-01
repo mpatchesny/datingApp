@@ -54,6 +54,7 @@ public static class Extensions
         services.AddScoped<IFileRepository, DbFileRepository>();
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
+        services.AddSingleton<IFileCompressor, InMemoryFileCompressor>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();
         return services;

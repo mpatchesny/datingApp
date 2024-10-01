@@ -130,7 +130,8 @@ public class FileRepositoryTests : IDisposable
     public FileRepositoryTests()
     {
         _testDb = new TestDatabase();
-        _storage = new DbFileRepository(_testDb.DbContext);
+        var compressor = new DummyFileCompressor();
+        _storage = new DbFileRepository(_testDb.DbContext, compressor);
     }
 
     // Teardown

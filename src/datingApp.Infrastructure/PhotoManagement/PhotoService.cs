@@ -96,15 +96,15 @@ internal sealed class PhotoService : IPhotoService
 
         int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
         int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
-        int maxPhotoSizeMBBytes64EncodedStringApprox = (int) Math.Ceiling(1.5 * maxPhotoSizeMB);
-        int minPhotoSizeKBBytes64EncodedStringApprox = (int) Math.Ceiling(1.5 * maxPhotoSizeMB);
+        int maxPhotoSizeMBBase64EncodedApprox = (int) Math.Ceiling(1.5 * maxPhotoSizeMB);
+        int minPhotoSizeMBBase64EncodedApprox = (int) Math.Ceiling(1.5 * maxPhotoSizeMB);
 
         // Initial photo validation: is base64 string length within range
-        if (_base64Bytes.Length < maxPhotoSizeMBBytes64EncodedStringApprox)
+        if (_base64Bytes.Length < maxPhotoSizeMBBase64EncodedApprox)
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
-        if (_base64Bytes.Length > minPhotoSizeKBBytes64EncodedStringApprox)
+        if (_base64Bytes.Length > minPhotoSizeMBBase64EncodedApprox)
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }

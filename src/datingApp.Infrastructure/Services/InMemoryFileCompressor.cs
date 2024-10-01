@@ -36,7 +36,6 @@ internal sealed class InMemoryFileCompressor : IFileCompressor
         }
 
         var outputMemoryStream = new MemoryStream();
-
         using (var inStream = new MemoryStream(compressedFile))
         {
             using (var gzipStream = new GZipStream(inStream, CompressionMode.Decompress))
@@ -44,7 +43,6 @@ internal sealed class InMemoryFileCompressor : IFileCompressor
                 CopyStream(gzipStream, outputMemoryStream);
             }
         }
-
         notCompressedFile = outputMemoryStream.ToArray();
     }
 

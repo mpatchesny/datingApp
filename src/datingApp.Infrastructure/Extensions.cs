@@ -49,7 +49,7 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
-        services.AddSingleton<IPhotoService, PhotoService>();
+        services.AddScoped<IPhotoService, PhotoService>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
         services.AddScoped<IFileRepository, DbFileRepository>();
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();

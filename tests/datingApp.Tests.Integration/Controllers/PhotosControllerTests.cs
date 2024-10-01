@@ -15,7 +15,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Controllers;
 
-[Collection("Integration tests")]
+[Collection("Controller tests")]
 public class PhotosControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]

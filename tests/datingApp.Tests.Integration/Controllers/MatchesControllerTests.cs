@@ -13,7 +13,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Controllers;
 
-[Collection("Integration tests")]
+[Collection("Controller tests")]
 public class MatchesControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]

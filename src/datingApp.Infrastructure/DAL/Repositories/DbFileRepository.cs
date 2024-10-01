@@ -43,14 +43,18 @@ internal sealed class DbFileRepository : IFileRepository
             Binary = compressedBinary
         };
 
-        if (await _dbContext.Files.AnyAsync(x => x.Id == fileId))
-        {
-            _dbContext.Files.Update(file);
-        }
-        else
+        var existingFile = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
+        if (existingFile == null)
         {
             await _dbContext.Files.AddAsync(file);
         }
+        else
+        {
+            existingFile.Extension = file.Extension;
+            existingFile.Binary = file.Binary;
+            _dbContext.Files.Update(existingFile);
+        }
+
         await _dbContext.SaveChangesAsync();
     }
 

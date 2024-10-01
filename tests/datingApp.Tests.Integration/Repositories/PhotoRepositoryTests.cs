@@ -88,7 +88,7 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task add_photo_with_existing_id_should_throw_exception()
+    public async Task add_photo_with_existing_id_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);

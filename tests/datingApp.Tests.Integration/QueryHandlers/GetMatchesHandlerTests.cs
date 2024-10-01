@@ -29,7 +29,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_not_exists_GetMatchesHandler_by_user_id_should_return_UserNotExistsException()
+    public async Task given_user_not_exists_GetMatchesHandler_by_user_id_throws_UserNotExistsException()
     {
         var query = new GetMatches() { UserId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));

@@ -37,7 +37,7 @@ public class RefreshTokenHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_refresh_token_validation_failed_ResfreshTokenHandler_should_throw_InvalidRefreshTokenException()
+    public async Task given_refresh_token_validation_failed_ResfreshTokenHandler_throws_InvalidRefreshTokenException()
     {
         _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns(new JwtDto());
         _authenticator.Setup(m => m.ValidateRefreshToken(It.IsAny<string>())).Returns(new ClaimsPrincipal());

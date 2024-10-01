@@ -24,7 +24,7 @@ public class PhotoServiceTests
     }
 
     [Fact]
-    public void given_invalid_or_unknown_file_format_validate_should_throw_InvalidPhotoException()
+    public void given_invalid_or_unknown_file_format_validate_throws_InvalidPhotoException()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
@@ -84,7 +84,7 @@ public class PhotoServiceTests
     }
 
     [Fact]
-    public void given_invalid_base64_encoded_string_convert_to_array_of_bytes_should_throw_FailToConvertBase64StringToArrayOfBytes()
+    public void given_invalid_base64_encoded_string_convert_to_array_of_bytes_throws_FailToConvertBase64StringToArrayOfBytes()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         var service = new PhotoService(options);
@@ -96,7 +96,7 @@ public class PhotoServiceTests
     }
 
     [Fact]
-    public void too_small_photo_should_throw_InvalidPhotoSizeException()
+    public void too_small_photo_throws_InvalidPhotoSizeException()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         options.Value.MaxPhotoSizeBytes = 10000;
@@ -110,7 +110,7 @@ public class PhotoServiceTests
     }
 
     [Fact]
-    public void too_large_photo_should_throw_InvalidPhotoSizeException()
+    public void too_large_photo_throws_InvalidPhotoSizeException()
     {
         IOptions<PhotoServiceOptions> options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         options.Value.MaxPhotoSizeBytes = 100;

@@ -35,7 +35,7 @@ public class DeleteMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_delete_existing_match_should_return_UnauthorizedException()
+    public async Task given_authorization_fail_delete_existing_match_returns_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

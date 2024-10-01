@@ -20,7 +20,7 @@ namespace datingApp.Tests.Unit.Handlers;
 public class SignUpByEmailHandlerTests
 {
     [Fact]
-    public async Task given_nonexisting_email_sign_in_by_email_should_throw_InvalidCredentialsException()
+    public async Task given_nonexisting_email_sign_in_by_email_throws_InvalidCredentialsException()
     {
         _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
@@ -36,7 +36,7 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_null_email_provided_sign_in_by_email_should_throw_NoEmailProvidedException()
+    public async Task given_null_email_provided_sign_in_by_email_throws_NoEmailProvidedException()
     {
         _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
@@ -52,7 +52,7 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_null_access_code_provided_sign_in_by_email_should_throw_NoAccessCodeProvidedException()
+    public async Task given_null_access_code_provided_sign_in_by_email_throws_NoAccessCodeProvidedException()
     {
         _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User) null);
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
@@ -68,7 +68,7 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_no_access_code_in_storage_sign_in_by_email_should_throw_InvalidCredentialsException()
+    public async Task given_no_access_code_in_storage_sign_in_by_email_throws_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 18, 100, 100, 0.0, 0.0);
         var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, null, settings);
@@ -86,7 +86,7 @@ public class SignUpByEmailHandlerTests
     }
 
     [Fact]
-    public async Task given_negative_access_code_verification_sign_in_by_email_should_throw_InvalidCredentialsException()
+    public async Task given_negative_access_code_verification_sign_in_by_email_throws_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 18, 100, 100, 0.0, 0.0);
         var user = new User(settings.UserId, "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, null, settings);

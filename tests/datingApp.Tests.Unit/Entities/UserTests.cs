@@ -11,7 +11,7 @@ public class UserTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void empty_user_phone_should_throw_InvalidPhoneException(string phone)
+    public void empty_user_phone_throws_InvalidPhoneException(string phone)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -19,7 +19,7 @@ public class UserTests
     }
 
     [Fact]
-    public void empty_user_phone_should_throw_InvalidPhoneException2()
+    public void empty_user_phone_throws_InvalidPhoneException2()
     {
         string phone = new string(' ', 0);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
@@ -28,7 +28,7 @@ public class UserTests
     }
     
     [Fact]
-    public void user_phone_longer_than_9_chars_should_throw_InvalidPhoneException()
+    public void user_phone_longer_than_9_chars_throws_InvalidPhoneException()
     {
         string phone = new string('1', 10);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
@@ -41,7 +41,7 @@ public class UserTests
     [InlineData("000#000.0")]
     [InlineData("000a000 0")]
     [InlineData("000a000=0")]
-    public void user_phone_with_non_numeric_characters_should_throw_InvalidPhoneException(string phone)
+    public void user_phone_with_non_numeric_characters_throws_InvalidPhoneException(string phone)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -54,7 +54,7 @@ public class UserTests
     [InlineData("user@@example.com")]
     // [InlineData("user@exam_ple.com")]
     // [InlineData("user@ex ample.com")]
-    public void invalid_user_email_should_throw_InvalidEmailExceptions(string badEmail)
+    public void invalid_user_email_throws_InvalidEmailExceptions(string badEmail)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -62,7 +62,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_email_longer_than_256_chars_should_throw_InvalidEmailException()
+    public void user_email_longer_than_256_chars_throws_InvalidEmailException()
     {
         string badEmail = new string('a', 250);
         badEmail += "@test.com";
@@ -74,7 +74,7 @@ public class UserTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void empty_or_null_user_email_should_throw_InvalidEmailException(string email)
+    public void empty_or_null_user_email_throws_InvalidEmailException(string email)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", email, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -82,7 +82,7 @@ public class UserTests
     }
 
     [Fact]
-    public void empty_or_null_user_email_should_throw_InvalidEmailException2()
+    public void empty_or_null_user_email_throws_InvalidEmailException2()
     {
         string email = new string('a', 0);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", email, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
@@ -93,7 +93,7 @@ public class UserTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void empty_or_null_user_name_should_throw_InvalidUsernameException(string username)
+    public void empty_or_null_user_name_throws_InvalidUsernameException(string username)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -101,7 +101,7 @@ public class UserTests
     }
 
     [Fact]
-    public void empty_or_null_user_name_should_throw_InvalidUsernameException2()
+    public void empty_or_null_user_name_throws_InvalidUsernameException2()
     {
         string username = new string('a', 0);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
@@ -115,7 +115,7 @@ public class UserTests
     [InlineData(".")]
     [InlineData(",")]
     [InlineData("#")]
-    public void user_name_should_with_invalid_chars_should_throw_InvalidUsernameException(string username)
+    public void user_name_should_with_invalid_chars_throws_InvalidUsernameException(string username)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -123,7 +123,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_name_above_15_chars_should_throw_InvalidUsernameException()
+    public void user_name_above_15_chars_throws_InvalidUsernameException()
     {
         string username = new string('a', 16);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
@@ -139,7 +139,7 @@ public class UserTests
 
     [Theory]
     [MemberData(nameof(BadUserAgeData))]
-    public void user_age_below_18_or_above_100_should_throw_InvalidDateOfBirthException(DateTime date)
+    public void user_age_below_18_or_above_100_throws_InvalidDateOfBirthException(DateTime date)
     {
         var invalidDob = new DateOnly(date.Year, date.Month, date.Day);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", invalidDob, UserSex.Male, null, _properUserSettings));
@@ -148,7 +148,7 @@ public class UserTests
     }
 
     [Fact]
-    public void empty_date_of_birth_should_throw_DateOfBirthCannotBeEmptyException()
+    public void empty_date_of_birth_throws_DateOfBirthCannotBeEmptyException()
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(), UserSex.Male, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -156,7 +156,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_bio_longer_than_400_chars_should_throw_BioTooLongException()
+    public void user_bio_longer_than_400_chars_throws_BioTooLongException()
     {
         string bio = new string('a', 401);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings, "", bio));
@@ -165,7 +165,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_job_longer_than_50_chars_should_throw_JobTooLongException()
+    public void user_job_longer_than_50_chars_throws_JobTooLongException()
     {
         string job = new string('a', 51);
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings, job));
@@ -186,7 +186,7 @@ public class UserTests
     [InlineData(3)]
     [InlineData(0)]
     [InlineData(7)]
-    public void invalid_user_sex_should_throw_InvalidUserSexException(int sex)
+    public void invalid_user_sex_throws_InvalidUserSexException(int sex)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), (UserSex) sex, null, _properUserSettings));
         Assert.NotNull(exception);
@@ -218,7 +218,7 @@ public class UserTests
     }
 
     [Fact]
-    public void null_user_settings_should_throw_UserSettingsIsNullException()
+    public void null_user_settings_throws_UserSettingsIsNullException()
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, null));
         Assert.NotNull(exception);

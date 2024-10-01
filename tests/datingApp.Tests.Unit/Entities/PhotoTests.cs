@@ -13,7 +13,7 @@ public class PhotoTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void empty_or_null_photo_path_should_throw_exception(string path)
+    public void empty_or_null_photo_path_throws_PhotoEmptyPathException_1(string path)
     {
         var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
         Assert.NotNull(exception);
@@ -21,7 +21,7 @@ public class PhotoTests
     }
 
     [Fact]
-    public void empty_or_null_photo_path_should_throw_exception2()
+    public void empty_or_null_photo_path_throws_PhotoEmptyPathException_2()
     {
         string path = new string('a', 0);
         var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));

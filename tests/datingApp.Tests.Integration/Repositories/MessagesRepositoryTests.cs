@@ -154,7 +154,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void add_message_with_existing_id_should_throw_exception()
+    public async void add_message_with_existing_id_throws_exception()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);

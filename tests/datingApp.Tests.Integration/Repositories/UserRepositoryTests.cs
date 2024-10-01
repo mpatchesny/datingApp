@@ -65,7 +65,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_nonexisting_user_should_throw_exception()
+    public async Task delete_nonexisting_user_throws_exception()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
         var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
@@ -87,7 +87,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task add_user_with_existing_id_should_throw_exception()
+    public async Task add_user_with_existing_id_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var settings = new UserSettings(user.Id, PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
@@ -98,7 +98,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task add_user_with_existing_email_should_throw_exception()
+    public async Task add_user_with_existing_email_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
@@ -109,7 +109,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact (Skip = "email is not unique apparently")]
-    public async Task add_user_with_existing_phone_should_throw_exception()
+    public async Task add_user_with_existing_phone_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);

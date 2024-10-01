@@ -43,8 +43,8 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
             throw new InvalidRefreshTokenException();
         }
 
-        DateTime refreshTokenExpirationTime = DateTime.UtcNow + TimeSpan.FromDays(180);
-        var expirationTimeFromToken = knownUser.Claims.First(claim => claim.Type.Equals("exp")).Value;
+        var refreshTokenExpirationTime = DateTime.UtcNow + TimeSpan.FromDays(180);
+        var expirationTimeFromToken = knownUser.Claims.FirstOrDefault(claim => claim.Type.Equals("exp"))?.Value;
         if (!string.IsNullOrEmpty(expirationTimeFromToken))
         {
             refreshTokenExpirationTime = DateTime.Parse(expirationTimeFromToken);

@@ -37,6 +37,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
+        // FIXME: magic number
         if (user.Photos.Count() >= 6)
         {
             throw new UserPhotoLimitException();

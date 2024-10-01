@@ -38,6 +38,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         }
 
         // FIXME: magic number
+        // int maxUserPhotosCount = options.MaxUserPhotoCount;
         if (user.Photos.Count() >= 6)
         {
             throw new UserPhotoLimitException();

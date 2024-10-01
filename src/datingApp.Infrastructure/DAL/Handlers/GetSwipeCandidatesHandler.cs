@@ -73,6 +73,8 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
+        // query.HowMany = options.SwipeCandidatesCount;
+
         if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
         {
             throw new UserNotExistsException(query.UserId);

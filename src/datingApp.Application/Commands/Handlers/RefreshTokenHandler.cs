@@ -38,16 +38,22 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
         Guid userId = !string.IsNullOrWhiteSpace(knownUser?.Identity?.Name) ? 
             Guid.Parse(knownUser.Identity.Name) :
             Guid.Empty;
-
         if (userId == Guid.Empty)
         {
             throw new InvalidRefreshTokenException();
         }
 
+        DateTime refreshTokenExpirationTime = DateTime.UtcNow + TimeSpan.FromDays(180);
+        var expirationTimeFromToken = knownUser.Claims.First(claim => claim.Type.Equals("exp")).Value;
+        if (!string.IsNullOrEmpty(expirationTimeFromToken))
+        {
+            refreshTokenExpirationTime = DateTime.Parse(expirationTimeFromToken);
+        }
+
+        TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, refreshTokenExpirationTime);
+        await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
+
         var jwt = _authenticator.CreateToken(userId);
         _tokenStorage.Set(jwt);
-        // FIXME: magic number
-        TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, DateTime.UtcNow + TimeSpan.FromDays(180));
-        await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
     }
 }

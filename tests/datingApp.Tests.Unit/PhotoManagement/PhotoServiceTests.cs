@@ -164,7 +164,7 @@ public class PhotoServiceTests
         _options.Value.MinPhotoSizeBytes = 100;
         var service = new PhotoService(_options);
         int base64len = (int) Math.Ceiling(_options.Value.MinPhotoSizeBytes * 1.5) - 1;
-        string base64content = string.Join("", Enumerable.Range(0, base64len));
+        string base64content = "x".PadRight(base64len);
         service.SetBase64Photo(base64content);
 
         var exception = Record.Exception(() => service.ValidatePhoto());
@@ -179,7 +179,7 @@ public class PhotoServiceTests
         _options.Value.MinPhotoSizeBytes = 99;
         var service = new PhotoService(_options);
         int base64len = (int) Math.Ceiling(_options.Value.MaxPhotoSizeBytes * 1.5) + 1;
-        string base64content = string.Join("", Enumerable.Range(0, base64len));
+        string base64content = "x".PadRight(base64len);
         service.SetBase64Photo(base64content);
 
         var exception = Record.Exception(() => service.ValidatePhoto());
@@ -191,13 +191,12 @@ public class PhotoServiceTests
     public PhotoServiceTests()
     {
         _options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
-        _options.Value.MaxPhotoSizeBytes = 999999;
         _options.Value.MinPhotoSizeBytes = 1;
+        _options.Value.MaxPhotoSizeBytes = 999999;
     }
 
     private static string ToBase64(byte[] file)
     {
-        // TODO:
-        return "";
+        return Convert.ToBase64String(file);
     }
 }

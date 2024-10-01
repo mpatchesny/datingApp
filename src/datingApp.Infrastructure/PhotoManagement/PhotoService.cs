@@ -12,7 +12,7 @@ namespace datingApp.Infrastructure.PhotoManagement;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    private string _base64Bytes;
+    private string _base64File;
     private byte[] _bytes;
     private readonly IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>()
     {
@@ -32,12 +32,12 @@ internal sealed class PhotoService : IPhotoService
         {
             throw new EmptyBase64StringException();
         }
-        _base64Bytes = base64content;
+        _base64File = base64content;
     }
 
     public byte[] GetArrayOfBytes()
     {
-        if (string.IsNullOrEmpty(_base64Bytes))
+        if (string.IsNullOrEmpty(_base64File))
         {
             throw new EmptyBase64StringException();
         }
@@ -45,11 +45,11 @@ internal sealed class PhotoService : IPhotoService
         if (_bytes == null || _bytes.Length == 0)
         {
             // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
-            byte[] bytes = new byte[((_base64Bytes.Length * 3) + 3) / 4 -
-                (_base64Bytes.Length > 0 && _base64Bytes[^1] == '=' ?
-                    _base64Bytes.Length > 1 && _base64Bytes[^2] == '=' ?
+            byte[] bytes = new byte[((_base64File.Length * 3) + 3) / 4 -
+                (_base64File.Length > 0 && _base64File[^1] == '=' ?
+                    _base64File.Length > 1 && _base64File[^2] == '=' ?
                         2 : 1 : 0)];
-            if (!Convert.TryFromBase64String(_base64Bytes, bytes, out _))
+            if (!Convert.TryFromBase64String(_base64File, bytes, out _))
             {
                 throw new FailToConvertBase64StringToArrayOfBytes();
             }
@@ -63,7 +63,7 @@ internal sealed class PhotoService : IPhotoService
     {
         // Returns file extension associated with file format
         // if image file format is not known, returns null
-        if (string.IsNullOrEmpty(_base64Bytes))
+        if (string.IsNullOrEmpty(_base64File))
         {
             throw new EmptyBase64StringException();
         }
@@ -89,22 +89,22 @@ internal sealed class PhotoService : IPhotoService
 
     public void ValidatePhoto()
     {
-        if (string.IsNullOrEmpty(_base64Bytes))
+        if (string.IsNullOrEmpty(_base64File))
         {
             throw new EmptyBase64StringException();
         }
 
-        int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
         int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
-        int maxPhotoSizeMBBase64EncodedApprox = (int) Math.Ceiling(1.5 * maxPhotoSizeMB);
-        int minPhotoSizeMBBase64EncodedApprox = (int) Math.Ceiling(1.5 * maxPhotoSizeMB);
+        int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
+        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
+        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
 
         // Initial photo validation: is base64 string length within range
-        if (_base64Bytes.Length < maxPhotoSizeMBBase64EncodedApprox)
+        if (_base64File.Length < minBase64PhotoSizeBytes)
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
-        if (_base64Bytes.Length > minPhotoSizeMBBase64EncodedApprox)
+        if (_base64File.Length > maxBase64PhotoSizeBytes)
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }

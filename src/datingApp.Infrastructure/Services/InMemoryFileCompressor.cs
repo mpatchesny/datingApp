@@ -17,12 +17,14 @@ internal sealed class InMemoryFileCompressor : IFileCompressor
             return;
         }
 
-        var outputMemoryStream = new MemoryStream();
-        using (var compressor = new GZipStream(outputMemoryStream, CompressionMode.Compress))
+        using (var outputMemoryStream = new MemoryStream())
         {
-            compressor.Write(notCompressedFile, 0, notCompressedFile.Length);
+            using (var gzipStream = new GZipStream(outputMemoryStream, CompressionLevel.Optimal))
+            {
+                gzipStream.Write(notCompressedFile, 0, notCompressedFile.Length);
+            }
+            compressedFile = outputMemoryStream.ToArray();
         }
-        compressedFile = outputMemoryStream.ToArray();
     }
 
     public void Decompress(byte[] compressedFile, out byte[] notCompressedFile)
@@ -33,11 +35,13 @@ internal sealed class InMemoryFileCompressor : IFileCompressor
             return;
         }
 
-        var outputMemoryStream = new MemoryStream();
-        using (var compressor = new GZipStream(outputMemoryStream, CompressionMode.Decompress))
+        using (var outputMemoryStream = new MemoryStream())
         {
-            compressor.Write(compressedFile, 0, compressedFile.Length);
+            using (var gzipStream = new GZipStream(outputMemoryStream, CompressionMode.Decompress))
+            {
+                gzipStream.Write(compressedFile, 0, compressedFile.Length);
+            }
+            notCompressedFile = outputMemoryStream.ToArray();
         }
-        notCompressedFile = outputMemoryStream.ToArray();
     }
 }

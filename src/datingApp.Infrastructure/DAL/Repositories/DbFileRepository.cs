@@ -35,7 +35,7 @@ internal sealed class DbFileRepository : IFileRepository
 
     public async Task AddAsync(byte[] photo, Guid fileId, string extension)
     {
-        _fileCompressor.Decompress(photo, out byte[] compressedBinary);
+        _fileCompressor.Compress(photo, out byte[] compressedBinary);
 
         var file = new FileDto {
             Id = fileId,

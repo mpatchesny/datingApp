@@ -37,7 +37,6 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        // int maxUserPhotosCount = options.MaxUserPhotoCount;
         if (user.Photos.Count() >= 6)
         {
             throw new UserPhotoLimitException();

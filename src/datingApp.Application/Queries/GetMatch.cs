@@ -11,6 +11,5 @@ public class GetMatch : AuthenticatedQueryBase<MatchDto>
 {
     public Guid MatchId { get; set; }
     public Guid UserId { get; set; }
-    // HowManyMessages = options.MessagesPerMatchCount;
     public int HowManyMessages { get; set; } = 10;
 }

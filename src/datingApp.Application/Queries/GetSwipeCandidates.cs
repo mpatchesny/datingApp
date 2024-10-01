@@ -10,6 +10,5 @@ namespace datingApp.Application.Queries;
 public class GetSwipeCandidates : AuthenticatedQueryBase<IEnumerable<PublicUserDto>>
 {
     public Guid UserId { get; set; }
-    // query.HowMany = options.SwipeCandidatesCount;
     public int HowMany { get; set; } = 10;
 }

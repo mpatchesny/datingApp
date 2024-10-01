@@ -21,7 +21,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class RefreshTokenHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_refresh_token_exists_in_revoked_repository_ResfreshTokenHandler_should_throw_RefreshTokenRevokedException()
+    public async Task given_refresh_token_exists_in_revoked_repository_ResfreshTokenHandler_throws_RefreshTokenRevokedException()
     {
         _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns(new JwtDto());
         _tokenStorage.Setup(m => m.Set(It.IsAny<JwtDto>()));
@@ -37,7 +37,7 @@ public class RefreshTokenHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_refresh_token_validation_failed_ResfreshTokenHandler_should_throw_InvalidRefreshTokenException()
+    public async Task given_refresh_token_validation_failed_ResfreshTokenHandler_throws_InvalidRefreshTokenException()
     {
         _authenticator.Setup(m => m.CreateToken(It.IsAny<Guid>())).Returns(new JwtDto());
         _authenticator.Setup(m => m.ValidateRefreshToken(It.IsAny<string>())).Returns(new ClaimsPrincipal());
@@ -69,7 +69,7 @@ public class RefreshTokenHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_refresh_token_succeed_ResfreshTokenHandler_should_add_refresh_token_to_revoked_tokens_repository()
+    public async Task given_refresh_token_succeed_ResfreshTokenHandler_should_add_passed_refresh_token_to_revoked_tokens_repository()
     {
         var expirationTime = DateTime.UtcNow + TimeSpan.FromHours(1);
         var newToken = CreateToken(expirationTime);

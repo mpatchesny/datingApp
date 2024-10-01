@@ -19,7 +19,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMessageHandlerTests : IDisposable
 {
     [Fact]
-    public async Task query_messages_by_existing_message_id_should_return_nonempty_message_dto()
+    public async Task given_message_exists_get_message_by_id_returns_nonempty_message_dto()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -34,7 +34,7 @@ public class GetMessageHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_query_messages_by_existing_message_id_should_return_UnauthorizedException()
+    public async Task given_authorization_fail_get_message_by_id_returns_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

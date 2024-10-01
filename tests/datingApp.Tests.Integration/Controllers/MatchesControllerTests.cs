@@ -17,7 +17,7 @@ namespace datingApp.Tests.Integration.Controllers;
 public class MatchesControllerTests : ControllerTestBase, IDisposable
 {
     [Fact]
-    public async void get_match_returns_200_ok_and_match_dto()
+    public async void given_match_exists_get_match_returns_200_ok_and_match_dto()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -69,7 +69,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         for (int i=0; i<20; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
-            var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
         }
 
         var token = Authorize(user1.Id);

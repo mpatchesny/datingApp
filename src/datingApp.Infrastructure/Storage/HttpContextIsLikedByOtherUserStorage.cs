@@ -18,17 +18,9 @@ internal sealed class HttpContextIsLikedByOtherUserStorage : IIsLikedByOtherUser
 
     public IsLikedByOtherUserDto Get()
     {
-        if (_httpContextAccessor.HttpContext == null)
-        {
-            return null;
-        }
-
-        if (_httpContextAccessor.HttpContext.Items.TryGetValue(_key, out var jwt))
-        {
-            return jwt as IsLikedByOtherUserDto;
-        }
-
-        return null;
+        return _httpContextAccessor.HttpContext?.Items.TryGetValue(_key, out var isLikedByOtherUser) == true
+            ? isLikedByOtherUser as IsLikedByOtherUserDto
+            : null;
     }
 
     public void Set(IsLikedByOtherUserDto isLikedByOtherUser)

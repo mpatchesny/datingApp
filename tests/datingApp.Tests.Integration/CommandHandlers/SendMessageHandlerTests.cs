@@ -19,7 +19,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class SendMessageHandlerTests : IDisposable
 {
     [Fact]
-    public async Task send_message_within_existsing_match_should_succeed()
+    public async Task given_match_exists_send_message_within_match_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -32,7 +32,7 @@ public class SendMessageHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_send_message_within_existsing_match_should_throw_UnauthorizedException()
+    public async Task given_authorization_fail_send_message_within_existsing_match_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -46,7 +46,7 @@ public class SendMessageHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task send_message_within_nonexistsing_match_should_throw_match_not_exsits_exception()
+    public async Task given_match_not_exists_send_message_within_match_throws_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

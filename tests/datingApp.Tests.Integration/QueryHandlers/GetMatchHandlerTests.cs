@@ -80,7 +80,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task get_match_handler_respects_how_many_messages_query_argument()
+    public async Task get_match_handler_respects_how_many_messages_query_property()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -100,7 +100,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_not_exists_get_match_handler_should_return_match_not_exists_exception()
+    public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsExceptionn()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = Guid.NewGuid() };

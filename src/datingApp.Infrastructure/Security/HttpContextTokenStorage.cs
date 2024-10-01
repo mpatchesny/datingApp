@@ -18,17 +18,9 @@ public class HttpContextTokenStorage : ITokenStorage
 
     public JwtDto Get()
     {
-        if (_httpContextAccessor.HttpContext == null)
-        {
-            return null;
-        }
-
-        if (_httpContextAccessor.HttpContext.Items.TryGetValue(JwtDtoKey, out var jwt))
-        {
-            return jwt as JwtDto;
-        }
-
-        return null;
+        return _httpContextAccessor.HttpContext?.Items.TryGetValue(JwtDtoKey, out var jwt) == true
+            ? jwt as JwtDto
+            : null;
     }
 
     public void Set(JwtDto jwt)

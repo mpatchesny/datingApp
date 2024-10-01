@@ -28,7 +28,7 @@ public class DbAccessCodeStorageTests : IDisposable
     }
 
     [Fact]
-    public void set_code_for_same_email_twice_or_more_times_should_succeed_and_last_setted_code_should_be_fetched()
+    public void set_code_for_same_email_twice_or_more_times_should_succeed_and_last_set_code_should_be_returned()
     {
         string email = "test@test.com";
         var code1 = new AccessCodeDto()
@@ -70,7 +70,7 @@ public class DbAccessCodeStorageTests : IDisposable
         var storage = new DbAccessCodeStorage(_testDb.DbContext);
         storage.Set(code);
 
-        System.Threading.Thread.Sleep(1000);
+        System.Threading.Thread.Sleep(1500);
 
         Assert.Equal(code, storage.Get(email));
     }
@@ -78,15 +78,6 @@ public class DbAccessCodeStorageTests : IDisposable
     [Fact]
     public void if_access_code_with_given_email_not_exists_storage_should_return_null()
     {
-        string email = "test@test.com";
-        var code = new AccessCodeDto()
-        {
-            AccessCode = "12345",
-            EmailOrPhone = email,
-            ExpirationTime = DateTime.UtcNow,
-            Expiry = TimeSpan.FromMinutes(15)
-        };
-
         string badEmail = "test1@test.com";
         var storage = new DbAccessCodeStorage(_testDb.DbContext);
         Assert.Null(storage.Get(badEmail));

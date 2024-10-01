@@ -18,7 +18,7 @@ namespace datingApp.Api.Controllers;
 public class LikeController : ApiControllerBase
 {
     private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
-    private IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
+    private readonly IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
 
     public LikeController(ICommandHandler<SwipeUser> swipeUserHandler, IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
     {

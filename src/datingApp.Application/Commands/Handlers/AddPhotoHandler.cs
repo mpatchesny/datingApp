@@ -50,7 +50,6 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         int oridinal = user.Photos.Count();
         var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);
         await _photoRepository.AddAsync(photo);
-
         await _fileRepository.AddAsync(bytes, command.PhotoId, extension);
     }
 }

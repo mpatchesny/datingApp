@@ -20,7 +20,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMessagesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task query_messages_by_existing_match_id_should_return_nonempty_collection_of_messages_dto()
+    public async Task given_match_exists_get_messages_by_match_id_returns_nonempty_collection_of_messages_dto()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -53,7 +53,7 @@ public class GetMessagesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task query_messages_by_nonexisting_match_id_should_return_match_not_exists_exception()
+    public async Task given_match_not_exists_get_messages_by_match_id_returns_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var query = new GetMessages() { MatchId = Guid.NewGuid() };
@@ -81,7 +81,7 @@ public class GetMessagesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task proper_number_of_messages_are_returned_when_page_is_above_1()
+    public async Task given_page_above_1_proper_number_of_messages_are()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

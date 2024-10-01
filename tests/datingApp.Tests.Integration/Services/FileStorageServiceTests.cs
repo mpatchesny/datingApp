@@ -45,7 +45,8 @@ public class FileStorageServiceTests : IDisposable
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         _storageService.SaveFile(data, "test", "txt");
 
-        var exists = _storageService.Exists("test", "txt");
+        var filePath = System.IO.Path.Combine(_storagePath, "test.txt");
+        var exists = System.IO.File.Exists(filePath);
         Assert.True(exists);
     }
 
@@ -76,17 +77,7 @@ public class FileStorageServiceTests : IDisposable
         System.IO.File.WriteAllBytes(filePath, data);
 
         _storageService.DeleteFile("test", "txt");
-        var exists = _storageService.Exists("test", "txt");
-        Assert.False(exists);
-    }
-
-    [Fact]
-    public void given_file_exists_delete_file_by_file_id_and_extension_not_throws_exception()
-    {
-        var exception = Record.Exception(() => _storageService.DeleteFile("test", "txt"));
-        Assert.Null(exception);
-
-        var exists = _storageService.Exists("test", "txt");
+        var exists = System.IO.File.Exists(filePath);
         Assert.False(exists);
     }
 
@@ -103,7 +94,14 @@ public class FileStorageServiceTests : IDisposable
     }
 
     [Fact]
-    public void given_file_exists_delete_file_by_file_id_not_throws_exception()
+    public void given_file_not_exists_delete_file_by_file_id_and_extension_not_throws_exception()
+    {
+        var exception = Record.Exception(() => _storageService.DeleteFile("test", "txt"));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void given_file_not_exists_delete_file_by_file_id_not_throws_exception()
     {
         var exception = Record.Exception(() => _storageService.DeleteFile("test"));
         Assert.Null(exception);
@@ -114,14 +112,13 @@ public class FileStorageServiceTests : IDisposable
 
     private readonly FileStorageService _storageService;
     private readonly string _storagePath;
-    private readonly DirectoryInfo _dir;
     public FileStorageServiceTests()
     {
         _storagePath = System.IO.Path.Combine(
                 Path.GetTempPath(), $"datingapptest_{Guid.NewGuid()}"
             );
-        _dir = new DirectoryInfo(_storagePath);
-        _dir.Create();
+        var dir = new DirectoryInfo(_storagePath);
+        dir.Create();
 
         var options = new StorageOptions { StoragePath = _storagePath };
         ILogger<FileStorageService> logger = new Logger<FileStorageService>(new LoggerFactory());
@@ -131,6 +128,7 @@ public class FileStorageServiceTests : IDisposable
     public async void Dispose()
     {
         await Task.Delay(1000);
-        _dir.Delete(true);
+        var dir = new DirectoryInfo(_storagePath);
+        dir.Delete(true);
     }
 }

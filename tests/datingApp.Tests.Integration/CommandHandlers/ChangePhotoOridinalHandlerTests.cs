@@ -18,32 +18,35 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class ChangePhotoOridinalHandlerTests : IDisposable
 {
     [Fact]
-    public async Task change_oridinal_of_existing_photo_should_succeed()
+    public async Task given_photo_exists_change_oridinal_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
         var command = new ChangePhotoOridinal(photo.Id, 2);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
 
     [Fact]
-    public async Task change_oridinal_of_existing_photo_when_other_photo_with_that_oridinal_exists_should_succeed()
+    public async Task given_photo_exists_and_has_that_oridinal_change_oridinal_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
         var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 2);
+
         var command = new ChangePhotoOridinal(photo1.Id, 2);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
 
     [Fact]
-    public async Task change_oridinal_of_nonexisting_photo_should_throw_exception()
+    public async Task given_photo_not_exists_change_oridinal_throws_PhotoNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+
         var command = new ChangePhotoOridinal(Guid.NewGuid(), 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -51,11 +54,12 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_fail_change_oridinal_of_existing_photo_should_throw_UnauthorizedException()
+    public async Task given_authorization_fail_and_photo_exists_change_oridinal_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
         var command = new ChangePhotoOridinal(photo.Id, 2);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);

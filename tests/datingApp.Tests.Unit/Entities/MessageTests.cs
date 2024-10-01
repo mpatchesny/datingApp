@@ -12,7 +12,7 @@ public class MessageTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void empty_message_string_should_throw_exception(string message)
+    public void empty_message_string_throws_InvalidMessageException_1(string message)
     {
         var exception = Record.Exception(() =>new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), message, false, DateTime.UtcNow));
         Assert.NotNull(exception);
@@ -20,7 +20,7 @@ public class MessageTests
     }
 
     [Fact]
-    public void empty_message_string_should_throw_exception2()
+    public void empty_message_string_throws_InvalidMessageException_2()
     {
         string message = new string('a', 0);
         var exception = Record.Exception(() =>new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), message, false, DateTime.UtcNow));
@@ -29,7 +29,7 @@ public class MessageTests
     }
 
     [Fact]
-    public void message_length_above_255_should_throw_exception()
+    public void message_length_above_255_throws_InvalidMessageException()
     {
         string message = new string('a', 256);
         var exception = Record.Exception(() =>new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), message, false, DateTime.UtcNow));

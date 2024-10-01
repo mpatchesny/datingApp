@@ -13,20 +13,25 @@ using Xunit;
 namespace datingApp.Tests.Integration.CommandHandlers;
 
 
-public class SetMessageAsDisplayedHandlerTests : IDisposable
+public class SetMessagesAsDisplayedHandlerTests : IDisposable
 {
     [Fact]
-    public async Task set_existsing_message_as_displayed_should_succeed()
+    public async Task given_message_exists_set_messages_as_displayed_should_succeed()
     {
-        var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+
+        var command = new SetMessagesAsDisplayed(message.Id, user2.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
 
     [Fact]
-    public async Task set_non_existsing_messages_as_displayed_should_do_nothing()
+    public async Task given_message_not_exists_set_messages_as_displayed_should_do_nothing()
     {
-        var command = new SetMessagesAsDisplayed(Guid.Parse("00000000-0000-0000-0000-000000000099"), Guid.Parse("00000000-0000-0000-0000-000000000099"));
+        var command = new SetMessagesAsDisplayed(Guid.NewGuid(), Guid.NewGuid());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -34,7 +39,7 @@ public class SetMessageAsDisplayedHandlerTests : IDisposable
     // Arrange
     private readonly SetMessagesAsDisplayedHandler _handler;
     private readonly TestDatabase _testDb;
-    public SetMessageAsDisplayedHandlerTests()
+    public SetMessagesAsDisplayedHandlerTests()
     {
         var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, 18, 20, 50, 40.5, 40.5);
         var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);

@@ -49,7 +49,6 @@ internal sealed class PhotoService : IPhotoService
     {
         // Returns file extension associated with file format
         // if image file format is not known, returns null
-        string ext = null;
         bool match = false;
         foreach (var item in knownFileHeaders)
         {
@@ -61,12 +60,10 @@ internal sealed class PhotoService : IPhotoService
 
             if (match)
             {
-                ext = item.Value;
-                break;
+                return item.Value;
             }
         }
-
-        return ext;
+        return null;
     }
 
     public void ValidatePhoto(byte[] photo)

@@ -44,6 +44,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
         _photoService.SetBase64Photo(command.Base64Bytes);
         _photoService.ValidatePhoto();
+
         byte[] bytes = _photoService.GetArrayOfBytes();
         var extension = _photoService.GetImageFileFormat();
 

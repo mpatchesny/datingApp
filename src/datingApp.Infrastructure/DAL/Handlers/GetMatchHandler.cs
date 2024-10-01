@@ -25,8 +25,6 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 
     public async Task<MatchDto> HandleAsync(GetMatch query)
     {
-        // query.HowManyMessages = options.MessagesPerMatchCount;
-
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)

@@ -34,7 +34,7 @@ namespace datingApp.Tests.Integration
         }
 
         protected record Error(string Code, string Reason);
-        private AuthOptions _authOptions;
+        private readonly AuthOptions _authOptions;
         private IAuthenticator _authenticator;
         protected HttpClient Client { get; }
 

@@ -34,6 +34,8 @@ internal sealed class DbFileRepository : IFileRepository
 
     public async Task AddAsync(byte[] photo, Guid fileId, string extension)
     {
+        if (photo == null) return;
+
         _fileCompressor.Decompress(photo, out byte[] compressedBinary);
 
         var file = new FileDto {

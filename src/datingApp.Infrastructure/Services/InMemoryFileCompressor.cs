@@ -35,13 +35,27 @@ internal sealed class InMemoryFileCompressor : IFileCompressor
             return;
         }
 
-        using (var outputMemoryStream = new MemoryStream())
+        var outputMemoryStream = new MemoryStream();
+
+        using (var inStream = new MemoryStream(compressedFile))
         {
-            using (var gzipStream = new GZipStream(outputMemoryStream, CompressionMode.Decompress))
+            using (var gzipStream = new GZipStream(inStream, CompressionMode.Decompress))
             {
-                gzipStream.Write(compressedFile, 0, compressedFile.Length);
+                CopyStream(gzipStream, outputMemoryStream);
             }
-            notCompressedFile = outputMemoryStream.ToArray();
+        }
+
+        notCompressedFile = outputMemoryStream.ToArray();
+    }
+
+    // https://stackoverflow.com/questions/1354639/writing-to-the-compression-stream-is-not-supported-using-system-io-gzipstream
+    private static void CopyStream(Stream input, Stream output)
+    {
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            output.Write(buffer, 0, bytesRead);
         }
     }
 }

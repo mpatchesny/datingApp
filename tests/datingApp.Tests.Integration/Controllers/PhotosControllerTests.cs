@@ -161,8 +161,11 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var photoBinary = new byte[] {255, 0, 255};
-        var photoBase64 = "/wD/";
+        var photoBinary = new byte[]{
+                0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xFB, 0xFF,
+                0x9F, 0xF6, 0x00, 0x00, 0x81, 0x86, 0xD2, 0x03, 0x64, 0x00, 0x00, 0x00
+            };
+        var photoBase64 = "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==";
         var file = new FileDto() { Id = photo.Id, Extension = "jpg", Binary = photoBinary };
         await _testDb.DbContext.Files.AddAsync(file);
         await _testDb.DbContext.SaveChangesAsync();

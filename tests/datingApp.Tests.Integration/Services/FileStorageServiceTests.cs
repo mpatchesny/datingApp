@@ -82,15 +82,24 @@ public class FileStorageServiceTests : IDisposable
     }
 
     [Fact]
-    public void given_file_exists_delete_file_by_file_id_deletes_file()
+    public void given_file_exists_delete_file_by_file_id_deletes_all_files_with_same_name_sans_exception()
     {
-        var filePath = System.IO.Path.Combine(_storagePath, "test.txt");
-        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
-        System.IO.File.WriteAllBytes(filePath, data);
+        var paths = new List<string>();
+        foreach (var ext in new string[] {"txt", "jpg", "png", ""})
+        {
+            var filename = (string.IsNullOrWhiteSpace(ext)) ? "text" : $"text.{ext}";
+            var filePath = System.IO.Path.Combine(_storagePath, filename);
+            paths.Add(filePath);
+            byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
+            System.IO.File.WriteAllBytes(filePath, data);
+        }
 
         _storageService.DeleteFile("test");
-        var exists = _storageService.Exists("test", "txt");
-        Assert.False(exists);
+        foreach (var path in paths)
+        {
+            var exists = System.IO.File.Exists(path);
+            Assert.False(exists);
+        }
     }
 
     [Fact]

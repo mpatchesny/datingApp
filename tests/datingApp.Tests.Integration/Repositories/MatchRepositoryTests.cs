@@ -54,7 +54,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void given_match_exists_get_exsits_should_return_true()
+    public async void given_match_exists_exsits_should_return_true()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -64,14 +64,14 @@ public class MatchRepositoryTests : IDisposable
         Assert.True(exists);
     }
     [Fact]
-    public async void given_match_not_exists_get_exsits_should_return_false()
+    public async void given_match_not_exists_exsits_should_return_false()
     {
         var exists = await _repository.ExistsAsync(Guid.NewGuid(), Guid.NewGuid());
         Assert.False(exists);
     }
 
     [Fact]
-    public async void delete_existing_match_by_id_should_succeed()
+    public async void given_match_exists_delete_by_id_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -109,7 +109,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void update_match_should_succeed()
+    public async void given_match_exists_update_match_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -137,7 +137,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void add_match_with_existing_user_id_throws_exception()
+    public async void add_match_with_existing_user1_id_and_user2_id_throws_exception()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);

@@ -86,4 +86,20 @@ internal static class IntegrationTestHelper
         await database.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
         await database.DbContext.SaveChangesAsync();
     }
+
+    internal static async Task<FileDto> CreateFileAsync(TestDatabase database, Guid photoId)
+    {
+        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
+        var file = new FileDto
+        {
+            Id = photoId,
+            Extension = "txt",
+            Binary = data
+        };
+
+        await database.DbContext.Files.AddAsync(file);
+        await database.DbContext.SaveChangesAsync();
+
+        return file;
+    }
 }

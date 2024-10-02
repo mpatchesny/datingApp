@@ -23,7 +23,7 @@ public class FileRepositoryTests : IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await CreateFileAsync(photo.Id);
+        _ = await IntegrationTestHelper.CreateFileAsync(_testDb, photo.Id);
 
         var exists = await _repository.ExistsAsync(photo.Id);
         Assert.True(exists);
@@ -41,7 +41,7 @@ public class FileRepositoryTests : IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var file = await CreateFileAsync(photo.Id);
+        var file = await IntegrationTestHelper.CreateFileAsync(_testDb, photo.Id);
 
         var fileBinary = await _repository.GetByIdAsync(file.Id);
         Assert.Equal(fileBinary, file.Binary);
@@ -74,7 +74,7 @@ public class FileRepositoryTests : IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var file = await CreateFileAsync(photo.Id);
+        var file = await IntegrationTestHelper.CreateFileAsync(_testDb, photo.Id);
 
         file.Binary[0] = byte.MaxValue;
         file.Binary[1] = byte.MaxValue;
@@ -92,7 +92,7 @@ public class FileRepositoryTests : IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var file = await CreateFileAsync(photo.Id);
+        var file = await IntegrationTestHelper.CreateFileAsync(_testDb, photo.Id);
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
 
         await _repository.DeleteAsync(file.Id);
@@ -109,22 +109,6 @@ public class FileRepositoryTests : IDisposable
     }
 
     // Arrange
-    private async Task<FileDto> CreateFileAsync(Guid photoId)
-    {
-        byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
-        var file = new FileDto
-        {
-            Id = photoId,
-            Extension = "txt",
-            Binary = data
-        };
-
-        await _testDb.DbContext.Files.AddAsync(file);
-        await _testDb.DbContext.SaveChangesAsync();
-
-        return file;
-    }
-
     private readonly TestDatabase _testDb;
     private readonly IFileRepository _repository;
     public FileRepositoryTests()

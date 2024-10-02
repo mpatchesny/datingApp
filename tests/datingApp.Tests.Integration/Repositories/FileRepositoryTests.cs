@@ -25,14 +25,14 @@ public class FileRepositoryTests : IDisposable
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
         _ = await CreateFileAsync(photo.Id);
 
-        var exists = await _storage.ExistsAsync(photo.Id);
+        var exists = await _repository.ExistsAsync(photo.Id);
         Assert.True(exists);
     }
 
     [Fact]
     public async Task given_file_not_exists_ExistsAsync_returns_false()
     {
-        var exists = await _storage.ExistsAsync(Guid.NewGuid());
+        var exists = await _repository.ExistsAsync(Guid.NewGuid());
         Assert.False(exists);
     }
 
@@ -43,14 +43,14 @@ public class FileRepositoryTests : IDisposable
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
         var file = await CreateFileAsync(photo.Id);
 
-        var fileBinary = await _storage.GetByIdAsync(file.Id);
-        Assert.Same(fileBinary, file.Binary);
+        var fileBinary = await _repository.GetByIdAsync(file.Id);
+        Assert.Equal(fileBinary, file.Binary);
     }
 
     [Fact]
     public async Task given_file_not_exists_GetFileAsync_returns_null()
     {
-        var file = await _storage.GetByIdAsync(Guid.NewGuid());
+        var file = await _repository.GetByIdAsync(Guid.NewGuid());
         Assert.Null(file);
     }
 
@@ -62,7 +62,7 @@ public class FileRepositoryTests : IDisposable
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var fileId = photo.Id;
 
-        var exception = await Record.ExceptionAsync(async () => await _storage.AddAsync(data, fileId , "txt"));
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(data, fileId , "txt"));
         Assert.Null(exception);
 
         var file = await _testDb.DbContext.Files.FirstOrDefaultAsync(x => x.Id == photo.Id);
@@ -80,11 +80,11 @@ public class FileRepositoryTests : IDisposable
         file.Binary[1] = byte.MaxValue;
         file.Binary[2] = byte.MaxValue;
 
-        var exception = await Record.ExceptionAsync(async () => await _storage.AddAsync(file.Binary, file.Id , "txt"));
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(file.Binary, file.Id , "txt"));
         Assert.Null(exception);
 
         var fileBinary = (await _testDb.DbContext.Files.FirstOrDefaultAsync(x => x.Id == photo.Id))?.Binary;
-        Assert.Same(file.Binary, fileBinary);
+        Assert.Equal(file.Binary, fileBinary);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class FileRepositoryTests : IDisposable
         var file = await CreateFileAsync(photo.Id);
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
 
-        await _storage.DeleteAsync(file.Id);
+        await _repository.DeleteAsync(file.Id);
 
         var exists = await _testDb.DbContext.Files.AnyAsync(x => x.Id == photo.Id);
         Assert.False(exists);
@@ -104,7 +104,7 @@ public class FileRepositoryTests : IDisposable
     [Fact]
     public async Task given_file_not_exists_DeleteFileAsync_not_throws_exepction()
     {
-        var exception = await Record.ExceptionAsync(async () => await _storage.DeleteAsync(Guid.NewGuid()));
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.NewGuid()));
         Assert.Null(exception);
     }
 
@@ -126,12 +126,12 @@ public class FileRepositoryTests : IDisposable
     }
 
     private readonly TestDatabase _testDb;
-    private readonly IFileRepository _storage;
+    private readonly IFileRepository _repository;
     public FileRepositoryTests()
     {
         _testDb = new TestDatabase();
         var compressor = new DummyFileCompressor();
-        _storage = new DbFileRepository(_testDb.DbContext, compressor);
+        _repository = new DbFileRepository(_testDb.DbContext, compressor);
     }
 
     // Teardown

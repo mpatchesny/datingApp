@@ -19,7 +19,7 @@ public class InMemoryFileCompressorTests
     }
 
     [Fact]
-    public void given_notCompressedFile_passed_to_compress_is_null_compressedFile_is_null()
+    public void given_notCompressedFile_passed_to_compress_is_null_compressedFile_out_is_null()
     {
         var compressor = new InMemoryFileCompressor();
         byte[] inputFile = null;
@@ -41,7 +41,7 @@ public class InMemoryFileCompressorTests
     }
 
     [Fact]
-    public void given_compressedFile_passed_to_decompress_is_null_notCompressedFile_is_null()
+    public void given_compressedFile_passed_to_decompress_is_null_notCompressedFile_out_is_null()
     {
         var compressor = new InMemoryFileCompressor();
         byte[] inputFile = null;

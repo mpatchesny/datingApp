@@ -176,7 +176,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_exists_and_have_swipe_delete_user_deletes_swipe()
+    public async Task given_user_exists_and_have_swipe_delete_user_not_deletes_swipe()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -185,8 +185,8 @@ public class UserRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user1));
         Assert.Null(exception);
 
-        var matchExists = await _testDb.DbContext.Swipes.AnyAsync(s => s.SwipedWhoId == user1.Id);
-        Assert.False(matchExists);
+        var swipeExists = await _testDb.DbContext.Swipes.AnyAsync(s => s.SwipedWhoId == user1.Id);
+        Assert.True(swipeExists);
     }
 
     [Fact]

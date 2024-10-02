@@ -50,9 +50,7 @@ public class DbAccessCodeStorageTests : IDisposable
         var storage = new DbAccessCodeStorage(_testDb.DbContext);
         storage.Set(code1);
         storage.Set(code2);
-        Assert.Equal(code2.AccessCode, storage.Get(email).AccessCode);
-        Assert.Equal(code2.EmailOrPhone, storage.Get(email).EmailOrPhone);
-        Assert.Equal(code2.Expiry, storage.Get(email).Expiry);
+        Assert.Equal(code2, storage.Get(email));
     }
 
     [Fact]

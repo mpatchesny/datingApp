@@ -30,7 +30,7 @@ public class InMemoryAccessCodeStorageTests
     }
 
     [Fact]
-    public void given_access_code_with_given_email_exists_storage_should_return_null_after_expiration_time()
+    public void given_access_code_with_given_email_exists_and_code_is_expired_storage_should_return_null()
     {
         var email = "test@test.com";
         var code = new AccessCodeDto() {

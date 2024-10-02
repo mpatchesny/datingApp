@@ -143,6 +143,94 @@ public class UserRepositoryTests : IDisposable
         Assert.Null(user);
     }
 
+    [Fact]
+    public async Task given_user_exists_and_have_match_delete_user_deletes_match()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user1));
+        Assert.Null(exception);
+
+        var matchExists = await _testDb.DbContext.Matches.AnyAsync(m => m.Id == match.Id);
+        Assert.False(matchExists);
+    }
+
+    [Fact]
+    public async Task given_user_exists_and_have_match_with_message_delete_user_deletes_match_with_message()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var message  = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user1));
+        Assert.Null(exception);
+
+        var matchExists = await _testDb.DbContext.Matches.AnyAsync(m => m.Id == match.Id);
+        Assert.False(matchExists);
+
+        var messageExists = await _testDb.DbContext.Messages.AnyAsync(m => m.Id == message.Id);
+        Assert.False(messageExists);
+    }
+
+    [Fact]
+    public async Task given_user_exists_and_have_swipe_delete_user_deletes_swipe()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var swipe = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Like);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user1));
+        Assert.Null(exception);
+
+        var matchExists = await _testDb.DbContext.Swipes.AnyAsync(s => s.SwipedWhoId == user1.Id);
+        Assert.False(matchExists);
+    }
+
+    [Fact]
+    public async Task given_user_exists_and_have_photos_delete_user_deletes_photos()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 1);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 2);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
+        Assert.Null(exception);
+
+        var photoExists = await _testDb.DbContext.Photos.AnyAsync(p => p.Id == photo1.Id);
+        Assert.False(photoExists);
+
+        photoExists = await _testDb.DbContext.Photos.AnyAsync(p => p.Id == photo2.Id);
+        Assert.False(photoExists);
+    }
+
+    [Fact]
+    public async Task given_user_exists_and_have_photos_and_photo_files_delete_user_deletes_photos_and_photo_files()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 1);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 2);
+        var file1 = await IntegrationTestHelper.CreateFileAsync(_testDb, photo1.Id);
+        var file2 = await IntegrationTestHelper.CreateFileAsync(_testDb, photo2.Id);
+
+        var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
+        Assert.Null(exception);
+
+        var photoExists = await _testDb.DbContext.Photos.AnyAsync(p => p.Id == photo1.Id);
+        Assert.False(photoExists);
+
+        photoExists = await _testDb.DbContext.Photos.AnyAsync(p => p.Id == photo2.Id);
+        Assert.False(photoExists);
+
+        var fileExists = await _testDb.DbContext.Files.AnyAsync(f => f.Id == photo1.Id);
+        Assert.False(fileExists);
+
+        fileExists = await _testDb.DbContext.Files.AnyAsync(f => f.Id == photo2.Id);
+        Assert.False(photoExists);
+    }
+
     // Arrange
     private readonly IUserRepository _userRepository;
     private readonly TestDatabase _testDb;

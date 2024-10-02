@@ -32,19 +32,18 @@ public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOrid
             throw new PhotoNotExistsException(command.PhotoId);
         }
 
+        if (thisPhoto.Oridinal == command.NewOridinal)
+        {
+            return;
+        }
+
         var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, thisPhoto, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
         {
             throw new UnauthorizedException();
         }
 
-        if (thisPhoto.Oridinal == command.NewOridinal)
-        {
-            return;
-        }
-
         var photos = await _photoRepository.GetByUserIdAsync(thisPhoto.UserId);
-
         var photoList = _photoOrderer.OrderPhotos(photos.ToList<Photo>(), thisPhoto.Id, command.NewOridinal);
         for (int i = 0; i < photoList.Count(); i++)
         {

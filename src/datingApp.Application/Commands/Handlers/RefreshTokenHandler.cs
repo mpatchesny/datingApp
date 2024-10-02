@@ -35,25 +35,36 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
         }
 
         ClaimsPrincipal knownUser = _authenticator.ValidateRefreshToken(command.RefreshToken);
-        Guid userId = !string.IsNullOrWhiteSpace(knownUser?.Identity?.Name) ? 
-            Guid.Parse(knownUser.Identity.Name) :
-            Guid.Empty;
+
+        var userId = GetUserIdFromClaim(knownUser);
         if (userId == Guid.Empty)
         {
             throw new InvalidRefreshTokenException();
         }
 
-        var refreshTokenExpirationTime = DateTime.UtcNow + TimeSpan.FromDays(180);
-        var expirationTimeFromToken = knownUser.Claims.FirstOrDefault(claim => claim.Type.Equals("exp"))?.Value;
-        if (!string.IsNullOrEmpty(expirationTimeFromToken))
-        {
-            refreshTokenExpirationTime = DateTime.Parse(expirationTimeFromToken);
-        }
-
+        var refreshTokenExpirationTime = GetExpirationTimeFromClaim(knownUser) ?? DateTime.UtcNow + TimeSpan.FromDays(180);
         TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, refreshTokenExpirationTime);
         await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
 
         var jwt = _authenticator.CreateToken(userId);
         _tokenStorage.Set(jwt);
+    }
+
+    private static Guid GetUserIdFromClaim(ClaimsPrincipal user)
+    {
+        Guid userId = !string.IsNullOrWhiteSpace(user?.Identity?.Name) ? 
+            Guid.Parse(user.Identity.Name) :
+            Guid.Empty;
+        return userId;
+    }
+
+    private static DateTime? GetExpirationTimeFromClaim(ClaimsPrincipal user)
+    {
+        var expirationTimeFromToken = user.Claims.FirstOrDefault(claim => claim.Type.Equals("exp"))?.Value;
+        if (!string.IsNullOrEmpty(expirationTimeFromToken))
+        {
+            return DateTime.Parse(expirationTimeFromToken);
+        }
+        return null;
     }
 }

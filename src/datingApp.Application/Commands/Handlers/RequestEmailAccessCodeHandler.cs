@@ -36,6 +36,7 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         {
             throw new NoEmailProvidedException();
         }
+
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());
         _codeStorage.Set(code);
 

@@ -51,7 +51,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         {
             _fileStorageService.DeleteFile(photo.Id.ToString());
         }
-
         await _userRepository.DeleteAsync(user);
         await _deletedEntityRepository.AddAsync(user.Id);
     }

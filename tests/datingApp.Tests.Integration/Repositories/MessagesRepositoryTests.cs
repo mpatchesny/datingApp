@@ -27,7 +27,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void get_previous_not_displayed_messages_returns_not_displayed_messages_within_one_match_that_were_sent_before_the_message()
+    public async void get_previous_not_displayed_messages_returns_not_displayed_messages_within_same_match_that_were_sent_before_the_message()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -44,7 +44,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void get_existing_message_by_id_should_return_succeed()
+    public async void given_message_exists_get_by_id_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -70,7 +70,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void delete_existing_message_by_id_should_succeed()
+    public async void given_message_exists_delete_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -81,6 +81,13 @@ public class MessageRepositoryTests : IDisposable
         Assert.Null(exception);
         var deletedMessage = await _testDb.DbContext.Messages.FirstOrDefaultAsync(x => x.Id == message.Id);
         Assert.Null(deletedMessage);
+    }
+
+    [Fact]
+    public async void given_message_not_exists_delete_should_not_throw_exception()
+    {
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(Guid.NewGuid()));
+        Assert.Null(exception);
     }
 
     [Fact]
@@ -117,7 +124,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void update_message_should_succeed()
+    public async void given_message_exists_update_message_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -132,7 +139,7 @@ public class MessageRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void update_range_should_succeed()
+    public async void given_messages_exist_update_range_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);

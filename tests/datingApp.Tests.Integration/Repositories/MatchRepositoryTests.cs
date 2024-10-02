@@ -84,6 +84,17 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async void given_match_not_exists_delete_by_id_should_not_throw_exception()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = new Match(Guid.NewGuid(), user1.Id, user2.Id, false, false, null, DateTime.UtcNow);
+
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(match));
+        Assert.Null(exception);
+    }
+
+    [Fact]
     public async void after_delete_match_get_matches_by_user_id_should_return_minus_one_elements()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);

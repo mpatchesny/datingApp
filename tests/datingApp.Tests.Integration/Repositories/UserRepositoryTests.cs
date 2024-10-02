@@ -54,7 +54,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_existing_user_should_succeed()
+    public async Task given_user_exists_delete_user_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
@@ -65,7 +65,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_nonexisting_user_throws_exception()
+    public async Task given_user_not_exists_delete_user_throws_exception()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
         var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);

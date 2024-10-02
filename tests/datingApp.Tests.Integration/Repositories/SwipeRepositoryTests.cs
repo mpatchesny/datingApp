@@ -26,7 +26,7 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task add_swipe_with_existing_id_throws_exception()
+    public async Task add_swipe_with_existing_user_ids_throws_exception()
     {
         var swipe = await IntegrationTestHelper.CreateSwipeAsync(_testDb, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
         var swipe2 = new Swipe(swipe.SwipedById, swipe.SwipedWhoId, Like.Like, DateTime.UtcNow);

@@ -89,9 +89,9 @@ public class FileStorageServiceTests : IDisposable
         {
             var filename = (string.IsNullOrWhiteSpace(ext)) ? "text" : $"text.{ext}";
             var filePath = System.IO.Path.Combine(_storagePath, filename);
-            paths.Add(filePath);
             byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
             System.IO.File.WriteAllBytes(filePath, data);
+            paths.Add(filePath);
         }
 
         _storageService.DeleteFile("test");

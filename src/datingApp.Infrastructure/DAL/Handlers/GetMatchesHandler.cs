@@ -28,8 +28,9 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
+            where user.Id == match.UserId1 || user.Id == match.UserId2
             where match.UserId1 == query.UserId || match.UserId2 == query.UserId
+            where user.Id != query.UserId
             select new 
             {
                 Match = match,
@@ -37,10 +38,10 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             };
 
         var data = await dbQuery
-                            .AsNoTracking()
-                            .Skip((query.Page - 1) * query.PageSize)
-                            .Take(query.PageSize)
-                            .ToListAsync();
+                        .AsNoTracking()
+                        .Skip((query.Page - 1) * query.PageSize)
+                        .Take(query.PageSize)
+                        .ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
         foreach (var x in data)

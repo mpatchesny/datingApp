@@ -36,10 +36,9 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
-        var photoUrl = $"~/storage/{command.PhotoId}";
         int oridinal = user.Photos.Count();
         var photoFile = new PhotoFile(command.PhotoId, command.Base64Bytes);
-        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal, photoFile);
+        var photo = new Photo(command.PhotoId, command.UserId, $"~/storage/{command.PhotoId}.{photoFile.Extension}", oridinal, photoFile);
 
         await _photoRepository.AddAsync(photo);
     }

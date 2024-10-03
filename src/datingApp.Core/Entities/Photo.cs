@@ -28,7 +28,6 @@ public class Photo
         SetUrl(url);
         Oridinal = oridinal;
         SetFile(file);
-        SetUrlExtension(File?.Extension);
     }
 
     public void ChangeOridinal(int oridinal)
@@ -49,17 +48,6 @@ public class Photo
         }
         if (Url == url) return;
         Url = url;
-    }
-
-    private void SetUrlExtension(string extension)
-    {
-        if (!string.IsNullOrEmpty(extension))
-        {
-            if(!Url.EndsWith(extension))
-            {
-                Url += "." + extension;
-            }
-        }
     }
 
     private void SetFile(PhotoFile file)

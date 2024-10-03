@@ -24,8 +24,7 @@ public class AddPhotoHandlerTests : IDisposable
     public async Task given_user_exists_add_photo_to_user_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        // TODO: fix base64 content
-        var command = new AddPhoto(Guid.NewGuid(), user.Id, GetBase64SampleImageContent());
+        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -33,7 +32,7 @@ public class AddPhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_user_not_exists_add_photo_to_user_throws_UserNotExistsException()
     {
-        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), GetBase64SampleImageContent());
+        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), IntegrationTestHelper.SampleFileBase64Content());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -48,18 +47,10 @@ public class AddPhotoHandlerTests : IDisposable
             _ = IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, i);
         }
         
-        var command = new AddPhoto(Guid.NewGuid(), user.Id, GetBase64SampleImageContent());
+        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
-    }
-
-    private static string GetBase64SampleImageContent()
-    {
-        var bytes = new byte[25000];
-        bytes[0] = 0x42;
-        bytes[1] = 0x4D;
-        return Convert.ToBase64String(bytes);
     }
     
     // Arrange

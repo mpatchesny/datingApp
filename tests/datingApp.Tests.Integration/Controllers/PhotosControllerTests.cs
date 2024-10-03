@@ -55,9 +55,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        // TODO: fix base64 content
-        var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
-        var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
+        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SampleFileBase64Content());
         var response = await Client.PostAsJsonAsync("/photos", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -157,26 +155,18 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal($"Photo {photo.Id} is deleted permanently.", error.Reason);
     }
 
-    [Fact (Skip = "FIXME")]
+    [Fact]
     public async Task get_storage_returns_200_OK_and_photo_binary()
     {
-        // var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        // var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        // var photoBinary = new byte[]{
-        //         0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xFB, 0xFF,
-        //         0x9F, 0xF6, 0x00, 0x00, 0x81, 0x86, 0xD2, 0x03, 0x64, 0x00, 0x00, 0x00
-        //     };
-        // var photoBase64 = "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==";
-        // var file = new FileDto() { Id = photo.Id, Extension = "jpg", Binary = photoBinary };
-        // await _testDb.DbContext.Files.AddAsync(file);
-        // await _testDb.DbContext.SaveChangesAsync();
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
-        // var token = Authorize(user.Id);
-        // Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        // var response = await Client.GetAsync($"/storage/{photo.Id}.jpg");
-        // Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        // Assert.Equal(photoBase64, Convert.ToBase64String(await response.Content.ReadAsByteArrayAsync()));
+        var response = await Client.GetAsync($"/storage/{photo.Id}.jpg");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(photo.File.Content, await response.Content.ReadAsByteArrayAsync());
     }
 
     [Fact]

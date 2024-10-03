@@ -44,13 +44,13 @@ public class PhotoFile
 
         if (!IsValidContentSize(content))
         {
-            throw new InvalidPhotoSizeExceptionCore(minPhotoSizeKB, maxPhotoSizeMB);
+            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
         var extension = GetImageFileFormat();
         if (string.IsNullOrEmpty(extension))
         {
-            throw new InvalidPhotoExceptionCore();
+            throw new InvalidPhotoException();
         }
 
         Extension = extension;
@@ -64,7 +64,7 @@ public class PhotoFile
 
         if (!IsValidBase64ContentSize(base64Content))
         {
-            throw new InvalidPhotoSizeExceptionCore(minPhotoSizeKB, maxPhotoSizeMB);
+            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
         byte[] bytes = Base64ToArrayOfBytes(base64Content);

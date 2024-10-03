@@ -51,7 +51,6 @@ public static class Extensions
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddScoped<IPhotoService, PhotoService>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
-        services.AddScoped<IFileRepository, DbFileRepository>();
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
         services.AddSingleton<IFileCompressor, InMemoryFileCompressor>();

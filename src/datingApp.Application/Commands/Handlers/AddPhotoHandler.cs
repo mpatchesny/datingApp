@@ -16,17 +16,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IPhotoService _photoService;
-    private readonly IFileRepository _fileRepository;
     public AddPhotoHandler(IPhotoRepository photoRepository,
-                            IUserRepository userRepository,
-                            IPhotoService photoService,
-                            IFileRepository fileRepository)
+                            IUserRepository userRepository)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
-        _photoService = photoService;
-        _fileRepository = fileRepository;
     }
 
     public async Task HandleAsync(AddPhoto command)

@@ -62,10 +62,7 @@ public class AddPhotoHandlerTests : IDisposable
         _testDb = new TestDatabase();
         var photoRepository = new DbPhotoRepository(_testDb.DbContext);
         var userRepository = new DbUserRepository(_testDb.DbContext);
-        var mockedPhotoService = new Mock<IPhotoService>();
-        mockedPhotoService.Setup(m => m.GetImageFileFormat()).Returns("jpg");
-        var mockedFileStorage = new Mock<IFileRepository>();
-        _handler = new AddPhotoHandler(photoRepository, userRepository, mockedPhotoService.Object, mockedFileStorage.Object);
+        _handler = new AddPhotoHandler(photoRepository, userRepository);
     }
 
     // Teardown

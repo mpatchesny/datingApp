@@ -37,6 +37,10 @@ public class PhotoFile
 
     private void SetContent(byte[] content)
     {
+        if (content == null)
+        {
+            throw new EmptyPhotoContentException();
+        }
         if (Content == content) return;
 
         int minPhotoSizeKB = MinPhotoSizeBytes / 1024;
@@ -59,6 +63,11 @@ public class PhotoFile
 
     private void SetContent(string base64Content)
     {
+        if (string.IsNullOrEmpty(base64Content))
+        {
+            throw new EmptyPhotoContentException();
+        }
+
         int minPhotoSizeKB = MinPhotoSizeBytes / 1024;
         int maxPhotoSizeMB = MaxPhotoSizeBytes / (1024*1024);
 
@@ -81,7 +90,6 @@ public class PhotoFile
         {
             return false;
         }
-
         return true;
     }
 
@@ -94,7 +102,6 @@ public class PhotoFile
         {
             return false;
         }
-
         return true;
     }
 

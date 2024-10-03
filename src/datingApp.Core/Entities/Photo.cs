@@ -16,6 +16,11 @@ public class Photo
     public PhotoFile File { get; private set; }
     public string UrlPretty { get { return Url + "." + File?.Extension; } }
 
+    private Photo()
+    {
+        // EF
+    }
+
     public Photo(Guid id, Guid userId, string url, int oridinal, PhotoFile file)
     {
         Id = id;

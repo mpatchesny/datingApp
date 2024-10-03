@@ -23,6 +23,11 @@ public class PhotoFile
         {new byte[] {0xFF, 0xD8, 0xFF}, "jpg"},
     };
 
+    private PhotoFile()
+    {
+        // EF
+    }
+
     public PhotoFile(Guid photoId, byte[] content)
     {
         PhotoId = photoId;

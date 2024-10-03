@@ -14,8 +14,8 @@ public class PhotoFile
     public Guid PhotoId { get; }
     public string Extension { get; private set; }
     public byte[] Content { get; private set; }
-    private const int MinPhotoSizeBytes = 100;
-    private const int MaxPhotoSizeBytes = 100 * 100;
+    private const int MinPhotoSizeBytes = 10240;
+    private const int MaxPhotoSizeBytes = 2621440;
     private readonly IDictionary<byte[], string> _knownFileHeaders = new Dictionary<byte[], string>()
     {
         {new byte[] {0x42, 0x4D}, "bmp"},

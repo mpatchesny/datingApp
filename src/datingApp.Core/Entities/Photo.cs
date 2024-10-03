@@ -14,7 +14,7 @@ public class Photo
     public string Url { get;  private set; }
     public int Oridinal { get; private set; }
     public PhotoFile File { get; private set; }
-    public string UrlPretty { get { return Url + File.Extension; } }
+    public string UrlPretty { get { return Url + "." + File?.Extension; } }
 
     public Photo(Guid id, Guid userId, string url, int oridinal, PhotoFile file)
     {

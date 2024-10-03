@@ -79,7 +79,7 @@ public class PhotoFile
         byte[] bytes = Base64ToArrayOfBytes(base64Content);
         if (bytes == null)
         {
-            throw new FailToConvertBase64StringToArrayOfBytes();
+            throw new FailToConvertBase64StringToArrayOfBytesException();
         }
         SetContent(bytes);
     }

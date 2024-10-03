@@ -68,10 +68,14 @@ public class PhotoFile
         }
 
         byte[] bytes = Base64ToArrayOfBytes(base64Content);
+        if (bytes == null)
+        {
+            throw new FailToConvertBase64StringToArrayOfBytes();
+        }
         SetContent(bytes);
     }
 
-    private bool IsValidContentSize(byte[] content)
+    private static bool IsValidContentSize(byte[] content)
     {
         if (content.Length > MaxPhotoSizeBytes || content.Length < MinPhotoSizeBytes)
         {
@@ -81,7 +85,7 @@ public class PhotoFile
         return true;
     }
 
-    private bool IsValidBase64ContentSize(string base64Content)
+    private static bool IsValidBase64ContentSize(string base64Content)
     {
         int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * MinPhotoSizeBytes);
         int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * MaxPhotoSizeBytes);
@@ -94,7 +98,7 @@ public class PhotoFile
         return true;
     }
 
-    private byte[] Base64ToArrayOfBytes(string base64Content)
+    private static byte[] Base64ToArrayOfBytes(string base64Content)
     {
         // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
         byte[] bytes = new byte[((base64Content.Length * 3) + 3) / 4 -
@@ -104,7 +108,7 @@ public class PhotoFile
 
         if (!Convert.TryFromBase64String(base64Content, bytes, out _))
         {
-            // throw new FailToConvertBase64StringToArrayOfBytes();
+            return null;
         }
 
         return bytes;

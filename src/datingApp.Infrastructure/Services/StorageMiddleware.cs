@@ -18,7 +18,7 @@ internal sealed class StorageMiddleware : IMiddleware
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IFileStorageService _diskFileService;
-    public StorageMiddleware(DbPhotoRepository photoRepository, IFileStorageService diskFileService)
+    public StorageMiddleware(IPhotoRepository photoRepository, IFileStorageService diskFileService)
     {
         _photoRepository = photoRepository;
         _diskFileService = diskFileService;

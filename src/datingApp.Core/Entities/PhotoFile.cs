@@ -51,7 +51,7 @@ public class PhotoFile
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
-        var extension = GetImageFileFormat();
+        var extension = GetImageFileFormat(content);
         if (string.IsNullOrEmpty(extension))
         {
             throw new InvalidPhotoException();
@@ -121,18 +121,18 @@ public class PhotoFile
         return bytes;
     }
 
-    private string GetImageFileFormat()
+    private string GetImageFileFormat(byte[] content)
     {
         // Returns file extension associated with file format
         // if image file format is not known, returns null
-        if (Content == null) return null;
+        if (content == null) return null;
 
         bool match = false;
         foreach (var item in _knownFileHeaders)
         {
             for (int i = 0; i < item.Key.Length; i++)
             {
-                match = Content[i] == item.Key[i];
+                match = content[i] == item.Key[i];
                 if (!match) break;
             }
 

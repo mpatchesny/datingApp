@@ -13,18 +13,18 @@ public class PhotoTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void empty_or_null_photo_path_throws_PhotoEmptyPathException_1(string path)
+    public void empty_or_null_photo_url_throws_PhotoEmptyPathException_1(string url)
     {
-        var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
+        var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), url, 1));
         Assert.NotNull(exception);
         Assert.IsType<PhotoEmptyUrlException>(exception);
     }
 
     [Fact]
-    public void empty_or_null_photo_path_throws_PhotoEmptyPathException_2()
+    public void empty_or_null_photo_url_throws_PhotoEmptyPathException_2()
     {
-        string path = new string('a', 0);
-        var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
+        string url = new string('a', 0);
+        var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), url, 1));
         Assert.NotNull(exception);
         Assert.IsType<PhotoEmptyUrlException>(exception);
     }

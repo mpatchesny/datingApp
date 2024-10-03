@@ -14,9 +14,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_oridinal_greater_than_current_should_return_list_with_proper_order()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 2)
         };
 
         var orderer = new PhotoOrderer();
@@ -30,9 +30,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_oridinal_lower_than_current_should_return_list_with_proper_order()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 2)
         };
 
         var orderer = new PhotoOrderer();
@@ -46,9 +46,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_oridinal_greater_than_list_count_should_place_photo_at_the_end()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 2)
         };
 
         var orderer = new PhotoOrderer();
@@ -62,9 +62,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_negative_oridinal_should_place_photo_at_the_beginning()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 2)
         };
 
         var orderer = new PhotoOrderer();
@@ -78,9 +78,9 @@ public class PhotoOrdererTests
     public void list_size_should_not_change_after_performing_order()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", 2)
         };
 
         var orderer = new PhotoOrderer();

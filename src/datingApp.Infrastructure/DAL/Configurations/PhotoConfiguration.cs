@@ -19,7 +19,7 @@ internal sealed class PhotoConfiguration : IEntityTypeConfiguration<Photo>
             .IsRequired();
         builder.Property(x => x.Oridinal)
             .IsRequired();
-        builder.Property(x => x.Path)
+        builder.Property(x => x.Url)
             .IsRequired();
     }
 }

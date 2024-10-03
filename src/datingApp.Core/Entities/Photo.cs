@@ -20,7 +20,7 @@ public class Photo
         Id = id;
         UserId = userId;
         SetPath(path);
-        Url = url;
+        Url = url; // fixme: add file extension to path
         Oridinal = oridinal;
         File = file;
     }

@@ -70,7 +70,7 @@ public class PhotoFileTests
         byte[] bytes = new byte[10241];
         bytes[0] = 0x42;
         bytes[1] = 0x4D;
-        string byte64Content = ToBase64(bytes);
+        string byte64Content = Convert.ToBase64String(bytes);
 
         PhotoFile photoFile = new PhotoFile(Guid.NewGuid(), byte64Content);
         Assert.Equal("jpg", photoFile.Extension);
@@ -127,10 +127,5 @@ public class PhotoFileTests
         var exception = Record.Exception(() => new PhotoFile(Guid.NewGuid(), base64Content));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoSizeException>(exception);
-    }
-
-    private static string ToBase64(byte[] file)
-    {
-        return Convert.ToBase64String(file);
     }
 }

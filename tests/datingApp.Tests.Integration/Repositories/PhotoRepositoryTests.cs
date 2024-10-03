@@ -74,27 +74,6 @@ public class PhotoRepositoryTests : IDisposable
         Assert.Empty(photos);
     }
 
-    [Fact (Skip = "FIXME")]
-    public async Task delete_photo_deletes_associated_file()
-    {
-        // var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        // var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-
-        // var file = new Application.DTO.FileDto {
-        //     Id = photo.Id,
-        //     Extension = "txt",
-        //     Binary = new byte[] { byte.MinValue, 0, byte.MaxValue }
-        // };
-        // _testDb.DbContext.Files.Add(file);
-        // await _testDb.DbContext.SaveChangesAsync();
-
-        // await _repository.DeleteAsync(photo);
-        // var photos = await _repository.GetByUserIdAsync(user.Id);
-        // Assert.Empty(photos);
-        // var fileDto = await _testDb.DbContext.Files.FirstOrDefaultAsync(x => x.Id == photo.Id);
-        // Assert.Null(fileDto);
-    }
-
     [Fact]
     public async Task add_photo_with_existing_id_throws_exception()
     {
@@ -150,6 +129,20 @@ public class PhotoRepositoryTests : IDisposable
         Assert.Null(exception);
         var deletedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
         Assert.Null(deletedPhoto);
+    }
+
+    [Fact]
+    public async Task delete_existing_photo_should_delete_associated_file()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
+        Assert.Null(exception);
+        var deletedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
+        Assert.Null(deletedPhoto);
+        var deletedFile = await _testDb.DbContext.PhotoFiles.FirstOrDefaultAsync(f => f.PhotoId == photo.Id);
+        Assert.Null(deletedFile);
     }
 
     // Arrange

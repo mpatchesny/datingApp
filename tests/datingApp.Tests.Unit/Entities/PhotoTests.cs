@@ -30,10 +30,10 @@ public class PhotoTests
     }
 
     [Fact]
-    public void null_photo_file_throws_PhotoEmptyPathException()
+    public void null_photo_file_throws_NullPhotoFileException()
     {
         var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), "some url", 1, null));
         Assert.NotNull(exception);
-        Assert.IsType<EmptyPhotoUrlException>(exception);
+        Assert.IsType<NullPhotoFileException>(exception);
     }
 }

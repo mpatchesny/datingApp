@@ -145,6 +145,27 @@ public class PhotoRepositoryTests : IDisposable
         Assert.Null(deletedFile);
     }
 
+    [Fact]
+    public async Task given_photo_exists_get_photo_by_id_should_succeed()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var retrievedPhoto = await _repository.GetByIdAsync(photo.Id);
+        Assert.Equal(photo, retrievedPhoto);
+    }
+
+    [Fact]
+    public async Task given_photo_exists_get_photo_with_file_by_id_should_return_photo_file()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var retrievedPhoto = await _repository.GetByIdWithFileAsync(photo.Id);
+        Assert.NotNull(retrievedPhoto.File);
+        Assert.Equal(photo.File, retrievedPhoto.File);
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly IPhotoRepository _repository;

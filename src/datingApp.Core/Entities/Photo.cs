@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
@@ -20,7 +21,7 @@ public class Photo
         UserId = userId;
         SetUrl(url);
         Oridinal = oridinal;
-        File = file;
+        SetFile(file);
     }
 
     public void ChangeOridinal(int oridinal)
@@ -41,5 +42,16 @@ public class Photo
         }
         if (Url == url) return;
         Url = url;
+    }
+
+    private void SetFile(PhotoFile file)
+    {
+        if (file == null)
+        {
+            throw new NullPhotoFileException();
+        }
+
+        if (file == File) return;
+        File = file;
     }
 }

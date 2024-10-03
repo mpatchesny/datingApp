@@ -10,17 +10,15 @@ public class Photo
 {
     public Guid Id { get; }
     public Guid UserId { get; private set; }
-    public string Path { get; private set; }
     public string Url { get; private set; }
     public int Oridinal { get; private set; }
     public PhotoFile File { get; private set; }
 
-    public Photo(Guid id, Guid userId, string path, string url, int oridinal, PhotoFile file = null)
+    public Photo(Guid id, Guid userId, string url, int oridinal, PhotoFile file = null)
     {
         Id = id;
         UserId = userId;
-        SetPath(path);
-        Url = url; // fixme: add file extension to path
+        SetUrl(url);
         Oridinal = oridinal;
         File = file;
     }
@@ -35,13 +33,13 @@ public class Photo
         Oridinal = oridinal;
     }
 
-    private void SetPath(string path)
+    private void SetUrl(string url)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrEmpty(url))
         {
-            throw new PhotoEmptyPathException();
+            // throw new PhotoEmptyPathException();
         }
-        if (Path == path) return;
-        Path = path;
+        if (Url == url) return;
+        Url = url;
     }
 }

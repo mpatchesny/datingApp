@@ -17,7 +17,7 @@ public class PhotoTests
     {
         var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
         Assert.NotNull(exception);
-        Assert.IsType<PhotoEmptyPathException>(exception);
+        Assert.IsType<PhotoEmptyUrlException>(exception);
     }
 
     [Fact]
@@ -26,6 +26,6 @@ public class PhotoTests
         string path = new string('a', 0);
         var exception = Record.Exception(() =>new Photo(Guid.NewGuid(), Guid.NewGuid(), path, "abc", 1));
         Assert.NotNull(exception);
-        Assert.IsType<PhotoEmptyPathException>(exception);
+        Assert.IsType<PhotoEmptyUrlException>(exception);
     }
 }

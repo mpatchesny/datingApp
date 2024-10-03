@@ -19,20 +19,20 @@ internal sealed class FileStorageService : IFileStorageService
 
     public bool Exists(string fileId, string extension)
     {
-        return System.IO.File.Exists(System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}"));
+        return Exists(System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}"));
     }
 
-    public void SaveFile(byte[] file, string fileId, string extension)
+    public void SaveFile(byte[] fileContent, string fileId, string extension)
     {
         var fullPath = System.IO.Path.GetFullPath(_storageOptions.Value.StoragePath);
         BuildPath(fullPath);
 
-        string filename = $"{fileId}.{extension}";
-        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, filename);
+        string fileName = $"{fileId}.{extension}";
+        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, fileName);
 
         try
         {
-            System.IO.File.WriteAllBytes(filePath, file);
+            System.IO.File.WriteAllBytes(filePath, fileContent);
         }
         catch (Exception ex)
         {
@@ -43,9 +43,10 @@ internal sealed class FileStorageService : IFileStorageService
 
     public byte[] GetFile(string fileId, string extension)
     {
-        if (Exists(fileId, extension))
+        var filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}");
+        if (Exists(filePath))
         {
-            return System.IO.File.ReadAllBytes(System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}"));
+            return System.IO.File.ReadAllBytes(filePath);
         }
         var error = $"{nameof(FileStorageService)}: File id {fileId} not found.";
         _logger.LogError(error);
@@ -54,7 +55,7 @@ internal sealed class FileStorageService : IFileStorageService
  
     public void DeleteFile(string fileId)
     {
-        var files = (new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath)).GetFiles($"{fileId}.*");
+        var files = new System.IO.DirectoryInfo(_storageOptions.Value.StoragePath).GetFiles($"{fileId}.*");
         if (files.Any())
         {
             foreach (var file in files)
@@ -74,9 +75,9 @@ internal sealed class FileStorageService : IFileStorageService
 
     public void DeleteFile(string fileId, string extension)
     {
-        if (Exists(fileId, extension))
+        string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}");
+        if (Exists(filePath))
         {
-            string filePath = System.IO.Path.Combine(_storageOptions.Value.StoragePath, $"{fileId}.{extension}");
             try
             {
                 System.IO.File.Delete(filePath);
@@ -95,5 +96,10 @@ internal sealed class FileStorageService : IFileStorageService
         {
             System.IO.Directory.CreateDirectory(path);
         }
+    }
+
+    private static bool Exists(string path)
+    {
+        return System.IO.File.Exists(path);
     }
 }

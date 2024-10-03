@@ -36,7 +36,11 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 1)
     {
-        var photo = new Photo(Guid.NewGuid(), userId, "abc", oridinal);
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var photo = new Photo(photoFile.PhotoId, userId, "abc", oridinal, photoFile);
         await database.DbContext.Photos.AddAsync(photo);
         await database.DbContext.SaveChangesAsync();
         return photo;

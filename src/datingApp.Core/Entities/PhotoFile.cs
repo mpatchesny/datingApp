@@ -73,14 +73,11 @@ public class PhotoFile
 
     private bool IsValidContentSize(byte[] content)
     {
-        if (content.Length > MaxPhotoSizeBytes)
+        if (content.Length > MaxPhotoSizeBytes || content.Length < MinPhotoSizeBytes)
         {
             return false;
         }
-        if (content.Length < MinPhotoSizeBytes)
-        {
-            return false;
-        }
+
         return true;
     }
 
@@ -89,14 +86,11 @@ public class PhotoFile
         int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * MinPhotoSizeBytes);
         int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * MaxPhotoSizeBytes);
 
-        if (base64Content.Length < minBase64PhotoSizeBytes)
+        if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
         {
             return false;
         }
-        if (base64Content.Length > maxBase64PhotoSizeBytes)
-        {
-            return false;
-        }
+
         return true;
     }
 

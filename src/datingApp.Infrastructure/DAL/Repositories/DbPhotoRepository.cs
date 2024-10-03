@@ -23,13 +23,13 @@ internal sealed class DbPhotoRepository : IPhotoRepository
 
     public async Task<Photo> GetByIdWithFileAsync(Guid photoId)
     {
-        var compressedBinary = _dbContext
-                                .PhotoFiles
-                                .Where(p => p.PhotoId == photoId)
-                                .Select(p => p.Content)
-                                .SingleOrDefault();
         // decompressing?
-        // _fileCompressor.Compress(photoContent, out byte[] compressedBinary);
+        // var compressed = _dbContext
+        //                         .PhotoFiles
+        //                         .Where(p => p.PhotoId == photoId)
+        //                         .Select(p => p.Content)
+        //                         .SingleOrDefault();
+        // _fileCompressor.Decompress(compressed, out byte[] decompressed);
         var photo = await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
         return photo;
     }
@@ -46,12 +46,12 @@ internal sealed class DbPhotoRepository : IPhotoRepository
     {
         await _dbContext.Photos.AddAsync(photo);
         // compressing?
-        // _fileCompressor.Compress(photo, out byte[] compressedBinary);
-        // var photoFileCopy = new PhotoFile(photo.Id, compressedBinary);
+        // _fileCompressor.Compress(photo.File.Content, out byte[] compressed);
+        // var photoFileCopy = new PhotoFile(photo.Id, compressed);
         // var photoCopy = new Photo(photo.Id, photo.UserId, photo.Url, photo.Oridinal, photoFileCopy);
         // _dbContext.PhotoFiles
         //     .Where(p => p.PhotoId == photo.Id)
-        //     .ExecuteUpdate(b => b.SetProperty(p => p.Content, compressedBinary));
+        //     .ExecuteUpdate(b => b.SetProperty(p => p.Content, compressed));
         await _dbContext.SaveChangesAsync();
     }
 

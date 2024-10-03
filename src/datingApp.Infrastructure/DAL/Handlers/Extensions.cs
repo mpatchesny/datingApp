@@ -48,7 +48,7 @@ internal static class Extensions
         {
             Id = entity.Id,
             Oridinal = entity.Oridinal,
-            Url = entity.Url,
+            Url = entity.UrlPretty,
             UserId = entity.UserId
         };
     }

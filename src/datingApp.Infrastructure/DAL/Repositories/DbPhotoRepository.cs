@@ -21,6 +21,11 @@ internal sealed class DbPhotoRepository : IPhotoRepository
         return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
     }
 
+    public async Task<Photo> GetByIdWithFileAsync(Guid photoId)
+    {
+        return await _dbContext.Photos.Include(f => f.File).FirstOrDefaultAsync(x => x.Id == photoId);
+    }
+
     public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)
     {
         return await _dbContext.Photos
@@ -28,6 +33,7 @@ internal sealed class DbPhotoRepository : IPhotoRepository
                     .OrderBy(p => p.Oridinal)
                     .ToListAsync();
     }
+
 
     public async Task AddAsync(Photo photo)
     {
@@ -52,5 +58,6 @@ internal sealed class DbPhotoRepository : IPhotoRepository
         _dbContext.Photos.Remove(photo);
         await _dbContext.SaveChangesAsync();
     }
+
 
 }

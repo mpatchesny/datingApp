@@ -15,7 +15,7 @@ public class Photo
     public int Oridinal { get; private set; }
     public PhotoFile File { get; private set; }
 
-    public Photo(Guid id, Guid userId, string url, int oridinal, PhotoFile file = null)
+    public Photo(Guid id, Guid userId, string url, int oridinal, PhotoFile file)
     {
         Id = id;
         UserId = userId;

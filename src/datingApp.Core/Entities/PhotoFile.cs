@@ -11,7 +11,7 @@ namespace datingApp.Core.Entities;
 
 public class PhotoFile
 {
-    public Guid PhotoId { get; }
+    public Guid PhotoId { get; private set; }
     public string Extension { get; private set; }
     public byte[] Content { get; private set; }
     private const int MinPhotoSizeBytes = 10240;

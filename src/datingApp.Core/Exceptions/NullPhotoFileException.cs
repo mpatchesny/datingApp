@@ -7,7 +7,7 @@ namespace datingApp.Core.Exceptions;
 
 public class NullPhotoFileException : CustomException
 {
-    public NullPhotoFileException() : base("Photo file content must be provided.")
+    public NullPhotoFileException() : base("Photo file must be provided.")
     {
     }
 }

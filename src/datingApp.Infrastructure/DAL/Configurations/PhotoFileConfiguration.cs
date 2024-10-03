@@ -16,5 +16,7 @@ internal sealed class PhotoFileConfiguration
             .IsRequired();
         builder.Property(x => x.Content)
             .IsRequired();
+        builder.HasOne<Photo>()
+            .WithOne();
     }
 }

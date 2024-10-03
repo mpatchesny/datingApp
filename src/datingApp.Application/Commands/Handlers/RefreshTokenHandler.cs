@@ -43,14 +43,7 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
             throw new InvalidRefreshTokenException();
         }
 
-        var refreshTokenExpirationTime = DateTime.UtcNow + TimeSpan.FromDays(180);
-        var expirationTimeFromToken = knownUser.Claims.FirstOrDefault(claim => claim.Type.Equals("exp"))?.Value;
-        if (!string.IsNullOrEmpty(expirationTimeFromToken))
-        {
-            refreshTokenExpirationTime = DateTime.Parse(expirationTimeFromToken);
-        }
-
-        TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, refreshTokenExpirationTime);
+        TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, DateTime.UtcNow + TimeSpan.FromDays(180));
         await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
 
         var jwt = _authenticator.CreateToken(userId);

@@ -42,16 +42,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
-        _photoService.SetBase64Photo(command.Base64Bytes);
-        _photoService.ValidatePhoto();
-
-        byte[] bytes = _photoService.GetArrayOfBytes();
-        var extension = _photoService.GetImageFileFormat();
-
-        var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
+        var photoUrl = $"~/storage/{command.PhotoId}";
         int oridinal = user.Photos.Count();
-        var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);
+        var photoFile = new PhotoFile(command.PhotoId, command.Base64Bytes);
+        var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal, photoFile);
+
         await _photoRepository.AddAsync(photo);
-        await _fileRepository.AddAsync(bytes, command.PhotoId, extension);
     }
 }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace datingApp.Core.Exceptions;
 
-public class PhotoEmptyUrlException : CustomException
+public class EmptyPhotoUrlException : CustomException
 {
-    public PhotoEmptyUrlException() : base($"Photo URL cannot be empty.")
+    public EmptyPhotoUrlException() : base($"Photo URL cannot be empty.")
     {
     }
 }

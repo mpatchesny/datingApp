@@ -37,7 +37,7 @@ public class Photo
     {
         if (string.IsNullOrEmpty(url))
         {
-            throw new PhotoEmptyUrlException();
+            throw new EmptyPhotoUrlException();
         }
         if (Url == url) return;
         Url = url;

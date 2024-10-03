@@ -12,7 +12,7 @@ public class Photo
 {
     public Guid Id { get; }
     public Guid UserId { get; private set; }
-    public string Url { get;  private set; }
+    public string Url { get; private set; }
     public int Oridinal { get; private set; }
     public PhotoFile File { get; private set; }
 
@@ -55,7 +55,10 @@ public class Photo
     {
         if (!string.IsNullOrEmpty(extension))
         {
-            Url += "." + extension;
+            if(!Url.EndsWith(extension))
+            {
+                Url += "." + extension;
+            }
         }
     }
 

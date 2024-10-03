@@ -30,8 +30,7 @@ internal sealed class DbPhotoRepository : IPhotoRepository
         //                         .Select(p => p.Content)
         //                         .SingleOrDefault();
         // _fileCompressor.Decompress(compressed, out byte[] decompressed);
-        var photo = await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
-        return photo;
+        return await _dbContext.Photos.Include(p => p.File).FirstOrDefaultAsync(x => x.Id == photoId);;
     }
 
     public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)

@@ -33,8 +33,9 @@ public class PhotoFileTests
     [Fact]
     public void given_not_recognized_file_format_throws_InvalidPhotoException()
     {
-        // TODO
-        byte[] bytes = null;
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4F;
 
         var exception = Record.Exception(() => new PhotoFile(Guid.NewGuid(), bytes));
         Assert.NotNull(exception);
@@ -44,11 +45,12 @@ public class PhotoFileTests
     [Fact]
     public void given_recognized_file_format_Extension_has_proper_value()
     {
-        // TODO
-        byte[] bytes = null;
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
 
         PhotoFile photoFile = new PhotoFile(Guid.NewGuid(), bytes);
-        Assert.Equal("jpg", photoFile.Extension);
+        Assert.Equal("bmp", photoFile.Extension);
         Assert.Equal(bytes, photoFile.Content);
     }
 
@@ -65,9 +67,10 @@ public class PhotoFileTests
     [Fact]
     public void given_valid_base64_content_Content_and_Extension_is_set()
     {
-        // TODO
-        byte[] bytes = null;
-        string byte64Content = "";
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        string byte64Content = ToBase64(bytes);
 
         PhotoFile photoFile = new PhotoFile(Guid.NewGuid(), byte64Content);
         Assert.Equal("jpg", photoFile.Extension);
@@ -77,11 +80,12 @@ public class PhotoFileTests
     [Fact]
     public void given_valid_bytes_content_Content_and_Extension_is_set()
     {
-        // TODO
-        byte[] bytes = null;
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
 
         PhotoFile photoFile = new PhotoFile(Guid.NewGuid(), bytes);
-        Assert.Equal("jpg", photoFile.Extension);
+        Assert.Equal("bmp", photoFile.Extension);
         Assert.Equal(bytes, photoFile.Content);
     }
 

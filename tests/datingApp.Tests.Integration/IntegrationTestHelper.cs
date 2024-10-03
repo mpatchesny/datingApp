@@ -90,4 +90,20 @@ internal static class IntegrationTestHelper
         await database.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
         await database.DbContext.SaveChangesAsync();
     }
+
+    internal static byte[] SampleFileContent()
+    {
+        var bytes = new byte[25000];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        return bytes;
+    }
+
+    internal static string SampleFileBase64Content()
+    {
+        var bytes = new byte[25000];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        return Convert.ToBase64String(bytes);
+    }
 }

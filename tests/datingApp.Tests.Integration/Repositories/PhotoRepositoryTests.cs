@@ -36,7 +36,7 @@ public class PhotoRepositoryTests : IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", "abc", 1);
+        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", 1);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.Null(exception);
         var addedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
@@ -49,7 +49,7 @@ public class PhotoRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
-        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", "abc", 1);
+        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", 1);
         await _repository.AddAsync(photo);
         var photos = await _repository.GetByUserIdAsync(user.Id);
         Assert.Equal(2, photos.Count());
@@ -93,7 +93,7 @@ public class PhotoRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
-        var badPhoto = new Photo(photo.Id, user.Id, "abc", "abc", 1);
+        var badPhoto = new Photo(photo.Id, user.Id, "abc", 1);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.NotNull(exception);
     }

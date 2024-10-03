@@ -17,8 +17,5 @@ internal sealed class PhotoFileConfiguration : IEntityTypeConfiguration<PhotoFil
             .IsRequired();
         builder.Property(x => x.Content)
             .IsRequired();
-        // builder.HasOne<Photo>()
-        //     .WithOne()
-        //     .HasForeignKey<Photo>(x => x.Id);
     }
 }

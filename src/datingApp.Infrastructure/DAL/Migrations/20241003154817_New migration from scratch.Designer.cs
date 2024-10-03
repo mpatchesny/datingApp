@@ -9,10 +9,10 @@ using datingApp.Infrastructure;
 
 #nullable disable
 
-namespace datingApp.Infrastructure.Dal.Migrations
+namespace datingApp.Infrastructure.DAL.Migrations
 {
     [DbContext(typeof(DatingAppDbContext))]
-    [Migration("20240927144301_New migration from scratch")]
+    [Migration("20241003154817_New migration from scratch")]
     partial class Newmigrationfromscratch
     {
         /// <inheritdoc />
@@ -42,8 +42,6 @@ namespace datingApp.Infrastructure.Dal.Migrations
 
                     b.HasKey("EmailOrPhone");
 
-                    b.HasIndex("EmailOrPhone");
-
                     b.ToTable("AccessCodes");
 
                     NpgsqlEntityTypeBuilderExtensions.IsUnlogged(b, true);
@@ -62,26 +60,6 @@ namespace datingApp.Infrastructure.Dal.Migrations
                     b.ToTable("DeletedEntities");
                 });
 
-            modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte[]>("Binary")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("Extension")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("Files");
-                });
-
             modelBuilder.Entity("datingApp.Application.DTO.TokenDto", b =>
                 {
                     b.Property<string>("Token")
@@ -91,8 +69,6 @@ namespace datingApp.Infrastructure.Dal.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Token");
-
-                    b.HasIndex("Token");
 
                     b.ToTable("RevokedRefreshTokens");
                 });
@@ -168,11 +144,8 @@ namespace datingApp.Infrastructure.Dal.Migrations
                     b.Property<int>("Oridinal")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -180,9 +153,26 @@ namespace datingApp.Infrastructure.Dal.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId", "Oridinal");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Photos");
+                });
+
+            modelBuilder.Entity("datingApp.Core.Entities.PhotoFile", b =>
+                {
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("Extension")
+                        .HasColumnType("text");
+
+                    b.HasKey("PhotoId");
+
+                    b.ToTable("PhotoFiles");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
@@ -247,9 +237,6 @@ namespace datingApp.Infrastructure.Dal.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("Phone")
-                        .IsUnique();
-
                     b.HasIndex("Sex", "DateOfBirth");
 
                     b.ToTable("Users");
@@ -283,15 +270,6 @@ namespace datingApp.Infrastructure.Dal.Migrations
                     b.HasIndex("Lat", "Lon");
 
                     b.ToTable("UserSettings");
-                });
-
-            modelBuilder.Entity("datingApp.Application.DTO.FileDto", b =>
-                {
-                    b.HasOne("datingApp.Core.Entities.Photo", null)
-                        .WithOne()
-                        .HasForeignKey("datingApp.Application.DTO.FileDto", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
@@ -333,6 +311,15 @@ namespace datingApp.Infrastructure.Dal.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("datingApp.Core.Entities.PhotoFile", b =>
+                {
+                    b.HasOne("datingApp.Core.Entities.Photo", null)
+                        .WithOne("File")
+                        .HasForeignKey("datingApp.Core.Entities.PhotoFile", "PhotoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("datingApp.Core.Entities.UserSettings", b =>
                 {
                     b.HasOne("datingApp.Core.Entities.User", null)
@@ -345,6 +332,11 @@ namespace datingApp.Infrastructure.Dal.Migrations
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("datingApp.Core.Entities.Photo", b =>
+                {
+                    b.Navigation("File");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.User", b =>

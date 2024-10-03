@@ -8,17 +8,19 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Repositories;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
+using datingApp.Core.Repositories;
+using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
 
 namespace datingApp.Infrastructure.Exceptions;
 
 internal sealed class StorageMiddleware : IMiddleware
 {
-    private readonly IFileRepository _fileRepository;
+    private readonly IPhotoRepository _photoRepository;
     private readonly IFileStorageService _diskFileService;
-    public StorageMiddleware(IFileRepository fileRepository, IFileStorageService diskFileService)
+    public StorageMiddleware(IPhotoRepository photoRepository, IFileStorageService diskFileService)
     {
-        _fileRepository = fileRepository;
+        _photoRepository = photoRepository;
         _diskFileService = diskFileService;
     }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -38,10 +40,10 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (!_diskFileService.Exists(id, extension))
         {
-            var file = await _fileRepository.GetByIdAsync(Guid.Parse(id));
-            if (file != null)
+            var photo = await _photoRepository.GetByIdWithFileAsync(Guid.Parse(id));
+            if (photo != null)
             {
-                _diskFileService.SaveFile(file, id, extension);
+                _diskFileService.SaveFile(photo.File.Content, id, extension);
             }
         }
     }

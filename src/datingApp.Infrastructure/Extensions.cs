@@ -17,7 +17,6 @@ using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
 using datingApp.Infrastructure.Notifications;
-using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
@@ -31,7 +30,6 @@ namespace datingApp.Infrastructure;
 public static class Extensions
 {
     private const string EmailSenderOptionsSectionName = "EmailSender";
-    private const string PhotoServiceOptionsSectionName = "PhotoService";
     private const string StorageOptionsSectionName = "Storage";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -39,7 +37,6 @@ public static class Extensions
         services.AddAuth(configuration);
         services.AddHttpContextAccessor();
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
-        services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
@@ -49,9 +46,7 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
-        services.AddScoped<IPhotoService, PhotoService>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
-        services.AddScoped<IFileRepository, DbFileRepository>();
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
         services.AddSingleton<IFileCompressor, InMemoryFileCompressor>();

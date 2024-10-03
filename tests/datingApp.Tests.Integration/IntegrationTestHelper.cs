@@ -36,7 +36,11 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 1)
     {
-        var photo = new Photo(Guid.NewGuid(), userId, "abc", "abc", oridinal);
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var photo = new Photo(photoFile.PhotoId, userId, "abc", oridinal, photoFile);
         await database.DbContext.Photos.AddAsync(photo);
         await database.DbContext.SaveChangesAsync();
         return photo;
@@ -85,5 +89,21 @@ internal static class IntegrationTestHelper
         database.DbContext.Photos.Remove(photo);
         await database.DbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
         await database.DbContext.SaveChangesAsync();
+    }
+
+    internal static byte[] SampleFileContent()
+    {
+        var bytes = new byte[25000];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        return bytes;
+    }
+
+    internal static string SampleFileBase64Content()
+    {
+        var bytes = new byte[25000];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        return Convert.ToBase64String(bytes);
     }
 }

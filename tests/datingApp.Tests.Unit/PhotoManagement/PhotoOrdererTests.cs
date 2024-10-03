@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Xunit;
 
 namespace datingApp.Tests.Unit.PhotoManagement;
@@ -14,9 +15,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_oridinal_greater_than_current_should_return_list_with_proper_order()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            CreatePhoto(0),
+            CreatePhoto(1),
+            CreatePhoto(2),
         };
 
         var orderer = new PhotoOrderer();
@@ -30,9 +31,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_oridinal_lower_than_current_should_return_list_with_proper_order()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            CreatePhoto(0),
+            CreatePhoto(1),
+            CreatePhoto(2),
         };
 
         var orderer = new PhotoOrderer();
@@ -46,9 +47,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_oridinal_greater_than_list_count_should_place_photo_at_the_end()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            CreatePhoto(0),
+            CreatePhoto(1),
+            CreatePhoto(2),
         };
 
         var orderer = new PhotoOrderer();
@@ -62,9 +63,9 @@ public class PhotoOrdererTests
     public void change_photo_order_with_negative_oridinal_should_place_photo_at_the_beginning()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            CreatePhoto(0),
+            CreatePhoto(1),
+            CreatePhoto(2),
         };
 
         var orderer = new PhotoOrderer();
@@ -78,13 +79,22 @@ public class PhotoOrdererTests
     public void list_size_should_not_change_after_performing_order()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 0),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 1),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", "abc", 2)
+            CreatePhoto(0),
+            CreatePhoto(1),
+            CreatePhoto(2),
         };
 
         var orderer = new PhotoOrderer();
         var list = orderer.OrderPhotos(photos, photos[0].Id, 2);
         Assert.Equal(3, list.Count);
+    }
+
+    private Photo CreatePhoto(int oridinal)
+    {
+        var bytes = new byte[25000];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        return new Photo(photoFile.PhotoId, Guid.NewGuid(), "abc", oridinal, photoFile);
     }
 }

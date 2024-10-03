@@ -36,7 +36,11 @@ public class PhotoRepositoryTests : IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", "abc", 1);
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", 1, photoFile);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.Null(exception);
         var addedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
@@ -49,7 +53,11 @@ public class PhotoRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
-        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", "abc", 1);
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var photo = new Photo(Guid.NewGuid(), user.Id, "abc", 1, photoFile);
         await _repository.AddAsync(photo);
         var photos = await _repository.GetByUserIdAsync(user.Id);
         Assert.Equal(2, photos.Count());
@@ -67,33 +75,16 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_photo_deletes_associated_file()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-
-        var file = new Application.DTO.FileDto {
-            Id = photo.Id,
-            Extension = "txt",
-            Binary = new byte[] { byte.MinValue, 0, byte.MaxValue }
-        };
-        _testDb.DbContext.Files.Add(file);
-        await _testDb.DbContext.SaveChangesAsync();
-
-        await _repository.DeleteAsync(photo);
-        var photos = await _repository.GetByUserIdAsync(user.Id);
-        Assert.Empty(photos);
-        var fileDto = await _testDb.DbContext.Files.FirstOrDefaultAsync(x => x.Id == photo.Id);
-        Assert.Null(fileDto);
-    }
-
-    [Fact]
     public async Task add_photo_with_existing_id_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
-        var badPhoto = new Photo(photo.Id, user.Id, "abc", "abc", 1);
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var badPhoto = new Photo(photo.Id, user.Id, "abc", 1, photoFile);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(photo));
         Assert.NotNull(exception);
     }
@@ -138,6 +129,41 @@ public class PhotoRepositoryTests : IDisposable
         Assert.Null(exception);
         var deletedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
         Assert.Null(deletedPhoto);
+    }
+
+    [Fact]
+    public async Task delete_existing_photo_should_delete_associated_file()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
+        Assert.Null(exception);
+        var deletedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
+        Assert.Null(deletedPhoto);
+        var deletedFile = await _testDb.DbContext.PhotoFiles.FirstOrDefaultAsync(f => f.PhotoId == photo.Id);
+        Assert.Null(deletedFile);
+    }
+
+    [Fact]
+    public async Task given_photo_exists_get_photo_by_id_should_succeed()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var retrievedPhoto = await _repository.GetByIdAsync(photo.Id);
+        Assert.Equal(photo, retrievedPhoto);
+    }
+
+    [Fact]
+    public async Task given_photo_exists_get_photo_with_file_by_id_should_return_photo_file()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        var retrievedPhoto = await _repository.GetByIdWithFileAsync(photo.Id);
+        Assert.NotNull(retrievedPhoto.File);
+        Assert.Equal(photo.File, retrievedPhoto.File);
     }
 
     // Arrange

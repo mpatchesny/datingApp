@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace datingApp.Infrastructure.Dal.Migrations
+namespace datingApp.Infrastructure.DAL.Migrations
 {
     /// <inheritdoc />
     public partial class Newmigrationfromscratch : Migration
@@ -115,8 +115,7 @@ namespace datingApp.Infrastructure.Dal.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Path = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: true),
+                    Url = table.Column<string>(type: "text", nullable: false),
                     Oridinal = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -182,37 +181,27 @@ namespace datingApp.Infrastructure.Dal.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Files",
+                name: "PhotoFiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Extension = table.Column<string>(type: "text", nullable: false),
-                    Binary = table.Column<byte[]>(type: "bytea", nullable: false)
+                    PhotoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Extension = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<byte[]>(type: "bytea", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Files", x => x.Id);
+                    table.PrimaryKey("PK_PhotoFiles", x => x.PhotoId);
                     table.ForeignKey(
-                        name: "FK_Files_Photos_Id",
-                        column: x => x.Id,
+                        name: "FK_PhotoFiles_Photos_PhotoId",
+                        column: x => x.PhotoId,
                         principalTable: "Photos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccessCodes_EmailOrPhone",
-                table: "AccessCodes",
-                column: "EmailOrPhone");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DeletedEntities_Id",
                 table: "DeletedEntities",
-                column: "Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Files_Id",
-                table: "Files",
                 column: "Id");
 
             migrationBuilder.CreateIndex(
@@ -236,14 +225,9 @@ namespace datingApp.Infrastructure.Dal.Migrations
                 column: "SendFromId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_UserId_Oridinal",
+                name: "IX_Photos_UserId",
                 table: "Photos",
-                columns: new[] { "UserId", "Oridinal" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RevokedRefreshTokens_Token",
-                table: "RevokedRefreshTokens",
-                column: "Token");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Swipes_SwipedById_SwipedWhoId_Like",
@@ -255,12 +239,6 @@ namespace datingApp.Infrastructure.Dal.Migrations
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_Phone",
-                table: "Users",
-                column: "Phone",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -284,10 +262,10 @@ namespace datingApp.Infrastructure.Dal.Migrations
                 name: "DeletedEntities");
 
             migrationBuilder.DropTable(
-                name: "Files");
+                name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Messages");
+                name: "PhotoFiles");
 
             migrationBuilder.DropTable(
                 name: "RevokedRefreshTokens");
@@ -299,10 +277,10 @@ namespace datingApp.Infrastructure.Dal.Migrations
                 name: "UserSettings");
 
             migrationBuilder.DropTable(
-                name: "Photos");
+                name: "Matches");
 
             migrationBuilder.DropTable(
-                name: "Matches");
+                name: "Photos");
 
             migrationBuilder.DropTable(
                 name: "Users");

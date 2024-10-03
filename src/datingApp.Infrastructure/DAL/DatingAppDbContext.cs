@@ -16,8 +16,8 @@ internal sealed class DatingAppDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<Swipe> Swipes { get; set; }
     public DbSet<Photo> Photos { get; set; }
+    public DbSet<PhotoFile> PhotoFiles { get; set; }
     public DbSet<AccessCodeDto> AccessCodes { get; set; }
-    public DbSet<FileDto> Files { get; set; }
     public DbSet<DeletedEntityDto> DeletedEntities { get; set; }
     public DbSet<TokenDto> RevokedRefreshTokens { get; set; }
 

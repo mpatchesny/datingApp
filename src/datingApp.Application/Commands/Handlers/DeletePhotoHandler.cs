@@ -49,7 +49,6 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         }
 
         _fileStorageService.DeleteFile(photo.Id.ToString());
-
         await _photoRepository.DeleteAsync(photo);
         await _deletedEntityRepository.AddAsync(photo.Id);
     }

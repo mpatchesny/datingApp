@@ -44,4 +44,28 @@ public class PhotoTests
         Assert.NotNull(exception);
         Assert.IsType<NullPhotoFileException>(exception);
     }
+
+    [Fact]
+    public void photo_url_returns_raw_url()
+    {
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var url = "url";
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), url, 1, photoFile);
+        Assert.Equal(url, photo.Url);
+    }
+
+    [Fact]
+    public void given_valid_file_UrlPretty_returns_url_plus_file_extension()
+    {
+        byte[] bytes = new byte[10241];
+        bytes[0] = 0x42;
+        bytes[1] = 0x4D;
+        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
+        var url = "url";
+        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), url, 1, photoFile);
+        Assert.Equal(url + ".bmp", photo.UrlPretty);
+    }
 }

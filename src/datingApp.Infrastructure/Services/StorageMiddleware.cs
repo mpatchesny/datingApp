@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Repositories;
 using datingApp.Application.Services;
+using datingApp.Application.Storage;
 using datingApp.Core.Exceptions;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;

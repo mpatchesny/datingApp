@@ -5,6 +5,7 @@ using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authorization;
 using Serilog;
+using datingApp.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -13,7 +13,7 @@ using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
 
-namespace datingApp.Infrastructure.Exceptions;
+namespace datingApp.Infrastructure.Storage;
 
 internal sealed class StorageMiddleware : IMiddleware
 {

@@ -16,11 +16,17 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 {
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IPhotoService _photoService;
+    private readonly IFileRepository _fileRepository;
     public AddPhotoHandler(IPhotoRepository photoRepository,
-                            IUserRepository userRepository)
+                            IUserRepository userRepository,
+                            IPhotoService photoService,
+                            IFileRepository fileRepository)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
+        _photoService = photoService;
+        _fileRepository = fileRepository;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -36,10 +42,16 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
-        int oridinal = user.Photos.Count();
-        var photoFile = new PhotoFile(command.PhotoId, command.Base64Bytes);
-        var photo = new Photo(command.PhotoId, command.UserId, $"~/storage/{command.PhotoId}.{photoFile.Extension}", oridinal, photoFile);
+        _photoService.SetBase64Photo(command.Base64Bytes);
+        _photoService.ValidatePhoto();
 
+        byte[] bytes = _photoService.GetArrayOfBytes();
+        var extension = _photoService.GetImageFileFormat();
+
+        var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
+        int oridinal = user.Photos.Count();
+        var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);
         await _photoRepository.AddAsync(photo);
+        await _fileRepository.AddAsync(bytes, command.PhotoId, extension);
     }
 }

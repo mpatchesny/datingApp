@@ -7,6 +7,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Repositories;
 using datingApp.Application.Services;
+using datingApp.Application.Storage;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 
@@ -17,16 +18,16 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
-    private readonly IFileRepository _fileRepository;
+    private readonly IFileStorageService _fileStorage;
     public AddPhotoHandler(IPhotoRepository photoRepository,
                             IUserRepository userRepository,
                             IPhotoService photoService,
-                            IFileRepository fileRepository)
+                            IFileStorageService fileStorage)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
         _photoService = photoService;
-        _fileRepository = fileRepository;
+        _fileStorage = fileStorage;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -50,8 +51,8 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
-        var photo = new Photo(command.PhotoId, command.UserId, "depreciated", photoUrl, oridinal);
+        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal, null);
         await _photoRepository.AddAsync(photo);
-        await _fileRepository.AddAsync(bytes, command.PhotoId, extension);
+        _fileStorage.SaveFile(bytes, command.PhotoId.ToString(), extension);
     }
 }

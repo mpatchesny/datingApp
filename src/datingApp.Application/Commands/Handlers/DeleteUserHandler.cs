@@ -15,14 +15,14 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IFileStorageService _fileStorage;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
     {
         _userRepository = userRepository;
-        _fileStorageService = fileStorageService;
+        _fileStorage = fileStorageService;
         _deletedEntityRepository = deletedEntityRepository;
         _authorizationService = authorizationService;
     }
@@ -50,7 +50,7 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 
         foreach (var photo in user.Photos)
         {
-            _fileStorageService.DeleteFile(photo.Id.ToString());
+            _fileStorage.DeleteFile(photo.Id.ToString());
         }
 
         await _userRepository.DeleteAsync(user);

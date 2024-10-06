@@ -16,14 +16,14 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IPhotoRepository _photoRepository;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IFileStorageService _fileStorage;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
     {
         _photoRepository = photoRepository;
-        _fileStorageService = fileStorageService;
+        _fileStorage = fileStorageService;
         _deletedEntityRepository = deletedEntityRepository;
         _authorizationService = authorizationService;
     }
@@ -49,7 +49,7 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             throw new UnauthorizedException();
         }
 
-        _fileStorageService.DeleteFile(photo.Id.ToString());
+        _fileStorage.DeleteFile(photo.Id.ToString());
         await _photoRepository.DeleteAsync(photo);
         await _deletedEntityRepository.AddAsync(photo.Id);
     }

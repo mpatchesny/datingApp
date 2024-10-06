@@ -12,4 +12,7 @@ public interface IPhotoService
     public void ValidatePhoto();
     public byte[] GetArrayOfBytes();
     public string GetImageFileFormat();
+    PhotoServiceProcessOutput ProcessBase64Photo(string base64Bytes);
 }
+
+public sealed record PhotoServiceProcessOutput(byte[] Bytes, string Extension);

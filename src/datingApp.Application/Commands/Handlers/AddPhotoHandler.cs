@@ -43,13 +43,9 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
-        // TODO: refactor: Przetwarzanie zdjęcia (walidacja, konwersja)
-        // var (photoBytes, fileFormat) = _photoService.ProcessBase64Photo(command.Base64Bytes);
-        _photoService.SetBase64Photo(command.Base64Bytes);
-        _photoService.ValidatePhoto();
-
-        byte[] bytes = _photoService.GetArrayOfBytes();
-        var extension = _photoService.GetImageFileFormat();
+        var output = _photoService.ProcessBase64Photo(command.Base64Bytes);
+        var bytes = output.Bytes;
+        var extension = output.Extension;
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();

@@ -17,6 +17,7 @@ using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
 using datingApp.Infrastructure.Notifications;
+using datingApp.Infrastructure.PhotoManagement;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
@@ -49,6 +50,7 @@ public static class Extensions
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
+        services.AddSingleton<IPhotoService, PhotoService>();
         services.AddSingleton<IFileCompressor, InMemoryFileCompressor>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();

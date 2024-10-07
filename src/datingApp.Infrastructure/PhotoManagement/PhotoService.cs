@@ -12,9 +12,7 @@ namespace datingApp.Infrastructure.PhotoManagement;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    private string _base64File;
-    private byte[] _bytes;
-    private readonly IDictionary<byte[], string> knownFileHeaders = new Dictionary<byte[], string>()
+    private readonly IDictionary<byte[], string> _knownFileHeaders = new Dictionary<byte[], string>()
     {
         {new byte[] {0x42, 0x4D}, "bmp"},
         {new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png"},
@@ -26,56 +24,89 @@ internal sealed class PhotoService : IPhotoService
         _options = options;
     }
 
-    public void SetBase64Photo(string base64content)
+    public PhotoServiceProcessOutput ProcessBase64Photo(string base64content)
     {
         if (string.IsNullOrEmpty(base64content))
         {
             throw new EmptyBase64StringException();
         }
-        _base64File = base64content;
+
+        int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
+        int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
+
+        if (!IsValidBase64ContentSize(base64content))
+        {
+            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
+        }
+
+        var bytes = Base64ToArrayOfBytes(base64content);
+        if (bytes == null)
+        {
+            // throw new FailToConvertBase64StringToArrayOfBytesException();
+        }
+
+        if (!IsValidContentSize(bytes))
+        {
+            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
+        }
+
+        var extension = GetImageFileFormat(bytes);
+        if (string.IsNullOrEmpty(extension))
+        {
+            throw new InvalidPhotoException();
+        }
+
+        return new PhotoServiceProcessOutput(bytes, extension);
     }
 
-    public byte[] GetArrayOfBytes()
+    private bool IsValidContentSize(byte[] bytes)
     {
-        if (string.IsNullOrEmpty(_base64File))
+        if (bytes.Length < _options.Value.MinPhotoSizeBytes || bytes.Length > _options.Value.MinPhotoSizeBytes)
         {
-            throw new EmptyBase64StringException();
+            return false;
         }
-
-        if (_bytes == null || _bytes.Length == 0)
-        {
-            // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
-            byte[] bytes = new byte[((_base64File.Length * 3) + 3) / 4 -
-                (_base64File.Length > 0 && _base64File[^1] == '=' ?
-                    _base64File.Length > 1 && _base64File[^2] == '=' ?
-                        2 : 1 : 0)];
-            if (!Convert.TryFromBase64String(_base64File, bytes, out _))
-            {
-                throw new FailToConvertBase64StringToArrayOfBytes();
-            }
-            _bytes = bytes;
-        }
-
-        return _bytes;
+        return true;
     }
 
-    public string GetImageFileFormat()
+    private bool IsValidBase64ContentSize(string base64Content)
+    {
+        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
+        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
+        if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private static byte[] Base64ToArrayOfBytes(string base64Content)
+    {
+        // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
+        byte[] bytes = new byte[((base64Content.Length * 3) + 3) / 4 -
+            (base64Content.Length > 0 && base64Content[^1] == '=' ?
+                base64Content.Length > 1 && base64Content[^2] == '=' ?
+                    2 : 1 : 0)];
+
+        if (!Convert.TryFromBase64String(base64Content, bytes, out _))
+        {
+            return null;
+        }
+
+        return bytes;
+    }
+
+    private string GetImageFileFormat(byte[] content)
     {
         // Returns file extension associated with file format
         // if image file format is not known, returns null
-        if (string.IsNullOrEmpty(_base64File))
-        {
-            throw new EmptyBase64StringException();
-        }
-        GetArrayOfBytes();
+        if (content == null) return null;
 
-        // FIXME: jakaś gotowa biblioteka do tego
         bool match = false;
-        foreach (var item in knownFileHeaders)
+        foreach (var item in _knownFileHeaders)
         {
             for (int i = 0; i < item.Key.Length; i++)
             {
-                match = _bytes[i] == item.Key[i];
+                match = content[i] == item.Key[i];
                 if (!match) break;
             }
 
@@ -85,45 +116,5 @@ internal sealed class PhotoService : IPhotoService
             }
         }
         return null;
-    }
-
-    public void ValidatePhoto()
-    {
-        if (string.IsNullOrEmpty(_base64File))
-        {
-            throw new EmptyBase64StringException();
-        }
-
-        int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
-        int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
-        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
-        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
-
-        // Initial photo validation: is base64 string length within range
-        if (_base64File.Length < minBase64PhotoSizeBytes)
-        {
-            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
-        }
-        if (_base64File.Length > maxBase64PhotoSizeBytes)
-        {
-            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
-        }
-
-        GetArrayOfBytes();
-
-        // More precise photo validation based on bytes array and image 
-        // format recognition
-        if (_bytes.Length > _options.Value.MaxPhotoSizeBytes)
-        {
-            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
-        }
-        if (_bytes.Length < _options.Value.MinPhotoSizeBytes)
-        {
-            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
-        }
-        if (string.IsNullOrWhiteSpace(GetImageFileFormat()))
-        {
-            throw new InvalidPhotoException();
-        }
     }
 }

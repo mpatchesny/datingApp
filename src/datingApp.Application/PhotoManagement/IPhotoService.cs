@@ -8,10 +8,6 @@ namespace datingApp.Application.PhotoManagement;
 
 public interface IPhotoService
 {
-    public void SetBase64Photo(string base64content);
-    public void ValidatePhoto();
-    public byte[] GetArrayOfBytes();
-    public string GetImageFileFormat();
     PhotoServiceProcessOutput ProcessBase64Photo(string base64Bytes);
 }
 

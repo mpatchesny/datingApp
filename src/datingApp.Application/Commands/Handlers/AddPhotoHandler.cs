@@ -43,13 +43,13 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
-        var output = _photoService.ProcessBase64Photo(command.Base64Bytes);
+        var (bytes, extension) = _photoService.ProcessBase64Photo(command.Base64Bytes);
 
-        var photoUrl = $"~/storage/{command.PhotoId}.{output.Extension}";
+        var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
         var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal, null);
 
         await _photoRepository.AddAsync(photo);
-        _fileStorage.SaveFile(output.Bytes, command.PhotoId.ToString(), output.Extension);
+        _fileStorage.SaveFile(bytes, command.PhotoId.ToString(), extension);
     }
 }

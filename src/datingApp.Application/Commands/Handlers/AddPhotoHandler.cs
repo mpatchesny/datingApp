@@ -47,7 +47,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
-        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal, null);
+        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal);
 
         await _photoRepository.AddAsync(photo);
         _fileStorage.SaveFile(bytes, command.PhotoId.ToString(), extension);

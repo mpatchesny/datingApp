@@ -14,20 +14,16 @@ public class Photo
     public Guid UserId { get; private set; }
     public string Url { get; private set; }
     public int Oridinal { get; private set; }
-    public PhotoFile File { get; private set; }
-
     private Photo()
     {
         // EF
     }
-
-    public Photo(Guid id, Guid userId, string url, int oridinal, PhotoFile file)
+    public Photo(Guid id, Guid userId, string url, int oridinal)
     {
         Id = id;
         UserId = userId;
         SetUrl(url);
         Oridinal = oridinal;
-        SetFile(file);
     }
 
     public void ChangeOridinal(int oridinal)
@@ -48,16 +44,5 @@ public class Photo
         }
         if (Url == url) return;
         Url = url;
-    }
-
-    private void SetFile(PhotoFile file)
-    {
-        if (file == null)
-        {
-            throw new NullPhotoFileException();
-        }
-
-        if (file == File) return;
-        File = file;
     }
 }

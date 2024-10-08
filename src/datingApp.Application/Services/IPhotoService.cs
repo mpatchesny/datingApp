@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
-namespace datingApp.Application.PhotoManagement;
+namespace datingApp.Application.Services;
 
 public interface IPhotoService
 {

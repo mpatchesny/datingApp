@@ -4,9 +4,10 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Services;
 using datingApp.Core.Entities;
 
-namespace datingApp.Infrastructure.PhotoManagement;
+namespace datingApp.Infrastructure.Services;
 
 public class PhotoOrderer : IPhotoOrderer
 {

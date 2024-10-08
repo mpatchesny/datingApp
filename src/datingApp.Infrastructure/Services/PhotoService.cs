@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.PhotoManagement;
+using datingApp.Application.Services;
 using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Infrastructure.PhotoManagement;
+namespace datingApp.Infrastructure.Services;
 
 internal sealed class PhotoService : IPhotoService
 {

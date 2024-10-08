@@ -7,7 +7,7 @@ using datingApp.Application.Storage;
 using datingApp.Infrastructure.Services;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Infrastructure.Storage;
+namespace datingApp.Infrastructure.Services;
 
 internal sealed class FileStorageService : IFileStorageService
 {

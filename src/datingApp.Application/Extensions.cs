@@ -29,7 +29,6 @@ namespace datingApp.Application
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
-            services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
             services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
             return services;
         }

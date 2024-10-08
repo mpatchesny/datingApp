@@ -46,12 +46,12 @@ public static class Extensions
                 .Where(t => !t.Name.Equals("GetUpdatesHandler")))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+        services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
-        services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
         services.AddSingleton<IPhotoService, PhotoService>();
-        services.AddSingleton<IFileCompressor, InMemoryFileCompressor>();
+        services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();
         return services;

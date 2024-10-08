@@ -92,6 +92,6 @@ public class PhotoOrdererTests
 
     private Photo CreatePhoto(int oridinal)
     {
-        return new Photo(photoFile.PhotoId, Guid.NewGuid(), "abc", oridinal);
+        return new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", oridinal);
     }
 }

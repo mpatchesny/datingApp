@@ -92,10 +92,6 @@ public class PhotoOrdererTests
 
     private Photo CreatePhoto(int oridinal)
     {
-        var bytes = new byte[25000];
-        bytes[0] = 0x42;
-        bytes[1] = 0x4D;
-        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
-        return new Photo(photoFile.PhotoId, Guid.NewGuid(), "abc", oridinal, photoFile);
+        return new Photo(photoFile.PhotoId, Guid.NewGuid(), "abc", oridinal);
     }
 }

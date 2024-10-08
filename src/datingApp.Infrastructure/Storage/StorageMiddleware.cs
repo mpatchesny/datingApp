@@ -41,11 +41,11 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (!_diskFileService.Exists(id, extension))
         {
-            var photo = await _photoRepository.GetByIdWithFileAsync(Guid.Parse(id));
-            if (photo != null)
-            {
-                _diskFileService.SaveFile(photo.File.Content, id, extension);
-            }
+            // var photo = await _photoRepository.GetByIdWithFileAsync(Guid.Parse(id));
+            // if (photo != null)
+            // {
+            //     _diskFileService.SaveFile(photo.File.Content, id, extension);
+            // }
         }
     }
 }

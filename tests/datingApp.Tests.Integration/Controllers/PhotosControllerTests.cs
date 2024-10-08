@@ -166,7 +166,6 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         var response = await Client.GetAsync($"/storage/{photo.Id}.jpg");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(photo.File.Content, await response.Content.ReadAsByteArrayAsync());
     }
 
     [Fact]

@@ -57,9 +57,6 @@ public static class Extensions
                 .Where(t => !t.Name.Contains("Dummy") && !t.Name.Contains("Option")))
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
-        // services.AddSingleton<IFileStorageService, FileStorageService>();
-        // services.AddSingleton<IPhotoService, PhotoService>();
-        // services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={StoragePath}"));
         return services;

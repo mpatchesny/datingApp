@@ -14,14 +14,7 @@ public class Photo
     public Guid UserId { get; private set; }
     public string Url { get; private set; }
     public int Oridinal { get; private set; }
-    public string Extension
-    {
-        get
-        {
-            var x = Url.Split(".");
-            return x.Length > 0 ? x[^1] : "";
-        }
-    }
+    public string Extension { get { return GetFileExtensionFromUrl(Url); } }
     private Photo()
     {
         // EF
@@ -53,4 +46,12 @@ public class Photo
         if (Url == url) return;
         Url = url;
     }
+
+    // https://stackoverflow.com/questions/23228378/is-there-any-way-to-get-the-file-extension-from-a-url
+    private static string GetFileExtensionFromUrl(string url)
+    {
+        url = url.Split('?')[0];
+        url = url.Split('/').Last();
+        return url.Contains('.') ? url.Substring(url.LastIndexOf('.')) : "";
+}
 }

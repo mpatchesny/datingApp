@@ -24,6 +24,7 @@ using datingApp.Infrastructure.Storage;
 using FluentStorage;
 using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Builder.Extensions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -61,37 +62,9 @@ public static class Extensions
 
         var environment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
         var storagePath = StorageFullPath(environment, configuration);
-        if (!IsDirectory(storagePath))
-        {
-            throw new NotADirectoryException($"Storage path: {storagePath} is not a directory.");
-        }
-        if (!HasWritePrivileges(storagePath))
-        {
-            throw new NoWritePrivilegesOnDirectory($"Storage path: {storagePath} no write privileges on directory.");
-        }
         services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={storagePath}"));
 
         return services;
-    }
-
-    public static bool HasWritePrivileges(string path)
-    {
-        var directoryInfo = new System.IO.DirectoryInfo(path);
-        if ((directoryInfo.Attributes & FileAttributes.ReadOnly) > 0)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    public static bool IsDirectory(string path)
-    {
-        var directoryInfo = new System.IO.DirectoryInfo(path);
-        if ((directoryInfo.Attributes & FileAttributes.Directory) == 0)
-        {
-            return false;
-        }
-        return true;
     }
 
     public static string StorageFullPath(this IWebHostEnvironment environment, IConfiguration configuration)
@@ -107,5 +80,25 @@ public static class Extensions
         var section = configuration.GetRequiredSection(sectionName);
         section.Bind(options);
         return options;
+    }
+
+    private static void ValidateStoragePath(string storageFullPath)
+    {
+        var directoryInfo = new System.IO.DirectoryInfo(storageFullPath);
+
+        if (!directoryInfo.Exists)
+        {
+            throw new DirectoryNotExistsException($"Storage path: {storageFullPath} not exists.");
+        }
+
+        if ((directoryInfo.Attributes & FileAttributes.Directory) == 0)
+        {
+            throw new NotADirectoryException($"Storage path: {storageFullPath} is not a directory.");
+        }
+
+        if ((directoryInfo.Attributes & FileAttributes.ReadOnly) > 0)
+        {
+            throw new NoWritePrivilegesOnDirectory($"Storage path: {storageFullPath} no write privileges on directory.");
+        }
     }
 }

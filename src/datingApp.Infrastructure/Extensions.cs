@@ -58,8 +58,40 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
         services.AddSingleton<ExceptionMiddleware>();
-        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={StoragePath}"));
+
+        var storagePath = StoragePath(configuration);
+        if (!IsDirectory(storagePath))
+        {
+            throw new NotADirectoryException($"Storage path: {storagePath} is not a directory.");
+        }
+        if (!HasWritePrivileges(storagePath))
+        {
+            throw new NoWritePrivilegesOnDirectory($"Storage path: {storagePath} no write privileges on directory.");
+        }
+        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={storagePath}"));
+
         return services;
+    }
+
+    public static bool HasWritePrivileges(string path)
+    {
+        var directoryInfo = new System.IO.DirectoryInfo(path);
+        if ((directoryInfo.Attributes & FileAttributes.ReadOnly) > 0)
+        {
+            // no write privileges
+            return false;
+        }
+        return true;
+    }
+
+    public static bool IsDirectory(string path)
+    {
+        var directoryInfo = new System.IO.DirectoryInfo(path);
+        if ((directoryInfo.Attributes & FileAttributes.Directory) == 0)
+        {
+            return false;
+        }
+        return true;
     }
 
     public static string StoragePath(this IWebHostEnvironment environment, IConfiguration configuration)

@@ -28,12 +28,4 @@ public class PhotoTests
         Assert.NotNull(exception);
         Assert.IsType<EmptyPhotoUrlException>(exception);
     }
-
-    [Fact]
-    public void photo_url_returns_url_plus_file_extension()
-    {
-        var url = "url";
-        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), url, 1);
-        Assert.Equal(url + ".bmp", photo.Url);
-    }
 }

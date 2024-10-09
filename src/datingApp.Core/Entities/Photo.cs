@@ -14,6 +14,14 @@ public class Photo
     public Guid UserId { get; private set; }
     public string Url { get; private set; }
     public int Oridinal { get; private set; }
+    public string Extension
+    {
+        get
+        {
+            var x = Url.Split(".");
+            return x.Length > 0 ? x[^1] : "";
+        }
+    }
     private Photo()
     {
         // EF

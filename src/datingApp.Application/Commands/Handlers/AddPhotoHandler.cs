@@ -53,7 +53,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
         var path = "TODO";
         var tasks = new List<Task>(){
-            _fileStorage.WithGzipCompression().WriteAsync(path, bytes),
+            _fileStorage.WriteAsync(path, bytes),
             _photoRepository.AddAsync(photo),
         };
         await Task.WhenAll(tasks);

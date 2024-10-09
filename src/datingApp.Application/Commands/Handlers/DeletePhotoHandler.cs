@@ -9,17 +9,21 @@ using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Repositories;
+using FluentStorage.Blobs;
 
 namespace datingApp.Application.Commands.Handlers;
 
 public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IPhotoRepository _photoRepository;
-    private readonly IFileStorageService _fileStorage;
+    private readonly IBlobStorage _fileStorage;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public DeletePhotoHandler(IPhotoRepository photoRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
+    public DeletePhotoHandler(IPhotoRepository photoRepository,
+                            IBlobStorage fileStorageService,
+                            IDeletedEntityRepository deletedEntityRepository,
+                            IDatingAppAuthorizationService authorizationService)
     {
         _photoRepository = photoRepository;
         _fileStorage = fileStorageService;
@@ -48,8 +52,12 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             throw new UnauthorizedException();
         }
 
-        _fileStorage.DeleteFile(photo.Id.ToString());
-        await _photoRepository.DeleteAsync(photo);
-        await _deletedEntityRepository.AddAsync(photo.Id);
+        var path = "TODO";
+        var tasks = new List<Task>(){
+            _fileStorage.DeleteAsync(path),
+            _photoRepository.DeleteAsync(photo),
+            _deletedEntityRepository.AddAsync(photo.Id),
+        };
+        await Task.WhenAll(tasks);
     }
 }

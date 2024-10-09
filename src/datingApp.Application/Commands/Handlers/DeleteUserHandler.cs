@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
@@ -9,17 +10,21 @@ using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Repositories;
+using FluentStorage.Blobs;
 
 namespace datingApp.Application.Commands.Handlers;
 
 public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IFileStorageService _fileStorage;
+    private readonly IBlobStorage _fileStorage;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
+    public DeleteUserHandler(IUserRepository userRepository,
+                            IBlobStorage fileStorageService,
+                            IDeletedEntityRepository deletedEntityRepository,
+                            IDatingAppAuthorizationService authorizationService)
     {
         _userRepository = userRepository;
         _fileStorage = fileStorageService;
@@ -48,12 +53,18 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
             throw new UnauthorizedException();
         }
 
+        var paths = new List<string>();
         foreach (var photo in user.Photos)
         {
-            _fileStorage.DeleteFile(photo.Id.ToString());
+            //pass
         }
-
-        await _userRepository.DeleteAsync(user);
-        await _deletedEntityRepository.AddAsync(user.Id);
+        
+        var tasks = new List<Task>()
+        {
+            _fileStorage.DeleteAsync(paths),
+            _userRepository.DeleteAsync(user),
+            _deletedEntityRepository.AddAsync(user.Id),
+        };
+        await Task.WhenAll(tasks);
     }
 }

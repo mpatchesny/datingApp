@@ -9,6 +9,9 @@ using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using FluentStorage;
+using FluentStorage.Blobs;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace datingApp.Application.Commands.Handlers;
 
@@ -17,11 +20,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
-    private readonly IFileStorageService _fileStorage;
+    private readonly IBlobStorage _fileStorage;
     public AddPhotoHandler(IPhotoRepository photoRepository,
                             IUserRepository userRepository,
                             IPhotoService photoService,
-                            IFileStorageService fileStorage)
+                            IBlobStorage fileStorage)
     {
         _photoRepository = photoRepository;
         _userRepository = userRepository;
@@ -48,7 +51,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         int oridinal = user.Photos.Count();
         var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal);
 
-        await _photoRepository.AddAsync(photo);
-        _fileStorage.SaveFile(bytes, command.PhotoId.ToString(), extension);
+        var path = "TODO";
+        var tasks = new List<Task>(){
+            _fileStorage.WithGzipCompression().WriteAsync(path, bytes),
+            _photoRepository.AddAsync(photo),
+        };
+        await Task.WhenAll(tasks);
     }
 }

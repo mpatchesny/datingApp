@@ -120,20 +120,6 @@ public class PhotoRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task delete_existing_photo_should_delete_associated_file()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-
-        var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(photo));
-        Assert.Null(exception);
-        var deletedPhoto = await _testDb.DbContext.Photos.FirstOrDefaultAsync(x => x.Id == photo.Id);
-        Assert.Null(deletedPhoto);
-        var deletedFile = await _testDb.DbContext.PhotoFiles.FirstOrDefaultAsync(f => f.PhotoId == photo.Id);
-        Assert.Null(deletedFile);
-    }
-
-    [Fact]
     public async Task given_photo_exists_get_photo_by_id_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

@@ -36,6 +36,11 @@ public static class Extensions
     private const string StorageOptionsSectionName = "Storage";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        var environment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
+        var storagePath = StorageFullPath(environment, configuration);
+        ValidateStoragePath(storagePath);
+        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={storagePath}"));
+
         services.AddDatabase(configuration);
         services.AddAuth(configuration);
         services.AddHttpContextAccessor();
@@ -59,10 +64,6 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
         services.AddSingleton<ExceptionMiddleware>();
-
-        var environment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
-        var storagePath = StorageFullPath(environment, configuration);
-        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={storagePath}"));
 
         return services;
     }

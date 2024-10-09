@@ -63,7 +63,7 @@ internal sealed class PhotoService : IPhotoService
 
     private bool IsValidContentSize(byte[] bytes)
     {
-        if (bytes.Length < _options.Value.MinPhotoSizeBytes || bytes.Length > _options.Value.MinPhotoSizeBytes)
+        if (bytes.Length < _options.Value.MinPhotoSizeBytes || bytes.Length > _options.Value.MaxPhotoSizeBytes)
         {
             return false;
         }

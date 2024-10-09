@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
+using datingApp.Core.Exceptions;
 using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 
@@ -43,7 +44,7 @@ internal sealed class PhotoService : IPhotoService
         var bytes = Base64ToArrayOfBytes(base64content);
         if (bytes == null)
         {
-            // throw new FailToConvertBase64StringToArrayOfBytesException();
+            throw new FailToConvertBase64StringToArrayOfBytesException();
         }
 
         if (!IsValidContentSize(bytes))

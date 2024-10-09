@@ -53,12 +53,8 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
             throw new UnauthorizedException();
         }
 
-        var paths = new List<string>();
-        foreach (var photo in user.Photos)
-        {
-            //pass
-        }
-        
+        var paths = user.Photos.Select(photo => $"{photo.Id}.{photo.Extension}").ToList();
+
         var tasks = new List<Task>()
         {
             _fileStorage.DeleteAsync(paths),

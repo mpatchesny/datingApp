@@ -52,7 +52,7 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             throw new UnauthorizedException();
         }
 
-        var path = "TODO";
+        var path = $"{photo.Id}.{photo.Extension}";
         var tasks = new List<Task>(){
             _fileStorage.DeleteAsync(path),
             _photoRepository.DeleteAsync(photo),

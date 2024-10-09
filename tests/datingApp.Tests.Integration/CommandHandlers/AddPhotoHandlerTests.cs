@@ -20,7 +20,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 
 public class AddPhotoHandlerTests : IDisposable
 {
-    [Fact (Skip = "FIXME: mock photo service")]
+    [Fact]
     public async Task given_user_exists_add_photo_to_user_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -63,6 +63,7 @@ public class AddPhotoHandlerTests : IDisposable
         var photoRepository = new DbPhotoRepository(_testDb.DbContext);
         var userRepository = new DbUserRepository(_testDb.DbContext);
         var mockPhotoService = new Mock<IPhotoService>();
+        mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Returns(new PhotoServiceProcessOutput(new byte[10], "jpg"));
         var mockFileStorage = new Mock<IFileStorageService>();
         _handler = new AddPhotoHandler(photoRepository, userRepository, mockPhotoService.Object, mockFileStorage.Object);
     }

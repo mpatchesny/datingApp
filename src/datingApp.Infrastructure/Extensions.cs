@@ -59,7 +59,8 @@ public static class Extensions
             .WithSingletonLifetime());
         services.AddSingleton<ExceptionMiddleware>();
 
-        var storagePath = StoragePath(configuration);
+        var environment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
+        var storagePath = StorageFullPath(environment, configuration);
         if (!IsDirectory(storagePath))
         {
             throw new NotADirectoryException($"Storage path: {storagePath} is not a directory.");
@@ -78,7 +79,6 @@ public static class Extensions
         var directoryInfo = new System.IO.DirectoryInfo(path);
         if ((directoryInfo.Attributes & FileAttributes.ReadOnly) > 0)
         {
-            // no write privileges
             return false;
         }
         return true;
@@ -94,10 +94,11 @@ public static class Extensions
         return true;
     }
 
-    public static string StoragePath(this IWebHostEnvironment environment, IConfiguration configuration)
+    public static string StorageFullPath(this IWebHostEnvironment environment, IConfiguration configuration)
     {
         var options = configuration.GetOptions<StorageOptions>(StorageOptionsSectionName);
-        return options.StoragePath;
+        var storagePath = Path.GetFullPath(String.Format(options.StoragePath, environment.ContentRootPath));
+        return storagePath;
     }
 
     public static T GetOptions<T>(this IConfiguration configuration, string sectionName) where T : class, new()

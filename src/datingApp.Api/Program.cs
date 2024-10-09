@@ -60,12 +60,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<StorageMiddleware>();
 
-var storagePath = Path.GetFullPath(
-    String.Format(
-        builder.Environment.StoragePath(builder.Configuration),
-        builder.Environment.ContentRootPath
-    )
-);
+var storagePath = builder.Environment.StorageFullPath(builder.Configuration);
 
 app.UseStaticFiles(
     new StaticFileOptions

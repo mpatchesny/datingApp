@@ -6,9 +6,9 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Infrastructure.Exceptions;
 
-public class FailToConvertBase64StringToArrayOfBytes : CustomException
+public class FailToConvertBase64StringToArrayOfBytesException : CustomException
 {
-    public FailToConvertBase64StringToArrayOfBytes() : base("Failed to convert base 64 string to array of bytes.")
+    public FailToConvertBase64StringToArrayOfBytesException() : base("Failed to convert base 64 string to array of bytes.")
     {
     }
 }

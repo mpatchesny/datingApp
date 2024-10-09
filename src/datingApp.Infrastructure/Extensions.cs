@@ -21,6 +21,8 @@ using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
 using datingApp.Infrastructure.Storage;
+using FluentStorage;
+using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
@@ -53,6 +55,7 @@ public static class Extensions
         services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
         services.AddSingleton<ExceptionMiddleware>();
         services.AddScoped<StorageMiddleware>();
+        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={StoragePath}"));
         return services;
     }
 

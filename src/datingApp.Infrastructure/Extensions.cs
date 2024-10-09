@@ -40,7 +40,7 @@ public static class Extensions
         services.AddHttpContextAccessor();
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
-        services.AddSingleton<ISpatial, Spatial.Spatial>();
+
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>))
@@ -48,8 +48,10 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
+
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
+        services.AddSingleton<ISpatial, Spatial.Spatial>();
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
                 .Where(t => !t.Name.Contains("Dummy") && !t.Name.Contains("Option")))

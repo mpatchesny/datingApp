@@ -39,7 +39,7 @@ public static class Extensions
         var environment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
         var storagePath = StorageFullPath(environment, configuration);
         ValidateStoragePath(storagePath);
-        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={storagePath}"));
+        services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.DirectoryFiles(storagePath));
 
         services.AddDatabase(configuration);
         services.AddAuth(configuration);

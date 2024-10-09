@@ -50,11 +50,15 @@ public static class Extensions
         services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
-        services.AddSingleton<IFileStorageService, FileStorageService>();
-        services.AddSingleton<IPhotoService, PhotoService>();
-        services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
+        services.Scan(s => s.FromCallingAssembly()
+            .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
+                .Where(t => !t.Name.Contains("Dummy") && !t.Name.Contains("Option")))
+            .AsImplementedInterfaces()
+            .WithSingletonLifetime());
+        // services.AddSingleton<IFileStorageService, FileStorageService>();
+        // services.AddSingleton<IPhotoService, PhotoService>();
+        // services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
         services.AddSingleton<ExceptionMiddleware>();
-        services.AddScoped<StorageMiddleware>();
         services.AddSingleton<IBlobStorage>(storage => StorageFactory.Blobs.FromConnectionString($"disk://path={StoragePath}"));
         return services;
     }

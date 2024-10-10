@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
@@ -21,6 +18,31 @@ namespace datingApp.Infrastructure.Services;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
+    // https://stackoverflow.com/questions/56588900/how-to-validate-uploaded-file-in-asp-net-core
+    private static readonly Dictionary<string, List<byte[]>> _fileSignatures = new()
+    {
+        { ".png", new List<byte[]> { new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A } } },
+        { ".bmp", new List<byte[]> { new byte[] { 0x42, 0x4D } } },
+        { ".jpeg", new List<byte[]>
+            {
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xE2 },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xE3 },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xEE },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xDB },
+            }
+        },
+        { ".jpeg2000", new List<byte[]> { new byte[] { 0x00, 0x00, 0x00, 0x0C, 0x6A, 0x50, 0x20, 0x20, 0x0D, 0x0A, 0x87, 0x0A } } },
+        { ".jpg", new List<byte[]>
+            {
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xE1 },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xE8 },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xEE },
+                new byte[] { 0xFF, 0xD8, 0xFF, 0xDB },
+            }
+        }
+    };
 
     public PhotoService(IOptions<PhotoServiceOptions> options)
     {
@@ -64,15 +86,6 @@ internal sealed class PhotoService : IPhotoService
         return new PhotoServiceProcessOutput(stream.ToByteArray(), extension);
     }
 
-    private static bool IsValidContentSize(byte[] content, long minPhotoSizeBytes, long maxPhotoSizeBytes)
-    {
-        if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
-        {
-            return false;
-        }
-        return true;
-    }
-
     private static bool IsValidContentSize(Stream content, long minPhotoSizeBytes, long maxPhotoSizeBytes)
     {
         if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
@@ -91,22 +104,6 @@ internal sealed class PhotoService : IPhotoService
         return true;
     }
 
-    private static byte[] Base64ToArrayOfBytes(string base64Content)
-    {
-        // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
-        byte[] bytes = new byte[((base64Content.Length * 3) + 3) / 4 -
-            (base64Content.Length > 0 && base64Content[^1] == '=' ?
-                base64Content.Length > 1 && base64Content[^2] == '=' ?
-                    2 : 1 : 0)];
-
-        if (!Convert.TryFromBase64String(base64Content, bytes, out _))
-        {
-            return null;
-        }
-
-        return bytes;
-    }
-
     private static Stream Base64ToMemoryStream(string base64Content)
     {
         try
@@ -120,55 +117,24 @@ internal sealed class PhotoService : IPhotoService
         }
     }
 
-    private static string GetImageFileFormat(byte[] content)
-    {
-        try
-        {
-            var image = Image.FromStream(new MemoryStream(content));
-            switch (image.RawFormat)
-            {
-                case ImageFormat.Bmp:
-                    return "bmp";
-                    break;
-                case ImageFormat.Jpeg:
-                    return "jpg";
-                    break;
-                case ImageFormat.Png:
-                    return "png";
-                    break;
-                default:
-                    return null;
-            }
-        }
-        catch (System.Exception)
-        {
-            return null;
-        }
-    }
-
     private static string GetImageFileFormat(Stream content)
     {
-        try
+        // https://stackoverflow.com/questions/56588900/how-to-validate-uploaded-file-in-asp-net-core
+        using (var reader = new BinaryReader(content))
         {
-            var image = Image.FromStream(content);
-            switch (image.RawFormat)
+            var extensions = _fileSignatures.Keys.ToList();
+            var signatures = _fileSignatures.Values.SelectMany(x => x).ToList();
+
+            for (int i = 0; i < signatures.Count; i++)
             {
-                case ImageFormat.Bmp:
-                    return "bmp";
-                    break;
-                case ImageFormat.Jpeg:
-                    return "jpg";
-                    break;
-                case ImageFormat.Png:
-                    return "png";
-                    break;
-                default:
-                    return null;
+                var headerBytes = reader.ReadBytes(signatures[i].Length);
+                var result = headerBytes.Take(signatures[i].Length).SequenceEqual(signatures[i]);
+                if (result)
+                {
+                    return extensions[i];
+                }
             }
         }
-        catch (System.Exception)
-        {
-            return null;
-        }
+        return null;
     }
 }

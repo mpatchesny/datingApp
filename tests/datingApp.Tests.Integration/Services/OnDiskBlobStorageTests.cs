@@ -80,7 +80,7 @@ public class OnDiskBlobStorageTests
     }
 
     [Fact]
-    public async Task given_files_not_exists_DeleteAsync_not_throws_exceptionAsync()
+    public async Task given_files_not_exists_DeleteAsync_not_throws_exception()
     {
         var notExistingFiles = new List<string>();
         for (int i = 0; i < 10; i++)

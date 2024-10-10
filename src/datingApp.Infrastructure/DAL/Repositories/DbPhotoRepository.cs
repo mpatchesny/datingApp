@@ -21,18 +21,6 @@ internal sealed class DbPhotoRepository : IPhotoRepository
         return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
     }
 
-    public async Task<Photo> GetByIdWithFileAsync(Guid photoId)
-    {
-        // decompressing?
-        // var compressed = _dbContext
-        //                         .PhotoFiles
-        //                         .Where(p => p.PhotoId == photoId)
-        //                         .Select(p => p.Content)
-        //                         .SingleOrDefault();
-        // _fileCompressor.Decompress(compressed, out byte[] decompressed);
-        return await _dbContext.Photos.Include(p => p.File).FirstOrDefaultAsync(x => x.Id == photoId);;
-    }
-
     public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)
     {
         return await _dbContext.Photos
@@ -44,13 +32,6 @@ internal sealed class DbPhotoRepository : IPhotoRepository
     public async Task AddAsync(Photo photo)
     {
         await _dbContext.Photos.AddAsync(photo);
-        // compressing?
-        // _fileCompressor.Compress(photo.File.Content, out byte[] compressed);
-        // var photoFileCopy = new PhotoFile(photo.Id, compressed);
-        // var photoCopy = new Photo(photo.Id, photo.UserId, photo.Url, photo.Oridinal, photoFileCopy);
-        // _dbContext.PhotoFiles
-        //     .Where(p => p.PhotoId == photo.Id)
-        //     .ExecuteUpdate(b => b.SetProperty(p => p.Content, compressed));
         await _dbContext.SaveChangesAsync();
     }
 

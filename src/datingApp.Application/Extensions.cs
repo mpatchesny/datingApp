@@ -6,7 +6,6 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Notifications;
-using datingApp.Application.PhotoManagement;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
@@ -29,7 +28,6 @@ namespace datingApp.Application
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
-            services.AddSingleton<IPhotoOrderer, PhotoOrderer>();
             services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
             return services;
         }

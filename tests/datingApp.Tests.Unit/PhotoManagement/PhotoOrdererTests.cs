@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Xunit;
 
@@ -91,10 +92,6 @@ public class PhotoOrdererTests
 
     private Photo CreatePhoto(int oridinal)
     {
-        var bytes = new byte[25000];
-        bytes[0] = 0x42;
-        bytes[1] = 0x4D;
-        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
-        return new Photo(photoFile.PhotoId, Guid.NewGuid(), "abc", oridinal, photoFile);
+        return new Photo(Guid.NewGuid(), Guid.NewGuid(), "abc", oridinal);
     }
 }

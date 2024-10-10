@@ -53,6 +53,7 @@ internal sealed class ExceptionMiddleware : IMiddleware
     {
         var statusCode = _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType(), 
             _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType().BaseType, StatusCodes.Status500InternalServerError));
+
         var error = new Error("error", "Something went wrong.");
         if (statusCode != StatusCodes.Status500InternalServerError)
         {

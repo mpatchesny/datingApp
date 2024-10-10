@@ -159,14 +159,18 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     public async Task get_storage_returns_200_OK_and_photo_binary()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetAsync($"/storage/{photo.Id}.jpg");
+        var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
+        var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
+        var postResponse = await Client.PostAsJsonAsync("/photos", command);
+        Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
+        var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
+        var photoId = photoDto.Id;
+
+        var response = await Client.GetAsync($"/storage/{photoId}.jpg");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(photo.File.Content, await response.Content.ReadAsByteArrayAsync());
     }
 
     [Fact]

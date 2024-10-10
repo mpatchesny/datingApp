@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Repositories;
 using datingApp.Application.Services;
+using datingApp.Application.Storage;
 using datingApp.Core.Exceptions;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
 
-namespace datingApp.Infrastructure.Exceptions;
+namespace datingApp.Infrastructure.Storage;
 
 internal sealed class StorageMiddleware : IMiddleware
 {
@@ -40,11 +41,11 @@ internal sealed class StorageMiddleware : IMiddleware
     {
         if (!_diskFileService.Exists(id, extension))
         {
-            var photo = await _photoRepository.GetByIdWithFileAsync(Guid.Parse(id));
-            if (photo != null)
-            {
-                _diskFileService.SaveFile(photo.File.Content, id, extension);
-            }
+            // var photo = await _photoRepository.GetByIdWithFileAsync(Guid.Parse(id));
+            // if (photo != null)
+            // {
+            //     _diskFileService.SaveFile(photo.File.Content, id, extension);
+            // }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
@@ -7,21 +8,26 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Repositories;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
+using datingApp.Application.Storage;
 using datingApp.Core.Repositories;
+using FluentStorage.Blobs;
 
 namespace datingApp.Application.Commands.Handlers;
 
 public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly IBlobStorage _fileStorage;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public DeleteUserHandler(IUserRepository userRepository, IFileStorageService fileStorageService, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
+    public DeleteUserHandler(IUserRepository userRepository,
+                            IBlobStorage fileStorageService,
+                            IDeletedEntityRepository deletedEntityRepository,
+                            IDatingAppAuthorizationService authorizationService)
     {
         _userRepository = userRepository;
-        _fileStorageService = fileStorageService;
+        _fileStorage = fileStorageService;
         _deletedEntityRepository = deletedEntityRepository;
         _authorizationService = authorizationService;
     }
@@ -47,12 +53,14 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
             throw new UnauthorizedException();
         }
 
-        foreach (var photo in user.Photos)
-        {
-            _fileStorageService.DeleteFile(photo.Id.ToString());
-        }
+        var paths = user.Photos.Select(photo => $"{photo.Id}.{photo.Extension}").ToList();
 
-        await _userRepository.DeleteAsync(user);
+        var tasks = new List<Task>()
+        {
+            _fileStorage.DeleteAsync(paths),
+            _userRepository.DeleteAsync(user),
+        };
+        await Task.WhenAll(tasks);
         await _deletedEntityRepository.AddAsync(user.Id);
     }
 }

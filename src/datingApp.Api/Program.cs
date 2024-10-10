@@ -5,6 +5,7 @@ using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authorization;
 using Serilog;
+using datingApp.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,14 +58,8 @@ app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(
 // app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<StorageMiddleware>();
 
-var storagePath = Path.GetFullPath(
-    String.Format(
-        builder.Environment.StoragePath(builder.Configuration),
-        builder.Environment.ContentRootPath
-    )
-);
+var storagePath = builder.Environment.StorageFullPath(builder.Configuration);
 
 app.UseStaticFiles(
     new StaticFileOptions
@@ -75,7 +70,6 @@ app.UseStaticFiles(
 );
 
 app.UseMiddleware<ExceptionMiddleware>();
-
 
 app.MapControllers();
 

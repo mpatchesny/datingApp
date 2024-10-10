@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.PhotoManagement;
+using datingApp.Application.Services;
 using datingApp.Core.Entities;
 
-namespace datingApp.Application.PhotoManagement;
+namespace datingApp.Infrastructure.Services;
 
 public class PhotoOrderer : IPhotoOrderer
 {
@@ -13,7 +15,7 @@ public class PhotoOrderer : IPhotoOrderer
     {
         // deep copy
         var orderedPhotos = photos.Select(photo => 
-                new Photo(photo.Id, photo.UserId, photo.Url, photo.Oridinal, photo.File)
+                new Photo(photo.Id, photo.UserId, photo.Url, photo.Oridinal)
             ).ToList();
         var thisPhoto = orderedPhotos.FirstOrDefault(x => x.Id == photoToChangeId);
 

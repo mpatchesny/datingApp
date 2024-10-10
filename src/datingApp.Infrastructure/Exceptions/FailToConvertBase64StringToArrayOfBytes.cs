@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
 
-namespace datingApp.Core.Exceptions;
+namespace datingApp.Infrastructure.Exceptions;
 
 public class FailToConvertBase64StringToArrayOfBytesException : CustomException
 {

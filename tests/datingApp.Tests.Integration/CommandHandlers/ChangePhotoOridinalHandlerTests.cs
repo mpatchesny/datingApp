@@ -7,6 +7,7 @@ using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Security;
+using datingApp.Application.Services;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;

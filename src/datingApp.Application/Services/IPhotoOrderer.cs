@@ -1,6 +1,6 @@
 using datingApp.Core.Entities;
 
-namespace datingApp.Application.PhotoManagement;
+namespace datingApp.Application.Services;
 
 public interface IPhotoOrderer
 {

@@ -36,16 +36,12 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 1)
     {
-        byte[] bytes = new byte[10241];
-        bytes[0] = 0x42;
-        bytes[1] = 0x4D;
-        var photoFile = new PhotoFile(Guid.NewGuid(), bytes);
-        var photo = new Photo(photoFile.PhotoId, userId, "abc", oridinal, photoFile);
+        var photo = new Photo(Guid.NewGuid(), userId, "abc", oridinal);
         await database.DbContext.Photos.AddAsync(photo);
         await database.DbContext.SaveChangesAsync();
         return photo;
     }
-   
+
     internal static async Task<Match> CreateMatchAsync(TestDatabase database, Guid userId1, Guid userId2, bool isDisplayedByUser1 = false, bool isDisplayedByUser2 = false, DateTime? createdAt = null)
     {
         var match = new Match(Guid.NewGuid(), userId1, userId2, isDisplayedByUser1, isDisplayedByUser2, null, createdAt ?? DateTime.UtcNow);

@@ -13,6 +13,7 @@ using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
+using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -24,7 +25,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class DeletePhotoHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_photo_exists_delete_photo_should_succeed_and_add_deleted_photo_id_to_deleted_entities()
+    public async Task given_photo_exists_delete_photo_should_succeed_and_add_deleted_photo_id_to_deleted_entities_and_delete_photo_file_from_storage()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -34,7 +35,7 @@ public class DeletePhotoHandlerTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
         Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == photo.Id));
-        _mockFileStorageService.Verify(x => x.DeleteFile(photo.Id.ToString()), Times.Once);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -48,6 +49,7 @@ public class DeletePhotoHandlerTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -60,11 +62,11 @@ public class DeletePhotoHandlerTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<PhotoNotExistsException>(exception);
-        _mockFileStorageService.Verify(x => x.DeleteFile(nonExistingPhotoId.ToString()), Times.Never);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task given_photo_not_exists_and_photo_id_in_deleted_entities_repository_delete_user_throws_PhotoAlreadyDeletedException()
+    public async Task given_photo_not_exists_and_photo_id_in_deleted_entities_repository_delete_photo_throws_PhotoAlreadyDeletedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -75,14 +77,14 @@ public class DeletePhotoHandlerTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<PhotoAlreadyDeletedException>(exception);
-        _mockFileStorageService.Verify(x => x.DeleteFile(photo.Id.ToString()), Times.Never);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
-        
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DeletePhotoHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
-    private readonly Mock<IFileStorageService> _mockFileStorageService;
+    private readonly Mock<IBlobStorage> _mockStorage;
     public DeletePhotoHandlerTests()
     {
         _testDb = new TestDatabase();
@@ -90,9 +92,9 @@ public class DeletePhotoHandlerTests : IDisposable
 
         var photoRepository = new DbPhotoRepository(_testDb.DbContext);
         var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
-        _mockFileStorageService = new Mock<IFileStorageService>();
-        _mockFileStorageService.Setup(m => m.DeleteFile(It.IsAny<string>()));
-        _handler = new DeletePhotoHandler(photoRepository, _mockFileStorageService.Object, deletedEntitiesRepository, _authService.Object);
+        _mockStorage = new Mock<IBlobStorage>();
+        _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
+        _handler = new DeletePhotoHandler(photoRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);
     }
 
     // Teardown

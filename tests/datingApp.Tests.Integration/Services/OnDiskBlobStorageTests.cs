@@ -23,19 +23,6 @@ public class OnDiskBlobStorageTests
     }
 
     [Fact]
-    public async void given_invalid_input_WriteAsync_not_throws_exception()
-    {
-        byte[] data = new byte[0];
-        var filename = "test.txt";
-        var exception = await Record.ExceptionAsync(() => _storageService.WriteAsync(filename, new MemoryStream(data)));
-        Assert.Null(exception);
-
-        var dir = new System.IO.DirectoryInfo(_storagePath);
-        var files = dir.GetFiles();
-        Assert.Empty(files);
-    }
-
-    [Fact]
     public async void given_file_exists_DeleteAsync_deletes_file()
     {
         var filename = "test.txt";

@@ -58,7 +58,6 @@ app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(
 // app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-// app.UseMiddleware<StorageMiddleware>();
 
 var storagePath = builder.Environment.StorageFullPath(builder.Configuration);
 

@@ -56,8 +56,8 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         var tasks = new List<Task>(){
             _fileStorage.DeleteAsync(path),
             _photoRepository.DeleteAsync(photo),
-            _deletedEntityRepository.AddAsync(photo.Id),
         };
         await Task.WhenAll(tasks);
+        await _deletedEntityRepository.AddAsync(photo.Id);
     }
 }

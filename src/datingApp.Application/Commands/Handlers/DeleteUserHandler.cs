@@ -59,8 +59,8 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         {
             _fileStorage.DeleteAsync(paths),
             _userRepository.DeleteAsync(user),
-            _deletedEntityRepository.AddAsync(user.Id),
         };
         await Task.WhenAll(tasks);
+        await _deletedEntityRepository.AddAsync(user.Id);
     }
 }

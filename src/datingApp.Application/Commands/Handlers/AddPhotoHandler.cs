@@ -45,7 +45,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserPhotoLimitException();
         }
 
-        var (stream, extension) = _photoService.ProcessBase64Photo(command.Base64Bytes);
+        var (bytes, extension) = _photoService.ProcessBase64Photo(command.Base64Bytes);
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         int oridinal = user.Photos.Count();
@@ -53,7 +53,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
         var path = $"{photo.Id}.{extension}";
         var tasks = new List<Task>(){
-            _fileStorage.WriteAsync(path, stream),
+            _fileStorage.WriteAsync(path, new MemoryStream(bytes)),
             _photoRepository.AddAsync(photo),
         };
         await Task.WhenAll(tasks);

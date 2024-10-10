@@ -41,7 +41,7 @@ internal static class IntegrationTestHelper
         await database.DbContext.SaveChangesAsync();
         return photo;
     }
-   
+
     internal static async Task<Match> CreateMatchAsync(TestDatabase database, Guid userId1, Guid userId2, bool isDisplayedByUser1 = false, bool isDisplayedByUser2 = false, DateTime? createdAt = null)
     {
         var match = new Match(Guid.NewGuid(), userId1, userId2, isDisplayedByUser1, isDisplayedByUser2, null, createdAt ?? DateTime.UtcNow);

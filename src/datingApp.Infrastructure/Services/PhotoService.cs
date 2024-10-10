@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
 using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
+using System.Reflection;
+using System.Security.Cryptography;
 
 namespace datingApp.Infrastructure.Services;
 
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    private readonly IDictionary<byte[], string> _knownFileHeaders = new Dictionary<byte[], string>()
-    {
-        {new byte[] {0x42, 0x4D}, "bmp"},
-        {new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png"},
-        {new byte[] {0xFF, 0xD8, 0xFF}, "jpg"},
-    };
 
     public PhotoService(IOptions<PhotoServiceOptions> options)
     {
@@ -70,6 +70,15 @@ internal sealed class PhotoService : IPhotoService
         return true;
     }
 
+    private bool IsValidContentSize(Stream stream)
+    {
+        if (stream.Length < _options.Value.MinPhotoSizeBytes || stream.Length > _options.Value.MaxPhotoSizeBytes)
+        {
+            return false;
+        }
+        return true;
+    }
+
     private bool IsValidBase64ContentSize(string base64Content)
     {
         int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
@@ -97,26 +106,42 @@ internal sealed class PhotoService : IPhotoService
         return bytes;
     }
 
+    private static Stream Base64ToMemoryStream(string base64Content)
+    {
+        try
+        {
+            // https://stackoverflow.com/questions/31524343/how-to-convert-base64-value-from-a-database-to-a-stream-with-c-sharp
+            return new MemoryStream(Convert.FromBase64String(base64Content));
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
+
     private string GetImageFileFormat(byte[] content)
     {
-        // Returns file extension associated with file format
-        // if image file format is not known, returns null
-        if (content == null) return null;
-
-        bool match = false;
-        foreach (var item in _knownFileHeaders)
+        try
         {
-            for (int i = 0; i < item.Key.Length; i++)
+            var image = Image.FromStream(new MemoryStream(content));
+            switch (image.RawFormat)
             {
-                match = content[i] == item.Key[i];
-                if (!match) break;
-            }
-
-            if (match)
-            {
-                return item.Value;
+                case ImageFormat.Bmp:
+                    return "bmp";
+                    break;
+                case ImageFormat.Jpeg:
+                    return "jpg";
+                    break;
+                case ImageFormat.Png:
+                    return "png";
+                    break;
+                default:
+                    return null;
             }
         }
-        return null;
+        catch (System.Exception)
+        {
+            return null;
+        }
     }
 }

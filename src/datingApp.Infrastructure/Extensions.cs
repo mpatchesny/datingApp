@@ -32,6 +32,7 @@ namespace datingApp.Infrastructure;
 
 public static class Extensions
 {
+    private const string PhotoServiceOptionsSectionName = "PhotoService";
     private const string EmailSenderOptionsSectionName = "EmailSender";
     private const string StorageOptionsSectionName = "Storage";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
@@ -44,6 +45,8 @@ public static class Extensions
         services.AddDatabase(configuration);
         services.AddAuth(configuration);
         services.AddHttpContextAccessor();
+
+        services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
 
@@ -63,6 +66,7 @@ public static class Extensions
                 .Where(t => !t.Name.Contains("Dummy") && !t.Name.Contains("Option")))
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
+        //services.AddSingleton<IPhotoService, PhotoService>();
         services.AddSingleton<ExceptionMiddleware>();
 
         return services;

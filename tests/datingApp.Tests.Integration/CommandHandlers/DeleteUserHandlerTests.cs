@@ -12,6 +12,7 @@ using datingApp.Application.Storage;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
+using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -24,32 +25,7 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class DeleteUserHandlerTests : IDisposable
 {
     [Fact]
-    public async void given_user_exists_delete_user_should_succeed_and_add_user_id_to_deleted_entities()
-    {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-
-        var command = new DeleteUser(user.Id);
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        Assert.Null(exception);
-        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == user.Id));
-        _mockFileStorageService.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never);
-    }
-
-    [Fact]
-    public async void given_authorization_fail_delete_existing_user_throws_UnauthorizedException()
-    {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-
-        var command = new DeleteUser(user.Id);
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        Assert.NotNull(exception);
-        Assert.IsType<UnauthorizedException>(exception);
-    }
-
-    [Fact]
-    public async void given_user_exists_delete_user_should_delete_user_photos_stored_on_disk()
+    public async void given_user_exists_delete_user_should_succeed_and_add_user_id_to_deleted_entities_and_delete_user_photo_files_from_storage()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
@@ -62,11 +38,21 @@ public class DeleteUserHandlerTests : IDisposable
         var command = new DeleteUser(user.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        _mockFileStorageService.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Exactly(3));
-        foreach (var photo in photos)
-        {
-            _mockFileStorageService.Verify(x => x.DeleteFile(photo.Id.ToString()), Times.Once);
-        }
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == user.Id));
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async void given_authorization_fail_delete_existing_user_throws_UnauthorizedException()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var command = new DeleteUser(user.Id);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -78,7 +64,7 @@ public class DeleteUserHandlerTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
-        _mockFileStorageService.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -92,22 +78,23 @@ public class DeleteUserHandlerTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserAlreadyDeletedException>(exception);
+        _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DeleteUserHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
-    private readonly Mock<IFileStorageService> _mockFileStorageService;
+    private readonly Mock<IBlobStorage> _mockStorage;
     public DeleteUserHandlerTests()
     {
         _testDb = new TestDatabase();
         _authService = new Mock<IDatingAppAuthorizationService>();
         var userRepository = new DbUserRepository(_testDb.DbContext);
         var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
-        _mockFileStorageService = new Mock<IFileStorageService>();
-        _mockFileStorageService.Setup(m => m.DeleteFile(It.IsAny<string>()));
-        _handler = new DeleteUserHandler(userRepository, _mockFileStorageService.Object, deletedEntitiesRepository, _authService.Object);
+        _mockStorage = new Mock<IBlobStorage>();
+        _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
+        _handler = new DeleteUserHandler(userRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);
     }
 
     // Teardown

@@ -11,7 +11,7 @@ namespace datingApp.Tests.Integration.Services;
 public class OnDiskBlobStorageTests
 {
     [Fact]
-    public async void given_valid_input_WriteAsync_saves_file()
+    public async void given_valid_input_WriteAsync_with_stream_saves_file()
     {
         byte[] data = new byte[] { byte.MinValue, 0, byte.MaxValue };
         var filename = "test.txt";
@@ -23,7 +23,7 @@ public class OnDiskBlobStorageTests
     }
 
     [Fact]
-    public async void given_file_exists_DeleteAsync_deletes_file()
+    public async void given_file_exists_DeleteAsync_with_path_deletes_file()
     {
         var filename = "test.txt";
         var filePath = System.IO.Path.Combine(_storagePath, filename);
@@ -36,7 +36,7 @@ public class OnDiskBlobStorageTests
     }
 
     [Fact]
-    public async void given_file_exists_DeleteAsync_deletes_list_of_files()
+    public async void given_file_exists_DeleteAsync_with_list_of_paths_deletes_list_of_files()
     {
         var fileNames = new List<string>();
         var filePaths = new List<string>();
@@ -60,14 +60,14 @@ public class OnDiskBlobStorageTests
     }
 
     [Fact]
-    public async void given_file_not_exists_DeleteAsync_not_throws_exception()
+    public async void given_file_not_exists_DeleteAsync_with_path_not_throws_exception()
     {
         var exception = await Record.ExceptionAsync(() => _storageService.DeleteAsync("not_existing_file.txt"));
         Assert.Null(exception);
     }
 
     [Fact]
-    public async Task given_files_not_exists_DeleteAsync_not_throws_exception()
+    public async Task given_files_not_exists_DeleteAsync_with_list_of_paths_not_throws_exception()
     {
         var notExistingFiles = new List<string>();
         for (int i = 0; i < 10; i++)

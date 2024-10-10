@@ -14,6 +14,7 @@ using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security.Cryptography;
+using FluentStorage.Utils.Extensions;
 
 namespace datingApp.Infrastructure.Services;
 
@@ -35,54 +36,54 @@ internal sealed class PhotoService : IPhotoService
 
         int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
         int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
+        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
+        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
 
-        if (!IsValidBase64ContentSize(base64content))
+        if (!IsValidBase64ContentSize(base64content, minBase64PhotoSizeBytes, maxBase64PhotoSizeBytes))
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
-        var bytes = Base64ToArrayOfBytes(base64content);
-        if (bytes == null)
+        var stream = Base64ToMemoryStream(base64content);
+        if (stream == null)
         {
             throw new FailToConvertBase64StringToArrayOfBytesException();
         }
 
-        if (!IsValidContentSize(bytes))
+        if (!IsValidContentSize(stream, _options.Value.MinPhotoSizeBytes, _options.Value.MaxPhotoSizeBytes))
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
-        var extension = GetImageFileFormat(bytes);
+        var extension = GetImageFileFormat(stream);
         if (string.IsNullOrEmpty(extension))
         {
             throw new InvalidPhotoException();
         }
 
-        return new PhotoServiceProcessOutput(bytes, extension);
+        return new PhotoServiceProcessOutput(stream.ToByteArray(), extension);
     }
 
-    private bool IsValidContentSize(byte[] bytes)
+    private static bool IsValidContentSize(byte[] content, long minPhotoSizeBytes, long maxPhotoSizeBytes)
     {
-        if (bytes.Length < _options.Value.MinPhotoSizeBytes || bytes.Length > _options.Value.MaxPhotoSizeBytes)
+        if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
         {
             return false;
         }
         return true;
     }
 
-    private bool IsValidContentSize(Stream stream)
+    private static bool IsValidContentSize(Stream content, long minPhotoSizeBytes, long maxPhotoSizeBytes)
     {
-        if (stream.Length < _options.Value.MinPhotoSizeBytes || stream.Length > _options.Value.MaxPhotoSizeBytes)
+        if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
         {
             return false;
         }
         return true;
     }
 
-    private bool IsValidBase64ContentSize(string base64Content)
+    private static bool IsValidBase64ContentSize(string base64Content, int minBase64PhotoSizeBytes, int maxBase64PhotoSizeBytes)
     {
-        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
-        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
         if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
         {
             return false;
@@ -119,11 +120,37 @@ internal sealed class PhotoService : IPhotoService
         }
     }
 
-    private string GetImageFileFormat(byte[] content)
+    private static string GetImageFileFormat(byte[] content)
     {
         try
         {
             var image = Image.FromStream(new MemoryStream(content));
+            switch (image.RawFormat)
+            {
+                case ImageFormat.Bmp:
+                    return "bmp";
+                    break;
+                case ImageFormat.Jpeg:
+                    return "jpg";
+                    break;
+                case ImageFormat.Png:
+                    return "png";
+                    break;
+                default:
+                    return null;
+            }
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
+
+    private static string GetImageFileFormat(Stream content)
+    {
+        try
+        {
+            var image = Image.FromStream(content);
             switch (image.RawFormat)
             {
                 case ImageFormat.Bmp:

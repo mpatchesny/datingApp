@@ -19,6 +19,7 @@ namespace datingApp.Infrastructure.Services;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
+    private readonly List<string> _acceptedFileFormats = new List<string>{ "jpg", "png", "webp" };
     public PhotoService(IOptions<PhotoServiceOptions> options)
     {
         _options = options;
@@ -47,20 +48,29 @@ internal sealed class PhotoService : IPhotoService
             throw new FailToConvertBase64StringToArrayOfBytesException();
         }
 
+        string extension = "";
         try
         {
-            var task = ConvertToJpegAsync(content, _options.Value.ImageQuality);
-            task.Wait();
-            return new PhotoServiceProcessOutput(task.Result, "jpg");
+            Task<string> extensionTask = GetPhotoExtensionAsync(content);
+            extensionTask.Wait();
+            extension = extensionTask.Result;
         }
-        catch (Exception)
+        catch (System.Exception)
         {
-            // couldn't convert to jpg == bad image
             throw new InvalidPhotoException();
         }
+
+        if (!_acceptedFileFormats.Any(format => format == extension))
+        {
+            throw new InvalidPhotoException();
+        }
+
+        var task = ConvertToJpegAsync(content, _options.Value.ImageQuality);
+        task.Wait();
+        return new PhotoServiceProcessOutput(task.Result, "jpg");
     }
 
-   private static bool IsValidBase64ContentSize(string base64Content, uint minBase64PhotoSizeBytes, uint maxBase64PhotoSizeBytes)
+    private static bool IsValidBase64ContentSize(string base64Content, uint minBase64PhotoSizeBytes, uint maxBase64PhotoSizeBytes)
     {
         if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
         {
@@ -99,6 +109,12 @@ internal sealed class PhotoService : IPhotoService
     {
         // https://stackoverflow.com/questions/13378815/base64-length-calculation
         return (uint) Math.Ceiling(originalLength / 3D) * 4;
+    }
+
+    private static async Task<string> GetPhotoExtensionAsync(byte[] content)
+    {
+        var info = await ImageJob.GetImageInfoAsync(new MemorySource(content), SourceLifetime.TransferOwnership);
+        return info.PreferredExtension.ToLowerInvariant();
     }
 
     private static async Task<byte[]> ConvertToJpegAsync(byte[] content, int quality)

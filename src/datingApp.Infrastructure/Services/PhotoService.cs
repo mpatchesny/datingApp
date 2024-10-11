@@ -47,12 +47,6 @@ internal sealed class PhotoService : IPhotoService
             throw new FailToConvertBase64StringToArrayOfBytesException();
         }
 
-        // TODO: check if this needed or not
-        if (!IsValidContentSize(content, _options.Value.MinPhotoSizeBytes, _options.Value.MaxPhotoSizeBytes))
-        {
-            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
-        }
-
         try
         {
             var task = ConvertToJpegAsync(content, _options.Value.ImageQuality);

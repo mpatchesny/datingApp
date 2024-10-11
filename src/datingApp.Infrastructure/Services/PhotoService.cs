@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.IO;
+using Imageflow;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security.Cryptography;
 using FluentStorage.Utils.Extensions;
+using Imageflow.Fluent;
 
 namespace datingApp.Infrastructure.Services;
 
@@ -31,7 +33,7 @@ internal sealed class PhotoService : IPhotoService
         }
 
         uint minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
-        uint maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
+        uint maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / 1048576; // 1024 * 1024
         uint minBase64PhotoSizeBytes = Base64Length(_options.Value.MinPhotoSizeBytes);
         uint maxBase64PhotoSizeBytes = Base64Length(_options.Value.MaxPhotoSizeBytes);
 
@@ -40,27 +42,33 @@ internal sealed class PhotoService : IPhotoService
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
-        var stream = Base64ToMemoryStream(base64content);
-        if (stream == null)
+        var content = Base64ToByteArray(base64content);
+        if (content == null)
         {
             throw new FailToConvertBase64StringToArrayOfBytesException();
         }
 
-        if (!IsValidContentSize(stream, _options.Value.MinPhotoSizeBytes, _options.Value.MaxPhotoSizeBytes))
+        // TODO: check if this needed or not
+        if (!IsValidContentSize(content, _options.Value.MinPhotoSizeBytes, _options.Value.MaxPhotoSizeBytes))
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
-        var extension = GetImageFileFormat(stream);
-        if (string.IsNullOrEmpty(extension))
+        try
         {
+            var task = ConvertToJpeg(content, _options.Value.ImageQuality);
+            task.Wait();
+        }
+        catch (Exception)
+        {
+            // couldn't convert to jpg == bad image
             throw new InvalidPhotoException();
         }
 
-        return new PhotoServiceProcessOutput(stream.ToByteArray(), extension);
+        return new PhotoServiceProcessOutput(content, "jpg");
     }
 
-    private static bool IsValidContentSize(Stream content, uint minPhotoSizeBytes, uint maxPhotoSizeBytes)
+    private static bool IsValidContentSize(byte[] content, uint minPhotoSizeBytes, uint maxPhotoSizeBytes)
     {
         if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
         {
@@ -91,14 +99,27 @@ internal sealed class PhotoService : IPhotoService
         }
     }
 
+    private static byte[] Base64ToByteArray(string base64Content)
+    {
+        try
+        {
+            // https://stackoverflow.com/questions/31524343/how-to-convert-base64-value-from-a-database-to-a-stream-with-c-sharp
+            return Convert.FromBase64String(base64Content);
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
+
     private static uint Base64Length(uint originalLength)
     {
         // https://stackoverflow.com/questions/13378815/base64-length-calculation
         return ((originalLength + 3 - 1) / 3) * 4;
     }
-    private static string GetImageFileFormat(Stream content)
+
+    private static async Task ConvertToJpeg(byte[] content, int quality)
     {
-        // FIXME: use ImageFlow
-        return null;
+        new ImageJob().Decode(content).EncodeToBytes(new MozJpegEncoder(quality, true));
     }
 }

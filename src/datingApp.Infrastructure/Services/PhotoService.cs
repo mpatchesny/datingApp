@@ -60,16 +60,7 @@ internal sealed class PhotoService : IPhotoService
         }
     }
 
-    private static bool IsValidContentSize(byte[] content, uint minPhotoSizeBytes, uint maxPhotoSizeBytes)
-    {
-        if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    private static bool IsValidBase64ContentSize(string base64Content, uint minBase64PhotoSizeBytes, uint maxBase64PhotoSizeBytes)
+   private static bool IsValidBase64ContentSize(string base64Content, uint minBase64PhotoSizeBytes, uint maxBase64PhotoSizeBytes)
     {
         if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
         {

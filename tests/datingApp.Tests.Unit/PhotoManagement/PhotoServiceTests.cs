@@ -106,8 +106,8 @@ public class PhotoServiceTests
     [Fact]
     public void given_passed_valid_photo_is_too_small_ProcessBase64Photo_throws_InvalidPhotoSizeException()
     {
-        _options.Value.MinPhotoSizeBytes = 1000;
-        _options.Value.MaxPhotoSizeBytes = 10000;
+        _options.Value.MinPhotoSizeBytes = 380;
+        _options.Value.MaxPhotoSizeBytes = 390;
         var service = new PhotoService(_options);
 
         var exception = Record.Exception(() => service.ProcessBase64Photo(_base64PngSample));
@@ -119,7 +119,7 @@ public class PhotoServiceTests
     public void given_passed_valid_photo_is_too_large_ValidatePhoto_throws_InvalidPhotoSizeException()
     {
         _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 1;
+        _options.Value.MaxPhotoSizeBytes = 378;
         var service = new PhotoService(_options);
 
         var exception = Record.Exception(() => service.ProcessBase64Photo(_base64PngSample));

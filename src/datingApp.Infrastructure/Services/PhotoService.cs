@@ -56,8 +56,7 @@ internal sealed class PhotoService : IPhotoService
 
         try
         {
-            var task = ConvertToJpeg(content, _options.Value.ImageQuality);
-            task.Wait();
+            ConvertToJpeg(content, _options.Value.ImageQuality);
         }
         catch (Exception)
         {
@@ -118,7 +117,7 @@ internal sealed class PhotoService : IPhotoService
         return ((originalLength + 3 - 1) / 3) * 4;
     }
 
-    private static async Task ConvertToJpeg(byte[] content, int quality)
+    private static void ConvertToJpeg(byte[] content, int quality)
     {
         new ImageJob().Decode(content).EncodeToBytes(new MozJpegEncoder(quality, true));
     }

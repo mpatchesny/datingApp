@@ -54,6 +54,17 @@ public class AddPhotoHandlerTests : IDisposable
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoException>(exception);
     }
+
+    [Fact]
+    public async Task given_user_not_exists_and_photo_service_process_photo_failed_add_photo_to_user_throws_exception()
+    {
+        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), IntegrationTestHelper.SampleFileBase64Content());
+        _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Throws(new InvalidPhotoException());
+
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidPhotoException>(exception);
+    }
    
     [Fact]
     public async Task given_user_reached_photo_count_limit_add_photo_throws_UserPhotoLimitException()

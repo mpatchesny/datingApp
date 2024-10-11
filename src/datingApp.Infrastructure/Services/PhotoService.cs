@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.IO;
+using Imageflow.Fluent;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
 using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.Options;
+using System.Reflection;
+using System.Security.Cryptography;
+using FluentStorage.Utils.Extensions;
 
 namespace datingApp.Infrastructure.Services;
 
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    private readonly IDictionary<byte[], string> _knownFileHeaders = new Dictionary<byte[], string>()
-    {
-        {new byte[] {0x42, 0x4D}, "bmp"},
-        {new byte[] {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}, "png"},
-        {new byte[] {0xFF, 0xD8, 0xFF}, "jpg"},
-    };
-
+    private readonly List<string> _acceptedFileFormats = new List<string>{ "jpg", "png", "webp" };
     public PhotoService(IOptions<PhotoServiceOptions> options)
     {
         _options = options;
@@ -33,47 +32,46 @@ internal sealed class PhotoService : IPhotoService
             throw new EmptyBase64StringException();
         }
 
-        int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
-        int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
+        uint minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
+        uint maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / 1048576; // 1024 * 1024
+        uint minBase64PhotoSizeBytes = GetBase64Length(_options.Value.MinPhotoSizeBytes);
+        uint maxBase64PhotoSizeBytes = GetBase64Length(_options.Value.MaxPhotoSizeBytes);
 
-        if (!IsValidBase64ContentSize(base64content))
+        if (!IsValidBase64ContentSize(base64content, minBase64PhotoSizeBytes, maxBase64PhotoSizeBytes))
         {
             throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
         }
 
-        var bytes = Base64ToArrayOfBytes(base64content);
-        if (bytes == null)
+        var content = Base64ToByteArray(base64content);
+        if (content == null)
         {
             throw new FailToConvertBase64StringToArrayOfBytesException();
         }
 
-        if (!IsValidContentSize(bytes))
+        string extension = "";
+        try
         {
-            throw new InvalidPhotoSizeException(minPhotoSizeKB, maxPhotoSizeMB);
+            Task<string> extensionTask = GetPhotoExtensionAsync(content);
+            extensionTask.Wait();
+            extension = extensionTask.Result;
         }
-
-        var extension = GetImageFileFormat(bytes);
-        if (string.IsNullOrEmpty(extension))
+        catch (System.Exception)
         {
             throw new InvalidPhotoException();
         }
 
-        return new PhotoServiceProcessOutput(bytes, extension);
-    }
-
-    private bool IsValidContentSize(byte[] bytes)
-    {
-        if (bytes.Length < _options.Value.MinPhotoSizeBytes || bytes.Length > _options.Value.MaxPhotoSizeBytes)
+        if (!_acceptedFileFormats.Any(format => format == extension))
         {
-            return false;
+            throw new InvalidPhotoException();
         }
-        return true;
+
+        var task = ConvertToJpegAsync(content, _options.Value.ImageQuality);
+        task.Wait();
+        return new PhotoServiceProcessOutput(task.Result, "jpg");
     }
 
-    private bool IsValidBase64ContentSize(string base64Content)
+    private static bool IsValidBase64ContentSize(string base64Content, uint minBase64PhotoSizeBytes, uint maxBase64PhotoSizeBytes)
     {
-        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
-        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
         if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
         {
             return false;
@@ -81,42 +79,54 @@ internal sealed class PhotoService : IPhotoService
         return true;
     }
 
-    private static byte[] Base64ToArrayOfBytes(string base64Content)
+    private static Stream Base64ToMemoryStream(string base64Content)
     {
-        // https://stackoverflow.com/questions/51300523/how-to-use-span-in-convert-tryfrombase64string
-        byte[] bytes = new byte[((base64Content.Length * 3) + 3) / 4 -
-            (base64Content.Length > 0 && base64Content[^1] == '=' ?
-                base64Content.Length > 1 && base64Content[^2] == '=' ?
-                    2 : 1 : 0)];
-
-        if (!Convert.TryFromBase64String(base64Content, bytes, out _))
+        try
+        {
+            // https://stackoverflow.com/questions/31524343/how-to-convert-base64-value-from-a-database-to-a-stream-with-c-sharp
+            return new MemoryStream(Convert.FromBase64String(base64Content));
+        }
+        catch (System.Exception)
         {
             return null;
         }
-
-        return bytes;
     }
 
-    private string GetImageFileFormat(byte[] content)
+    private static byte[] Base64ToByteArray(string base64Content)
     {
-        // Returns file extension associated with file format
-        // if image file format is not known, returns null
-        if (content == null) return null;
-
-        bool match = false;
-        foreach (var item in _knownFileHeaders)
+        try
         {
-            for (int i = 0; i < item.Key.Length; i++)
-            {
-                match = content[i] == item.Key[i];
-                if (!match) break;
-            }
-
-            if (match)
-            {
-                return item.Value;
-            }
+            // https://stackoverflow.com/questions/31524343/how-to-convert-base64-value-from-a-database-to-a-stream-with-c-sharp
+            return Convert.FromBase64String(base64Content);
         }
-        return null;
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
+
+    private static uint GetBase64Length(uint originalLength)
+    {
+        // https://stackoverflow.com/questions/13378815/base64-length-calculation
+        return (uint) Math.Ceiling(originalLength / 3D) * 4;
+    }
+
+    private static async Task<string> GetPhotoExtensionAsync(byte[] content)
+    {
+        var info = await ImageJob.GetImageInfoAsync(new MemorySource(content), SourceLifetime.TransferOwnership);
+        return info.PreferredExtension.ToLowerInvariant();
+    }
+
+    private static async Task<byte[]> ConvertToJpegAsync(byte[] content, int quality)
+    {
+        using (var job = new ImageJob())
+        {
+            var r = await job
+                        .Decode(content)
+                        .EncodeToBytes(new MozJpegEncoder(quality, true))
+                        .Finish()
+                        .InProcessAndDisposeAsync();
+            return ((ArraySegment<byte>) r.First.TryGetBytes()).Array;
+        }
     }
 }

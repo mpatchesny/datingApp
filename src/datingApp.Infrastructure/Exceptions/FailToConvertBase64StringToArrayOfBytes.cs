@@ -8,7 +8,7 @@ namespace datingApp.Infrastructure.Exceptions;
 
 public class FailToConvertBase64StringToArrayOfBytesException : CustomException
 {
-    public FailToConvertBase64StringToArrayOfBytesException() : base("Failed to convert base 64 string to array of bytes.")
+    public FailToConvertBase64StringToArrayOfBytesException() : base("Provided image file is invalid or not in supported format.")
     {
     }
 }

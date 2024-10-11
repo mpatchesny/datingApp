@@ -94,9 +94,7 @@ internal sealed class PhotoService : IPhotoService
     private static uint Base64Length(uint originalLength)
     {
         // https://stackoverflow.com/questions/13378815/base64-length-calculation
-        var base64Length = 4 * (originalLength / 3D);
-        // round up to 4 division
-        return (uint) Math.Ceiling(base64Length);
+        return ((originalLength + 3 - 1) / 3) * 4;
     }
     private static string GetImageFileFormat(Stream content)
     {

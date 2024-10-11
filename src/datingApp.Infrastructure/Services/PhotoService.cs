@@ -25,7 +25,7 @@ internal sealed class PhotoService : IPhotoService
         _options = options;
     }
 
-    public async PhotoServiceProcessOutput ProcessBase64Photo(string base64content)
+    public PhotoServiceProcessOutput ProcessBase64Photo(string base64content)
     {
         if (string.IsNullOrEmpty(base64content))
         {
@@ -58,14 +58,13 @@ internal sealed class PhotoService : IPhotoService
         {
             var task = ConvertToJpegAsync(content, _options.Value.ImageQuality);
             task.Wait();
+            return new PhotoServiceProcessOutput(task.Result, "jpg");
         }
         catch (Exception)
         {
             // couldn't convert to jpg == bad image
             throw new InvalidPhotoException();
         }
-
-        return new PhotoServiceProcessOutput(content, "jpg");
     }
 
     private static bool IsValidContentSize(byte[] content, uint minPhotoSizeBytes, uint maxPhotoSizeBytes)
@@ -123,12 +122,11 @@ internal sealed class PhotoService : IPhotoService
         using (var job = new ImageJob())
         {
             var r = await job
-                    .Decode(content)
-                    .EncodeToBytes(new MozJpegEncoder(quality, true))
-                    .Finish()
-                    .InProcessAndDisposeAsync();
-            // return r.First.TryGetBytes();
+                        .Decode(content)
+                        .EncodeToBytes(new MozJpegEncoder(quality, true))
+                        .Finish()
+                        .InProcessAndDisposeAsync();
+            return ((ArraySegment<byte>) r.First.TryGetBytes()).Array;
         }
-
     }
 }

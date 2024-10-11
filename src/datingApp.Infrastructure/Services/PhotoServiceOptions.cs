@@ -9,4 +9,5 @@ public sealed class PhotoServiceOptions
 {
     public uint MinPhotoSizeBytes { get; set; }
     public uint MaxPhotoSizeBytes { get; set; }
+    public int ImageQuality{ get; set; }
 }

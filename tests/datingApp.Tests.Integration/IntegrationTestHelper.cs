@@ -97,9 +97,6 @@ internal static class IntegrationTestHelper
 
     internal static string SampleFileBase64Content()
     {
-        var bytes = new byte[25000];
-        bytes[0] = 0x42;
-        bytes[1] = 0x4D;
-        return Convert.ToBase64String(bytes);
+        return "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TpVIrDnYQcchQBcGCqIjgIlUsgoXSVmjVweTSD6FJQ5Li4ii4Fhz8WKw6uDjr6uAqCIIfIM4OToouUuL/kkKLGA+O+/Hu3uPuHSDUy0w1O8YAVbOMVDwmZnMrYuAVQXQjjBHMSMzUE+mFDDzH1z18fL2L8izvc3+OHiVvMsAnEs8y3bCI14mnNi2d8z5xmJUkhficeNSgCxI/cl12+Y1z0WGBZ4aNTGqOOEwsFttYbmNWMlTiSeKIomqUL2RdVjhvcVbLVda8J39hKK8tp7lOcxBxLCKBJETIqGIDZViI0qqRYiJF+zEP/4DjT5JLJtcGGDnmUYEKyfGD/8Hvbs3CxLibFIoBnS+2/TEEBHaBRs22v49tu3EC+J+BK63lr9SB6U/Say0tcgT0bgMX1y1N3gMud4D+J10yJEfy0xQKBeD9jL4pB/TdAsFVt7fmPk4fgAx1tXQDHBwCw0XKXvN4d1d7b/+eafb3A/RZcttv9j1bAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH6AoLFCsTQpMb9AAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAVSURBVBjTY/z37x8DbsDEgBeMVGkAokcDDrmMttcAAAAASUVORK5CYII=";
     }
 }

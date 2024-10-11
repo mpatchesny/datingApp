@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.IO;
 using Imageflow;
+using Imageflow.Fluent;
 using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
@@ -13,7 +14,6 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Security.Cryptography;
 using FluentStorage.Utils.Extensions;
-using Imageflow.Fluent;
 
 namespace datingApp.Infrastructure.Services;
 
@@ -34,8 +34,8 @@ internal sealed class PhotoService : IPhotoService
 
         uint minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
         uint maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / 1048576; // 1024 * 1024
-        uint minBase64PhotoSizeBytes = Base64Length(_options.Value.MinPhotoSizeBytes);
-        uint maxBase64PhotoSizeBytes = Base64Length(_options.Value.MaxPhotoSizeBytes);
+        uint minBase64PhotoSizeBytes = GetBase64Length(_options.Value.MinPhotoSizeBytes);
+        uint maxBase64PhotoSizeBytes = GetBase64Length(_options.Value.MaxPhotoSizeBytes);
 
         if (!IsValidBase64ContentSize(base64content, minBase64PhotoSizeBytes, maxBase64PhotoSizeBytes))
         {
@@ -111,10 +111,10 @@ internal sealed class PhotoService : IPhotoService
         }
     }
 
-    private static uint Base64Length(uint originalLength)
+    private static uint GetBase64Length(uint originalLength)
     {
         // https://stackoverflow.com/questions/13378815/base64-length-calculation
-        return ((originalLength + 3 - 1) / 3) * 4;
+        return (uint) Math.Ceiling(originalLength / 3D) * 4;
     }
 
     private static async Task<byte[]> ConvertToJpegAsync(byte[] content, int quality)

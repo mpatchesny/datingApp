@@ -18,32 +18,6 @@ namespace datingApp.Infrastructure.Services;
 internal sealed class PhotoService : IPhotoService
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    // https://stackoverflow.com/questions/56588900/how-to-validate-uploaded-file-in-asp-net-core
-    private static readonly Dictionary<string, List<byte[]>> _fileSignatures = new()
-    {
-        { ".png", new List<byte[]> { new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A } } },
-        { ".bmp", new List<byte[]> { new byte[] { 0x42, 0x4D } } },
-        { ".jpeg", new List<byte[]>
-            {
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xE2 },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xE3 },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xEE },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xDB },
-            }
-        },
-        { ".jpeg2000", new List<byte[]> { new byte[] { 0x00, 0x00, 0x00, 0x0C, 0x6A, 0x50, 0x20, 0x20, 0x0D, 0x0A, 0x87, 0x0A } } },
-        { ".jpg", new List<byte[]>
-            {
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xE1 },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xE8 },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xEE },
-                new byte[] { 0xFF, 0xD8, 0xFF, 0xDB },
-            }
-        }
-    };
-
     public PhotoService(IOptions<PhotoServiceOptions> options)
     {
         _options = options;
@@ -56,10 +30,10 @@ internal sealed class PhotoService : IPhotoService
             throw new EmptyBase64StringException();
         }
 
-        int minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
-        int maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
-        int minBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MinPhotoSizeBytes);
-        int maxBase64PhotoSizeBytes = (int) Math.Ceiling(1.5 * _options.Value.MaxPhotoSizeBytes);
+        uint minPhotoSizeKB = _options.Value.MinPhotoSizeBytes / 1024;
+        uint maxPhotoSizeMB = _options.Value.MaxPhotoSizeBytes / (1024*1024);
+        uint minBase64PhotoSizeBytes = Base64Length(_options.Value.MinPhotoSizeBytes);
+        uint maxBase64PhotoSizeBytes = Base64Length(_options.Value.MaxPhotoSizeBytes);
 
         if (!IsValidBase64ContentSize(base64content, minBase64PhotoSizeBytes, maxBase64PhotoSizeBytes))
         {
@@ -86,7 +60,7 @@ internal sealed class PhotoService : IPhotoService
         return new PhotoServiceProcessOutput(stream.ToByteArray(), extension);
     }
 
-    private static bool IsValidContentSize(Stream content, long minPhotoSizeBytes, long maxPhotoSizeBytes)
+    private static bool IsValidContentSize(Stream content, uint minPhotoSizeBytes, uint maxPhotoSizeBytes)
     {
         if (content.Length < minPhotoSizeBytes || content.Length > maxPhotoSizeBytes)
         {
@@ -95,7 +69,7 @@ internal sealed class PhotoService : IPhotoService
         return true;
     }
 
-    private static bool IsValidBase64ContentSize(string base64Content, int minBase64PhotoSizeBytes, int maxBase64PhotoSizeBytes)
+    private static bool IsValidBase64ContentSize(string base64Content, uint minBase64PhotoSizeBytes, uint maxBase64PhotoSizeBytes)
     {
         if (base64Content.Length < minBase64PhotoSizeBytes || base64Content.Length > maxBase64PhotoSizeBytes)
         {
@@ -117,24 +91,16 @@ internal sealed class PhotoService : IPhotoService
         }
     }
 
+    private static uint Base64Length(uint originalLength)
+    {
+        // https://stackoverflow.com/questions/13378815/base64-length-calculation
+        var base64Length = 4 * (originalLength / 3D);
+        // round up to 4 division
+        return (uint) Math.Ceiling(base64Length);
+    }
     private static string GetImageFileFormat(Stream content)
     {
-        // https://stackoverflow.com/questions/56588900/how-to-validate-uploaded-file-in-asp-net-core
-        using (var reader = new BinaryReader(content))
-        {
-            var extensions = _fileSignatures.Keys.ToList();
-            var signatures = _fileSignatures.Values.SelectMany(x => x).ToList();
-
-            for (int i = 0; i < signatures.Count; i++)
-            {
-                var headerBytes = reader.ReadBytes(signatures[i].Length);
-                var result = headerBytes.Take(signatures[i].Length).SequenceEqual(signatures[i]);
-                if (result)
-                {
-                    return extensions[i];
-                }
-            }
-        }
+        // FIXME: use ImageFlow
         return null;
     }
 }

@@ -23,7 +23,7 @@ public class PhotoServiceTests
     }
 
     [Fact]
-    public void given_valid_not_image_file_ProcessBase64Photo_throws_InvalidPhotoException()
+    public void given_valid_file_which_is_not_image_ProcessBase64Photo_throws_InvalidPhotoException()
     {
         _options.Value.MinPhotoSizeBytes = 1;
         _options.Value.MaxPhotoSizeBytes = 999999;

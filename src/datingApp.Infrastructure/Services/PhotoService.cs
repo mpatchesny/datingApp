@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.IO;
 using Imageflow.Fluent;
-using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
 using datingApp.Core.Exceptions;
 using datingApp.Infrastructure.Exceptions;

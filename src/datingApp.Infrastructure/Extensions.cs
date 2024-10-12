@@ -56,17 +56,17 @@ public static class Extensions
                 .Where(t => !t.Name.Equals("GetUpdatesHandler")))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-        services.AddScoped<IDeletedEntityRepository, DbDeletedEntityRepository>();
 
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
         services.AddSingleton<ISpatial, Spatial.Spatial>();
+
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
-                .Where(t => !t.Name.Contains("Dummy") && !t.Name.Contains("Option")))
+                .Where(t => !t.Name.StartsWith("Dummy") && !t.Name.EndsWith("Options")))
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
-        //services.AddSingleton<IPhotoService, PhotoService>();
+
         services.AddSingleton<ExceptionMiddleware>();
 
         return services;

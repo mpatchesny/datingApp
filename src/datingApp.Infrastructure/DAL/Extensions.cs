@@ -24,7 +24,7 @@ internal static class Extensions
         services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
 
         services.Scan(s => s.FromCallingAssembly()
-            .AddClasses(c => c.InNamespaces("datingApp.Application.Repositories"))
+            .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.DAL.Repositories"))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 

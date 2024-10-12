@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using datingApp.Application.PhotoManagement;
 using datingApp.Application.Services;
 using datingApp.Core.Entities;
 

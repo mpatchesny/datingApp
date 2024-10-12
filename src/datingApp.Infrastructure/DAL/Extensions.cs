@@ -22,12 +22,12 @@ internal static class Extensions
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
         var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);
         services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
-        services.AddScoped<IUserRepository, DbUserRepository>();
-        services.AddScoped<IPhotoRepository, DbPhotoRepository>();
-        services.AddScoped<ISwipeRepository, DbSwipeRepository>();
-        services.AddScoped<IMatchRepository, DbMatchRepository>();
-        services.AddScoped<IMessageRepository, DbMessageRepository>();
-        services.AddScoped<IRevokedRefreshTokensRepository, DbRevokedRefreshTokensRepository>();
+
+        services.Scan(s => s.FromCallingAssembly()
+            .AddClasses(c => c.InNamespaces("datingApp.Application.Repositories"))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
         services.AddHostedService<DatabaseInitializer>();
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
         services.AddHostedService<ExpiredDataRemover>();

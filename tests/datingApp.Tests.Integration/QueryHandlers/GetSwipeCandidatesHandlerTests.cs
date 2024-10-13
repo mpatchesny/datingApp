@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Spatial;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.DAL.Handlers;

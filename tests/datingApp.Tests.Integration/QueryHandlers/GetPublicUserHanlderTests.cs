@@ -6,6 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Handlers;

@@ -16,20 +16,20 @@ namespace datingApp.Api.Controllers;
 [Route("photos")]
 public class PhotosController : ApiControllerBase
 {
-    private readonly IQueryHandler<GetPhoto, PhotoDto> _getPhotoHandler;
+    private readonly IQueryDispatcher _queryDispatcher;
     private readonly ICommandDispatcher _commandDispatcher;
     public PhotosController(ICommandDispatcher commandDispatcher,
-                            IQueryHandler<GetPhoto, PhotoDto> getPhotoHandler)
+                            IQueryDispatcher queryDispatcher)
     {
         _commandDispatcher = commandDispatcher;
-        _getPhotoHandler = getPhotoHandler;
+        _queryDispatcher = queryDispatcher;
     }
 
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
         var query = Authenticate(new GetPhoto { PhotoId = photoId});
-        var photo = await _getPhotoHandler.HandleAsync(query);
+        var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
         return photo;
     }
 
@@ -40,7 +40,7 @@ public class PhotosController : ApiControllerBase
         await _commandDispatcher.DispatchAsync(command);
 
         var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
-        var photo = await _getPhotoHandler.HandleAsync(query);
+        var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
         return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 

@@ -16,30 +16,21 @@ namespace datingApp.Api.Controllers;
 [Route("matches")]
 public class MatchesController : ApiControllerBase
 {
+    private readonly ICommandDispatcher _commandDispatcher;
     private readonly IQueryHandler<GetMatches, PaginatedDataDto> _getMatchesHandler;
     private readonly IQueryHandler<GetMatch, MatchDto> _getMatchHandler;
     private readonly IQueryHandler<GetMessages, PaginatedDataDto> _getMessagesHandler;
     private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
-    private readonly ICommandHandler<SendMessage> _sendMessageHandler;
-    private readonly ICommandHandler<SetMessagesAsDisplayed> _setMessagesAsDisplayedHandler;
-    private readonly ICommandHandler<SetMatchAsDisplayed> _setMatchAsDisplayedHandler;
-    private readonly ICommandHandler<DeleteMatch> _deleteMatchHandler;
-    public MatchesController(IQueryHandler<GetMatches, PaginatedDataDto> getMatchesHandler,
-                            ICommandHandler<SendMessage> sendMessageHandler,
-                            ICommandHandler<DeleteMatch> deleteMatchHandler,
+    public MatchesController(ICommandDispatcher commandDispatcher,
+                            IQueryHandler<GetMatches, PaginatedDataDto> getMatchesHandler,
                             IQueryHandler<GetMessages, PaginatedDataDto> getMessagesHandler,
                             IQueryHandler<GetMessage, MessageDto> getMessageHandler,
-                            ICommandHandler<SetMessagesAsDisplayed> setMessagesAsDisplayedHandler,
-                            ICommandHandler<SetMatchAsDisplayed> setMatchAsDisplayedHandler,
                             IQueryHandler<GetMatch, MatchDto> getMatchHandler)
     {
+        _commandDispatcher = commandDispatcher;
         _getMatchesHandler = getMatchesHandler;
-        _deleteMatchHandler = deleteMatchHandler;
         _getMessagesHandler = getMessagesHandler;
-        _sendMessageHandler = sendMessageHandler;
         _getMessageHandler = getMessageHandler;
-        _setMessagesAsDisplayedHandler = setMessagesAsDisplayedHandler;
-        _setMatchAsDisplayedHandler = setMatchAsDisplayedHandler;
         _getMatchHandler = getMatchHandler;
     }
 
@@ -84,7 +75,7 @@ public class MatchesController : ApiControllerBase
     {
         command = Authenticate(command);
         command = command with {MessageId = Guid.NewGuid(), SendFromId = command.AuthenticatedUserId, MatchId = matchId};
-        await _sendMessageHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
 
         var query = Authenticate(new GetMessage { MessageId = command.MessageId });
         var message = await _getMessageHandler.HandleAsync(query);
@@ -96,7 +87,7 @@ public class MatchesController : ApiControllerBase
     {
         command = Authenticate(command);
         command = command with {LastMessageId = messageId};
-        await _setMessagesAsDisplayedHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 
@@ -105,7 +96,7 @@ public class MatchesController : ApiControllerBase
     {
         command = Authenticate(command);
         command = command with {MatchId = matchId};
-        await _setMatchAsDisplayedHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 
@@ -113,7 +104,7 @@ public class MatchesController : ApiControllerBase
     public async Task<ActionResult> Delete(Guid matchId)
     {
         var command = Authenticate(new DeleteMatch(matchId));
-        await _deleteMatchHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 }

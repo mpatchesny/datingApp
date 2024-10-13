@@ -64,7 +64,7 @@ internal sealed class PhotoService : IPhotoService
             throw new InvalidPhotoException();
         }
 
-        var task = ConvertToJpegAsync(content, _options.Value.ImageQuality);
+        var task = ConvertToJpegAsync(content, _options.Value.CompressedImageQuality);
         task.Wait();
         return new PhotoServiceProcessOutput(task.Result, "jpg");
     }

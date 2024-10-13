@@ -17,18 +17,12 @@ namespace datingApp.Api.Controllers;
 public class PhotosController : ApiControllerBase
 {
     private readonly IQueryHandler<GetPhoto, PhotoDto> _getPhotoHandler;
-    private readonly ICommandHandler<AddPhoto> _addPhotoHandler;
-    private readonly ICommandHandler<ChangePhotoOridinal> _changePhotoOridinalHandler;
-    private readonly ICommandHandler<DeletePhoto> _deletePhotoHandler;
-    public PhotosController(ICommandHandler<AddPhoto> addPhotoHandler,
-                            IQueryHandler<GetPhoto, PhotoDto> getPhotoHandler,
-                            ICommandHandler<ChangePhotoOridinal> changePhotoOridinalHandler,
-                            ICommandHandler<DeletePhoto> deletePhotoHandler)
+    private readonly ICommandDispatcher _commandDispatcher;
+    public PhotosController(ICommandDispatcher commandDispatcher,
+                            IQueryHandler<GetPhoto, PhotoDto> getPhotoHandler)
     {
-        _addPhotoHandler = addPhotoHandler;
+        _commandDispatcher = commandDispatcher;
         _getPhotoHandler = getPhotoHandler;
-        _changePhotoOridinalHandler = changePhotoOridinalHandler;
-        _deletePhotoHandler = deletePhotoHandler;
     }
 
     [HttpGet("{photoId:guid}")]
@@ -43,7 +37,7 @@ public class PhotosController : ApiControllerBase
     public async Task<ActionResult> Post(AddPhoto command)
     {
         command = Authenticate(command with {PhotoId = Guid.NewGuid()});
-        await _addPhotoHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
 
         var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
         var photo = await _getPhotoHandler.HandleAsync(query);
@@ -54,7 +48,7 @@ public class PhotosController : ApiControllerBase
     public async Task<ActionResult> Patch([FromRoute] Guid photoId, ChangePhotoOridinal command)
     {
         command = Authenticate(command with {PhotoId = photoId});
-        await _changePhotoOridinalHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 
@@ -62,7 +56,7 @@ public class PhotosController : ApiControllerBase
     public async Task<ActionResult> Delete(Guid photoId)
     {
         var command = Authenticate(new DeletePhoto(photoId));
-        await _deletePhotoHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 }

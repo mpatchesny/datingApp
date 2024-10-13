@@ -71,7 +71,7 @@ public class AddPhotoHandlerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         for (int i = 0; i < PHOTO_COUNT_PER_USER_LIMIT; i++)
         {
-            _ = IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, i);
+            await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, i);
         }
         
         var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());

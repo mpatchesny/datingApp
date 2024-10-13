@@ -14,7 +14,7 @@ namespace datingApp.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("like")]
+[Route("/")]
 public class LikeController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
@@ -26,12 +26,24 @@ public class LikeController : ApiControllerBase
         _isLikedByOtherUserStorage = isLikedByOtherUserStorage;
     }
 
-    [HttpPut("{userId:guid}")]
-    public async Task<ActionResult<IsLikedByOtherUserDto>> Put(Guid userId)
+    [HttpPut("like/{userId:guid}")]
+    public async Task<ActionResult<IsLikedByOtherUserDto>> LikeUser(Guid userId)
     {
         var swipedById = AuthenticatedUserId;
         var swipedWhoId = userId;
         var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 2));
+        await _commandDispatcher.DispatchAsync(command);
+
+        var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();
+        return isLikedByOtherUser;
+    }
+
+    [HttpPut("pass/{userId:guid}")]
+    public async Task<ActionResult<IsLikedByOtherUserDto>> PassUser(Guid userId)
+    {
+        var swipedById = Guid.Parse(User.Identity?.Name);
+        var swipedWhoId = userId;
+        var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 1));
         await _commandDispatcher.DispatchAsync(command);
 
         var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();

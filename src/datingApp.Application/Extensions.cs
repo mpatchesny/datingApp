@@ -29,6 +29,7 @@ namespace datingApp.Application
                 .WithScopedLifetime());
 
             services.AddScoped<ICommandDispatcher, InMemoryCommandDispatcher>();
+            services.AddScoped<IQueryDispatcher, InMemoryQueryDispatcher>();
             services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
             return services;
         }

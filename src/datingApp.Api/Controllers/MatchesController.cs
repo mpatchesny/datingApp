@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
+using datingApp.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,21 +18,12 @@ namespace datingApp.Api.Controllers;
 public class MatchesController : ApiControllerBase
 {
     private readonly ICommandDispatcher _commandDispatcher;
-    private readonly IQueryHandler<GetMatches, PaginatedDataDto> _getMatchesHandler;
-    private readonly IQueryHandler<GetMatch, MatchDto> _getMatchHandler;
-    private readonly IQueryHandler<GetMessages, PaginatedDataDto> _getMessagesHandler;
-    private readonly IQueryHandler<GetMessage, MessageDto> _getMessageHandler;
+    private readonly IQueryDispatcher _queryDispatcher;
     public MatchesController(ICommandDispatcher commandDispatcher,
-                            IQueryHandler<GetMatches, PaginatedDataDto> getMatchesHandler,
-                            IQueryHandler<GetMessages, PaginatedDataDto> getMessagesHandler,
-                            IQueryHandler<GetMessage, MessageDto> getMessageHandler,
-                            IQueryHandler<GetMatch, MatchDto> getMatchHandler)
+                            IQueryDispatcher queryDispatcher)
     {
         _commandDispatcher = commandDispatcher;
-        _getMatchesHandler = getMatchesHandler;
-        _getMessagesHandler = getMessagesHandler;
-        _getMessageHandler = getMessageHandler;
-        _getMatchHandler = getMatchHandler;
+        _queryDispatcher = queryDispatcher;
     }
 
     [HttpGet("{matchId:guid}")]
@@ -40,7 +32,7 @@ public class MatchesController : ApiControllerBase
         var query = new GetMatch { MatchId = matchId };
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
-        var match = await _getMatchHandler.HandleAsync(query);
+        var match = await _queryDispatcher.DispatchAsync<GetMatch, MatchDto>(query);
         return Ok(match);
     }
 
@@ -50,14 +42,15 @@ public class MatchesController : ApiControllerBase
         var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
         query.SetPage(page);
         query.SetPageSize(pageSize);
-        return Ok(await _getMatchesHandler.HandleAsync(query));
+        var result = await _queryDispatcher.DispatchAsync<GetMatches, PaginatedDataDto>(query);
+        return Ok(result);
     }
 
     [HttpGet("{matchId:guid}/messages/{messageId:guid}")]
     public async Task<ActionResult<MessageDto>> GetMessage(Guid matchId, Guid messageId)
     {
         var query = Authenticate(new GetMessage { MessageId = messageId });
-        var message = await _getMessageHandler.HandleAsync(query);
+        var message = await _queryDispatcher.DispatchAsync<GetMessage, MessageDto>(query);
         return message;
     }
 
@@ -67,7 +60,8 @@ public class MatchesController : ApiControllerBase
         var query = Authenticate(new GetMessages { MatchId = matchId });
         query.SetPage(page);
         query.SetPageSize(pageSize);
-        return Ok(await _getMessagesHandler.HandleAsync(query));
+        var result = await _queryDispatcher.DispatchAsync<GetMessages, PaginatedDataDto>(query);
+        return Ok(result);
     }
 
     [HttpPost("{matchId:guid}/messages")]
@@ -78,7 +72,7 @@ public class MatchesController : ApiControllerBase
         await _commandDispatcher.DispatchAsync(command);
 
         var query = Authenticate(new GetMessage { MessageId = command.MessageId });
-        var message = await _getMessageHandler.HandleAsync(query);
+        var message = await _queryDispatcher.DispatchAsync<GetMessage, MessageDto>(query);
         return CreatedAtAction(nameof(GetMessage), new { command.MatchId, command.MessageId }, message);
     }
 

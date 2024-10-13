@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.DTO;
-using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using Newtonsoft.Json;
 using Xunit;

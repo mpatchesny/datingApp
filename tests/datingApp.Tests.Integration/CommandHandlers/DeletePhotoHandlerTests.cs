@@ -6,7 +6,6 @@ using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
-using datingApp.Application.PhotoManagement;
 using datingApp.Application.Repositories;
 using datingApp.Application.Security;
 using datingApp.Application.Services;

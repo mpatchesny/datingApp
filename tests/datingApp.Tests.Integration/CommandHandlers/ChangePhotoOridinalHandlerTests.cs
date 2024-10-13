@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
-using datingApp.Application.PhotoManagement;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Core.Entities;

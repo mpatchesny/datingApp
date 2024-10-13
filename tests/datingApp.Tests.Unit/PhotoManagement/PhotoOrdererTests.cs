@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using datingApp.Application.PhotoManagement;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

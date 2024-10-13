@@ -18,13 +18,13 @@ namespace datingApp.Api.Controllers;
 [Route("pass")]
 public class PassController : ApiControllerBase
 {
-    private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
+    private readonly ICommandDispatcher _commandDispatcher;
     private readonly IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
 
-    public PassController(ICommandHandler<SwipeUser> swipeUserHandler,
-                        IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
+    public PassController(ICommandDispatcher commandDispatcher,
+                          IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
     {
-        _swipeUserHandler = swipeUserHandler;
+        _commandDispatcher = commandDispatcher;
         _isLikedByOtherUserStorage = isLikedByOtherUserStorage;
     }
 
@@ -34,7 +34,7 @@ public class PassController : ApiControllerBase
         var swipedById = Guid.Parse(User.Identity?.Name);
         var swipedWhoId = userId;
         var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 1));
-        await _swipeUserHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
 
         var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();
         return isLikedByOtherUser;

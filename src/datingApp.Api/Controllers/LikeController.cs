@@ -17,12 +17,12 @@ namespace datingApp.Api.Controllers;
 [Route("like")]
 public class LikeController : ApiControllerBase
 {
-    private readonly ICommandHandler<SwipeUser> _swipeUserHandler;
+    private readonly ICommandDispatcher _commandDispatcher;
     private readonly IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
 
-    public LikeController(ICommandHandler<SwipeUser> swipeUserHandler, IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
+    public LikeController(ICommandDispatcher commandDispatcher, IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
     {
-        _swipeUserHandler = swipeUserHandler;
+        _commandDispatcher = commandDispatcher;
         _isLikedByOtherUserStorage = isLikedByOtherUserStorage;
     }
 
@@ -32,7 +32,7 @@ public class LikeController : ApiControllerBase
         var swipedById = AuthenticatedUserId;
         var swipedWhoId = userId;
         var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 2));
-        await _swipeUserHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
 
         var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();
         return isLikedByOtherUser;

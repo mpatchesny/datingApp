@@ -20,44 +20,29 @@ namespace datingApp.Api.Controllers;
 [Route("users")]
 public class UserController : ApiControllerBase
 {
+    private readonly ICommandDispatcher _commandDispatcher;
     private readonly IQueryHandler<GetPublicUser, PublicUserDto> _getPublicUserHandler;
-    private readonly IQueryHandler<GetPrivateUser, PrivateUserDto> _getPrivateUserHandler;
-    private readonly ICommandHandler<SignUp> _signUpHandler;
-    private readonly ICommandHandler<ChangeUser> _changeUserHandler;
-    private readonly ICommandHandler<DeleteUser> _deleteUserHandler;
     private readonly IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> _getSwipesCandidatesHandler;
-    private readonly ICommandHandler<RequestEmailAccessCode> _requestAccessCodeHandler;
-    private readonly ICommandHandler<SignInByEmail> _signInHandler;
+    private readonly IQueryHandler<GetPrivateUser, PrivateUserDto> _getPrivateUserHandler;
+    private readonly IQueryHandler<GetUpdates, IEnumerable<MatchDto>> _getUpdatesHandler;
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
-    private readonly IQueryHandler<GetUpdates, IEnumerable<MatchDto>> _getUpdatesHandler;
-    private readonly ICommandHandler<RefreshJWT> _refreshTokenHandler;
 
-    public UserController(IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
-                            ICommandHandler<SignUp> signUpHandler,
-                            IQueryHandler<GetPrivateUser, PrivateUserDto> getPrivateUserHandler,
-                            ICommandHandler<ChangeUser> changeUserHandler,
-                            ICommandHandler<DeleteUser> deleteUserHandler,
-                            IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler,
-                            ICommandHandler<RequestEmailAccessCode> requestAccessCodeHandler,
-                            ICommandHandler<SignInByEmail> signInHandler,
-                            ITokenStorage tokenStorage,
-                            IAccessCodeStorage codeStorage,
-                            IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler,
-                            ICommandHandler<RefreshJWT> refreshTokenHandler)
+    public UserController(ICommandDispatcher commandDispatcher,
+                          IQueryHandler<GetPublicUser, PublicUserDto> getUserHandler,
+                          IQueryHandler<GetPrivateUser, PrivateUserDto> getPrivateUserHandler,
+                          IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>> getSwipesCandidatesHandler,
+                          IQueryHandler<GetUpdates, IEnumerable<MatchDto>> getUpdatesHandler,
+                          IAccessCodeStorage codeStorage,
+                          ITokenStorage tokenStorage)
     {
+        _commandDispatcher = commandDispatcher;
         _getPublicUserHandler = getUserHandler;
-        _signUpHandler = signUpHandler;
         _getPrivateUserHandler = getPrivateUserHandler;
-        _changeUserHandler = changeUserHandler;
-        _deleteUserHandler = deleteUserHandler;
         _getSwipesCandidatesHandler = getSwipesCandidatesHandler;
-        _requestAccessCodeHandler = requestAccessCodeHandler;
-        _signInHandler = signInHandler;
-        _tokenStorage = tokenStorage;
-        _codeStorage = codeStorage;
         _getUpdatesHandler = getUpdatesHandler;
-        _refreshTokenHandler = refreshTokenHandler;
+        _codeStorage = codeStorage;
+        _tokenStorage = tokenStorage;
     }
 
     [HttpGet("me")]
@@ -98,7 +83,7 @@ public class UserController : ApiControllerBase
     {
         command = Authenticate(command);
         command = command with {UserId = userId};
-        await _changeUserHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 
@@ -106,7 +91,7 @@ public class UserController : ApiControllerBase
     public async Task<ActionResult> Delete(Guid userId)
     {
         var command = Authenticate(new DeleteUser(userId));
-        await _deleteUserHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
 
@@ -115,7 +100,7 @@ public class UserController : ApiControllerBase
     public async Task<ActionResult> Post(SignUp command)
     {
         command = command with {UserId = Guid.NewGuid()};
-        await _signUpHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
 
         var query = new GetPrivateUser { UserId = command.UserId };
         var user = await _getPrivateUserHandler.HandleAsync(query);
@@ -126,7 +111,7 @@ public class UserController : ApiControllerBase
     [HttpPost("auth")]
     public async Task<ActionResult<string>> RequestAccessCode(RequestEmailAccessCode command)
     {
-        await _requestAccessCodeHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         var code = _codeStorage.Get(command.Email);
         var response = new { SendTo = command.Email, Code = code.AccessCode };
         return Ok(response);
@@ -136,7 +121,7 @@ public class UserController : ApiControllerBase
     [HttpPost("auth/refresh")]
     public async Task<ActionResult<JwtDto>> RefreshToken(RefreshJWT command)
     {
-        await _refreshTokenHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;
     }
@@ -145,7 +130,7 @@ public class UserController : ApiControllerBase
     [HttpPost("sign-in")]
     public async Task<ActionResult<JwtDto>> SingIn(SignInByEmail command)
     {
-        await _signInHandler.HandleAsync(command);
+        await _commandDispatcher.DispatchAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;
     }

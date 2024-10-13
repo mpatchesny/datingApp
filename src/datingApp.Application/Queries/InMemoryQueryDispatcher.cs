@@ -20,7 +20,7 @@ public class InMemoryQueryDispatcher : IQueryDispatcher
         var handler = _serviceProvider.GetService<IQueryHandler<TQuery, TResult>>();
         if (handler == null)
         {
-            throw new InvalidOperationException($"No handler found for command type {typeof(TQuery).Name}");
+            throw new InvalidOperationException($"No handler found for query type {typeof(TQuery).Name}");
         }
         return await handler.HandleAsync(query);
     }

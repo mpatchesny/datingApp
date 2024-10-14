@@ -36,7 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // enforce HTTPS connection for prod environment
-if (app.Environment.IsProduction())
+if (!app.Environment.IsDevelopment())
 {
     app.Use(
         async (context, next) =>

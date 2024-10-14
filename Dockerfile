@@ -14,7 +14,6 @@ COPY --from=builder /app/out .
 
 # Set the environment variable for Storage Path & create the storage directory
 ARG STORAGE_PATH=/app/storage
-ENV ASPNETCORE_Storage__StoragePath=$STORAGE_PATH
 RUN mkdir -p $STORAGE_PATH && chmod -R 666 $STORAGE_PATH
 
 ENV ASPNETCORE_URLS https://*:8443, http://*:5000

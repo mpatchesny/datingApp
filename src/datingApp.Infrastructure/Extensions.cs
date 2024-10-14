@@ -35,6 +35,7 @@ public static class Extensions
     private const string PhotoServiceOptionsSectionName = "PhotoService";
     private const string EmailSenderOptionsSectionName = "EmailSender";
     private const string StorageOptionsSectionName = "Storage";
+    private const string AppOptionsSectionName = "app";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var environment = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
@@ -49,6 +50,7 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
+        services.Configure<AppOptions>(configuration.GetRequiredSection(AppOptionsSectionName));
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()

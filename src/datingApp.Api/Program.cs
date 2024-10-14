@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authorization;
 using Serilog;
 using datingApp.Infrastructure.Storage;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,5 +73,7 @@ app.UseStaticFiles(
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
+
+app.MapGet("api", (IOptions<AppOptions> options) => Results.Ok(options.Value.Name));
 
 app.Run();

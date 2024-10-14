@@ -5,6 +5,10 @@ Origin: http://localhost:4200
 Referer: http://localhost:4200
 Access-Control-Request-Method: POST
 
+###
+GET {{url}}/api
+###
+
 ### USERS ###
 
 ### Create user

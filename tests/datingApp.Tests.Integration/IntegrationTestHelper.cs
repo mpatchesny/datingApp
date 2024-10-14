@@ -16,7 +16,7 @@ internal static class IntegrationTestHelper
     internal static async Task<User> CreateUserAsync(TestDatabase database, string email = null, string phone = null)
     {
         Random random = new Random();
-        if (email == null) email = "test_" + random.Next(1, 999999).ToString() + "@test.com";
+        if (email == null) email = "test_" + Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
 
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);

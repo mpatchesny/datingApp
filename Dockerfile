@@ -13,8 +13,9 @@ WORKDIR /app
 COPY --from=builder /app/out .
 
 # Set the environment variable for Storage Path & create the storage directory
-ENV ASPNETCORE_Storage__StoragePath=/app/storage
-RUN mkdir -p $ASPNETCORE_Storage__StoragePath && chmod -R 666 $ASPNETCORE_Storage__StoragePath
+ARG STORAGE_PATH=/app/storage
+ENV ASPNETCORE_Storage__StoragePath=$STORAGE_PATH
+RUN mkdir -p $STORAGE_PATH && chmod -R 666 $STORAGE_PATH
 
 ENV ASPNETCORE_URLS https://*:8443, http://*:5000
 ENV ASPNETCORE_ENVIRONMENT=Docker

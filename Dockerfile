@@ -16,7 +16,7 @@ COPY --from=builder /app/out .
 ARG STORAGE_PATH=/app/storage
 RUN mkdir -p $STORAGE_PATH && chmod -R 666 $STORAGE_PATH
 
-ENV ASPNETCORE_URLS https://*:8443, http://*:5000
+ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
 EXPOSE 5000

@@ -6,4 +6,4 @@ using datingApp.Application.Notifications;
 
 namespace datingApp.Infrastructure.Notifications;
 
-public sealed record Email(string Receiver, string Subject, string Body) : INotificationMessage;
+public sealed record Email(string Receiver, string Subject, string Body) : IEmail;

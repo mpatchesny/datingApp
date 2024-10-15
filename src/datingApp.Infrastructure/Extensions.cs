@@ -53,7 +53,7 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
-        services.Configure<SMSGeneratorOptions>(configuration.GetRequiredSection(SmsGeneratorOptionsName));
+        services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();

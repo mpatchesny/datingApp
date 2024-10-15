@@ -53,8 +53,8 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
-        services.AddSingleton<INotificationMessageGenerator<Email>, EmailGenerator>();
-        services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
+        services.AddSingleton<INotificationMessageGenerator<IEmail>, EmailGenerator>();
+        services.AddSingleton<INotificationSender<IEmail>, DummyEmailSender>();
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()

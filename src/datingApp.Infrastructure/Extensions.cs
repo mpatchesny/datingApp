@@ -34,6 +34,8 @@ public static class Extensions
 {
     private const string PhotoServiceOptionsSectionName = "PhotoService";
     private const string EmailSenderOptionsSectionName = "EmailSender";
+    private const string EmailGeneratorOptionsName = "AccessCodeEmail";
+    private const string SmsGeneratorOptionsName = "AccessCodeSMS";
     private const string StorageOptionsSectionName = "Storage";
     private const string AppOptionsSectionName = "app";
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
@@ -51,6 +53,8 @@ public static class Extensions
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
         services.Configure<AppOptions>(configuration.GetRequiredSection(AppOptionsSectionName));
+        services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
+        services.Configure<SMSGeneratorOptions>(configuration.GetRequiredSection(SmsGeneratorOptionsName));
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()

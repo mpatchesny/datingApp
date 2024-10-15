@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Notifications;
 
-internal sealed class SimpleEmailSender : INotificationSender<Email>
+internal sealed class SimpleEmailSender : INotificationSender<IEmail>
 {
     private readonly string _username;
     private readonly string _sendFrom;
@@ -17,9 +17,9 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     private readonly string _serverAddress;
     private readonly string _serverPort;
     private readonly bool _enableSsl;
-    private readonly ILogger<INotificationSender<Email>> _logger;
+    private readonly ILogger<INotificationSender<IEmail>> _logger;
     public SimpleEmailSender(IOptions<EmailSenderOptions> options,
-                            ILogger<INotificationSender<Email>> logger)
+                            ILogger<INotificationSender<IEmail>> logger)
     {
         _username = options.Value.Username;
         _sendFrom = options.Value.SendFrom;
@@ -30,9 +30,11 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
         _logger = logger;
     }
 
-    public async Task SendAsync(Email email)
+    public async Task SendAsync(IEmail message)
     {
-        MailMessage message = new MailMessage(
+        var email = (Email) message;
+
+        MailMessage mail = new MailMessage(
             _sendFrom,
             email.Receiver,
             email.Subject,
@@ -54,7 +56,7 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
                 client.Credentials = new System.Net.NetworkCredential(_username, _password);
                 client.Timeout = 5000;
                 client.UseDefaultCredentials = false;
-                await client.SendMailAsync(message);
+                await client.SendMailAsync(mail);
             }
             catch (Exception ex)
             {

@@ -19,6 +19,7 @@ RUN mkdir -p $STORAGE_PATH && chmod -R 666 $STORAGE_PATH
 # Certificates
 ARG CERTS_PATH=/app/https
 ARG PASSWORD_ENV_SEED=test
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password=$PASSWORD_ENV_SEED
 RUN mkdir -p $CERTS_PATH && chmod -R 666 $CERTS_PATH
 
 ## Generate self-signed certificate

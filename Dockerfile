@@ -12,20 +12,21 @@ WORKDIR /app
 
 COPY --from=builder /app/out .
 
-# Set the environment variable for Storage Path & create the storage directory
+# Make storage path
 ARG STORAGE_PATH=/app/storage
 RUN mkdir -p $STORAGE_PATH && chmod -R 666 $STORAGE_PATH
 
+# Certificates
 ARG CERTS_PATH=/app/https
 ARG PASSWORD_ENV_SEED=test
 RUN mkdir -p $CERTS_PATH && chmod -R 666 $CERTS_PATH
 
-# Generate self-signed certificate
+## Generate self-signed certificate
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $CERTS_PATH/aspnetapp.key -out $CERTS_PATH/aspnetapp.crt -subj "/CN=localhost"
-# Combine key and certificate to create .pfx file
+## Combine key and certificate to create .pfx file
 RUN openssl pkcs12 -export -out $CERTS_PATH/aspnetapp.pfx -inkey $CERTS_PATH/aspnetapp.key -in $CERTS_PATH/aspnetapp.crt -password pass:$PASSWORD_ENV_SEED
 
-ENV ASPNETCORE_URLS=http://+:5000;http://+:8443
+ENV ASPNETCORE_URLS=http://+:5000;https://+:8443
 ENV ASPNETCORE_ENVIRONMENT=Docker
 
 EXPOSE 5000

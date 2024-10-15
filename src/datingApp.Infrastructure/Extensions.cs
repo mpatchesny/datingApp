@@ -49,12 +49,12 @@ public static class Extensions
         services.AddAuth(configuration);
         services.AddHttpContextAccessor();
 
+        services.Configure<AppOptions>(configuration.GetRequiredSection(AppOptionsSectionName));
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
-        services.Configure<StorageOptions>(configuration.GetRequiredSection(StorageOptionsSectionName));
-        services.Configure<AppOptions>(configuration.GetRequiredSection(AppOptionsSectionName));
         services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
         services.Configure<SMSGeneratorOptions>(configuration.GetRequiredSection(SmsGeneratorOptionsName));
+        services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()
@@ -63,7 +63,6 @@ public static class Extensions
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 
-        services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
         services.AddSingleton<ISpatial, Spatial.Spatial>();
 

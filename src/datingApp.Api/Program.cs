@@ -35,8 +35,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// enforce HTTPS connection for prod environment
-if (!app.Environment.IsDevelopment())
+// enforce HTTPS connection for  non-test, non-development environments
+if (!app.Environment.IsEnvironment("test") && !app.Environment.IsEnvironment("development"))
 {
     app.Use(
         async (context, next) =>

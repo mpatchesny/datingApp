@@ -9,9 +9,10 @@ namespace datingApp.Infrastructure.Notifications;
 
 internal sealed class DummyEmailSender : INotificationSender<IEmail>
 {
-    public Task SendAsync(IEmail notification)
+    public Task SendAsync(IEmail message)
     {
         // does nothing
+        var email = (Email) message;
         return Task.CompletedTask;
     }
 }

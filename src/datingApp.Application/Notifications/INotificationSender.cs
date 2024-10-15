@@ -7,5 +7,5 @@ namespace datingApp.Application.Notifications;
 
 public interface INotificationSender<in T> where T : class, INotificationMessage
 {
-    public Task SendAsync(T notification);
+    public Task SendAsync(T message);
 }

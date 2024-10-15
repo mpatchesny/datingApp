@@ -51,10 +51,6 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
                 var error = $"{nameof(SimpleEmailSender)}: failed to send email to {email.Receiver}.";
                 _logger.LogError(ex, error);
             }
-            finally
-            {
-                client.Dispose();
-            }
         }
     }
 }

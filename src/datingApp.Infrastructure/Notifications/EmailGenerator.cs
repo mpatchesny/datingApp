@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Application.Notifications;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Application.Notifications;
+namespace datingApp.Infrastructure.Notifications;
 
 public class EmailGenerator : INotificationMessageGenerator<Email>
 {

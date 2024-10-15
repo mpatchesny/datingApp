@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace datingApp.Application.Notifications;
+namespace datingApp.Infrastructure.Notifications;
 
 public sealed class EmailGeneratorOptions
 {

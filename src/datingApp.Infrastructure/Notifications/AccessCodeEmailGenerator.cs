@@ -8,11 +8,11 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Notifications;
 
-public class EmailGenerator : INotificationMessageGenerator<Email>
+public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
 {
     private readonly string _bodyTemplate;
     private readonly string _subjectTemplate;
-    public EmailGenerator(IOptions<EmailGeneratorOptions> options)
+    public AccessCodeEmailGenerator(IOptions<EmailGeneratorOptions> options)
     {
         _subjectTemplate = options.Value.SubjectTemplate;
         _bodyTemplate = options.Value.BodyTemplate;

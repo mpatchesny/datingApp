@@ -10,16 +10,19 @@ namespace datingApp.Infrastructure.Notifications;
 
 public class EmailGenerator : INotificationMessageGenerator<Email>
 {
-    private readonly IOptions<EmailGeneratorOptions> _options;
+    private readonly string _bodyTemplate;
+    private readonly string _subjectTemplate;
     public EmailGenerator(IOptions<EmailGeneratorOptions> options)
     {
-        _options = options;
+        _subjectTemplate = options.Value.SubjectTemplate;
+        _bodyTemplate = options.Value.BodyTemplate;
     }
+   
     public Email Generate(string Receiver, Dictionary<string, string> kwargs)
     {
         string receiver = Receiver;
-        string subject = _options.Value.SubjectTemplate;
-        string body = _options.Value.BodyTemplate;
+        string subject = _subjectTemplate;
+        string body = _bodyTemplate;
 
         foreach (var key in kwargs.Keys)
         {

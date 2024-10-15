@@ -9,16 +9,16 @@ namespace datingApp.Infrastructure.Notifications;
 
 public class SMSGenerator : INotificationMessageGenerator<SMS>
 {
-    private readonly IOptions<SMSGeneratorOptions> _options;
+    private readonly string _bodyTemplate;
     public SMSGenerator(IOptions<SMSGeneratorOptions> options)
     {
-        _options = options;
+        _bodyTemplate = options.Value.BodyTemplate;
     }
 
     public SMS Generate(string Receiver, Dictionary<string, string> kwargs)
     {
         string receiver = Receiver;
-        string body = _options.Value.BodyTemplate;
+        string body = _bodyTemplate;
 
         foreach (var key in kwargs.Keys)
         {

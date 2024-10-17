@@ -15,15 +15,15 @@ public class SMSGenerator : INotificationMessageGenerator<SMS>
         _bodyTemplate = options.Value.BodyTemplate;
     }
 
-    public SMS Generate(string Receiver, Dictionary<string, string> kwargs)
+    public SMS Generate(string Recipient, Dictionary<string, string> kwargs)
     {
-        string receiver = Receiver;
+        string recipient = Recipient;
         string body = _bodyTemplate;
 
         foreach (var key in kwargs.Keys)
         {
             body = body.Replace($"{key}", kwargs[key]);
         }
-        return new SMS(receiver, body);
+        return new SMS(recipient, body);
     }
 }

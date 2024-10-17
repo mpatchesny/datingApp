@@ -40,7 +40,7 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
         }
     }
 
-    private SmtpClient ConfigureClient(string host, int port, string username, string password, bool enableSsl)
+    private static SmtpClient ConfigureClient(string host, int port, string username, string password, bool enableSsl)
     {
         var client = new SmtpClient(host, port);
         client.EnableSsl = enableSsl;

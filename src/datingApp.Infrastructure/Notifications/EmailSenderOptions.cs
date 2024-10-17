@@ -11,6 +11,6 @@ public sealed class EmailSenderOptions
     public string SendFrom { get; set; }
     public string Password { get; set; }
     public string ServerAddress { get; set; }
-    public string ServerPort { get; set; }
+    public int ServerPort { get; set; }
     public bool EnableSsl { get; set; }
 }

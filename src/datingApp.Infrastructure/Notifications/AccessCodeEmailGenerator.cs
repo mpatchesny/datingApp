@@ -18,9 +18,9 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
         _bodyTemplate = options.Value.BodyTemplate;
     }
    
-    public Email Generate(string Receiver, Dictionary<string, string> kwargs)
+    public Email Generate(string Recipient, Dictionary<string, string> kwargs)
     {
-        string receiver = Receiver;
+        string recipient = Recipient;
         string subject = _subjectTemplate;
         string body = _bodyTemplate;
 
@@ -29,6 +29,6 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
             subject = subject.Replace($"{key}", kwargs[key]);
             body = body.Replace($"{key}", kwargs[key]);
         }
-        return new Email(receiver, subject, body);
+        return new Email("TODO", recipient, subject, body);
     }
 }

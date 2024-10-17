@@ -7,12 +7,11 @@ using datingApp.Application.Services;
 
 namespace datingApp.Infrastructure.Notifications;
 
-internal sealed class DummyEmailSender : INotificationSender<IEmail>
+internal sealed class DummyEmailSender : INotificationSender<Email>
 {
-    public Task SendAsync(IEmail message)
+    public Task SendAsync(Email message)
     {
         // does nothing
-        var email = (Email) message;
         return Task.CompletedTask;
     }
 }

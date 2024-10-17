@@ -13,4 +13,5 @@ public sealed class EmailSenderOptions
     public string ServerAddress { get; set; }
     public int ServerPort { get; set; }
     public bool EnableSsl { get; set; }
+    public TimeSpan EmailSendTimeout { get; set; }
 }

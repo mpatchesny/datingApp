@@ -17,7 +17,12 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     public SimpleEmailSender(IOptions<EmailSenderOptions> options,
                             ILogger<INotificationSender<Email>> logger)
     {
-        _client = ConfigureClient(options.Value.ServerAddress, options.Value.ServerPort, options.Value.Username, options.Value.Password, options.Value.EnableSsl);
+        _client = ConfigureClient(options.Value.ServerAddress, 
+                                options.Value.ServerPort, 
+                                options.Value.Username, 
+                                options.Value.Password, 
+                                options.Value.EnableSsl,
+                                options.Value.EmailSendTimeout);
         _logger = logger;
     }
 
@@ -40,12 +45,12 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
         }
     }
 
-    private static SmtpClient ConfigureClient(string host, int port, string username, string password, bool enableSsl)
+    private static SmtpClient ConfigureClient(string host, int port, string username, string password, bool enableSsl, TimeSpan emailSendTimeout)
     {
         var client = new SmtpClient(host, port);
         client.EnableSsl = enableSsl;
         client.Credentials = new System.Net.NetworkCredential(username, password);
-        client.Timeout = 5000;
+        client.Timeout = emailSendTimeout.Milliseconds;
         client.UseDefaultCredentials = false;
         return client;
     }

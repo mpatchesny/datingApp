@@ -9,60 +9,27 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Notifications;
 
-internal sealed class SimpleEmailSender : INotificationSender<IEmail>
+internal sealed class SimpleEmailSender : INotificationSender<Email>
 {
-    private readonly string _username;
-    private readonly string _sendFrom;
-    private readonly string _password;
-    private readonly string _serverAddress;
-    private readonly string _serverPort;
-    private readonly bool _enableSsl;
-    private readonly ILogger<INotificationSender<IEmail>> _logger;
-    public SimpleEmailSender(IOptions<EmailSenderOptions> options,
-                            ILogger<INotificationSender<IEmail>> logger)
+    private readonly IEmailClient _client;
+    private readonly ILogger<INotificationSender<Email>> _logger;
+    public SimpleEmailSender(IEmailClient client,
+                            ILogger<INotificationSender<Email>> logger)
     {
-        _username = options.Value.Username;
-        _sendFrom = options.Value.SendFrom;
-        _password = options.Value.Password;
-        _serverAddress = options.Value.ServerAddress;
-        _serverPort = options.Value.ServerPort;
-        _enableSsl = options.Value.EnableSsl;
+        _client = client;
         _logger = logger;
     }
 
-    public async Task SendAsync(IEmail message)
+    public async Task SendAsync(Email email)
     {
-        var email = (Email) message;
-
-        MailMessage mail = new MailMessage(
-            _sendFrom,
-            email.Receiver,
-            email.Subject,
-            email.Body);
-
-        int port = 0;
-        if (!int.TryParse(_serverPort, out port))
+        try
         {
-            var error = $"{nameof(SimpleEmailSender)}: port {_serverPort} cannot be cast to integer.";
-            _logger.LogError(error);
-            throw new InvalidCastException($"Port {_serverPort} cannot be cast to integer.");
+            await _client.SendAsync(email);
         }
-
-        using (var client = new SmtpClient(_serverAddress, port))
+        catch (Exception ex)
         {
-            try
-            {
-                client.EnableSsl = _enableSsl;
-                client.Credentials = new System.Net.NetworkCredential(_username, _password);
-                client.Timeout = 5000;
-                client.UseDefaultCredentials = false;
-                await client.SendMailAsync(mail);
-            }
-            catch (Exception ex)
-            {
-                var error = $"{nameof(SimpleEmailSender)}: failed to send email to {email.Receiver}.";
-                _logger.LogError(ex, error);
-            }
+            var error = $"{nameof(SimpleEmailSender)}: failed to send email to {email.Receiver}.";
+            _logger.LogError(ex, error);
         }
     }
 }

@@ -11,7 +11,6 @@ namespace datingApp.Infrastructure.Notifications;
 
 internal sealed class SimpleEmailSender : INotificationSender<Email>
 {
-    private readonly bool _enableSsl;
     private readonly SmtpClient _client;
     private readonly ILogger<INotificationSender<Email>> _logger;
     public SimpleEmailSender(IOptions<EmailSenderOptions> options,

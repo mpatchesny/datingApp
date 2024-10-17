@@ -21,17 +21,18 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
         _bodyTemplate = emailGeneratorOptions.Value.BodyTemplate;
     }
    
-    public Email Generate(string Recipient, Dictionary<string, string> kwargs)
+    public Email Generate(string recipient, Dictionary<string, string> kwargs)
     {
-        string recipient = Recipient;
         string subject = _subjectTemplate;
         string body = _bodyTemplate;
 
+        // Better approach: extract fields to be substituted from string
         foreach (var key in kwargs.Keys)
         {
             subject = subject.Replace($"{key}", kwargs[key]);
             body = body.Replace($"{key}", kwargs[key]);
         }
+
         return new Email(_sender, recipient, subject, body);
     }
 }

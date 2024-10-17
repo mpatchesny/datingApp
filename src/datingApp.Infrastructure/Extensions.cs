@@ -54,7 +54,7 @@ public static class Extensions
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
         services.AddSingleton<INotificationMessageGenerator<Email>, AccessCodeEmailGenerator>();
-        services.AddSingleton<INotificationSender<Email>, SimpleEmailSender>();
+        services.AddSingleton<INotificationSender<Email>, AzureOutlookEmailSender>();
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
         services.Scan(s => s.FromCallingAssembly()

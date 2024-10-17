@@ -14,7 +14,7 @@ using MimeKit.Text;
 
 namespace datingApp.Infrastructure.Notifications;
 
-internal sealed class SimpleEmailSender : INotificationSender<Email>
+internal sealed class AzureOutlookEmailSender : INotificationSender<Email>
 {
     private readonly string _host;
     private readonly int _port;
@@ -24,7 +24,7 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     private AuthenticationResult _auth;
     private readonly ILogger<INotificationSender<Email>> _logger;
 
-    public SimpleEmailSender(IOptions<EmailSenderOptions> options,
+    public AzureOutlookEmailSender(IOptions<EmailSenderOptions> options,
                             ILogger<INotificationSender<Email>> logger)
     {
         _host = options.Value.ServerAddress;
@@ -58,12 +58,12 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
             await client.ConnectAsync(_host, _port, SecureSocketOptions.StartTls);
             await client.AuthenticateAsync(oauth2);
             await client.SendAsync(message);
-            var info = $"{nameof(SimpleEmailSender)}: email send to {email.Recipient}.";
+            var info = $"{nameof(AzureOutlookEmailSender)}: email send to {email.Recipient}.";
             _logger.LogInformation(info);
         }
         catch (Exception ex)
         {
-            var error = $"{nameof(SimpleEmailSender)}: failed to send email to {email.Recipient}.";
+            var error = $"{nameof(AzureOutlookEmailSender)}: failed to send email to {email.Recipient}.";
             _logger.LogError(ex, error);
         }
         finally

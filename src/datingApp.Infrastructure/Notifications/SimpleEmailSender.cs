@@ -28,15 +28,9 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
 
     public async Task SendAsync(Email email)
     {
-        MailMessage mail = new MailMessage(
-            email.Sender,
-            email.Recipient,
-            email.Subject,
-            email.Body);
-
         try
         {
-            await _client.SendMailAsync(mail);
+            await _client.SendMailAsync(email.Sender, email.Recipient, email.Subject, email.Body);
         }
         catch (Exception ex)
         {

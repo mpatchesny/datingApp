@@ -13,10 +13,9 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
     private readonly string _sender;
     private readonly string _bodyTemplate;
     private readonly string _subjectTemplate;
-    public AccessCodeEmailGenerator(IOptions<EmailGeneratorOptions> emailGeneratorOptions,
-                                    IOptions<EmailSenderOptions> emailSenderOptions)
+    public AccessCodeEmailGenerator(IOptions<EmailGeneratorOptions> emailGeneratorOptions)
     {
-        _sender = emailSenderOptions.Value.SendFrom;
+        _sender = emailGeneratorOptions.Value.SendFrom;
         _subjectTemplate = emailGeneratorOptions.Value.SubjectTemplate;
         _bodyTemplate = emailGeneratorOptions.Value.BodyTemplate;
     }

@@ -23,8 +23,8 @@ public class SmtpClient : IEmailClient
 
     public async Task SendAsync(Email email)
     {
-        MailMessage mail = new MailMessage("TODO", 
-            email.Receiver,
+        MailMessage mail = new MailMessage(email.Sender,
+            email.Recipient,
             email.Subject,
             email.Body);
         await _client.SendMailAsync(mail);

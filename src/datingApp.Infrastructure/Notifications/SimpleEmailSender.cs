@@ -16,8 +16,6 @@ namespace datingApp.Infrastructure.Notifications;
 
 internal sealed class SimpleEmailSender : INotificationSender<Email>
 {
-    private record Token(string AccessToken, DateTimeOffset ExpiresOn);
-
     private readonly string _host;
     private readonly int _port;
     private readonly string _clientId;
@@ -25,7 +23,7 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     private readonly string _clientSecret;
     private readonly string _username;
     private readonly string _password;
-    private Token _token;
+    private AuthenticationResult _auth;
     private readonly ILogger<INotificationSender<Email>> _logger;
 
     public SimpleEmailSender(IOptions<EmailSenderOptions> options,
@@ -53,12 +51,11 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
         };
 
         var client = new SmtpClient();
-        if (_token == null || _token.ExpiresOn.DateTime <= DateTime.UtcNow)
+        if (_auth == null || _auth.ExpiresOn.DateTime <= DateTime.UtcNow)
         {
-            var result = await GetConfidentialClientOAuth2CredentialsAsync(_clientId, _tenantId, _clientSecret);
-            _token = new Token(result.AccessToken, result.ExpiresOn);
+            _auth = await GetConfidentialClientOAuth2CredentialsAsync(_clientId, _tenantId, _clientSecret);
         }
-        var oauth2 = new SaslMechanismOAuth2(_username, _token.AccessToken);
+        var oauth2 = new SaslMechanismOAuth2 (_auth.Account.Username, _auth.AccessToken);
 
         try
         {

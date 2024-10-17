@@ -8,6 +8,7 @@ using datingApp.Application.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using MimeKit;
 using MimeKit.Text;
 
@@ -49,12 +50,12 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
 
         var client = new SmtpClient();
         var result = await GetConfidentialClientOAuth2CredentialsAsync(_clientId, _tenantId, _clientSecret);
-        var oauth2 = new SaslMechanismOAuth2 (_username, result.AccessToken);
+        var oauth2 = new SaslMechanismOAuth2(_username, result.AccessToken);
 
         try
         {
             await client.ConnectAsync(_host, _port, SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(_username, _password);
+            await client.AuthenticateAsync(oauth2);
             await client.SendAsync(message);
         }
         catch (Exception ex)
@@ -76,11 +77,11 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     {
         // https://github.com/jstedfast/MailKit/blob/master/ExchangeOAuth2.md
         var confidentialClientApplication = ConfidentialClientApplicationBuilder.Create(clientId)
-            .WithAuthority ($"https://login.microsoftonline.com/{tenantId}/v2.0")
-            .WithClientSecret (clientSecret)
+            .WithAuthority($"https://login.microsoftonline.com/{tenantId}/v2.0")
+            .WithClientSecret(clientSecret)
             .Build ();
 
-        var scopes = new string[] {
+        var scopes = new string[]{
             // For SMTP, use the following scope
             "https://outlook.office365.com/.default"
         };

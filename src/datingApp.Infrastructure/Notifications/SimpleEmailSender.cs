@@ -21,8 +21,6 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     private readonly string _clientId;
     private readonly string _tenantId;
     private readonly string _clientSecret;
-    private readonly string _username;
-    private readonly string _password;
     private AuthenticationResult _auth;
     private readonly ILogger<INotificationSender<Email>> _logger;
 
@@ -31,8 +29,6 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
     {
         _host = options.Value.ServerAddress;
         _port = options.Value.ServerPort;
-        _username = options.Value.Username;
-        _password = options.Value.Password;
         _clientId = options.Value.ClientId;
         _tenantId = options.Value.TenantId;
         _clientSecret = options.Value.ClientSecret;
@@ -62,6 +58,8 @@ internal sealed class SimpleEmailSender : INotificationSender<Email>
             await client.ConnectAsync(_host, _port, SecureSocketOptions.StartTls);
             await client.AuthenticateAsync(oauth2);
             await client.SendAsync(message);
+            var info = $"{nameof(SimpleEmailSender)}: email send to {email.Recipient}.";
+            _logger.LogInformation(info);
         }
         catch (Exception ex)
         {

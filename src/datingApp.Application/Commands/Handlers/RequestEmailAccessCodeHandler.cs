@@ -18,16 +18,16 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
     private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IAccessCodeStorage _codeStorage;
     private readonly INotificationSender<Email> _emailSender;
-    private readonly INotificationMessageGenerator<Email> _emailGenerator;
+    private readonly IEmailGeneratorFactory _emailGeneratorFactory;
     public RequestEmailAccessCodeHandler(IAccessCodeGenerator codeGenerator,
                         IAccessCodeStorage codeStorage,
                         INotificationSender<Email> emailSender,
-                        INotificationMessageGenerator<Email> emailGenerator)
+                        IEmailGeneratorFactory emailGeneratorFactory)
     {
         _codeGenerator = codeGenerator;
         _codeStorage = codeStorage;
         _emailSender = emailSender;
-        _emailGenerator = emailGenerator;
+        _emailGeneratorFactory = emailGeneratorFactory;
     }
 
     public async Task HandleAsync(RequestEmailAccessCode command)
@@ -39,9 +39,7 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());
         _codeStorage.Set(code);
 
-        string expirationTime = code.Expiry.Minutes.ToString();
-        var emailGeneratorArgs = new Dictionary<string, string>{{ "AccessCode", code.AccessCode }, { "ExpirationTime", expirationTime }};
-        var email = _emailGenerator.Generate(command.Email, emailGeneratorArgs);
+        var email = _emailGeneratorFactory.CreateAccessCodeEmail(command.Email, code.AccessCode, code.Expiry).Generate();
         _ = _emailSender.SendAsync(email);
     }
 }

@@ -16,7 +16,7 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
     private readonly string _recipient;
     private readonly string _accessCode;
     private readonly TimeSpan _expirationTime;
-    public AccessCodeEmailGenerator(IOptions<EmailGeneratorOptions> emailGeneratorOptions, string recipient = "", string accessCode = "", TimeSpan expirationTime = new TimeSpan())
+    public AccessCodeEmailGenerator(IOptions<EmailGeneratorOptions> emailGeneratorOptions, string recipient, string accessCode, TimeSpan expirationTime)
     {
         _sender = emailGeneratorOptions.Value.SendFrom;
         _subjectTemplate = emailGeneratorOptions.Value.SubjectTemplate;

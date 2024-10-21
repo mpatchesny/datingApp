@@ -39,19 +39,4 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
         return new Email(_sender, _recipient, subject, body);
         throw new NotImplementedException();
     }
-
-    public Email Generate(string recipient, Dictionary<string, string> kwargs)
-    {
-        string subject = _subjectTemplate;
-        string body = _bodyTemplate;
-
-        // Better approach: extract fields to be substituted from string
-        foreach (var key in kwargs.Keys)
-        {
-            subject = subject.Replace($"{key}", kwargs[key]);
-            body = body.Replace($"{key}", kwargs[key]);
-        }
-
-        return new Email(_sender, recipient, subject, body);
-    }
 }

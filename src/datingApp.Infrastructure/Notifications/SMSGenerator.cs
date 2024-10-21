@@ -19,15 +19,4 @@ public class SMSGenerator : INotificationMessageGenerator<SMS>
     {
         throw new NotImplementedException();
     }
-    public SMS Generate(string Recipient, Dictionary<string, string> kwargs)
-    {
-        string recipient = Recipient;
-        string body = _bodyTemplate;
-
-        foreach (var key in kwargs.Keys)
-        {
-            body = body.Replace($"{key}", kwargs[key]);
-        }
-        return new SMS(recipient, body);
-    }
 }

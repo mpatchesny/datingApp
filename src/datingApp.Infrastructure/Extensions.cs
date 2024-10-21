@@ -53,7 +53,7 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
-        services.AddSingleton<INotificationMessageGenerator<Email>, AccessCodeEmailGenerator>();
+        services.AddSingleton<IEmailGeneratorFactory, EmailGeneratorFactory>();
         services.AddSingleton<INotificationSender<Email>, AzureOutlookEmailSender>();
 
         services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();

@@ -9,9 +9,17 @@ namespace datingApp.Infrastructure.Notifications;
 
 internal sealed class DummyEmailSender : INotificationSender<Email>
 {
+    private ILogger<INotificationSender<Email>> _logger;
+
+    public DummyEmailSender(ILogger<INotificationSender<Email>> logger)
+    {
+        _logger = logger;
+    }
+
     public Task SendAsync(Email message)
     {
-        // does nothing
+        var emailInfo = $"From: {message.Sender}, to: {message.Recipient}, subject: {message.Subject}";
+        _logger.LogInformation($"Dummy email sender: sending email: {emailInfo}");
         return Task.CompletedTask;
     }
 }

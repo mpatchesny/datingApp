@@ -7,5 +7,6 @@ namespace datingApp.Application.Notifications;
 
 public interface INotificationMessageGenerator<out T> where T : class, INotificationMessage
 {
+    public T Generate();
     public T Generate(string Recipient, Dictionary<string, string> kwargs);
 }

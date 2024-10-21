@@ -15,6 +15,10 @@ public class SMSGenerator : INotificationMessageGenerator<SMS>
         _bodyTemplate = options.Value.BodyTemplate;
     }
 
+    public SMS Generate()
+    {
+        throw new NotImplementedException();
+    }
     public SMS Generate(string Recipient, Dictionary<string, string> kwargs)
     {
         string recipient = Recipient;

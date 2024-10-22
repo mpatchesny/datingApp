@@ -43,7 +43,7 @@ internal sealed class AzureOutlookEmailSender : INotificationSender<Email>
         message.Subject = email.Subject;
         message.Body = new TextPart(TextFormat.Html)
         {
-            Text = email.Body
+            Text = email.HtmlBody
         };
 
         var client = new SmtpClient();

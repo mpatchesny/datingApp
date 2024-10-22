@@ -1,11 +1,11 @@
-@page
 @model datingApp.Infrastructure.Notifications.Views.Emails.AccessCode.AccessCodeEmailViewModel
 @{
-    ViewData["Title"] = "AccessCodeEmail";
+    var title = "AccessCodeEmail";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>@title</h1>
 
 <div>
-    
+    <p>@Model.AccessCode</p>
+    <p>@Model.ExpirationTime</p>
 </div>

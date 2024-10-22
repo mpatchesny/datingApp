@@ -6,7 +6,7 @@ using datingApp.Application.Notifications;
 using Microsoft.Extensions.Options;
 using RazorHtmlEmails.RazorClassLib.Services;
 
-namespace datingApp.Infrastructure.Notifications;
+namespace datingApp.Infrastructure.Notifications.Generators;
 
 public class EmailGeneratorFactory : IEmailGeneratorFactory
 {

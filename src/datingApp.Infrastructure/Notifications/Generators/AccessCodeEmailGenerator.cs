@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
 using RazorHtmlEmails.RazorClassLib.Services;
 
-namespace datingApp.Infrastructure.Notifications;
+namespace datingApp.Infrastructure.Notifications.Generators;
 
 public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
 {

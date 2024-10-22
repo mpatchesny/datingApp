@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Notifications;
 using Microsoft.Extensions.Options;
 
-namespace datingApp.Infrastructure.Notifications;
+namespace datingApp.Infrastructure.Notifications.Generators;
 
 public class SMSGenerator : INotificationMessageGenerator<SMS>
 {

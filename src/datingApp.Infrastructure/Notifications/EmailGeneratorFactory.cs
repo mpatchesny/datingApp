@@ -4,20 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Notifications;
 using Microsoft.Extensions.Options;
+using RazorHtmlEmails.RazorClassLib.Services;
 
 namespace datingApp.Infrastructure.Notifications;
 
 public class EmailGeneratorFactory : IEmailGeneratorFactory
 {
-    private IOptions<EmailGeneratorOptions> _emailGeneratorOptions { get; set; }
+    private readonly IOptions<EmailGeneratorOptions> _emailGeneratorOptions;
+    private readonly IRazorViewToStringRenderer _razorViewToStringRenderer;
 
-    public EmailGeneratorFactory(IOptions<EmailGeneratorOptions> emailGeneratorOptions)
+    public EmailGeneratorFactory(IOptions<EmailGeneratorOptions> emailGeneratorOptions, IRazorViewToStringRenderer razorViewToStringRenderer)
     {
         _emailGeneratorOptions = emailGeneratorOptions;
+        _razorViewToStringRenderer = razorViewToStringRenderer;
     }
 
     public INotificationMessageGenerator<Email> CreateAccessCodeEmail(string recipient, string accessCode, TimeSpan expirationTime)
     {
-        return new AccessCodeEmailGenerator(_emailGeneratorOptions, recipient, accessCode, expirationTime);
+        return new AccessCodeEmailGenerator(_razorViewToStringRenderer, _emailGeneratorOptions, recipient, accessCode, expirationTime);
     }
 }

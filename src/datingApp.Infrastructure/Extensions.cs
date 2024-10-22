@@ -26,6 +26,7 @@ using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using RazorHtmlEmails.RazorClassLib.Services;
 using Scrutor;
 
 namespace datingApp.Infrastructure;
@@ -53,6 +54,7 @@ public static class Extensions
         services.Configure<PhotoServiceOptions>(configuration.GetRequiredSection(PhotoServiceOptionsSectionName));
         services.Configure<EmailSenderOptions>(configuration.GetRequiredSection(EmailSenderOptionsSectionName));
         services.Configure<EmailGeneratorOptions>(configuration.GetRequiredSection(EmailGeneratorOptionsName));
+        services.AddSingleton<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
         services.AddSingleton<IEmailGeneratorFactory, EmailGeneratorFactory>();
         services.AddSingleton<INotificationSender<Email>, DummyEmailSender>();
 

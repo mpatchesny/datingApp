@@ -29,14 +29,14 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
     public Email Generate()
     {
         string subject = _subjectTemplate;
-        string body = _bodyTemplate;
-
         subject = subject.Replace("{access_code}", _accessCode);
         subject = subject.Replace("{expiration_time}", _expirationTime.Minutes.ToString());
+
+        string body = _bodyTemplate;
         body = body.Replace("{access_code}", _accessCode);
         body = body.Replace("{expiration_time}", _expirationTime.Minutes.ToString());
 
-        return new Email(_sender, _recipient, subject, body);
+        return new Email(_sender, _recipient, subject, body, body);
         throw new NotImplementedException();
     }
 }

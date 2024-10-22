@@ -46,7 +46,7 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
         textBody = textBody.Replace("{expiration_time}", _expirationTime.Minutes.ToString());
 
         var model = new AccessCodeEmailViewModel(_accessCode, _expirationTime);
-        var task = _razorViewToStringRenderer.RenderViewToStringAsync("/Views/Emails/AccessCode/AccessCodeEmail.cshtml", model);
+        var task = _razorViewToStringRenderer.RenderViewToStringAsync("/Notifications/Views/Emails/AccessCode/AccessCodeEmail.cshtml", model);
         task.Wait();
         var htmlBody = task.Result;
 

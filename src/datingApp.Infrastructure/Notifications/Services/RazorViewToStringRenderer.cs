@@ -15,7 +15,12 @@ using System.Threading.Tasks;
 namespace RazorHtmlEmails.RazorClassLib.Services;
 
 // Code from: https://github.com/aspnet/Entropy/blob/master/samples/Mvc.RenderViewToString/RazorViewToStringRenderer.cs
-public class RazorViewToStringRenderer : IRazorViewToStringRenderer
+internal interface IRazorViewToStringRenderer
+{
+    Task<Tuple<ViewDataDictionary, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model);
+}
+
+internal sealed class RazorViewToStringRenderer : IRazorViewToStringRenderer
 {
     private readonly IRazorViewEngine _viewEngine;
     private readonly ITempDataProvider _tempDataProvider;
@@ -87,9 +92,4 @@ public class RazorViewToStringRenderer : IRazorViewToStringRenderer
         };
         return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
     }
-
-}
-public interface IRazorViewToStringRenderer
-{
-    Task<Tuple<ViewDataDictionary, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model);
 }

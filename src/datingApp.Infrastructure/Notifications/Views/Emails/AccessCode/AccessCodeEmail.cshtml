@@ -2,11 +2,13 @@
 @model AccessCodeEmailViewModel
 
 @{
-    ViewData["EmailPreheaderText"] =  $"Your access code for DatingApp: {Model.AccessCode}";
+    ViewData["EmailSubject"] =  $"Your sign-in code for DatingApp: {Model.AccessCode}";
+    ViewData["EmailTextBody"] =  $"Your sign-in code for DatingApp: {Model.AccessCode}. Code expires in {ExpirationTime} minutes.";
+    ViewData["EmailPreheaderText"] =  $"Your sign-in for DatingApp: {Model.AccessCode}";
 }
 
 <h1 style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 25px; line-height: 30px; color: #333333; font-weight: normal;">
-    Your access code for DatingApp:
+    Your sign-in code for DatingApp:
 </h1>
 <br>
 <h1 style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 30px; letter-spacing: 5px; line-height: 30px; color: #333333; font-weight: bold;" align="center">
@@ -14,5 +16,5 @@
 </h1>
 <br>
 <p style="margin: 0;">
-    Access code will expire in @string.Format("{0:D1}", Model.ExpirationTime.Minutes) minutes.
+    Code will expire in @string.Format("{0:D1}", Model.ExpirationTime.Minutes) minutes.
 </p>

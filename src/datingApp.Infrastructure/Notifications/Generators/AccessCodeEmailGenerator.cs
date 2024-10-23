@@ -51,6 +51,5 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
         var htmlBody = task.Result;
 
         return new Email(_sender, _recipient, subject, textBody, htmlBody);
-        throw new NotImplementedException();
     }
 }

@@ -18,7 +18,7 @@ internal sealed class DummyEmailSender : INotificationSender<Email>
 
     public Task SendAsync(Email message)
     {
-        var emailInfo = $"From: {message.Sender}, to: {message.Recipient}, subject: {message.Subject}";
+        var emailInfo = $"From: {message.Sender}, to: {message.Recipient}, subject: {message.Subject}, HTML body: '{message.HtmlBody}'";
         _logger.LogInformation($"Dummy email sender: sending email: {emailInfo}");
         return Task.CompletedTask;
     }

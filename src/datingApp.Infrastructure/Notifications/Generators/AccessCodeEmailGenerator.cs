@@ -14,8 +14,6 @@ namespace datingApp.Infrastructure.Notifications.Generators;
 public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
 {
     private readonly string _sender;
-    private readonly string _bodyTemplate;
-    private readonly string _subjectTemplate;
     private readonly string _recipient;
     private readonly string _accessCode;
     private readonly TimeSpan _expirationTime;
@@ -28,8 +26,6 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
     {
         _razorViewToStringRenderer = razorViewToStringRenderer;
         _sender = emailGeneratorOptions.Value.SendFrom;
-        _subjectTemplate = emailGeneratorOptions.Value.SubjectTemplate;
-        _bodyTemplate = emailGeneratorOptions.Value.BodyTemplate;
         _recipient = recipient;
         _accessCode = accessCode;
         _expirationTime = expirationTime;

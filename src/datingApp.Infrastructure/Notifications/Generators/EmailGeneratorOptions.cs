@@ -8,6 +8,4 @@ namespace datingApp.Infrastructure.Notifications.Generators;
 public sealed class EmailGeneratorOptions
 {
     public string SendFrom { get; set; }
-    public string SubjectTemplate { get; set; }
-    public string BodyTemplate { get; set; }
 }

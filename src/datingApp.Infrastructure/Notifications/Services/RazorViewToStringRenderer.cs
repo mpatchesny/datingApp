@@ -31,7 +31,7 @@ public class RazorViewToStringRenderer : IRazorViewToStringRenderer
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<Tuple<ViewContext, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model)
+    public async Task<Tuple<ViewDataDictionary, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model)
     {
         var actionContext = GetActionContext();
         var view = FindView(actionContext, viewName);
@@ -54,7 +54,7 @@ public class RazorViewToStringRenderer : IRazorViewToStringRenderer
 
         await view.RenderAsync(viewContext);
 
-        return new Tuple<ViewContext, string>(viewContext, output.ToString());
+        return new Tuple<ViewDataDictionary, string>(viewContext.ViewData, output.ToString());
     }
 
     private IView FindView(ActionContext actionContext, string viewName)
@@ -91,5 +91,5 @@ public class RazorViewToStringRenderer : IRazorViewToStringRenderer
 }
 public interface IRazorViewToStringRenderer
 {
-    Task<Tuple<ViewContext, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model);
+    Task<Tuple<ViewDataDictionary, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model);
 }

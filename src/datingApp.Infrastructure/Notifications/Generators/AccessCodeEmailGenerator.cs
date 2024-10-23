@@ -37,9 +37,9 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
         var task = _razorViewToStringRenderer.RenderViewToStringAsync("/Notifications/Views/Emails/AccessCode/AccessCodeEmail.cshtml", model);
         task.Wait();
 
-        var viewContext = task.Result.Item1;
-        var subject = viewContext.TempData["EmailSubject"].ToString();
-        var textBody = viewContext.TempData["EmailTextBody"].ToString();
+        var viewData = task.Result.Item1;
+        var subject = viewData["EmailSubject"].ToString();
+        var textBody = viewData["EmailTextBody"].ToString();
         var htmlBody = task.Result.Item2;
 
         return new Email(_sender, _recipient, subject, textBody, htmlBody);

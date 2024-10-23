@@ -1,7 +1,8 @@
 @using datingApp.Infrastructure.Notifications.Views.Emails.AccessCode
 @model AccessCodeEmailViewModel
+
 @{
-    var title = "AccessCodeEmail";
+    ViewData["EmailPreheaderText"] =  $"Your access code for DatingApp: {Model.AccessCode}";
 }
 
 <h1 style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 25px; line-height: 30px; color: #333333; font-weight: normal;">

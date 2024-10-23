@@ -3,7 +3,7 @@
 
 @{
     ViewData["EmailSubject"] =  $"Your sign-in code for DatingApp: {Model.AccessCode}";
-    ViewData["EmailTextBody"] =  $"Your sign-in code for DatingApp: {Model.AccessCode}. Code expires in {ExpirationTime} minutes.";
+    ViewData["EmailTextBody"] =  $"Your sign-in code for DatingApp: {Model.AccessCode}. Code expires in {Model.ExpirationTime} minutes.";
     ViewData["EmailPreheaderText"] =  $"Your sign-in for DatingApp: {Model.AccessCode}";
 }
 

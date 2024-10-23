@@ -37,18 +37,14 @@ public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
 
     public Email Generate()
     {
-        var subject = _subjectTemplate;
-        subject = subject.Replace("{access_code}", _accessCode);
-        subject = subject.Replace("{expiration_time}", _expirationTime.Minutes.ToString());
-
-        var textBody = _bodyTemplate;
-        textBody = textBody.Replace("{access_code}", _accessCode);
-        textBody = textBody.Replace("{expiration_time}", _expirationTime.Minutes.ToString());
-
         var model = new AccessCodeEmailViewModel(_accessCode, _expirationTime);
         var task = _razorViewToStringRenderer.RenderViewToStringAsync("/Notifications/Views/Emails/AccessCode/AccessCodeEmail.cshtml", model);
         task.Wait();
-        var htmlBody = task.Result;
+
+        var viewContext = task.Result.Item1;
+        var subject = viewContext.TempData["EmailSubject"].ToString();
+        var textBody = viewContext.TempData["EmailTextBody"].ToString();
+        var htmlBody = task.Result.Item2;
 
         return new Email(_sender, _recipient, subject, textBody, htmlBody);
     }

@@ -11,7 +11,7 @@ using RazorHtmlEmails.RazorClassLib.Services;
 
 namespace datingApp.Infrastructure.Notifications.Generators;
 
-public class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
+internal sealed class AccessCodeEmailGenerator : INotificationMessageGenerator<Email>
 {
     private readonly string _sender;
     private readonly string _recipient;

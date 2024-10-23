@@ -8,7 +8,7 @@ using RazorHtmlEmails.RazorClassLib.Services;
 
 namespace datingApp.Infrastructure.Notifications.Generators;
 
-public class EmailGeneratorFactory : IEmailGeneratorFactory
+internal sealed class EmailGeneratorFactory : IEmailGeneratorFactory
 {
     private readonly IOptions<EmailGeneratorOptions> _emailGeneratorOptions;
     private readonly IRazorViewToStringRenderer _razorViewToStringRenderer;

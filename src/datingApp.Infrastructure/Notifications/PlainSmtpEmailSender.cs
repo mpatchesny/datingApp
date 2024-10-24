@@ -32,8 +32,8 @@ internal sealed class PlainSmtpEmailSender : INotificationSender<Email>
     public async Task SendAsync(Email email)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Dating App Notification Service", email.Sender));
-        message.To.Add(new MailboxAddress("datingApp user", email.Recipient));
+        message.From.Add(new MailboxAddress("Dating App Notifications", email.Sender));
+        message.To.Add(new MailboxAddress(email.Recipient, email.Recipient));
         message.Subject = email.Subject;
         message.Body = new TextPart(TextFormat.Html)
         {

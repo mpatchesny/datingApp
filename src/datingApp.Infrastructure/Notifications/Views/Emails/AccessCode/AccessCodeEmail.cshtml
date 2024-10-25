@@ -1,0 +1,21 @@
+@using datingApp.Infrastructure.Notifications.Views.Emails.AccessCode
+@model AccessCodeEmailViewModel
+
+@{
+    var expirationTimePretty = string.Format("{0:D1}", Model.ExpirationTime.Minutes);
+    ViewData["EmailSubject"] = $"Your sign-in code for DatingApp: {Model.AccessCode}";
+    ViewData["EmailTextBody"] = $"Your sign-in code for DatingApp: {Model.AccessCode}. Code expires in {expirationTimePretty} minutes.";
+    ViewData["EmailPreheaderText"] = $"Your sign-in for DatingApp: {Model.AccessCode}";
+}
+
+<h1 style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 22px; line-height: 30px; color: #333333; font-weight: normal;" align="center">
+    Your sign-in code for DatingApp:
+</h1>
+<br>
+<h1 style="margin: 0 0 10px 0; font-family: sans-serif; font-size: 30px; letter-spacing: 5px; line-height: 30px; color: #333333; font-weight: bold;" align="center">
+    @Model.AccessCode
+</h1>
+<br>
+<p style="margin: 0; font-family: sans-serif; font-size: 16px; color: #333333; font-weight: normal;" align="center">
+    Code will expire in @expirationTimePretty minutes.
+</p>

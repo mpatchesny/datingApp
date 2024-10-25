@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace datingApp.Application.Notifications;
+namespace datingApp.Infrastructure.Notifications.Generators;
 
 public sealed class EmailGeneratorOptions
 {
-    public string SubjectTemplate { get; set; }
-    public string BodyTemplate { get; set; }
+    public string SendFrom { get; set; }
 }

@@ -17,7 +17,7 @@ internal sealed class Authenticator : IAuthenticator
 {
     private record TokenOptions(
         string Issuer,
-        TimeSpan Expirty,
+        TimeSpan Expiry,
         string Audience,
         SigningCredentials Credentials
     );
@@ -92,7 +92,7 @@ internal sealed class Authenticator : IAuthenticator
         };
 
         var now = DateTime.UtcNow;
-        var expires = now.Add(options.Expirty);
+        var expires = now.Add(options.Expiry);
         var jwt = new JwtSecurityToken(
             options.Issuer,
             options.Audience,

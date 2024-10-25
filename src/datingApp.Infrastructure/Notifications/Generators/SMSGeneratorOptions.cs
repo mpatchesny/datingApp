@@ -1,4 +1,4 @@
-namespace datingApp.Application.Notifications;
+namespace datingApp.Infrastructure.Notifications.Generators;
 
 public sealed class SMSGeneratorOptions
 {

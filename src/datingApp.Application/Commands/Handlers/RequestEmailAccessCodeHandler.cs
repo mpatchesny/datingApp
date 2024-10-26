@@ -36,10 +36,11 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
             throw new NoEmailProvidedException();
         }
 
-        bool isValidEmailAddress = (new EmailAddressAttribute()).IsValid(command.Email);
-        if (!isValidEmailAddress)
+        var emailAddress = command.Email.Trim().ToLowerInvariant();
+        var emailAttrib = new EmailAddressAttribute();
+        if (!emailAttrib.IsValid(emailAddress))
         {
-            throw new InvalidEmailException(command.Email);
+            throw new InvalidEmailException($"invalid email address {emailAddress}");
         }
 
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());

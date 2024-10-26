@@ -94,6 +94,26 @@ public class RequestEmailAccessCodeHandlerTests
         _emailNotificationSender.Verify(mock => mock.SendAsync(emailMsg), Times.Once());
     }
 
+    [Fact]
+    public async Task given_invalid_email_RequestEmailAccessCode_throws_InvalidEmailException()
+    {
+        var code = CreateAccessCodeDto();
+        _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
+        _accessCodeStorage.Setup(m => m.Set(code));
+        _accessCodeGenerator.Setup(m => m.GenerateCode(It.IsAny<string>())).Returns(code);
+        _emailNotificationSender.Setup(m => m.SendAsync(It.IsAny<Email>()));
+        var emailMsg = new Email("sender", "receiver", "subject", "text body", "html body");
+        _emailMessageGenerator.Setup(m => m.Generate()).Returns(emailMsg);
+        _emailGeneratorFactory.Setup(m => m.CreateAccessCodeEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(_emailMessageGenerator.Object);
+
+        string invalidEmail = "testtest.com";
+        var command = new RequestEmailAccessCode(invalidEmail);
+        var handler = new RequestEmailAccessCodeHandler(_accessCodeGenerator.Object, _accessCodeStorage.Object, _emailNotificationSender.Object, _emailGeneratorFactory.Object);
+        var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidEmailException>(exception);
+    }
+
     private static AccessCodeDto CreateAccessCodeDto()
     {
         return new AccessCodeDto() {

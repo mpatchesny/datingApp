@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
@@ -7,8 +8,6 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Notifications;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
-using datingApp.Core.Entities;
-using datingApp.Core.Repositories;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace datingApp.Application.Commands.Handlers;
@@ -36,6 +35,14 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         {
             throw new NoEmailProvidedException();
         }
+
+        var emailAddress = command.Email.Trim().ToLowerInvariant();
+        var emailAttrib = new EmailAddressAttribute();
+        if (!emailAttrib.IsValid(emailAddress))
+        {
+            throw new InvalidEmailException(emailAddress);
+        }
+
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());
         _codeStorage.Set(code);
 

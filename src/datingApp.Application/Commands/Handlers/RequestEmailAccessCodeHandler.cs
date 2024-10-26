@@ -40,7 +40,7 @@ public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessC
         var emailAttrib = new EmailAddressAttribute();
         if (!emailAttrib.IsValid(emailAddress))
         {
-            throw new InvalidEmailException($"invalid email address {emailAddress}");
+            throw new InvalidEmailException(emailAddress);
         }
 
         var code = _codeGenerator.GenerateCode(command.Email.ToLowerInvariant());

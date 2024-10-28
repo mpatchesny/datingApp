@@ -20,7 +20,7 @@ public class AddMatchHandlerTests
     {
         var command = new AddMatch(Guid.NewGuid(), Guid.NewGuid());
         var matchRepository = new Mock<IMatchRepository>();
-        matchRepository.Setup(m => m.ExistsAsync(It.IsAny<UserId>(), It.IsAny<UserId>())).ReturnsAsync(true);
+        matchRepository.Setup(m => m.ExistsAsync(It.IsAny<UserId>(), It.IsAny<UserId>())).ReturnsAsync(false);
 
         var handler = new AddMatchHandler(matchRepository.Object);
         await handler.HandleAsync(command);

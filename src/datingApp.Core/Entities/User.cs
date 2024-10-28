@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 
@@ -16,7 +17,7 @@ public class User
     private static readonly Regex BadNameRegex = new Regex(@"[^a-zA-Z\s]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    public Guid Id { get; }
+    public UserId Id { get; }
     public string Phone { get; private set; }
     public string Email { get; private set; }
     public string Name { get; private set; }
@@ -31,7 +32,7 @@ public class User
     {
         // EF
     }
-    public User(Guid id, string phone, string email, string name, DateOnly dateOfBirth, UserSex sex,
+    public User(UserId id, string phone, string email, string name, DateOnly dateOfBirth, UserSex sex,
                 IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
     {
         Id = id;

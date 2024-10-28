@@ -20,7 +20,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }
@@ -28,7 +28,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && user.Id != query.UserId
+            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
             where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
             select new 
             {

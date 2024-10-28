@@ -41,7 +41,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         int preferredSex = (int) settings.PreferredSex;
 
         return _dbContext.Users
-                    .Where(candidate => candidate.Id != userId)
+                    .Where(candidate => !candidate.Id.Equals(userId))
                     .Where(candidate => !swipedCandidates.Contains(candidate.Id))
                     .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
@@ -51,7 +51,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(x => x.Settings.Location.Lon <= spatialSquare.EastLon)
                     .Where(x => x.Settings.Location.Lon >= spatialSquare.WestLon)
                     .AsNoTracking()
-                    .Select(candidate => candidate.Id);
+                    .Select(candidate => candidate.Id.Value);
     }
 
     private Task<List<User>> GetCandidatesAsync(IQueryable<Guid> initialCandidates)
@@ -74,7 +74,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }

@@ -46,7 +46,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }
@@ -59,7 +59,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && user.Id != query.UserId
+            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
             where newMessagesAndMatches.Contains(match.Id)
             select new 
             {

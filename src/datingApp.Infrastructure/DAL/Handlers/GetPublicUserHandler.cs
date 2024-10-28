@@ -32,16 +32,16 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
                             .AsNoTracking()
                             .Include(x => x.Settings)
                             .Include(x => x.Photos)
-                            .Where(x => x.Id == query.RequestByUserId || x.Id == query.RequestWhoUserId)
+                            .Where(x => x.Id.Equals(query.RequestByUserId) || x.Id.Equals(query.RequestWhoUserId))
                             .ToListAsync();
 
-        var requestedWho = users.FirstOrDefault(x => x.Id == query.RequestWhoUserId);
+        var requestedWho = users.FirstOrDefault(x => x.Id.Equals(query.RequestWhoUserId));
         if (requestedWho == null) 
         {
             return null;
         };
 
-        var requestedBy = users.FirstOrDefault(x => x.Id == query.RequestByUserId);
+        var requestedBy = users.FirstOrDefault(x => x.Id.Equals(query.RequestByUserId));
         if (requestedBy == null)
         {
             throw new UserNotExistsException(query.RequestByUserId);

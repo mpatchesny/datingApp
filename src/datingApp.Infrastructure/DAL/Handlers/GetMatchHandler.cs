@@ -30,7 +30,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             from user in _dbContext.Users.Include(u => u.Photos)
             where match.Id.Equals(query.MatchId)
             where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            where user.Id != query.UserId
+            where !user.Id.Equals(query.UserId)
             select new 
             {
                 Match = match,

@@ -23,7 +23,7 @@ internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, Priv
                                 .AsNoTracking()
                                 .Include(x => x.Settings)
                                 .Include(x => x.Photos)
-                                .FirstOrDefaultAsync(x => x.Id == query.UserId);
+                                .FirstOrDefaultAsync(x => x.Id.Equals(query.UserId));
 
         if (user == null)
         {

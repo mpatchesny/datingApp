@@ -30,10 +30,10 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates that matches sex, age and are within approx range of user who requested
         // we want candidates that are different from user who requested
         var now = DateTime.UtcNow;
-        DateOnly minDob = new DateOnly(now.Year - settings.PreferredAgeTo, now.Month, now.Day);
-        DateOnly maxDob = new DateOnly(now.Year - settings.PreferredAgeFrom, now.Month, now.Day);
+        DateOnly minDob = new DateOnly(now.Year - settings.PreferredAge.To, now.Month, now.Day);
+        DateOnly maxDob = new DateOnly(now.Year - settings.PreferredAge.From, now.Month, now.Day);
 
-        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Lat, settings.Lon, settings.PreferredMaxDistance + 5);
+        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Location.Lat, settings.Location.Lon, settings.PreferredMaxDistance + 5);
 
         var swipedCandidates = 
             _dbContext.Swipes.Where(s => s.SwipedById == userId).Select(x => x.SwipedWhoId);
@@ -46,10 +46,10 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
                     .Where(candidate => candidate.DateOfBirth <= maxDob)
-                    .Where(x => x.Settings.Lat <= spatialSquare.NorthLat)
-                    .Where(x => x.Settings.Lat >= spatialSquare.SouthLat)
-                    .Where(x => x.Settings.Lon <= spatialSquare.EastLon)
-                    .Where(x => x.Settings.Lon >= spatialSquare.WestLon)
+                    .Where(x => x.Settings.Location.Lat <= spatialSquare.NorthLat)
+                    .Where(x => x.Settings.Location.Lat >= spatialSquare.SouthLat)
+                    .Where(x => x.Settings.Location.Lon <= spatialSquare.EastLon)
+                    .Where(x => x.Settings.Location.Lon >= spatialSquare.WestLon)
                     .AsNoTracking()
                     .Select(candidate => candidate.Id);
     }
@@ -80,7 +80,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         }
 
         var settings = await _dbContext.UserSettings
-                                .Where(x => x.UserId == query.UserId)
+                                .Where(x => x.UserId.Equals(query.UserId))
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync();
         if (settings == null) return null;
@@ -90,7 +90,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
         // we want candidates within range of user who requested
         return candidates
-                .Select(u => u.AsPublicDto(_spatial.CalculateDistanceInKms(settings.Lat, settings.Lon, u.Settings.Lat, u.Settings.Lon)))
+                .Select(u => u.AsPublicDto(_spatial.CalculateDistanceInKms(settings.Location.Lat, settings.Location.Lon, u.Settings.Location.Lat, u.Settings.Location.Lon)))
                 .Where(u => u.DistanceInKms <= settings.PreferredMaxDistance)
                 .Take(query.HowMany)
                 .ToList();

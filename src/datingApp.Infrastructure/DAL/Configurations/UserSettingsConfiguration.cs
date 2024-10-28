@@ -17,17 +17,17 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
             .IsRequired();
         builder.Property(x => x.PreferredMaxDistance)
             .IsRequired();
-        builder.Property(x => x.PreferredAgeFrom)
+        builder.Property(x => x.PreferredAge.From)
             .IsRequired();
-        builder.Property(x => x.PreferredAgeTo)
+        builder.Property(x => x.PreferredAge.To)
             .IsRequired();
         builder.Property(x => x.PreferredSex)
             .IsRequired();
-        builder.Property(x => x.Lat)
+        builder.Property(x => x.Location.Lat)
             .IsRequired();
-        builder.Property(x => x.Lon)
+        builder.Property(x => x.Location.Lon)
             .IsRequired();
 
-        builder.HasIndex(x => new {x.Lat, x.Lon});
+        builder.HasIndex(x => new {x.Location.Lat, x.Location.Lon});
     }
 }

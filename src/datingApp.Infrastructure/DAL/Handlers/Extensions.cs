@@ -72,11 +72,11 @@ internal static class Extensions
         {
             UserId = entity.UserId,
             PreferredSex = (int) entity.PreferredSex,
-            PreferredAgeFrom = entity.PreferredAgeFrom,
-            PreferredAgeTo = entity.PreferredAgeTo,
+            PreferredAgeFrom = entity.PreferredAge.From,
+            PreferredAgeTo = entity.PreferredAge.To,
             PreferredMaxDistance = entity.PreferredMaxDistance,
-            Lat = entity.Lat,
-            Lon = entity.Lon
+            Lat = entity.Location.Lat,
+            Lon = entity.Location.Lon
         };
     }
 }

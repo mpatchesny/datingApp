@@ -2,6 +2,7 @@ using System;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 using Xunit;
 
 namespace datingApp.Tests.Unit;
@@ -235,6 +236,6 @@ public class UserTests
     private readonly UserSettings _properUserSettings;
     public UserTests()
     {
-        _properUserSettings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 20, 45.5, 45.5);
+        _properUserSettings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
     }
 }

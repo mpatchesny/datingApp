@@ -60,15 +60,15 @@ public class UserSettings
     {
         if (preferredAgeFrom < 18 | preferredAgeFrom > 100)
         {
-            throw new InvalidDiscoveryAgeException("minimum discover age must be between 18 and 100");
+            throw new InvalidDiscoveryAgeException("minimum preferred age must be between 18 and 100");
         }
         else if (preferredAgeTo < 18 | preferredAgeTo > 100)
         {
-            throw new InvalidDiscoveryAgeException("maximum discover age must be between 18 and 100");
+            throw new InvalidDiscoveryAgeException("maximum preferred age must be between 18 and 100");
         }
         else if (preferredAgeFrom > preferredAgeTo)
         {
-            throw new InvalidDiscoveryAgeException("minimum discover age cannot be larger than maximum discover age");
+            throw new InvalidDiscoveryAgeException("minimum preferred age cannot be larger than maximum preferred age");
         }
         PreferredAgeFrom = preferredAgeFrom;
         PreferredAgeTo = preferredAgeTo;

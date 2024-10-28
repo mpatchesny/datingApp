@@ -6,7 +6,7 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.ValueObjects;
 
-public class Location
+public sealed record Location
 {
     public double Lat { get; }
     public double Lon { get; }

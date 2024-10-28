@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Core.ValueObjects;
 
-public class UserId
+public sealed record UserId
 {
     public Guid Value { get; }
 

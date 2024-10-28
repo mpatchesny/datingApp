@@ -6,7 +6,7 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Core.ValueObjects;
 
-public class PreferredMaxDistance
+public sealed record PreferredMaxDistance
 {
     public int Value { get; }
 

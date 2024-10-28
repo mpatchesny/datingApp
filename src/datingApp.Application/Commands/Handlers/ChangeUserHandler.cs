@@ -8,6 +8,7 @@ using datingApp.Application.Security;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Application.Commands.Handlers;
 
@@ -47,21 +48,23 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
             user.ChangeDateOfBirth(dob);
         }
 
-        if (command.DiscoverAgeFrom != null && command.DiscoverAgeTo != null)
+        if (command.PreferredAgeFrom != null && command.PreferredAgeTo != null)
         {
-            user.Settings.ChangePreferredAge((int) command.DiscoverAgeFrom, (int) command.DiscoverAgeTo);
+            var newPreferredAge = new PreferredAge((int) command.PreferredAgeFrom,(int) command.PreferredAgeTo);
+            user.Settings.ChangePreferredAge(newPreferredAge);
         }
-        if (command.DiscoverRange != null) 
+        if (command.PreferredRange != null) 
         {
-            user.Settings.ChangePreferredMaxDistance((int) command.DiscoverRange);
+            user.Settings.ChangePreferredMaxDistance((int) command.PreferredRange);
         }
-        if (command.DiscoverSex != null) 
+        if (command.PreferredSex != null) 
         {
-            user.Settings.ChangePreferredSex((PreferredSex) command.DiscoverSex);
+            user.Settings.ChangePreferredSex((PreferredSex) command.PreferredSex);
         }
         if (command.Lat != null && command.Lon != null)
         {
-            user.Settings.ChangeLocation((double) command.Lat, (double) command.Lon);
+            var newLocation = new Location((double) command.Lat, (double) command.Lon);
+            user.Settings.ChangeLocation(newLocation);
         }
 
         await _userRepository.UpdateAsync(user);

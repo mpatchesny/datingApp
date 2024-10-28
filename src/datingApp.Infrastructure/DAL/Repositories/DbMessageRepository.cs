@@ -23,7 +23,7 @@ internal sealed class DbMessageRepository : IMessageRepository
 
     public async Task<Message> GetByIdAsync(Guid messageId)
     {
-        return await _dbContext.Messages.SingleOrDefaultAsync(x => x.Id == messageId);
+        return await _dbContext.Messages.SingleOrDefaultAsync(x => x.Id.Equals(messageId));
     }
 
     public async Task AddAsync(Message message)
@@ -46,7 +46,7 @@ internal sealed class DbMessageRepository : IMessageRepository
 
     public async Task DeleteAsync(Guid messageId)
     {
-        var message = await _dbContext.Messages.FirstAsync(x => x.Id == messageId);
+        var message = await _dbContext.Messages.FirstAsync(x => x.Id.Equals(messageId));
         _dbContext.Messages.Remove(message);
         await _dbContext.SaveChangesAsync();
     }
@@ -54,7 +54,7 @@ internal sealed class DbMessageRepository : IMessageRepository
     public async Task<IEnumerable<Message>> GetPreviousNotDisplayedMessages(Guid messageId)
     {
         var condition = _dbContext.Messages
-                                .Where(x => x.Id == messageId)
+                                .Where(x => x.Id.Equals(messageId))
                                 .Select(x => new {
                                     x.CreatedAt,
                                     x.MatchId

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore.Storage;
 using Xunit.Sdk;
 
@@ -19,7 +20,7 @@ internal static class IntegrationTestHelper
         if (email == null) email = "test_" + Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
 
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, 18, 100, 100, 45.5, 45.5);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, new PreferredAge(18, 100), 100, new Location(45.5, 45.5));
         var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         await database.DbContext.Users.AddAsync(user);

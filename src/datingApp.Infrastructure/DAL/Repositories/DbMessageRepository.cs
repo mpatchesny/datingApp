@@ -18,7 +18,7 @@ internal sealed class DbMessageRepository : IMessageRepository
     
     public async Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId)
     {
-        return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
+        return await _dbContext.Messages.Where(x => x.MatchId.Equals(matchId)).ToListAsync();
     }
 
     public async Task<Message> GetByIdAsync(Guid messageId)

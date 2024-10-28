@@ -32,7 +32,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                         .AsNoTracking()
                         .Where(x => usersMatches.Contains(x.MatchId))
                         .Where(x => x.CreatedAt >= lastActivityTime)
-                        .Select(x => x.MatchId);
+                        .Select(x => x.MatchId.Value);
     }
 
     private IQueryable<Guid> GetMatchesPastGivenActivityTime(IQueryable<Guid> usersMatches, DateTime lastActivityTime)

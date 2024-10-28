@@ -23,7 +23,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         return _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
-                        .Select(x => x.Id);
+                        .Select(x => x.Id.Value);
     }
 
     private IQueryable<Guid> GetMessagesPastGivenActivityTime(IQueryable<Guid> usersMatches, DateTime lastActivityTime)
@@ -41,7 +41,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                         .AsNoTracking()
                         .Where(x => usersMatches.Contains(x.Id))
                         .Where(x => x.CreatedAt >= lastActivityTime)
-                        .Select(x => x.Id);
+                        .Select(x => x.Id.Value);
     }
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)

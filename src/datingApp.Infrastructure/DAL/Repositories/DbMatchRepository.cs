@@ -25,7 +25,7 @@ internal sealed class DbMatchRepository : IMatchRepository
     }
     public async Task<Match> GetByIdAsync(Guid matchId)
     {
-        return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id == matchId);
+        return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id.Equals(matchId));
     }
 
     public async Task<bool> ExistsAsync(Guid userId1, Guid userId2)

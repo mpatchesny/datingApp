@@ -28,7 +28,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where match.Id == query.MatchId
+            where match.Id.Equals(query.MatchId)
             where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
             where user.Id != query.UserId
             select new 

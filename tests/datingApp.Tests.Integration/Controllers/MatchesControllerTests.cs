@@ -27,7 +27,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<MatchDto>($"matches/{match.Id}");
-        Assert.Equal(match.Id, response.Id);
+        Assert.True(match.Id.Equals(response.Id));
     }
 
     [Fact]

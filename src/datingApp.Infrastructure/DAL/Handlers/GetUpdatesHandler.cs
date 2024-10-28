@@ -22,7 +22,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
     {
         return _dbContext.Matches
                         .AsNoTracking()
-                        .Where(x => x.UserId1 == userId || x.UserId2 == userId)
+                        .Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
                         .Select(x => x.Id);
     }
 
@@ -59,7 +59,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
+            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && user.Id != query.UserId
             where newMessagesAndMatches.Contains(match.Id)
             select new 
             {
@@ -77,7 +77,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 {
                     Id = x.Match.Id,
                     User = x.User.AsPublicDto(0),
-                    IsDisplayed = (x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
+                    IsDisplayed = (x.Match.UserId1.Equals(query.UserId)) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
                     Messages =  x.Match.Messages.Where(m => m.CreatedAt >= query.LastActivityTime).OrderBy(m => m.CreatedAt).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });

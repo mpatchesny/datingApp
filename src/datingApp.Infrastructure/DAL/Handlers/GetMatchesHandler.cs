@@ -28,8 +28,8 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
-            where match.UserId1 == query.UserId || match.UserId2 == query.UserId
+            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && user.Id != query.UserId
+            where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
             select new 
             {
                 Match = match,
@@ -50,7 +50,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 {
                     Id = x.Match.Id,
                     User = x.User.AsPublicDto(0),
-                    IsDisplayed = (x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
+                    IsDisplayed = (x.Match.UserId1.Equals(query.UserId)) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
                     Messages =  x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });

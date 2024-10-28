@@ -50,8 +50,8 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
         // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(m => (m.UserId1 == requestedBy.Id || m.UserId2 == requestedBy.Id) && 
-                            (m.UserId1 == requestedWho.Id || m.UserId2 == requestedWho.Id));
+                        .FirstOrDefaultAsync(m => (m.UserId1.Equals(requestedBy.Id) || m.UserId2.Equals(requestedBy.Id)) && 
+                            (m.UserId1.Equals(requestedWho.Id) || m.UserId2.Equals(requestedWho.Id)));
 
         var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)

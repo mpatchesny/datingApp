@@ -17,7 +17,7 @@ internal sealed class DbMatchRepository : IMatchRepository
     }
     public async Task<IEnumerable<Match>> GetByUserIdAsync(Guid userId)
     {
-        return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId)
+        return await _dbContext.Matches.Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
                         .Include(match => match.Messages
                                 .OrderByDescending(message => message.CreatedAt)
                                 .Take(1))
@@ -31,7 +31,7 @@ internal sealed class DbMatchRepository : IMatchRepository
     public async Task<bool> ExistsAsync(Guid userId1, Guid userId2)
     {
         return await _dbContext.Matches
-                    .AnyAsync(x => x.UserId1 == userId1 && x.UserId2 == userId2);
+                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
     public async Task AddAsync(Match match)

@@ -32,7 +32,7 @@ public class Match
         CreatedAt = createdAt;
     }
 
-    public void SetDisplayed(Guid userId)
+    public void SetDisplayed(UserId userId)
     {
         if (UserId1.Equals(userId))
         {

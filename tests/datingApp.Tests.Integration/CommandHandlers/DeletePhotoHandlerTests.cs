@@ -33,7 +33,7 @@ public class DeletePhotoHandlerTests : IDisposable
         var command = new DeletePhoto(photo.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == photo.Id));
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id.Equals(photo.Id)));
         _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 

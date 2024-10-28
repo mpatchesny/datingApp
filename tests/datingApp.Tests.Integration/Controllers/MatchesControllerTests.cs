@@ -123,7 +123,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<MessageDto>($"matches/{match.Id}/messages/{message.Id}");
-        Assert.Equal(message.Id, response.Id);
+        Assert.True(message.Id.Equals(response.Id));
     }
 
     [Fact]

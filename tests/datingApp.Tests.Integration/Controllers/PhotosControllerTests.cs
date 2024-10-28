@@ -28,7 +28,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         var response = await Client.GetFromJsonAsync<PhotoDto>($"photos/{photo.Id}");
         Assert.NotNull(response);
-        Assert.Equal(photo.Id, response.Id);
+        Assert.True(photo.Id.Equals(response.Id));
     }
 
     [Fact]

@@ -16,6 +16,7 @@ public class Photo
     public PhotoUrl Url { get; private set; }
     public Oridinal Oridinal { get; private set; }
     public string Extension { get { return Url.Extension; } }
+
     private Photo()
     {
         // EF

@@ -18,7 +18,7 @@ internal sealed class DbPhotoRepository : IPhotoRepository
 
     public async Task<Photo> GetByIdAsync(Guid photoId)
     {
-        return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
+        return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id.Equals(photoId));
     }
 
     public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)

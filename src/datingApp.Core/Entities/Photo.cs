@@ -11,7 +11,7 @@ namespace datingApp.Core.Entities;
 
 public class Photo
 {
-    public Guid Id { get; }
+    public PhotoId Id { get; }
     public UserId UserId { get; private set; }
     public string Url { get; private set; }
     public int Oridinal { get; private set; }
@@ -20,7 +20,7 @@ public class Photo
     {
         // EF
     }
-    public Photo(Guid id, UserId userId, string url, int oridinal)
+    public Photo(PhotoId id, UserId userId, string url, int oridinal)
     {
         Id = id;
         UserId = userId;

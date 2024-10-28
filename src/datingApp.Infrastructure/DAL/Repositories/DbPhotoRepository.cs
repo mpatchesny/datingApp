@@ -24,7 +24,7 @@ internal sealed class DbPhotoRepository : IPhotoRepository
     public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)
     {
         return await _dbContext.Photos
-                    .Where(x=> x.UserId == userId)
+                    .Where(x=> x.UserId.Equals(userId))
                     .OrderBy(p => p.Oridinal)
                     .ToListAsync();
     }

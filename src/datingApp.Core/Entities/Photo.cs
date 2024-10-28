@@ -5,13 +5,14 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 
 public class Photo
 {
     public Guid Id { get; }
-    public Guid UserId { get; private set; }
+    public UserId UserId { get; private set; }
     public string Url { get; private set; }
     public int Oridinal { get; private set; }
     public string Extension { get { return GetFileExtensionFromUrl(Url); } }
@@ -19,7 +20,7 @@ public class Photo
     {
         // EF
     }
-    public Photo(Guid id, Guid userId, string url, int oridinal)
+    public Photo(Guid id, UserId userId, string url, int oridinal)
     {
         Id = id;
         UserId = userId;

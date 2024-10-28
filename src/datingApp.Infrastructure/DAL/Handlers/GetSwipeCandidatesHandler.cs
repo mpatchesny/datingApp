@@ -36,7 +36,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Location.Lat, settings.Location.Lon, settings.PreferredMaxDistance + 5);
 
         var swipedCandidates = 
-            _dbContext.Swipes.Where(s => s.SwipedById == userId).Select(x => x.SwipedWhoId);
+            _dbContext.Swipes.Where(s => s.SwipedById.Equals(userId)).Select(x => x.SwipedWhoId.Value);
 
         int preferredSex = (int) settings.PreferredSex;
 
@@ -62,7 +62,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Select(x => new 
                         {
                             User = x,
-                            LikesCount = _dbContext.Swipes.Where(s => s.SwipedWhoId == x.Id && s.Like == Like.Like).Count()
+                            LikesCount = _dbContext.Swipes.Where(s => s.SwipedWhoId.Equals(x.Id) && s.Like == Like.Like).Count()
                         })
                     .OrderByDescending(x => x.LikesCount)
                     .Select(x => x.User)

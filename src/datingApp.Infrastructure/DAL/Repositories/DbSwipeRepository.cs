@@ -24,12 +24,12 @@ internal sealed class DbSwipeRepository : ISwipeRepository
 
     public async Task<Swipe> GetBySwipedBy(Guid swipedById, Guid swipedWhoId)
     {
-        var swipe = await _dbContext.Swipes.SingleOrDefaultAsync(x => x.SwipedById == swipedById & x.SwipedWhoId == swipedWhoId);
+        var swipe = await _dbContext.Swipes.SingleOrDefaultAsync(x => x.SwipedById.Equals(swipedById) & x.SwipedWhoId.Equals(swipedWhoId));
         return swipe;
     }
 
     public async Task<bool> SwipeExists(Guid swipedById, Guid swipedWhoId)
     {
-        return await _dbContext.Swipes.AnyAsync(x => x.SwipedById == swipedById & x.SwipedWhoId == swipedWhoId);
+        return await _dbContext.Swipes.AnyAsync(x => x.SwipedById.Equals(swipedById) & x.SwipedWhoId.Equals(swipedWhoId));
     }
 }

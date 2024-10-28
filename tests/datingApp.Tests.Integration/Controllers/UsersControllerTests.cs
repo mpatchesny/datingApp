@@ -235,7 +235,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user2.Id}");
         Assert.NotNull(response);
-        Assert.Equal(user2.Id, response.Id);
+        Assert.Equal(user2.Id.Value, response.Id);
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/me");
         Assert.NotNull(response);
-        Assert.Equal(user.Id, response.Id);
+        Assert.Equal(user.Id.Value, response.Id);
     }
 
     [Fact]

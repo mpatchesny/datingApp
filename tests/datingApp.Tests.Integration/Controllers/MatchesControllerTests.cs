@@ -244,7 +244,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         
         var messageDto = await response.Content.ReadFromJsonAsync<MessageDto>();
-        Assert.Equal(user1.Id, messageDto.SendFromId);
+        Assert.Equal(user1.Id.Value, messageDto.SendFromId);
         Assert.Equal("test", messageDto.Text);
     }
 
@@ -264,7 +264,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var messageDto = await response.Content.ReadFromJsonAsync<MessageDto>();
-        Assert.Equal(user1.Id, messageDto.SendFromId);
+        Assert.Equal(user1.Id.Value, messageDto.SendFromId);
         Assert.Equal("test", messageDto.Text);
     }
 

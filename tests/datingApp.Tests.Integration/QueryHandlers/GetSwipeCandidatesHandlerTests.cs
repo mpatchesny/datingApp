@@ -158,9 +158,9 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
         Assert.NotEmpty(candidates);
-        Assert.Equal(candidates.ToList()[0].Id, user5.Id);
-        Assert.Equal(candidates.ToList()[1].Id, user4.Id);
-        Assert.Equal(candidates.ToList()[2].Id, user3.Id);
+        Assert.Equal(candidates.ToList()[0].Id, user5.Id.Value);
+        Assert.Equal(candidates.ToList()[1].Id, user4.Id.Value);
+        Assert.Equal(candidates.ToList()[2].Id, user3.Id.Value);
     }
 
     [Fact]

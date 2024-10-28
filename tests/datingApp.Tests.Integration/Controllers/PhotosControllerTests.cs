@@ -59,7 +59,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
-        Assert.Equal(user.Id, dto.UserId);
+        Assert.Equal(user.Id.Value, dto.UserId);
     }
 
     [Fact]

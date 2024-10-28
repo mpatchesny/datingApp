@@ -1,6 +1,7 @@
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL;
 using datingApp.Infrastructure.DAL.Repositories;
@@ -67,7 +68,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task delete_nonexisting_user_throws_exception()
     {
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
@@ -77,7 +78,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task add_user_should_succeed()
     {
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
@@ -90,7 +91,7 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_id_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var settings = new UserSettings(user.Id, PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var settings = new UserSettings(user.Id, PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
@@ -101,7 +102,7 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_email_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(settings.UserId, "000000000", user.Email, "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
@@ -112,7 +113,7 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_phone_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, 18, 20, 50, 45.5, 45.5);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(settings.UserId, user.Phone, "test@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));

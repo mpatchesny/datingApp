@@ -20,7 +20,7 @@ public class User
     public UserSex Sex { get; private set; }
     public Job Job { get; private set; }
     public Bio Bio { get; private set; }
-    public IEnumerable<Photo> Photos { get; private set; } = new List<Photo>();
+    public ICollection<Photo> Photos { get; private set; } = new List<Photo>();
     public UserSettings Settings { get; private set; }
 
     private User()
@@ -29,7 +29,7 @@ public class User
     }
 
     public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
-                IEnumerable<Photo> photos, UserSettings settings, Job job=null, Bio bio=null)
+                ICollection<Photo> photos, UserSettings settings, Job job=null, Bio bio=null)
     {
         if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
         if (settings == null) throw new UserSettingsIsNullException();
@@ -64,5 +64,20 @@ public class User
     public void ChangeJob(Job job)
     {
         Job = job;
+    }
+
+    public void AddPhoto(Photo photo)
+    {
+        if (Photos.Count() >= 6)
+        {
+            throw new UserPhotoLimitException();
+        }
+        Photos.Add(photo);
+    }
+
+    public void RemovePhoto(PhotoId photoId)
+    {
+        var photo = Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo != null) Photos.Remove(photo);
     }
 }

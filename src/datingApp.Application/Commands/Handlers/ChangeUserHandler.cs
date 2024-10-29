@@ -41,11 +41,11 @@ public class ChangeUserHandler : ICommandHandler<ChangeUser>
         if (command.Job != null) user.ChangeJob(command.Job);
         if (command.DateOfBirth != null)
         {
-            if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
+            if (!DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly newDateOfBirth))
             {
                 throw new InvalidDateOfBirthFormatException(command.DateOfBirth);
             }
-            user.ChangeDateOfBirth(dob);
+            user.ChangeDateOfBirth(newDateOfBirth);
         }
 
         if (command.PreferredAgeFrom != null && command.PreferredAgeTo != null)

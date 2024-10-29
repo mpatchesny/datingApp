@@ -246,7 +246,7 @@ public class UserTests
     }
 
     [Fact]
-    public void remove_photo_removess_photo_to_user_Photo_collection()
+    public void remove_photo_removes_photo_from_user_Photo_collection()
     {
         var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0); 
         var photos = new List<Photo>{ photo };
@@ -258,7 +258,7 @@ public class UserTests
     }
 
     [Fact]
-    public void given_user_reached_photo_add_photo_throws_UserPhotoLimitException()
+    public void given_user_reached_photo_limit_add_photo_throws_UserPhotoLimitException()
     {
         var photos = new List<Photo>();
         for (int i = 0; i < 6; i++)

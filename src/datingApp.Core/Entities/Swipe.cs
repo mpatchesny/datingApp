@@ -15,6 +15,11 @@ public class Swipe
     public Like Like { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
+    private Swipe()
+    {
+        // EF
+    }
+
     public Swipe(UserId swipedById, UserId swipedWhoId, Like like, DateTime createdAt)
     {
         if (swipedById == swipedWhoId) throw new InvalidSwipeException();

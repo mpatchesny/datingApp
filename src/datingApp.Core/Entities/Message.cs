@@ -16,6 +16,11 @@ public class Message
     public bool IsDisplayed { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
+    private Message()
+    {
+        // EF
+    }
+
     public Message(MessageId id, MatchId matchId, UserId sendFromId, MessageText text, bool isDisplayed, DateTime createdAt)
     {
         Id = id;

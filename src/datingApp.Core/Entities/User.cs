@@ -73,6 +73,9 @@ public class User
         {
             throw new UserPhotoLimitException();
         }
+
+        if (Photos.Any(p => p.Id == photo.Id)) return;
+
         Photos.Add(photo);
     }
 

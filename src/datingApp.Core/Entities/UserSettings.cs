@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
+using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace datingApp.Core.Entities;
 
@@ -15,6 +16,21 @@ public class UserSettings
     public PreferredAge PreferredAge { get; private set; }
     public PreferredMaxDistance PreferredMaxDistance { get; private set; }
     public Location Location { get; private set; }
+
+    private UserSettings()
+    {
+        // EF
+    }
+
+    private UserSettings(UserId userId, PreferredSex preferredSex, int preferredAgeFrom, int preferredAgeTo, PreferredMaxDistance preferredMaxDistance, double lat, double lon)
+    {
+        // EF
+        UserId = userId;
+        SetPreferredSex(preferredSex);
+        PreferredAge = new PreferredAge(preferredAgeFrom, preferredAgeTo);
+        PreferredMaxDistance = preferredMaxDistance;
+        Location = new Location(lat, lon);
+    }
 
     public UserSettings(UserId userId, PreferredSex preferredSex, PreferredAge preferredAge, PreferredMaxDistance preferredMaxDistance, Location location)
     {

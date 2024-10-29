@@ -22,16 +22,6 @@ public class UserSettings
         // EF
     }
 
-    private UserSettings(UserId userId, PreferredSex preferredSex, int preferredAgeFrom, int preferredAgeTo, PreferredMaxDistance preferredMaxDistance, double lat, double lon)
-    {
-        // EF
-        UserId = userId;
-        SetPreferredSex(preferredSex);
-        PreferredAge = new PreferredAge(preferredAgeFrom, preferredAgeTo);
-        PreferredMaxDistance = preferredMaxDistance;
-        Location = new Location(lat, lon);
-    }
-
     public UserSettings(UserId userId, PreferredSex preferredSex, PreferredAge preferredAge, PreferredMaxDistance preferredMaxDistance, Location location)
     {
         UserId = userId;

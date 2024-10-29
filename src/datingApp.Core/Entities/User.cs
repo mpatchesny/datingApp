@@ -18,8 +18,8 @@ public class User
     public Name Name { get; private set; }
     public DateOfBirth DateOfBirth { get; private set; }
     public UserSex Sex { get; private set; }
-    public string Job { get; private set; }
-    public string Bio { get; private set; }
+    public Job Job { get; private set; }
+    public Bio Bio { get; private set; }
     public IEnumerable<Photo> Photos { get; private set; } = new List<Photo>();
     public UserSettings Settings { get; private set; }
 
@@ -29,18 +29,20 @@ public class User
     }
 
     public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
-                IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
+                IEnumerable<Photo> photos, UserSettings settings, Job job=null, Bio bio=null)
     {
         Id = id;
         Phone = phone;
         Email = email;
         Name = name;
-        SetSex(sex);
+        if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
+        Sex = sex;
         DateOfBirth = dateOfBirth;
         Photos = photos;
-        SetSettings(settings);
-        SetJob(job);
-        SetBio(bio);
+        if (settings == null) throw new UserSettingsIsNullException();
+        Settings = settings;
+        Job = job;
+        Bio = bio;
     }
 
     public int GetAge()
@@ -53,49 +55,13 @@ public class User
         DateOfBirth = dateOfBirth;
     }
 
-    public void ChangeBio(string bio)
+    public void ChangeBio(Bio bio)
     {
-        SetBio(bio);
-    }
-
-    public void ChangeJob(string job)
-    {
-        SetJob(job);
-    }
-
-    #region Setters
-    private void SetSettings(UserSettings settings)
-    {
-        if (settings == null) throw new UserSettingsIsNullException();
-        if (Settings == settings) return;
-        Settings = settings;
-    }
-    private void SetJob(string job)
-    {
-        if (job.Length > 50)
-        {
-            throw new JobTooLongException();
-        }
-        if (Job == job) return;
-        Job = job;
-    }
-    private void SetBio(string bio)
-    {
-        if (bio.Length > 400)
-        {
-            throw new BioTooLongException();
-        }
-        if (Bio == bio) return;
         Bio = bio;
     }
-    private void SetSex(UserSex sex)
+
+    public void ChangeJob(Job job)
     {
-        if (!Enum.IsDefined(typeof(UserSex), sex))
-        {
-            throw new InvalidUserSexException();
-        }
-        if (Sex == sex) return;
-        Sex = sex;
+        Job = job;
     }
-    #endregion
 }

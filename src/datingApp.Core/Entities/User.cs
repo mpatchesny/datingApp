@@ -40,7 +40,7 @@ public class User
         Name = name;
         Sex = sex;
         DateOfBirth = dateOfBirth;
-        Photos = photos;
+        Photos = photos ?? new List<Photo>();
         Settings = settings;
         Job = job ?? new Job("");
         Bio = bio ?? new Bio("");

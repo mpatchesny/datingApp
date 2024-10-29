@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,20 +15,15 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
     {
         builder.HasKey(x => x.UserId);
         builder.Property(x => x.UserId)
+            .HasConversion(x => x.Value, x => new UserId(x))
             .IsRequired();
         builder.Property(x => x.PreferredMaxDistance)
-            .IsRequired();
-        builder.Property(x => x.PreferredAge.From)
-            .IsRequired();
-        builder.Property(x => x.PreferredAge.To)
+            .HasConversion(x => x.Value, x => new PreferredMaxDistance(x))
             .IsRequired();
         builder.Property(x => x.PreferredSex)
             .IsRequired();
-        builder.Property(x => x.Location.Lat)
-            .IsRequired();
-        builder.Property(x => x.Location.Lon)
-            .IsRequired();
-
-        builder.HasIndex(x => new {x.Location.Lat, x.Location.Lon});
+        builder.OwnsOne(e => e.PreferredAge);
+        builder.OwnsOne(e => e.Location);
+        // builder.HasIndex(x => x.Location);
     }
 }

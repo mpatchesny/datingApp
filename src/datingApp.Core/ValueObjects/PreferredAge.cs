@@ -8,8 +8,13 @@ namespace datingApp.Core.ValueObjects;
 
 public sealed record PreferredAge
 {
-    public int From { get; }
-    public int To { get; }
+    public int From { get; private set; }
+    public int To { get; private set; }
+
+    public PreferredAge()
+    {
+        // EF
+    }
 
     public PreferredAge(int from, int to)
     {

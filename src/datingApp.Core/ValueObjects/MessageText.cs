@@ -8,7 +8,7 @@ namespace datingApp.Core.ValueObjects;
 
 public sealed record MessageText
 {
-    string Value { get; }
+    public string Value { get; }
 
     public MessageText(string value)
     {

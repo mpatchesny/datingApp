@@ -8,8 +8,13 @@ namespace datingApp.Core.ValueObjects;
 
 public sealed record Location
 {
-    public double Lat { get; }
-    public double Lon { get; }
+    public double Lat { get; private set; }
+    public double Lon { get; private set; }
+
+    private Location()
+    {
+        // EF
+    }
 
     public Location(double lat, double lon)
     {

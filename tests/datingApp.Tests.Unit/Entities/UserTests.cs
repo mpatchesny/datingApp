@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Exceptions;
@@ -231,6 +233,44 @@ public class UserTests
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, _properUserSettings, "", ""));
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public void add_photo_adds_photo_to_user_Photo_collection()
+    {
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, _properUserSettings);
+
+        Assert.Empty(user.Photos);
+        user.AddPhoto(new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0));
+        Assert.Single(user.Photos);
+    }
+
+    [Fact]
+    public void remove_photo_removess_photo_to_user_Photo_collection()
+    {
+        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0); 
+        var photos = new List<Photo>{ photo };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        Assert.Single(user.Photos);
+        user.RemovePhoto(photo.Id);
+        Assert.Empty(user.Photos);
+    }
+
+    [Fact]
+    public void given_user_reached_photo_add_photo_throws_UserPhotoLimitException()
+    {
+        var photos = new List<Photo>();
+        for (int i = 0; i < 6; i++)
+        {
+            photos.Add(new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", i));
+        }
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        var newPhoto = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 6);
+        var exception = Record.Exception(() => user.AddPhoto(newPhoto));
+        Assert.NotNull(exception);
+        Assert.IsType<UserPhotoLimitException>(exception);
     }
 
     private readonly UserSettings _properUserSettings;

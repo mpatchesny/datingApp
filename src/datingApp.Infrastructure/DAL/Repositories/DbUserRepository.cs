@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
@@ -22,12 +23,12 @@ internal sealed class DbUserRepository : IUserRepository
                         .FirstOrDefaultAsync(x=> x.Email == email.ToLowerInvariant().Trim());
     }
 
-    public async Task<User> GetByIdAsync(Guid userId)
+    public async Task<User> GetByIdAsync(UserId userId)
     {
         return await _dbContext.Users
                         .Include(x => x.Photos)
                         .Include(x => x.Settings)
-                        .FirstOrDefaultAsync(x=> x.Id == userId);
+                        .FirstOrDefaultAsync(x=> x.Id.Equals(userId));
     }
 
     public async Task<User> GetByPhoneAsync(string phone)

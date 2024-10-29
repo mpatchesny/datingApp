@@ -32,16 +32,16 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
                             .AsNoTracking()
                             .Include(x => x.Settings)
                             .Include(x => x.Photos)
-                            .Where(x => x.Id == query.RequestByUserId || x.Id == query.RequestWhoUserId)
+                            .Where(x => x.Id.Equals(query.RequestByUserId) || x.Id.Equals(query.RequestWhoUserId))
                             .ToListAsync();
 
-        var requestedWho = users.FirstOrDefault(x => x.Id == query.RequestWhoUserId);
+        var requestedWho = users.FirstOrDefault(x => x.Id.Equals(query.RequestWhoUserId));
         if (requestedWho == null) 
         {
             return null;
         };
 
-        var requestedBy = users.FirstOrDefault(x => x.Id == query.RequestByUserId);
+        var requestedBy = users.FirstOrDefault(x => x.Id.Equals(query.RequestByUserId));
         if (requestedBy == null)
         {
             throw new UserNotExistsException(query.RequestByUserId);
@@ -50,8 +50,8 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
         // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(m => (m.UserId1 == requestedBy.Id || m.UserId2 == requestedBy.Id) && 
-                            (m.UserId1 == requestedWho.Id || m.UserId2 == requestedWho.Id));
+                        .FirstOrDefaultAsync(m => (m.UserId1.Equals(requestedBy.Id) || m.UserId2.Equals(requestedBy.Id)) && 
+                            (m.UserId1.Equals(requestedWho.Id) || m.UserId2.Equals(requestedWho.Id)));
 
         var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
@@ -59,7 +59,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UnauthorizedException();
         }
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Lat, requestedBy.Settings.Lon, requestedWho.Settings.Lat, requestedWho.Settings.Lon);
+        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, requestedWho.Settings.Location.Lat, requestedWho.Settings.Location.Lon);
         return requestedWho.AsPublicDto(distanceInKms);
     }
 }

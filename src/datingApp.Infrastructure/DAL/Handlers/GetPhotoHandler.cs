@@ -21,7 +21,7 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
     {
         var photo = await _dbContext.Photos
                                 .AsNoTracking()
-                                .FirstOrDefaultAsync(x => x.Id == query.PhotoId);
+                                .FirstOrDefaultAsync(x => x.Id.Equals(query.PhotoId));
         
         if (photo == null)
         {

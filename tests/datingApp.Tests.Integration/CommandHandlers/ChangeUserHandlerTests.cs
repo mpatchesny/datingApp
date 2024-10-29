@@ -91,7 +91,7 @@ public class ChangeUserHandlerTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var command = new ChangeUser(user.Id, DiscoverAgeFrom: 18, DiscoverAgeTo: 20, DiscoverRange: 20, DiscoverSex: 1);
+        var command = new ChangeUser(user.Id, PreferredAgeFrom: 18, PreferredAgeTo: 20, PreferredRange: 20, PreferredSex: 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }

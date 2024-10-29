@@ -28,9 +28,9 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where match.Id == query.MatchId
-            where match.UserId1 == user.Id || match.UserId2 == user.Id 
-            where user.Id != query.UserId
+            where match.Id.Equals(query.MatchId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            where !user.Id.Equals(query.UserId)
             select new 
             {
                 Match = match,
@@ -56,7 +56,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         {
             Id = data.Match.Id,
             User = data.User.AsPublicDto(0),
-            IsDisplayed = (data.Match.UserId1 == query.UserId) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
+            IsDisplayed = (data.Match.UserId1.Equals(query.UserId)) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
             Messages = data.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(query.HowManyMessages).OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
             CreatedAt = data.Match.CreatedAt
         }; 

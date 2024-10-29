@@ -103,8 +103,8 @@ public class PhotoRepositoryTests : IDisposable
         photos[1].ChangeOridinal(1);
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateRangeAsync(photos.ToArray()));
         Assert.Null(exception);
-        var updatedPhotos = await _testDb.DbContext.Photos.Where(x => x.UserId == user.Id).ToListAsync();
-        Assert.Equal(photos.OrderBy(x => x.Id), updatedPhotos.OrderBy(x => x.Id));
+        var updatedPhotos = await _testDb.DbContext.Photos.Where(x => x.UserId.Equals(user.Id)).ToListAsync();
+        Assert.Equal(photos.OrderBy(x => x.Id.Value), updatedPhotos.OrderBy(x => x.Id.Value));
     }
 
     [Fact]

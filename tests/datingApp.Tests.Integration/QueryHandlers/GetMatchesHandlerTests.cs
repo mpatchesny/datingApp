@@ -82,7 +82,7 @@ public class GetMatchesHandlerTests : IDisposable
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
-        Assert.Equal(user2.Id, matches.Data.First().User.Id);
+        Assert.Equal(user2.Id.Value, matches.Data.First().User.Id);
     }
 
     [Fact]

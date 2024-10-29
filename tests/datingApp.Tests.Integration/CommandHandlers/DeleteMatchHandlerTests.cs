@@ -31,7 +31,7 @@ public class DeleteMatchHandlerTests : IDisposable
         var command = new DeleteMatch(match.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == match.Id));
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id.Equals(match.Id)));
     }
 
     [Fact]

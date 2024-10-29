@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
@@ -16,15 +17,15 @@ internal sealed class DbPhotoRepository : IPhotoRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Photo> GetByIdAsync(Guid photoId)
+    public async Task<Photo> GetByIdAsync(PhotoId photoId)
     {
-        return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id == photoId);
+        return await _dbContext.Photos.FirstOrDefaultAsync(x => x.Id.Equals(photoId));
     }
 
-    public async Task<IEnumerable<Photo>> GetByUserIdAsync(Guid userId)
+    public async Task<IEnumerable<Photo>> GetByUserIdAsync(UserId userId)
     {
         return await _dbContext.Photos
-                    .Where(x=> x.UserId == userId)
+                    .Where(x=> x.UserId.Equals(userId))
                     .OrderBy(p => p.Oridinal)
                     .ToListAsync();
     }

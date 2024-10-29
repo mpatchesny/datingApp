@@ -5,53 +5,33 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 
 public class Photo
 {
-    public Guid Id { get; }
-    public Guid UserId { get; private set; }
-    public string Url { get; private set; }
-    public int Oridinal { get; private set; }
-    public string Extension { get { return GetFileExtensionFromUrl(Url); } }
+    public PhotoId Id { get; }
+    public UserId UserId { get; private set; }
+    public PhotoUrl Url { get; private set; }
+    public Oridinal Oridinal { get; private set; }
+    public string Extension { get { return Url.Extension; } }
+
     private Photo()
     {
         // EF
     }
-    public Photo(Guid id, Guid userId, string url, int oridinal)
+
+    public Photo(PhotoId id, UserId userId, PhotoUrl url, Oridinal oridinal)
     {
         Id = id;
         UserId = userId;
-        SetUrl(url);
-        Oridinal = oridinal;
-    }
-
-    public void ChangeOridinal(int oridinal)
-    {
-        if (oridinal < -1)
-        {
-            oridinal = 0;
-        }
-        if (Oridinal == oridinal) return;
-        Oridinal = oridinal;
-    }
-
-    private void SetUrl(string url)
-    {
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new EmptyPhotoUrlException();
-        }
-        if (Url == url) return;
         Url = url;
+        Oridinal = oridinal;
     }
 
-    // https://stackoverflow.com/questions/23228378/is-there-any-way-to-get-the-file-extension-from-a-url
-    private static string GetFileExtensionFromUrl(string url)
+    public void ChangeOridinal(Oridinal oridinal)
     {
-        url = url.Split('?')[0];
-        url = url.Split('/').Last();
-        return url.Contains('.') ? url.Substring(url.LastIndexOf('.')) : "";
-}
+        Oridinal = oridinal;
+    }
 }

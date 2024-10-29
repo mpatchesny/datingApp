@@ -16,7 +16,7 @@ public class PhotoOrderer : IPhotoOrderer
         var orderedPhotos = photos.Select(photo => 
                 new Photo(photo.Id, photo.UserId, photo.Url, photo.Oridinal)
             ).ToList();
-        var thisPhoto = orderedPhotos.FirstOrDefault(x => x.Id == photoToChangeId);
+        var thisPhoto = orderedPhotos.FirstOrDefault(x => x.Id.Equals(photoToChangeId));
 
         if (newOridinal >= orderedPhotos.Count - 1)
         {

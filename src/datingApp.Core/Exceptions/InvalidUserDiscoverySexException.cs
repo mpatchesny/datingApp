@@ -7,7 +7,7 @@ namespace datingApp.Core.Exceptions;
 
 public class InvalidUserDiscoverySexException : CustomException
 {
-    public InvalidUserDiscoverySexException() : base("User discovery sex is invalid.")
+    public InvalidUserDiscoverySexException() : base("User preferred sex is invalid.")
     {
     }
 }

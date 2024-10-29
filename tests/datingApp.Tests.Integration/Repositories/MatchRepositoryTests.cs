@@ -24,7 +24,7 @@ public class MatchRepositoryTests : IDisposable
         var matches = await _repository.GetByUserIdAsync(user1.Id);
         Assert.Single(matches);
         Assert.NotEmpty(matches.Select(x => x.Messages).ToList());
-        Assert.Empty(matches.Where(x => x.UserId1 != user1.Id && x.UserId2 != user1.Id));
+        Assert.Empty(matches.Where(x => !x.UserId1.Equals(user1.Id) && !x.UserId2.Equals(user1.Id)));
     }
 
     [Fact]

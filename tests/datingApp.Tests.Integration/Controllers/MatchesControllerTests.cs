@@ -26,8 +26,8 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<MatchDto>($"matches/{match.Id}");
-        Assert.Equal(match.Id, response.Id);
+        var response = await Client.GetFromJsonAsync<MatchDto>($"matches/{match.Id.Value}");
+        Assert.True(match.Id.Equals(response.Id));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches");
         Assert.Single(response.Data);
         var matchDto = JsonConvert.DeserializeObject<MatchDto>(response.Data[0].ToString());
-        Assert.Equal(match.Id, matchDto.Id);
+        Assert.Equal(match.Id.Value, matchDto.Id);
     }
 
     [Fact]
@@ -122,8 +122,8 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<MessageDto>($"matches/{match.Id}/messages/{message.Id}");
-        Assert.Equal(message.Id, response.Id);
+        var response = await Client.GetFromJsonAsync<MessageDto>($"matches/{match.Id.Value}/messages/{message.Id.Value}");
+        Assert.True(message.Id.Equals(response.Id));
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistsingMessageId = Guid.NewGuid();
-        var response = await Client.GetAsync($"matches/{match.Id}/messages/{notExistsingMessageId}");
+        var response = await Client.GetAsync($"matches/{match.Id.Value}/messages/{notExistsingMessageId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
@@ -155,10 +155,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id}/messages");
+        var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id.Value}/messages");
         Assert.Single(response.Data);
         var messageDto = JsonConvert.DeserializeObject<MessageDto>(response.Data[0].ToString());
-        Assert.Equal(message.Id, messageDto.Id);
+        Assert.Equal(message.Id.Value, messageDto.Id);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id}/messages?pageSize=5");
+        var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id.Value}/messages?pageSize=5");
         Assert.Equal(5, response.Data.Count);
     }
 
@@ -198,7 +198,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var allMessagesDtoIds = new List<Guid>();
         for (int i=1; i<=3; i++)
         {
-            var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id}/messages?page={i}");
+            var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id.Value}/messages?page={i}");
             foreach (var item in response.Data)
             {
                 var messageDto = JsonConvert.DeserializeObject<MessageDto>(item.ToString());
@@ -240,11 +240,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
 
         var command = new SendMessage(Guid.Empty, match.Id, user1.Id, "test");
 
-        var response = await Client.PostAsJsonAsync($"matches/{match.Id}/messages", command);
+        var response = await Client.PostAsJsonAsync($"matches/{match.Id.Value}/messages", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         
         var messageDto = await response.Content.ReadFromJsonAsync<MessageDto>();
-        Assert.Equal(user1.Id, messageDto.SendFromId);
+        Assert.Equal(user1.Id.Value, messageDto.SendFromId);
         Assert.Equal("test", messageDto.Text);
     }
 
@@ -260,11 +260,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
 
         var command = new SendMessage(Guid.Empty, match.Id, Guid.Empty, "test");
 
-        var response = await Client.PostAsJsonAsync($"matches/{match.Id}/messages", command);
+        var response = await Client.PostAsJsonAsync($"matches/{match.Id.Value}/messages", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var messageDto = await response.Content.ReadFromJsonAsync<MessageDto>();
-        Assert.Equal(user1.Id, messageDto.SendFromId);
+        Assert.Equal(user1.Id.Value, messageDto.SendFromId);
         Assert.Equal("test", messageDto.Text);
     }
 
@@ -296,7 +296,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.DeleteAsync($"matches/{match.Id}");
+        var response = await Client.DeleteAsync($"matches/{match.Id.Value}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
@@ -328,11 +328,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var deletedMatch = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
         await IntegrationTestHelper.DeleteMatchAsync(_testDb, deletedMatch);
 
-        var response = await Client.DeleteAsync($"matches/{deletedMatch.Id}");
+        var response = await Client.DeleteAsync($"matches/{deletedMatch.Id.Value}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"Match {deletedMatch.Id} is deleted permanently.", error.Reason);
+        Assert.Equal($"Match {deletedMatch.Id.Value} is deleted permanently.", error.Reason);
     }
 
     private readonly TestDatabase _testDb;

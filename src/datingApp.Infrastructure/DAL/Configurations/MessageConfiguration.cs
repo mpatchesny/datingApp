@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,14 +15,18 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
+            .HasConversion(x => x.Value, x => new MessageId(x))
             .IsRequired();
         builder.Property(x => x.MatchId)
+            .HasConversion(x => x.Value, x => new MatchId(x))
             .IsRequired();
         builder.Property(x => x.SendFromId)
+            .HasConversion(x => x.Value, x => new UserId(x))
             .IsRequired();
         builder.Property(x => x.IsDisplayed)
             .IsRequired();
         builder.Property(x => x.Text)
+            .HasConversion(x => x.Value, x => new MessageText(x))
             .IsRequired()
             .HasMaxLength(255);
         builder.Property(x => x.CreatedAt)

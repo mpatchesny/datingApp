@@ -23,7 +23,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.PutAsync($"pass/{user2.Id}", null);
+        var response = await Client.PutAsync($"pass/{user2.Id.Value}", null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
         Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
@@ -51,7 +51,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.PutAsync($"pass/{user2.Id}", null);
+        var response = await Client.PutAsync($"pass/{user2.Id.Value}", null);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
         Assert.True(isLikedByOtherUser.IsLikedByOtherUser);

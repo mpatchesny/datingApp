@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
@@ -15,23 +16,23 @@ internal sealed class DbMatchRepository : IMatchRepository
     {
         _dbContext = dbContext;
     }
-    public async Task<IEnumerable<Match>> GetByUserIdAsync(Guid userId)
+    public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId)
     {
-        return await _dbContext.Matches.Where(x => x.UserId1 == userId || x.UserId2 == userId)
+        return await _dbContext.Matches.Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
                         .Include(match => match.Messages
                                 .OrderByDescending(message => message.CreatedAt)
                                 .Take(1))
                         .ToListAsync();
     }
-    public async Task<Match> GetByIdAsync(Guid matchId)
+    public async Task<Match> GetByIdAsync(MatchId matchId)
     {
-        return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id == matchId);
+        return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id.Equals(matchId));
     }
 
-    public async Task<bool> ExistsAsync(Guid userId1, Guid userId2)
+    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
     {
         return await _dbContext.Matches
-                    .AnyAsync(x => x.UserId1 == userId1 && x.UserId2 == userId2);
+                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
     public async Task AddAsync(Match match)

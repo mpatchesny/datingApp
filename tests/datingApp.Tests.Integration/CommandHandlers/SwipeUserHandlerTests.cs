@@ -72,11 +72,11 @@ public class SwipeUserHandlerTests : IDisposable
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1 == user1.Id && m.UserId2 == user2.Id) || 
-            (m.UserId1 == user2.Id && m.UserId2 == user1.Id));
+        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
+            (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user2.Id)));
         Assert.NotNull(match);
-        Assert.Equal(match.UserId1, user1.Id);
-        Assert.Equal(match.UserId2, user2.Id);
+        Assert.True(match.UserId1.Equals(user1.Id));
+        Assert.True(match.UserId2.Equals(user2.Id));
     }
 
     [Fact]
@@ -88,8 +88,8 @@ public class SwipeUserHandlerTests : IDisposable
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1 == user1.Id && m.UserId2 == user2.Id) || 
-            (m.UserId1 == user2.Id && m.UserId2 == user1.Id));
+        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
+            (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user1.Id)));
         Assert.Null(match);
     }
 
@@ -102,8 +102,8 @@ public class SwipeUserHandlerTests : IDisposable
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1 == user1.Id && m.UserId2 == user2.Id) || 
-            (m.UserId1 == user2.Id && m.UserId2 == user1.Id));
+        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
+            (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user1.Id)));
         Assert.Null(match);
     }
 

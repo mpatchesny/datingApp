@@ -26,11 +26,11 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
     {
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
-            where match.Messages.Any(m => m.Id == query.MessageId)
+            where match.Messages.Any(m => m.Id.Equals(query.MessageId))
             select new
             {
                 Match = match,
-                Message = match.Messages.FirstOrDefault(m => m.Id == query.MessageId)
+                Message = match.Messages.FirstOrDefault(m => m.Id.Equals(query.MessageId))
             };
 
         var data = await dbQuery

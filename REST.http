@@ -21,7 +21,7 @@ Content-Type: application/json
     "name": "Some name",
     "dateOfBirth": "1990-01-01",
     "sex": 1,
-    "discoverSex": 2,
+    "preferredSex": 2,
     "job": "Some job I work at (optional)",
     "bio": "Some bio (optional)"
 }
@@ -91,10 +91,10 @@ Content-Type: application/json
     "job": "Some another job",
     "bio": "Some another bio",
     "dateOfBirth": "1990-01-02",
-    "discoverSex": 2,
-    "discoverRange": 40,
-    "discoverAgeFrom": 18,
-    "discoverAgeTo": 45,
+    "preferredSex": 2,
+    "preferredRange": 40,
+    "preferredAgeFrom": 18,
+    "preferredAgeTo": 45,
     "lat": 50.3719424,
     "lon": 16.6143541
 }

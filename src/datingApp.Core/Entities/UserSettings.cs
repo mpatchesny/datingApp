@@ -4,26 +4,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
+using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace datingApp.Core.Entities;
 
 public class UserSettings
 {
-    public Guid UserId { get; private set; }
+    public UserId UserId { get; private set; }
     public PreferredSex PreferredSex { get; private set; }
-    public int PreferredAgeFrom { get; private set; }
-    public int PreferredAgeTo { get; private set; }
-    public int PreferredMaxDistance { get; private set; }
-    public double Lat { get; private set; }
-    public double Lon { get; private set; }
+    public PreferredAge PreferredAge { get; private set; }
+    public PreferredMaxDistance PreferredMaxDistance { get; private set; }
+    public Location Location { get; private set; }
 
-    public UserSettings(Guid userId, PreferredSex preferredSex, int preferredAgeFrom, int preferredAgeTo, int preferredMaxDistance, double lat, double lon)
+    private UserSettings()
+    {
+        // EF
+    }
+
+    public UserSettings(UserId userId, PreferredSex preferredSex, PreferredAge preferredAge, PreferredMaxDistance preferredMaxDistance, Location location)
     {
         UserId = userId;
         SetPreferredSex(preferredSex);
-        SetPreferredAge(preferredAgeFrom, preferredAgeTo);
-        SetPreferredMaxDistance(preferredMaxDistance);
-        SetLocation(lat, lon);
+        PreferredAge = preferredAge;
+        PreferredMaxDistance = preferredMaxDistance;
+        Location = location;
     }
 
     public void ChangePreferredSex(PreferredSex sex)
@@ -31,19 +36,19 @@ public class UserSettings
         SetPreferredSex(sex);
     }
 
-    public void ChangePreferredAge(int preferredAgeFrom, int preferredAgeTo)
+    public void ChangePreferredAge(PreferredAge preferredAge)
     {
-        SetPreferredAge(preferredAgeFrom, preferredAgeTo);
+        PreferredAge = preferredAge;
     }
 
-    public void ChangePreferredMaxDistance(int preferredMaxDistance)
+    public void ChangePreferredMaxDistance(PreferredMaxDistance preferredMaxDistance)
     {
-        SetPreferredMaxDistance(preferredMaxDistance);
+        PreferredMaxDistance = preferredMaxDistance;
     }
 
-    public void ChangeLocation(double lat, double lon)
+    public void ChangeLocation(Location location)
     {
-        SetLocation(lat, lon);
+        Location = location;
     }
 
     private void SetPreferredSex(PreferredSex sex)
@@ -54,44 +59,5 @@ public class UserSettings
         }
         if (PreferredSex == sex) return;
         PreferredSex = sex;
-    }
-
-    private void SetPreferredAge(int preferredAgeFrom, int preferredAgeTo)
-    {
-        if (preferredAgeFrom < 18 | preferredAgeFrom > 100)
-        {
-            throw new InvalidDiscoveryAgeException("minimum discover age must be between 18 and 100");
-        }
-        else if (preferredAgeTo < 18 | preferredAgeTo > 100)
-        {
-            throw new InvalidDiscoveryAgeException("maximum discover age must be between 18 and 100");
-        }
-        else if (preferredAgeFrom > preferredAgeTo)
-        {
-            throw new InvalidDiscoveryAgeException("minimum discover age cannot be larger than maximum discover age");
-        }
-        PreferredAgeFrom = preferredAgeFrom;
-        PreferredAgeTo = preferredAgeTo;
-    }
-
-    private void SetLocation(double lat, double lon)
-    {
-        if (lat > 90 | lat < -90 |
-            lon > 180 | lon < -180)
-        {
-            throw new InvalidLocationException();
-        }
-        Lat = lat;
-        Lon = lon;
-    }
-
-    private void SetPreferredMaxDistance(int discoverRange)
-    {
-        if (discoverRange < 1 | discoverRange > 100)
-        {
-            throw new InvalidDiscoveryRangeException();
-        }
-        if (PreferredMaxDistance == discoverRange) return;
-        PreferredMaxDistance = discoverRange;
     }
 }

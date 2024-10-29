@@ -38,7 +38,7 @@ public class DeleteUserHandlerTests : IDisposable
         var command = new DeleteUser(user.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == user.Id));
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id == user.Id.Value));
         _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 

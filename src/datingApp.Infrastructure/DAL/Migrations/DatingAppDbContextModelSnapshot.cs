@@ -73,7 +73,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -103,7 +102,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
             modelBuilder.Entity("datingApp.Core.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -135,7 +133,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
             modelBuilder.Entity("datingApp.Core.Entities.Photo", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<int>("Oridinal")
@@ -180,7 +177,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
             modelBuilder.Entity("datingApp.Core.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Bio")
@@ -227,18 +223,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("Lat")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Lon")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("PreferredAgeFrom")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PreferredAgeTo")
-                        .HasColumnType("integer");
-
                     b.Property<int>("PreferredMaxDistance")
                         .HasColumnType("integer");
 
@@ -246,8 +230,6 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("Lat", "Lon");
 
                     b.ToTable("UserSettings");
                 });
@@ -298,6 +280,48 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .HasForeignKey("datingApp.Core.Entities.UserSettings", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("datingApp.Core.ValueObjects.Location", "Location", b1 =>
+                        {
+                            b1.Property<Guid>("UserSettingsUserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<double>("Lat")
+                                .HasColumnType("double precision");
+
+                            b1.Property<double>("Lon")
+                                .HasColumnType("double precision");
+
+                            b1.HasKey("UserSettingsUserId");
+
+                            b1.ToTable("UserSettings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserSettingsUserId");
+                        });
+
+                    b.OwnsOne("datingApp.Core.ValueObjects.PreferredAge", "PreferredAge", b1 =>
+                        {
+                            b1.Property<Guid>("UserSettingsUserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("From")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("To")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("UserSettingsUserId");
+
+                            b1.ToTable("UserSettings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserSettingsUserId");
+                        });
+
+                    b.Navigation("Location");
+
+                    b.Navigation("PreferredAge");
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>

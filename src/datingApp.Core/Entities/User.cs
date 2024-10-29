@@ -6,24 +6,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 
 public class User
 {
-    private static readonly Regex BadPhoneRegex = new Regex(@"[^0-9]",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    private static readonly Regex BadNameRegex = new Regex(@"[^a-zA-Z\s]",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
-    public Guid Id { get; }
-    public string Phone { get; private set; }
-    public string Email { get; private set; }
-    public string Name { get; private set; }
-    public DateOnly DateOfBirth { get; private set; }
+    public UserId Id { get; }
+    public Phone Phone { get; private set; }
+    public Email Email { get; private set; }
+    public Name Name { get; private set; }
+    public DateOfBirth DateOfBirth { get; private set; }
     public UserSex Sex { get; private set; }
-    public string Job { get; private set; }
-    public string Bio { get; private set; }
+    public Job Job { get; private set; }
+    public Bio Bio { get; private set; }
     public IEnumerable<Photo> Photos { get; private set; } = new List<Photo>();
     public UserSettings Settings { get; private set; }
 
@@ -31,161 +27,42 @@ public class User
     {
         // EF
     }
-    public User(Guid id, string phone, string email, string name, DateOnly dateOfBirth, UserSex sex,
-                IEnumerable<Photo> photos, UserSettings settings, string job="", string bio="")
+
+    public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
+                IEnumerable<Photo> photos, UserSettings settings, Job job=null, Bio bio=null)
     {
+        if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
+        if (settings == null) throw new UserSettingsIsNullException();
+
         Id = id;
-        SetPhone(phone);
-        SetEmail(email);
-        SetName(name);
-        SetSex(sex);
-        SetDateOfBirth(dateOfBirth);
+        Phone = phone;
+        Email = email;
+        Name = name;
+        Sex = sex;
+        DateOfBirth = dateOfBirth;
         Photos = photos;
-        SetSettings(settings);
-        SetJob(job);
-        SetBio(bio);
+        Settings = settings;
+        Job = job ?? new Job("");
+        Bio = bio ?? new Bio("");
     }
 
     public int GetAge()
     {
-        DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
-        var age = CalculateAge(DateOfBirth, currDate);
-        return age;
+        return DateOfBirth.GetAge();
     }
 
-    public void ChangeDateOfBirth(DateOnly dateOfBirth)
+    public void ChangeDateOfBirth(DateOfBirth dateOfBirth)
     {
-        SetDateOfBirth(dateOfBirth);
-    }
-    public void ChangeBio(string bio)
-    {
-        SetBio(bio);
-    }
-    public void ChangeJob(string job)
-    {
-        SetJob(job);
-    }
-
-    #region Setters
-    private void SetName(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new InvalidUsernameException("user name can't be empty");
-        }
-        if (name.Length > 15)
-        {
-            throw new InvalidUsernameException("user name too long");
-        }
-        if (BadNameRegex.IsMatch(name))
-        {
-            throw new InvalidUsernameException($"contains forbidden characters {name}");
-        }
-        if (Name == name) return;
-        Name = name;
-    }
-    private void SetPhone(string phone)
-    {       
-        if (string.IsNullOrEmpty(phone))
-        {
-            throw new InvalidPhoneException("phone number cannot be empty");
-        }
-        if (phone.Length > 9)
-        {
-            throw new InvalidPhoneException("phone number too long");
-        }
-        if (BadPhoneRegex.IsMatch(phone))
-        {
-            throw new InvalidPhoneException("phone number must be only numbers");
-        }
-        if (Phone == phone) return;
-        Phone = phone;
-    }
-    private void SetEmail(string email)
-    {
-        if (string.IsNullOrEmpty(email))
-        {
-            throw new InvalidEmailException("email address cannot be empty");
-        }
-        if (email.Length > 256)
-        {
-            throw new InvalidEmailException("email too long");
-        }
-        
-        email = email.Trim().ToLowerInvariant();
-        var emailAttrib = new EmailAddressAttribute();
-        if (!emailAttrib.IsValid(email))
-        {
-            throw new InvalidEmailException($"invalid email address {email}");
-        }
-        if (Email == email) return;
-        Email = email;
-    }
-    private void SetDateOfBirth(DateOnly dateOfBirth)
-    {
-        if (dateOfBirth.CompareTo(new DateOnly()) == 0)
-        {
-            throw new DateOfBirthCannotBeEmptyException();
-        }
-
-        DateOnly currDate = new DateOnly(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
-        var age = CalculateAge(dateOfBirth, currDate);
-        if (age < 18 | age > 100) 
-        {
-            throw new InvalidDateOfBirthException($"user cannot be younger than 18 or older than 100 years");
-        }
-        if (DateOfBirth == dateOfBirth) return;
         DateOfBirth = dateOfBirth;
     }
-    private void SetSettings(UserSettings settings)
+
+    public void ChangeBio(Bio bio)
     {
-        if (settings == null) throw new UserSettingsIsNullException();
-        if (Settings == settings) return;
-        Settings = settings;
-    }
-    private void SetJob(string job)
-    {
-        if (job.Length > 50)
-        {
-            throw new JobTooLongException();
-        }
-        if (Job == job) return;
-        Job = job;
-    }
-    private void SetBio(string bio)
-    {
-        if (bio.Length > 400)
-        {
-            throw new BioTooLongException();
-        }
-        if (Bio == bio) return;
         Bio = bio;
     }
-    private void SetSex(UserSex sex)
+
+    public void ChangeJob(Job job)
     {
-        if (!Enum.IsDefined(typeof(UserSex), sex))
-        {
-            throw new InvalidUserSexException();
-        }
-        if (Sex == sex) return;
-        Sex = sex;
-    }
-    #endregion
-    private static int CalculateAge(DateOnly olderDate, DateOnly newerDate)
-    {
-        var age = newerDate.Year - olderDate.Year;
-        switch (newerDate.Month - olderDate.Month)
-        {
-            case < 0:
-                age -= 1;
-                break;
-            case 0:
-                if (newerDate.Day < olderDate.Day)
-                {
-                    age -= 1;
-                }
-                break;
-        }
-        return age;
+        Job = job;
     }
 }

@@ -6,6 +6,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure.DAL.Repositories;
 using Moq;
 using Xunit;
@@ -19,7 +20,7 @@ public class AddMatchHandlerTests
     {
         var command = new AddMatch(Guid.NewGuid(), Guid.NewGuid());
         var matchRepository = new Mock<IMatchRepository>();
-        matchRepository.Setup(m => m.ExistsAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(false);
+        matchRepository.Setup(m => m.ExistsAsync(It.IsAny<UserId>(), It.IsAny<UserId>())).ReturnsAsync(false);
 
         var handler = new AddMatchHandler(matchRepository.Object);
         await handler.HandleAsync(command);
@@ -31,7 +32,7 @@ public class AddMatchHandlerTests
     {
         var command = new AddMatch(Guid.NewGuid(), Guid.NewGuid());
         var matchRepository = new Mock<IMatchRepository>();
-        matchRepository.Setup(m => m.ExistsAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(true);
+        matchRepository.Setup(m => m.ExistsAsync(It.IsAny<UserId>(), It.IsAny<UserId>())).ReturnsAsync(true);
 
         var handler = new AddMatchHandler(matchRepository.Object);
         await handler.HandleAsync(command);

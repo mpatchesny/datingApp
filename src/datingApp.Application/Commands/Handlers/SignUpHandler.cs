@@ -7,6 +7,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 
 namespace datingApp.Application.Commands.Handlers;
 
@@ -19,7 +20,7 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
     }
     public async Task HandleAsync(SignUp command)
     {
-        if (command.DateOfBirth != null && !DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dob))
+        if (command.DateOfBirth != null && !DateOnly.TryParseExact(command.DateOfBirth, new string[] { "yyyy-MM-dd" }, out DateOnly dateOfBirth))
         {
             throw new InvalidDateOfBirthFormatException(command.DateOfBirth);
         }
@@ -36,8 +37,8 @@ public sealed class SignUpHandler : ICommandHandler<SignUp>
             throw new PhoneAlreadyInUseException(command.Phone);
         }
 
-        var settings = new UserSettings(command.UserId, (PreferredSex) command.DiscoverSex, 18, 35, 30, 0.0, 0.0);
-        var user = new User(command.UserId, command.Phone, command.Email, command.Name, dob, (UserSex) command.Sex, null, settings, command.Job, command.Bio);
+        var settings = new UserSettings(command.UserId, (PreferredSex) command.PreferredSex, new PreferredAge(18, 35), 30, new Location(0.0, 0.0));
+        var user = new User(command.UserId, command.Phone, command.Email, command.Name, dateOfBirth, (UserSex) command.Sex, null, settings, command.Job, command.Bio);
         await _userRepository.AddAsync(user);
     }
 }

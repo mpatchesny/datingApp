@@ -18,13 +18,13 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
 
     public async Task HandleAsync(AddMatch command)
     {
-        Guid userId1 = command.swipedById;
-        Guid userId2 = command.swipedWhoId;
+        Guid userId1 = command.SwipedById;
+        Guid userId2 = command.SwipedWhoId;
         
-        if (command.swipedById.CompareTo(command.swipedWhoId) >= 0)
+        if (command.SwipedById.CompareTo(command.SwipedWhoId) >= 0)
         {
-            userId1 = command.swipedWhoId;
-            userId2 = command.swipedById;
+            userId1 = command.SwipedWhoId;
+            userId2 = command.SwipedById;
         }
 
         var matchExists = await _matchRepository.ExistsAsync(userId1, userId2);

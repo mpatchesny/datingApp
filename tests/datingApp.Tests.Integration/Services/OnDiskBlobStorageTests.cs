@@ -8,7 +8,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.Services;
 
-public class OnDiskBlobStorageTests
+public class OnDiskBlobStorageTests : IDisposable
 {
     [Fact]
     public async void given_valid_input_WriteAsync_with_stream_saves_file()
@@ -93,9 +93,9 @@ public class OnDiskBlobStorageTests
         _storageService = StorageFactory.Blobs.DirectoryFiles(_storagePath);
     }
 
-    public async void Dispose()
+    public void Dispose()
     {
-        await Task.Delay(1000);
+        Task.Delay(1000);
         var dir = new DirectoryInfo(_storagePath);
         dir.Delete(true);
     }

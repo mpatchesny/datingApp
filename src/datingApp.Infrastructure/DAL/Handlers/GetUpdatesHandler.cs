@@ -22,44 +22,44 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
     {
         return _dbContext.Matches
                         .AsNoTracking()
-                        .Where(x => x.UserId1 == userId || x.UserId2 == userId)
-                        .Select(x => x.Id);
+                        .Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
+                        .Select(x => x.Id.Value);
     }
 
-    private IQueryable<Guid> GetMessagesPastGivenActivityTime(IQueryable<Guid> usersMatches, DateTime lastActivityTime)
+    private IQueryable<Guid> GetMessagesPastGivenActivityTime(IEnumerable<Guid> usersMatches, DateTime lastActivityTime)
     {
         return _dbContext.Messages
                         .AsNoTracking()
                         .Where(x => usersMatches.Contains(x.MatchId))
                         .Where(x => x.CreatedAt >= lastActivityTime)
-                        .Select(x => x.MatchId);
+                        .Select(x => x.MatchId.Value);
     }
 
-    private IQueryable<Guid> GetMatchesPastGivenActivityTime(IQueryable<Guid> usersMatches, DateTime lastActivityTime)
+    private IQueryable<Guid> GetMatchesPastGivenActivityTime(IEnumerable<Guid> usersMatches, DateTime lastActivityTime)
     {
         return  _dbContext.Matches
                         .AsNoTracking()
                         .Where(x => usersMatches.Contains(x.Id))
                         .Where(x => x.CreatedAt >= lastActivityTime)
-                        .Select(x => x.Id);
+                        .Select(x => x.Id.Value);
     }
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id == query.UserId))
+        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }
 
-        var usersMatches = GetMatchesIdByUserId(query.UserId);
-        var newMessagesMatchId = GetMessagesPastGivenActivityTime(usersMatches, query.LastActivityTime);
-        var newMatchesId = GetMatchesPastGivenActivityTime(usersMatches, query.LastActivityTime);
+        var usersMatches = await GetMatchesIdByUserId(query.UserId).ToListAsync();
+        var newMessagesMatchId = await GetMessagesPastGivenActivityTime(usersMatches, query.LastActivityTime).ToListAsync();
+        var newMatchesId = await GetMatchesPastGivenActivityTime(usersMatches, query.LastActivityTime).ToListAsync();
         var newMessagesAndMatches = newMessagesMatchId.Union(newMatchesId);
 
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             from user in _dbContext.Users.Include(u => u.Photos)
-            where (user.Id == match.UserId1 || user.Id == match.UserId2) && user.Id != query.UserId
+            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
             where newMessagesAndMatches.Contains(match.Id)
             select new 
             {
@@ -77,7 +77,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 {
                     Id = x.Match.Id,
                     User = x.User.AsPublicDto(0),
-                    IsDisplayed = (x.Match.UserId1 == query.UserId) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
+                    IsDisplayed = (x.Match.UserId1.Equals(query.UserId)) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
                     Messages =  x.Match.Messages.Where(m => m.CreatedAt >= query.LastActivityTime).OrderBy(m => m.CreatedAt).Select(x => x.AsDto()).ToList(),
                     CreatedAt = x.Match.CreatedAt
                 });

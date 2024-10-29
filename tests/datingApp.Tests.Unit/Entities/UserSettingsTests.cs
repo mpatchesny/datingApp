@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Exceptions;
+using datingApp.Core.ValueObjects;
 using Xunit;
 
 namespace datingApp.Tests.Unit.Entities;
@@ -15,7 +17,7 @@ public class UserSettingsTests
     public void user_settings_should_accept_male_female_discovery_sex()
     {
         var discoverySex = PreferredSex.Male | PreferredSex.Female;
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), discoverySex, new PreferredAge(20, 21), 20, new Location(45.5, 45.5)));
         Assert.Null(exception);
     }
 
@@ -23,7 +25,7 @@ public class UserSettingsTests
     public void user_settings_should_accept_male_discovery_sex()
     {
         var discoverySex = PreferredSex.Male;
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), discoverySex, new PreferredAge(20, 21), 20, new Location(45.5, 45.5)));
         Assert.Null(exception);
     }
 
@@ -31,7 +33,7 @@ public class UserSettingsTests
     public void user_settings_should_accept_female_discovery_sex()
     {
         var discoverySex = PreferredSex.Female;
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), discoverySex, new PreferredAge(20, 21), 20, new Location(45.5, 45.5)));
         Assert.Null(exception);
     }
 
@@ -45,7 +47,7 @@ public class UserSettingsTests
     [InlineData(8)]
     public void invalid_user_settings_discovery_sex_throws_InvalidUserDiscoverySexException(int discoverySex)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), (PreferredSex) discoverySex, 20, 21, 20, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), (PreferredSex) discoverySex, new PreferredAge(20, 21), 20, new Location(45.5, 45.5)));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUserDiscoverySexException>(exception);
     }
@@ -55,7 +57,7 @@ public class UserSettingsTests
     [InlineData(18, 101)]
     public void user_settings_age_range_below_18_or_above_100_throws_InvalidDiscoveryAgeException(int minAge, int maxAge)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), PreferredSex.Male, minAge, maxAge, 20, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(minAge, maxAge), 20, new Location(45.5, 45.5)));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDiscoveryAgeException>(exception);
     }
@@ -63,7 +65,7 @@ public class UserSettingsTests
     [InlineData(21, 20)]
     public void user_settings_age_range_with_age_to_below_age_from_throws_InvalidDiscoveryAgeException(int minAge, int maxAge)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), PreferredSex.Male, minAge, maxAge, 20, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(minAge, maxAge), 20, new Location(45.5, 45.5)));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDiscoveryAgeException>(exception);
     }
@@ -73,7 +75,7 @@ public class UserSettingsTests
     [InlineData(101)]
     public void user_settings_discovery_range_below_1_or_above_100_throws_InvalidDiscoveryRangeException(int range)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, range, 45.5, 45.5));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), range, new Location(45.5, 45.5)));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDiscoveryRangeException>(exception);
     }
@@ -85,7 +87,7 @@ public class UserSettingsTests
     [InlineData(-90.1, 0.0)]
     public void user_settings_invalid_location_throws_InvalidLocationException(double lat, double lon)
     {
-        var exception = Record.Exception(() =>new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, lat, lon));
+        var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(lat, lon)));
         Assert.NotNull(exception);
         Assert.IsType<InvalidLocationException>(exception);
     }
@@ -93,26 +95,26 @@ public class UserSettingsTests
     [Fact]
     public void user_settings_location_change_should_take_effect()
     {
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, 40.5, 40.5);
-        settings.ChangeLocation(45.5, 46.5);
-        Assert.Equal(45.5, settings.Lat);
-        Assert.Equal(46.5, settings.Lon);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(40.5, 40.5));
+        settings.ChangeLocation(new Location(45.5, 46.5));
+        Assert.Equal(45.5, settings.Location.Lat);
+        Assert.Equal(46.5, settings.Location.Lon);
     }
 
     [Fact]
     public void user_settings_discovery_age_range_change_should_take_effect()
     {
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, 40.5, 40.5);
-        settings.ChangePreferredAge(18, 60);
-        Assert.Equal(18, settings.PreferredAgeFrom);
-        Assert.Equal(60, settings.PreferredAgeTo);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(40.5, 40.5));
+        settings.ChangePreferredAge(new PreferredAge(18, 60));
+        Assert.Equal(18, settings.PreferredAge.From);
+        Assert.Equal(60, settings.PreferredAge.To);
     }
 
     [Fact]
     public void user_settings_change_range_should_take_effect()
     {
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, 20, 25, 20, 40.5, 40.5);
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(40.5, 40.5));
         settings.ChangePreferredMaxDistance(40);
-        Assert.Equal(40, settings.PreferredMaxDistance);
+        Assert.Equal(40, settings.PreferredMaxDistance.Value);
     }
 }

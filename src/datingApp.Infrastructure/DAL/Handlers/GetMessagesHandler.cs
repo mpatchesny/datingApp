@@ -24,7 +24,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
-        var match = _dbContext.Matches.FirstOrDefault(x => x.Id == query.MatchId);
+        var match = _dbContext.Matches.FirstOrDefault(x => x.Id.Equals(query.MatchId));
         if (match == null)
         {
             throw new MatchNotExistsException(query.MatchId);
@@ -38,7 +38,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
         var dbQuery = _dbContext.Messages
                             .AsNoTracking()
-                            .Where(x => x.MatchId == query.MatchId)
+                            .Where(x => x.MatchId.Equals(query.MatchId))
                             .OrderByDescending(x => x.CreatedAt);
 
         var data = await dbQuery

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
@@ -16,14 +17,14 @@ internal sealed class DbMessageRepository : IMessageRepository
         _dbContext = dbContext;
     }
     
-    public async Task<IEnumerable<Message>> GetByMatchIdAsync(Guid matchId)
+    public async Task<IEnumerable<Message>> GetByMatchIdAsync(MatchId matchId)
     {
-        return await _dbContext.Messages.Where(x => x.MatchId == matchId).ToListAsync();
+        return await _dbContext.Messages.Where(x => x.MatchId.Equals(matchId)).ToListAsync();
     }
 
-    public async Task<Message> GetByIdAsync(Guid messageId)
+    public async Task<Message> GetByIdAsync(MessageId messageId)
     {
-        return await _dbContext.Messages.SingleOrDefaultAsync(x => x.Id == messageId);
+        return await _dbContext.Messages.SingleOrDefaultAsync(x => x.Id.Equals(messageId));
     }
 
     public async Task AddAsync(Message message)
@@ -44,17 +45,17 @@ internal sealed class DbMessageRepository : IMessageRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(Guid messageId)
+    public async Task DeleteAsync(MessageId messageId)
     {
-        var message = await _dbContext.Messages.FirstAsync(x => x.Id == messageId);
+        var message = await _dbContext.Messages.FirstAsync(x => x.Id.Equals(messageId));
         _dbContext.Messages.Remove(message);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Message>> GetPreviousNotDisplayedMessages(Guid messageId)
+    public async Task<IEnumerable<Message>> GetPreviousNotDisplayedMessages(MessageId messageId)
     {
         var condition = _dbContext.Messages
-                                .Where(x => x.Id == messageId)
+                                .Where(x => x.Id.Equals(messageId))
                                 .Select(x => new {
                                     x.CreatedAt,
                                     x.MatchId

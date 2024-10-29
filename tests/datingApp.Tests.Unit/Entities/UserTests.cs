@@ -5,6 +5,7 @@ using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
+using Org.BouncyCastle.Tls.Crypto.Impl;
 using Xunit;
 
 namespace datingApp.Tests.Unit;
@@ -236,12 +237,24 @@ public class UserTests
     }
 
     [Fact]
-    public void add_photo_adds_photo_to_user_Photo_collection()
+    public void add_photo_adds_photo_to_user_Photos_collection()
     {
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, _properUserSettings);
 
         Assert.Empty(user.Photos);
         user.AddPhoto(new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0));
+        Assert.Single(user.Photos);
+    }
+
+    [Fact]
+    public void given_photo_already_in_Photos_collection_add_photo_do_nothing()
+    {
+        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0);
+        var photos = new List<Photo>{ photo };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        Assert.Single(user.Photos);
+        user.AddPhoto(photo);
         Assert.Single(user.Photos);
     }
 
@@ -253,6 +266,18 @@ public class UserTests
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
 
         Assert.Single(user.Photos);
+        user.RemovePhoto(photo.Id);
+        Assert.Empty(user.Photos);
+    }
+
+    [Fact]
+    public void given_photo_not_in_Photos_collection_remove_photo_do_nothing()
+    {
+        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0); 
+        var photos = new List<Photo>();
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        Assert.Empty(user.Photos);
         user.RemovePhoto(photo.Id);
         Assert.Empty(user.Photos);
     }
@@ -271,6 +296,25 @@ public class UserTests
         var exception = Record.Exception(() => user.AddPhoto(newPhoto));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
+    }
+
+    [Fact]
+    public void given_photo_not_in_Photos_collection_change_oridinal_do_nothing()
+    {
+        var photos = new List<Photo>{
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 3),
+        };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 4);
+
+        user.ChangeOridinal(photo.Id, 1);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photos[0].Id, p.Id),
+            p => Assert.Equal(photos[1].Id, p.Id),
+            p => Assert.Equal(photos[2].Id, p.Id)
+        );
     }
 
     private readonly UserSettings _properUserSettings;

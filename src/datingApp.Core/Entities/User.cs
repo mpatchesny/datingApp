@@ -87,20 +87,19 @@ public class User
 
     public void ChangeOridinal(PhotoId photoId, Oridinal newOridinal)
     {
-        var photo = Photos.FirstOrDefault(p => p.Id == photoId);
-        if (photo == null) return;
+        var photoToChange = Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photoToChange == null) return;
+        photoToChange.ChangeOridinal(newOridinal);
 
-        photo.ChangeOridinal(newOridinal);
-
-        foreach (var p in Photos.Where(p => p.Id != photoId))
+        foreach (var photo in Photos.Where(p => p.Id != photoId))
         {
-            if (p.Oridinal >= photo.Oridinal)
+            if (photo.Oridinal >= photoToChange.Oridinal)
             {
-                p.ChangeOridinal(p.Oridinal.Value+1);
+                photo.ChangeOridinal(photo.Oridinal.Value+1);
             }
-            else if (p.Oridinal < photo.Oridinal)
+            else if (photo.Oridinal < photoToChange.Oridinal)
             {
-                p.ChangeOridinal(p.Oridinal.Value-1);
+                photo.ChangeOridinal(photo.Oridinal.Value-1);
             }
         }
     }

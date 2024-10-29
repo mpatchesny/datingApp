@@ -59,7 +59,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches");
         Assert.Single(response.Data);
         var matchDto = JsonConvert.DeserializeObject<MatchDto>(response.Data[0].ToString());
-        Assert.Equal(match.Id, matchDto.Id);
+        Assert.Equal(match.Id.Value, matchDto.Id);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var response = await Client.GetFromJsonAsync<PaginatedDataDto>($"matches/{match.Id.Value}/messages");
         Assert.Single(response.Data);
         var messageDto = JsonConvert.DeserializeObject<MessageDto>(response.Data[0].ToString());
-        Assert.Equal(message.Id, messageDto.Id);
+        Assert.Equal(message.Id.Value, messageDto.Id);
     }
 
     [Fact]

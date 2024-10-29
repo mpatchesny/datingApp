@@ -22,6 +22,7 @@ public class User
     public Bio Bio { get; private set; }
     public ICollection<Photo> Photos { get; private set; } = new List<Photo>();
     public UserSettings Settings { get; private set; }
+    private const int PhotoCountLimit = 6;
 
     private User()
     {
@@ -68,7 +69,7 @@ public class User
 
     public void AddPhoto(Photo photo)
     {
-        if (Photos.Count >= 6)
+        if (Photos.Count >= PhotoCountLimit)
         {
             throw new UserPhotoLimitException();
         }

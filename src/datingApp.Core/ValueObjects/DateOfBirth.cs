@@ -27,12 +27,6 @@ public sealed record DateOfBirth
         Value = value;
     }
 
-    public static implicit operator DateOnly(DateOfBirth dateOfBirth)
-        => dateOfBirth.Value;
-
-    public static implicit operator DateOfBirth(DateOnly value)
-        => new(value);
-
     public int GetAge()
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
@@ -58,4 +52,10 @@ public sealed record DateOfBirth
 
         return age;
     }
+
+    public static implicit operator DateOnly(DateOfBirth dateOfBirth)
+        => dateOfBirth.Value;
+
+    public static implicit operator DateOfBirth(DateOnly value)
+        => new(value);
 }

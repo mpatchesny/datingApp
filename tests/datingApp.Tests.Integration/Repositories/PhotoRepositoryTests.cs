@@ -104,7 +104,7 @@ public class PhotoRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateRangeAsync(photos.ToArray()));
         Assert.Null(exception);
         var updatedPhotos = await _testDb.DbContext.Photos.Where(x => x.UserId.Equals(user.Id)).ToListAsync();
-        Assert.Equal(photos.OrderBy(x => x.Id), updatedPhotos.OrderBy(x => x.Id));
+        Assert.Equal(photos.OrderBy(x => x.Id.Value), updatedPhotos.OrderBy(x => x.Id.Value));
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,15 +31,15 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates that matches sex, age and are within approx range of user who requested
         // we want candidates that are different from user who requested
         var now = DateTime.UtcNow;
-        DateOnly minDob = new DateOnly(now.Year - settings.PreferredAge.To, now.Month, now.Day);
-        DateOnly maxDob = new DateOnly(now.Year - settings.PreferredAge.From, now.Month, now.Day);
-
-        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Location.Lat, settings.Location.Lon, settings.PreferredMaxDistance + 5);
-
-        var swipedCandidates = 
-            _dbContext.Swipes.Where(s => s.SwipedById.Equals(userId)).Select(x => x.SwipedWhoId.Value);
+        var minDob = new DateOnly(now.Year - settings.PreferredAge.To, now.Month, now.Day);
+        var maxDob = new DateOnly(now.Year - settings.PreferredAge.From, now.Month, now.Day);
 
         int preferredSex = (int) settings.PreferredSex;
+
+        var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Location.Lat, settings.Location.Lon, 
+            settings.PreferredMaxDistance + 5);
+
+        var swipedCandidates = _dbContext.Swipes.Where(s => s.SwipedById.Equals(userId)).Select(x => x.SwipedWhoId.Value).ToList();
 
         return _dbContext.Users
                     .Where(candidate => !candidate.Id.Equals(userId))
@@ -54,7 +55,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Select(candidate => candidate.Id.Value);
     }
 
-    private Task<List<User>> GetCandidatesAsync(IQueryable<Guid> initialCandidates)
+    private Task<List<User>> GetCandidatesAsync(IEnumerable<Guid> initialCandidates)
     {
         // we want candidates sorted by number of likes descending
         return _dbContext.Users
@@ -85,7 +86,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                                 .FirstOrDefaultAsync();
         if (settings == null) return null;
 
-        var initialCandidates = GetInitialCandidatesToSwipe(settings, query.UserId);
+        var initialCandidates = await GetInitialCandidatesToSwipe(settings, query.UserId).ToListAsync();
         var candidates = await GetCandidatesAsync(initialCandidates);
 
         // we want candidates within range of user who requested

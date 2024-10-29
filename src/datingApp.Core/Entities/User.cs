@@ -68,7 +68,7 @@ public class User
 
     public void AddPhoto(Photo photo)
     {
-        if (Photos.Count() >= 6)
+        if (Photos.Count >= 6)
         {
             throw new UserPhotoLimitException();
         }
@@ -79,5 +79,25 @@ public class User
     {
         var photo = Photos.FirstOrDefault(p => p.Id == photoId);
         if (photo != null) Photos.Remove(photo);
+    }
+
+    public void ChangeOridinal(PhotoId photoId, Oridinal newOridinal)
+    {
+        var photo = Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo == null) return;
+
+        photo.ChangeOridinal(newOridinal);
+
+        foreach (var p in Photos.Where(p => p.Id != photoId))
+        {
+            if (p.Oridinal >= photo.Oridinal)
+            {
+                p.ChangeOridinal(p.Oridinal.Value+1);
+            }
+            else if (p.Oridinal < photo.Oridinal)
+            {
+                p.ChangeOridinal(p.Oridinal.Value-1);
+            }
+        }
     }
 }

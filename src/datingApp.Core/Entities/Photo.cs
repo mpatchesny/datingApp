@@ -21,6 +21,7 @@ public class Photo
     {
         // EF
     }
+
     public Photo(PhotoId id, UserId userId, PhotoUrl url, Oridinal oridinal)
     {
         Id = id;

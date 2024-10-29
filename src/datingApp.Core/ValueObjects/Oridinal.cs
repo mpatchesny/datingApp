@@ -15,7 +15,7 @@ public sealed record Oridinal
         {
             value = 0;
         }
-        if (Value == value) return;
+
         Value = value;
     }
 

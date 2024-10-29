@@ -16,10 +16,12 @@ public sealed record MessageText
         {
             throw new InvalidMessageException("message cannot be empty");
         }
+
         if (value.Length > 255)
         {
             throw new InvalidMessageException("message too long");
         }
+
         Value = value;
     }
 

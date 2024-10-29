@@ -31,18 +31,19 @@ public class User
     public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
                 IEnumerable<Photo> photos, UserSettings settings, Job job=null, Bio bio=null)
     {
+        if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
+        if (settings == null) throw new UserSettingsIsNullException();
+
         Id = id;
         Phone = phone;
         Email = email;
         Name = name;
-        if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
         Sex = sex;
         DateOfBirth = dateOfBirth;
         Photos = photos;
-        if (settings == null) throw new UserSettingsIsNullException();
         Settings = settings;
-        Job = job;
-        Bio = bio;
+        Job = job ?? new Job("");
+        Bio = bio ?? new Bio("");
     }
 
     public int GetAge()

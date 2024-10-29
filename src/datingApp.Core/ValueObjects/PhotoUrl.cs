@@ -9,16 +9,16 @@ namespace datingApp.Core.ValueObjects;
 
 public sealed record PhotoUrl
 {
-    public string Url { get; }
-    public string Extension { get { return GetFileExtensionFromUrl(Url); } }
+    public string Value { get; }
+    public string Extension { get { return GetFileExtensionFromUrl(Value); } }
 
-    public PhotoUrl(string url)
+    public PhotoUrl(string value)
     {
-        if (string.IsNullOrEmpty(url))
+        if (string.IsNullOrEmpty(value))
         {
             throw new EmptyPhotoUrlException();
         }
-        Url = url;
+        Value = value;
     }
 
     // https://stackoverflow.com/questions/23228378/is-there-any-way-to-get-the-file-extension-from-a-url
@@ -30,8 +30,10 @@ public sealed record PhotoUrl
     }
 
     public static implicit operator string(PhotoUrl url)
-        => url.Url;
+        => url.Value;
 
     public static implicit operator PhotoUrl(string value)
         => new(value);
+
+    public override string ToString() => Value;
 }

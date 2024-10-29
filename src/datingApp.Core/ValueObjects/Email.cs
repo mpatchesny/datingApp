@@ -38,4 +38,6 @@ public sealed record Email
 
     public static implicit operator Email(string value)
         => new(value);
+
+    public override string ToString() => Value;
 }

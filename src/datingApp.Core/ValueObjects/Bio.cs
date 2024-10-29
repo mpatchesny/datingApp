@@ -24,4 +24,6 @@ public sealed record Bio
 
     public static implicit operator Bio(string value)
         => new(value);
+
+    public override string ToString() => Value;
 }

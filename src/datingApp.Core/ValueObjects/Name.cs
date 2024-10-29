@@ -39,4 +39,6 @@ public sealed record Name
 
     public static implicit operator Name(string value)
         => new(value);
+
+    public override string ToString() => Value;
 }

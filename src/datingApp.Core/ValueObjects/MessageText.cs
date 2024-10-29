@@ -30,4 +30,6 @@ public sealed record MessageText
 
     public static implicit operator MessageText(string value)
         => new(value);
+
+    public override string ToString() => Value;
 }

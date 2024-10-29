@@ -25,4 +25,6 @@ public sealed record Job
 
     public static implicit operator Job(string value)
         => new(value);
+
+    public override string ToString() => Value;
 }

@@ -5,7 +5,6 @@ using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
-using Org.BouncyCastle.Tls.Crypto.Impl;
 using Xunit;
 
 namespace datingApp.Tests.Unit;

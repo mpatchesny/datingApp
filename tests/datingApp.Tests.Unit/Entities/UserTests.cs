@@ -199,7 +199,7 @@ public class UserTests
     {
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings);
         user.ChangeDateOfBirth(new DateOnly(1999,1,2));
-        Assert.Equal(new DateOnly(1999,1,2), user.DateOfBirth);
+        Assert.Equal(new DateOnly(1999,1,2), user.DateOfBirth.Value);
     }
 
     [Fact]

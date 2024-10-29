@@ -26,7 +26,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PhotoDto>($"photos/{photo.Id}");
+        var response = await Client.GetFromJsonAsync<PhotoDto>($"photos/{photo.Id.Value}");
         Assert.NotNull(response);
         Assert.True(photo.Id.Equals(response.Id));
     }
@@ -86,7 +86,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         var command = new ChangePhotoOridinal(photo.Id, 1);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
-        var response = await Client.PatchAsync($"/photos/{photo.Id}", payload);
+        var response = await Client.PatchAsync($"/photos/{photo.Id.Value}", payload);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
@@ -117,7 +117,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.DeleteAsync($"/photos/{photo.Id}");
+        var response = await Client.DeleteAsync($"/photos/{photo.Id.Value}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
@@ -147,11 +147,11 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.DeleteAsync($"/photos/{photo.Id}");
+        var response = await Client.DeleteAsync($"/photos/{photo.Id.Value}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"Photo {photo.Id} is deleted permanently.", error.Reason);
+        Assert.Equal($"Photo {photo.Id.Value} is deleted permanently.", error.Reason);
     }
 
     [Fact]

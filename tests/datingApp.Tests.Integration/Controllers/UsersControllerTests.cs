@@ -125,7 +125,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
 
-        var response = await Client.GetAsync($"users/{user.Id}");
+        var response = await Client.GetAsync($"users/{user.Id.Value}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -137,7 +137,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var badToken = token.AccessToken.Token + "x";
 
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
-        var response = await Client.GetAsync($"users/{user.Id}");
+        var response = await Client.GetAsync($"users/{user.Id.Value}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -233,7 +233,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user2.Id}");
+        var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user2.Id.Value}");
         Assert.NotNull(response);
         Assert.Equal(user2.Id.Value, response.Id);
     }
@@ -247,7 +247,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response =  await Client.GetAsync($"users/{user2.Id}");
+        var response =  await Client.GetAsync($"users/{user2.Id.Value}");
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -259,7 +259,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetAsync($"users/{user1.Id}");
+        var response = await Client.GetAsync($"users/{user1.Id.Value}");
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -297,7 +297,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.DeleteAsync($"users/{user.Id}");
+        var response = await Client.DeleteAsync($"users/{user.Id.Value}");
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
@@ -326,11 +326,11 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         
-        var response = await Client.DeleteAsync($"users/{user.Id}");
+        var response = await Client.DeleteAsync($"users/{user.Id.Value}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"User {user.Id} is deleted permanently.", error.Reason);
+        Assert.Equal($"User {user.Id.Value} is deleted permanently.", error.Reason);
     }
 
     [Fact]
@@ -458,7 +458,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new ChangeUser(user.Id);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
-        var response = await Client.PatchAsync($"users/{user.Id}", payload);
+        var response = await Client.PatchAsync($"users/{user.Id.Value}", payload);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
@@ -473,7 +473,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
-        var response = await Client.PatchAsync($"users/{user.Id}", content);
+        var response = await Client.PatchAsync($"users/{user.Id.Value}", content);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 

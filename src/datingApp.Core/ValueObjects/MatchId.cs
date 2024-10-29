@@ -17,4 +17,6 @@ public sealed record MatchId
     public static implicit operator Guid(MatchId matchId) => matchId.Value;
     
     public static implicit operator MatchId(Guid value) => new(value);
+
+    public override string ToString() => Value.ToString();
 }

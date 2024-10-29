@@ -15,6 +15,8 @@ public sealed record MessageId
     }
 
     public static implicit operator Guid(MessageId messageId) => messageId.Value;
-    
+
     public static implicit operator MessageId(Guid value) => new(value);
+
+    public override string ToString() => Value.ToString();
 }

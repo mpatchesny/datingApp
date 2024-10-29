@@ -69,7 +69,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_candidates_with_proper_age_exists_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
+        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(queryAgeFrom, queryAgeTo), 100, new Location(0.0, 0.0));
         var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Female, null, settings1);
 
         int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;

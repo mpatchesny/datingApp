@@ -11,6 +11,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
+using FluentStorage.Utils.Extensions;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -441,7 +442,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var lastActivityTime = time - TimeSpan.FromHours(1);
+        var lastActivityTime = (time - TimeSpan.FromHours(1)).ToIso8601DateString();
         var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
         Assert.NotNull(response);
         Assert.Equal(5, response.Count);

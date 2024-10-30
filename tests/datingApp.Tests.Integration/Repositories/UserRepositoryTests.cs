@@ -23,6 +23,30 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task given_user_exists_and_has_photos_get_user_by_photo_id_should_succeed()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var photo3 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        foreach (var photo in new Photo[] {photo1, photo2, photo3})
+        {
+            var retrievedUser = await _userRepository.GetByPhotoIdAsync(photo.Id);
+            Assert.Same(user, retrievedUser);
+        }
+    }
+
+    [Fact]
+    public async Task given_user_exists_get_user_by_nonexisting_photo_id_should_return_null()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var retrievedUser = await _userRepository.GetByPhotoIdAsync(Guid.NewGuid());
+        Assert.Null(retrievedUser);
+    }
+
+    [Fact]
     public async Task given_user_exists_get_user_by_phone_should_succeed()
     {
         var phone = "123456789";

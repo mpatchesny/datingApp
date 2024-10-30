@@ -298,12 +298,12 @@ public class UserTests
     }
 
     [Fact]
-    public void given_photo_not_in_Photos_collection_change_oridinal_do_nothing()
+    public void given_photo_not_in_Photos_change_oridinal_do_nothing()
     {
         var photos = new List<Photo>{
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0),
             new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1),
             new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2),
-            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 3),
         };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
         var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 4);
@@ -313,6 +313,94 @@ public class UserTests
             p => Assert.Equal(photos[0].Id, p.Id),
             p => Assert.Equal(photos[1].Id, p.Id),
             p => Assert.Equal(photos[2].Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(0, photos[0].Oridinal.Value),
+            p => Assert.Equal(1, photos[1].Oridinal.Value),
+            p => Assert.Equal(2, photos[2].Oridinal.Value)
+        );
+    }
+
+    [Fact]
+    public void given_new_oridinal_is_the_same_change_oridinal_do_nothing()
+    {
+        var photos = new List<Photo>{
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2),
+        };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.ChangeOridinal(photos[1].Id, 1);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photos[0].Id, p.Id),
+            p => Assert.Equal(photos[1].Id, p.Id),
+            p => Assert.Equal(photos[2].Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(0, photos[0].Oridinal.Value),
+            p => Assert.Equal(1, photos[1].Oridinal.Value),
+            p => Assert.Equal(2, photos[2].Oridinal.Value)
+        );
+    }
+
+    [Fact]
+    public void passed_ordinal_in_change_oridinal_is_modified_not_to_be_greater_than_photos_count_minus_one()
+    {
+        var photos = new List<Photo>{
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2),
+        };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.ChangeOridinal(photos[0].Id, 5);
+        Assert.Equal(2, photos[0].Oridinal.Value);
+    }
+
+    [Fact]
+    public void given_photo_in_Photos_change_oridinal_shift_photos_with_greater_or_equal_oridinal_one_oridnal_up()
+    {
+        var photos = new List<Photo>{
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2),
+        };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.ChangeOridinal(photos[2].Id, 0);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photos[0].Id, p.Id),
+            p => Assert.Equal(photos[1].Id, p.Id),
+            p => Assert.Equal(photos[2].Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(1, photos[0].Oridinal.Value),
+            p => Assert.Equal(2, photos[1].Oridinal.Value),
+            p => Assert.Equal(0, photos[2].Oridinal.Value)
+        );
+    }
+
+    [Fact]
+    public void given_photo_in_Photos_change_oridinal_shift_photos_with_less_oridinal_one_oridnal_down()
+    {
+        var photos = new List<Photo>{
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1),
+            new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2),
+        };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.ChangeOridinal(photos[1].Id, 2);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photos[0].Id, p.Id),
+            p => Assert.Equal(photos[1].Id, p.Id),
+            p => Assert.Equal(photos[2].Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(0, photos[0].Oridinal.Value),
+            p => Assert.Equal(2, photos[1].Oridinal.Value),
+            p => Assert.Equal(1, photos[2].Oridinal.Value)
         );
     }
 

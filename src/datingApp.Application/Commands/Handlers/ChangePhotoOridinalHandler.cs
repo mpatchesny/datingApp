@@ -13,49 +13,31 @@ namespace datingApp.Application.Commands.Handlers;
 
 public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOridinal>
 {
-    private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IPhotoOrderer _photoOrderer;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, 
-                                        IUserRepository userRepository, 
-                                        IPhotoOrderer photoOrderer, 
-                                        IDatingAppAuthorizationService authorizationService)
+    public ChangePhotoOridinalHandler(IUserRepository userRepository, 
+                                      IDatingAppAuthorizationService authorizationService)
     {
-        _photoRepository = photoRepository;
         _userRepository = userRepository;
-        _photoOrderer = photoOrderer;
         _authorizationService = authorizationService;
     }
 
     public async Task HandleAsync(ChangePhotoOridinal command)
     {
-        var thisPhoto = await _photoRepository.GetByIdAsync(command.PhotoId);
-        if (thisPhoto == null)
+        var user = await _userRepository.GetByPhotoIdAsync(command.PhotoId);
+        if (user == null)
         {
             throw new PhotoNotExistsException(command.PhotoId);
         }
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, thisPhoto, "OwnerPolicy");
+        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
         {
             throw new UnauthorizedException();
         }
 
-        if (thisPhoto.Oridinal == command.NewOridinal)
-        {
-            return;
-        }
-
-        var photos = await _photoRepository.GetByUserIdAsync(thisPhoto.UserId);
-
-        var photoList = _photoOrderer.OrderPhotos(photos.ToList<Photo>(), thisPhoto.Id, command.NewOridinal);
-        for (int i = 0; i < photoList.Count(); i++)
-        {
-            photoList[i].ChangeOridinal(i);
-        }
-
-        await _photoRepository.UpdateRangeAsync(photoList.ToArray());
+        user.ChangeOridinal(command.PhotoId, command.NewOridinal);
+        await _userRepository.UpdateAsync(user);
     }
 }

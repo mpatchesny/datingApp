@@ -11,7 +11,7 @@ public sealed record Oridinal
 
     public Oridinal(int value)
     {
-        if (value < -1)
+        if (value <= -1)
         {
             value = 0;
         }

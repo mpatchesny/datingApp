@@ -64,24 +64,8 @@ public class AddPhotoHandlerTests : IDisposable
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoException>(exception);
     }
-   
-    [Fact]
-    public async Task given_user_reached_photo_count_limit_add_photo_throws_UserPhotoLimitException()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        for (int i = 0; i < PHOTO_COUNT_PER_USER_LIMIT; i++)
-        {
-            await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, i);
-        }
-        
-        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        Assert.NotNull(exception);
-        Assert.IsType<UserPhotoLimitException>(exception);
-    }
-    
+
     // Arrange
-    private readonly int PHOTO_COUNT_PER_USER_LIMIT = 6;
     private readonly AddPhotoHandler _handler;
     private readonly TestDatabase _testDb;
     private readonly Mock<IPhotoService> _mockPhotoService;
@@ -89,13 +73,12 @@ public class AddPhotoHandlerTests : IDisposable
     public AddPhotoHandlerTests()
     {
         _testDb = new TestDatabase();
-        var photoRepository = new DbPhotoRepository(_testDb.DbContext);
         var userRepository = new DbUserRepository(_testDb.DbContext);
         _mockPhotoService = new Mock<IPhotoService>();
         _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Returns(new PhotoServiceProcessOutput(new byte[10], "jpg"));
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<System.IO.Stream>(), false, It.IsAny<System.Threading.CancellationToken>()));
-        _handler = new AddPhotoHandler(photoRepository, userRepository, _mockPhotoService.Object, _mockStorage.Object);
+        _handler = new AddPhotoHandler(userRepository, _mockPhotoService.Object, _mockStorage.Object);
     }
 
     // Teardown

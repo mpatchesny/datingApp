@@ -12,6 +12,7 @@ public interface IUserRepository : IRepository
     Task<User> GetByIdAsync(UserId userId);
     Task<User> GetByEmailAsync(string email);
     Task<User> GetByPhoneAsync(string phone);
+    Task<User> GetByPhotoIdAsync(PhotoId photoId);
     Task AddAsync(User user);
     Task UpdateAsync(User user);
     Task DeleteAsync(User user);

@@ -17,16 +17,13 @@ namespace datingApp.Application.Commands.Handlers;
 
 public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 {
-    private readonly IPhotoRepository _photoRepository;
     private readonly IUserRepository _userRepository;
     private readonly IPhotoService _photoService;
     private readonly IBlobStorage _fileStorage;
-    public AddPhotoHandler(IPhotoRepository photoRepository,
-                            IUserRepository userRepository,
-                            IPhotoService photoService,
-                            IBlobStorage fileStorage)
+    public AddPhotoHandler(IUserRepository userRepository,
+                           IPhotoService photoService,
+                           IBlobStorage fileStorage)
     {
-        _photoRepository = photoRepository;
         _userRepository = userRepository;
         _photoService = photoService;
         _fileStorage = fileStorage;
@@ -42,19 +39,14 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        if (user.Photos.Count() >= 6)
-        {
-            throw new UserPhotoLimitException();
-        }
-
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
-        int oridinal = user.Photos.Count();
-        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, oridinal);
+        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, 0);
+        user.AddPhoto(photo);
 
         var path = $"{photo.Id}.{extension}";
         var tasks = new List<Task>(){
             _fileStorage.WriteAsync(path, new MemoryStream(bytes)),
-            _photoRepository.AddAsync(photo),
+            _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
     }

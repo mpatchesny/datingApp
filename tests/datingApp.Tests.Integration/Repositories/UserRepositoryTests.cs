@@ -23,6 +23,30 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task given_user_exists_and_has_photos_get_user_by_photo_id_should_succeed()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var photo3 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+
+        foreach (var photo in new Photo[] {photo1, photo2, photo3})
+        {
+            var retrievedUser = await _userRepository.GetByPhotoIdAsync(photo.Id);
+            Assert.Same(user, retrievedUser);
+        }
+    }
+
+    [Fact]
+    public async Task given_user_exists_get_user_by_nonexisting_photo_id_should_return_null()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+
+        var retrievedUser = await _userRepository.GetByPhotoIdAsync(Guid.NewGuid());
+        Assert.Null(retrievedUser);
+    }
+
+    [Fact]
     public async Task given_user_exists_get_user_by_phone_should_succeed()
     {
         var phone = "123456789";
@@ -52,6 +76,46 @@ public class UserRepositoryTests : IDisposable
         Assert.Null(exception);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.Same(user, updatedUser);
+    }
+
+    [Fact]
+    public async Task given_user_photo_is_added_update_user_should_update_photos()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        user.AddPhoto(new Photo(Guid.NewGuid(), user.Id, "abcdef", 0));
+
+        await _userRepository.UpdateAsync(user);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        Assert.Same(user, updatedUser);
+    }
+
+    [Fact]
+    public async Task given_user_photo_is_removed_update_user_should_update_photos()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
+        user.RemovePhoto(photo.Id);
+
+        await _userRepository.UpdateAsync(user);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        Assert.Same(user, updatedUser);
+    }
+
+    [Fact]
+    public async Task given_user_photo_oridinal_change_update_user_should_update_photos()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 1);
+        user.ChangeOridinal(photo2.Id, 0);
+
+        await _userRepository.UpdateAsync(user);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        var photos = updatedUser.Photos.OrderBy(p => p.Oridinal.Value).ToList();
+        Assert.Collection(photos, 
+            p => Assert.Equal(p.Id, photo2.Id),
+            p => Assert.Equal(p.Id, photo1.Id)
+        );
     }
 
     [Fact]

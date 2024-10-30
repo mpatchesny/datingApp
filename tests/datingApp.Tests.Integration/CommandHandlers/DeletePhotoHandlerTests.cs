@@ -26,7 +26,7 @@ public class DeletePhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_photo_exists_delete_photo_should_succeed_and_add_deleted_photo_id_to_deleted_entities_and_delete_photo_file_from_storage()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
@@ -40,7 +40,7 @@ public class DeletePhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_authorization_fail_delete_existing_photo_throws_UnauthorizedException()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
@@ -54,7 +54,7 @@ public class DeletePhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_photo_not_exists_delete_photo_throws_PhotoNotExistsException()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var nonExistingPhotoId = Guid.NewGuid();
 
         var command = new DeletePhoto(nonExistingPhotoId);
@@ -67,7 +67,7 @@ public class DeletePhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_photo_not_exists_and_photo_id_in_deleted_entities_repository_delete_photo_throws_PhotoAlreadyDeletedException()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Photo>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
         await IntegrationTestHelper.DeletePhotoAsync(_testDb, photo);
@@ -89,11 +89,11 @@ public class DeletePhotoHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _authService = new Mock<IDatingAppAuthorizationService>();
 
-        var photoRepository = new DbPhotoRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_testDb.DbContext);
         var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
-        _handler = new DeletePhotoHandler(photoRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);
+        _handler = new DeletePhotoHandler(userRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);
     }
 
     // Teardown

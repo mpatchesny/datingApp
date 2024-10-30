@@ -77,8 +77,9 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
         mockedPhotoOrderer.Setup(m => m.OrderPhotos(It.IsAny<List<Photo>>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .Returns((List<Photo> x, Guid y, int z) => x);
         var photoRepository = new DbPhotoRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_testDb.DbContext);
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new ChangePhotoOridinalHandler(photoRepository, mockedPhotoOrderer.Object, _authService.Object);
+        _handler = new ChangePhotoOridinalHandler(photoRepository, userRepository, mockedPhotoOrderer.Object, _authService.Object);
     }
 
     // Teardown

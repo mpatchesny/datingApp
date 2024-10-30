@@ -14,12 +14,17 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class ChangePhotoOridinalHandler : ICommandHandler<ChangePhotoOridinal>
 {
     private readonly IPhotoRepository _photoRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IPhotoOrderer _photoOrderer;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, IPhotoOrderer photoOrderer, IDatingAppAuthorizationService authorizationService)
+    public ChangePhotoOridinalHandler(IPhotoRepository photoRepository, 
+                                        IUserRepository userRepository, 
+                                        IPhotoOrderer photoOrderer, 
+                                        IDatingAppAuthorizationService authorizationService)
     {
         _photoRepository = photoRepository;
+        _userRepository = userRepository;
         _photoOrderer = photoOrderer;
         _authorizationService = authorizationService;
     }

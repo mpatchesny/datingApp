@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
 using datingApp.Core.Consts;
 using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
@@ -87,20 +90,26 @@ public class User
 
     public void ChangeOridinal(PhotoId photoId, Oridinal newOridinal)
     {
-        var photoToChange = Photos.FirstOrDefault(p => p.Id == photoId);
-        if (photoToChange == null) return;
-        photoToChange.ChangeOridinal(newOridinal);
+        newOridinal = Math.Min(newOridinal, Math.Max(0, Photos.Count-1));
 
-        foreach (var photo in Photos.Where(p => p.Id != photoId))
+        var photoToChange = Photos.FirstOrDefault(p => p.Id == photoId
+            && p.Oridinal != newOridinal);
+        if (photoToChange == null) return;
+
+        var shiftUp = newOridinal > photoToChange.Oridinal;
+        var lowerBound = shiftUp ? photoToChange.Oridinal : newOridinal;
+        var upperBound = shiftUp ? newOridinal : photoToChange.Oridinal;
+
+        foreach (var photo in Photos)
         {
-            if (photo.Oridinal >= photoToChange.Oridinal)
+            if (photo.Id != photoId && photo.Oridinal >= lowerBound 
+                && photo.Oridinal <= upperBound)
             {
-                photo.ChangeOridinal(photo.Oridinal.Value+1);
-            }
-            else if (photo.Oridinal < photoToChange.Oridinal)
-            {
-                photo.ChangeOridinal(photo.Oridinal.Value-1);
+                var shift = shiftUp ? -1 : 1;
+                photo.ChangeOridinal(photo.Oridinal + shift);
             }
         }
+
+        photoToChange.ChangeOridinal(newOridinal);
     }
 }

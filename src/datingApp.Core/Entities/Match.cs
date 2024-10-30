@@ -59,4 +59,16 @@ public class Match
             Messages.Remove(message);
         }
     }
+
+    public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId sendFromId)
+    {
+        var lastMessage = Messages.FirstOrDefault(m => m.Id == lastMessageId);
+        foreach (var message in Messages)
+        {
+            if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId == sendFromId)
+            {
+                message.SetDisplayed();
+            }
+        }
+    }
 }

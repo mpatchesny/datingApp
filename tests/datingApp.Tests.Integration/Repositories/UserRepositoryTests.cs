@@ -79,7 +79,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_photos_change_update_user_should_update_photos_1()
+    public async Task given_user_photo_is_added_update_user_should_update_photos()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         user.AddPhoto(new Photo(Guid.NewGuid(), user.Id, "abcdef", 0));
@@ -90,7 +90,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_photos_change_update_user_should_update_photos_2()
+    public async Task given_user_photo_is_removed_update_user_should_update_photos()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
@@ -102,7 +102,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_photos_change_update_user_should_update_photos_3()
+    public async Task given_user_photo_oridinal_change_update_user_should_update_photos()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);

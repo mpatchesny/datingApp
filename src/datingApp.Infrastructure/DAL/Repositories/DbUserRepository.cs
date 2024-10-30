@@ -52,4 +52,13 @@ internal sealed class DbUserRepository : IUserRepository
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<User> GetByPhotoIdAsync(PhotoId photoId)
+    {
+        return await _dbContext.Users
+                        .Include(x => x.Photos)
+                        .Include(x => x.Settings)
+                        .Where(x => x.Photos.Any(p => p.Id == photoId))
+                        .FirstOrDefaultAsync();
+    }
 }

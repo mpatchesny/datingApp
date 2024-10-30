@@ -55,6 +55,46 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task given_user_photos_change_update_user_should_update_photos_1()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        user.AddPhoto(new Photo(Guid.NewGuid(), user.Id, "abcdef", 0));
+
+        await _userRepository.UpdateAsync(user);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        Assert.Same(user, updatedUser);
+    }
+
+    [Fact]
+    public async Task given_user_photos_change_update_user_should_update_photos_2()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
+        user.RemovePhoto(photo.Id);
+
+        await _userRepository.UpdateAsync(user);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        Assert.Same(user, updatedUser);
+    }
+
+    [Fact]
+    public async Task given_user_photos_change_update_user_should_update_photos_3()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 1);
+        user.ChangeOridinal(photo2.Id, 0);
+
+        await _userRepository.UpdateAsync(user);
+        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        var photos = updatedUser.Photos.OrderBy(p => p.Oridinal.Value).ToList();
+        Assert.Collection(photos, 
+            p => Assert.Equal(p.Id, photo2.Id),
+            p => Assert.Equal(p.Id, photo1.Id)
+        );
+    }
+
+    [Fact]
     public async Task delete_existing_user_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);

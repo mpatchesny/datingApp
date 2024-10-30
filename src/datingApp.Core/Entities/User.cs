@@ -79,13 +79,18 @@ public class User
 
         if (Photos.Any(p => p.Id == photo.Id)) return;
 
+        photo.ChangeOridinal(Photos.Count);
         Photos.Add(photo);
     }
 
     public void RemovePhoto(PhotoId photoId)
     {
         var photo = Photos.FirstOrDefault(p => p.Id == photoId);
-        if (photo != null) Photos.Remove(photo);
+        if (photo != null) 
+        {
+            ChangeOridinal(photoId, 999);
+            Photos.Remove(photo);
+        }
     }
 
     public void ChangeOridinal(PhotoId photoId, Oridinal newOridinal)

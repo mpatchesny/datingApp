@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Exceptions;
@@ -236,17 +237,18 @@ public class UserTests
     }
 
     [Fact]
-    public void add_photo_adds_photo_to_user_Photos_collection()
+    public void add_photo_adds_photo_to_user_Photos_with_oridinal_set_to_photos_count()
     {
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, _properUserSettings);
 
         Assert.Empty(user.Photos);
-        user.AddPhoto(new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0));
+        user.AddPhoto(new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 5));
         Assert.Single(user.Photos);
+        Assert.Equal(0, user.Photos.First().Oridinal.Value);
     }
 
     [Fact]
-    public void given_photo_already_in_Photos_collection_add_photo_do_nothing()
+    public void given_photo_already_in_Photos_add_photo_do_nothing()
     {
         var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0);
         var photos = new List<Photo>{ photo };
@@ -258,7 +260,7 @@ public class UserTests
     }
 
     [Fact]
-    public void remove_photo_removes_photo_from_user_Photo_collection()
+    public void remove_photo_removes_photo_from_user_Photo()
     {
         var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0); 
         var photos = new List<Photo>{ photo };
@@ -270,7 +272,67 @@ public class UserTests
     }
 
     [Fact]
-    public void given_photo_not_in_Photos_collection_remove_photo_do_nothing()
+    public void remove_photo_from_middle_changes_remain_Photos_oridinal()
+    {
+        var photo1 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0);
+        var photo2 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1);
+        var photo3 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2);
+        var photos = new List<Photo>{ photo1, photo2, photo3 };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.RemovePhoto(photo2.Id);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photo1.Id, p.Id),
+            p => Assert.Equal(photo3.Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(0, photo1.Oridinal.Value),
+            p => Assert.Equal(1, photo3.Oridinal.Value)
+        );
+    }
+
+    [Fact]
+    public void remove_photo_from_beginning_changes_remain_Photos_oridinal()
+    {
+        var photo1 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0);
+        var photo2 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1);
+        var photo3 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2);
+        var photos = new List<Photo>{ photo1, photo2, photo3 };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.RemovePhoto(photo1.Id);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photo2.Id, p.Id),
+            p => Assert.Equal(photo3.Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(0, photo2.Oridinal.Value),
+            p => Assert.Equal(1, photo3.Oridinal.Value)
+        );
+    }
+
+    [Fact]
+    public void remove_photo_from_beginning_not_change_remain_Photos_oridinal()
+    {
+        var photo1 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0);
+        var photo2 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 1);
+        var photo3 = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 2);
+        var photos = new List<Photo>{ photo1, photo2, photo3 };
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+
+        user.RemovePhoto(photo3.Id);
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(photo1.Id, p.Id),
+            p => Assert.Equal(photo2.Id, p.Id)
+        );
+        Assert.Collection(user.Photos,
+            p => Assert.Equal(0, photo1.Oridinal.Value),
+            p => Assert.Equal(1, photo2.Oridinal.Value)
+        );
+    }
+
+    [Fact]
+    public void given_photo_not_in_Photos_remove_photo_do_nothing()
     {
         var photo = new Photo(Guid.NewGuid(), Guid.NewGuid(), "abcde", 0); 
         var photos = new List<Photo>();

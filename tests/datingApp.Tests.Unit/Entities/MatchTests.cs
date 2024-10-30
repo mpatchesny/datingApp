@@ -35,4 +35,50 @@ public class MatchTests
         Assert.False(match.IsDisplayedByUser2);
         Assert.False(match.IsDisplayedByUser1);
     }
+
+    [Fact]
+    public void given_message_not_in_Match_AddMessage_adds_message()
+    {
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), match.Id, Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+        
+        Assert.Empty(match.Messages);
+        match.AddMessage(message);
+        Assert.Single(match.Messages);
+    }
+
+    [Fact]
+    public void given_message_in_Match_AddMessage_adds_message_do_nothing()
+    {
+        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+        var messages = new List<Message> { message };
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+        
+        Assert.Single(match.Messages);
+        match.AddMessage(message);
+        Assert.Single(match.Messages);
+    }
+
+    [Fact]
+    public void given_message_not_in_Match_RemoveMessage_do_nothing()
+    {
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), match.Id, Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+        
+        Assert.Empty(match.Messages);
+        match.RemoveMessage(message.Id);
+        Assert.Empty(match.Messages);
+    }
+
+    [Fact]
+    public void given_message_in_Match_RemoveMessage_removes_message()
+    {
+        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+        var messages = new List<Message> { message };
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+        
+        Assert.Single(match.Messages);
+        match.RemoveMessage(message.Id);
+        Assert.Empty(match.Messages);
+    }
 }

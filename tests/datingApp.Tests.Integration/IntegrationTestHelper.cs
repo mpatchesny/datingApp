@@ -35,7 +35,7 @@ internal static class IntegrationTestHelper
         return user;
     }
 
-    internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 1)
+    internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 0)
     {
         var photo = new Photo(Guid.NewGuid(), userId, "abc", oridinal);
         await database.DbContext.Photos.AddAsync(photo);

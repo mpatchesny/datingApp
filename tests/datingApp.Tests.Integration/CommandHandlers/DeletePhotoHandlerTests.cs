@@ -89,11 +89,11 @@ public class DeletePhotoHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _authService = new Mock<IDatingAppAuthorizationService>();
 
-        var photoRepository = new DbPhotoRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_testDb.DbContext);
         var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
-        _handler = new DeletePhotoHandler(photoRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);
+        _handler = new DeletePhotoHandler(userRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);
     }
 
     // Teardown

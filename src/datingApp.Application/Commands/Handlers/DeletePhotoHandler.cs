@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
@@ -15,17 +16,17 @@ namespace datingApp.Application.Commands.Handlers;
 
 public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
-    private readonly IPhotoRepository _photoRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IBlobStorage _fileStorage;
     private readonly IDeletedEntityRepository _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public DeletePhotoHandler(IPhotoRepository photoRepository,
+    public DeletePhotoHandler(IUserRepository userRepository,
                             IBlobStorage fileStorageService,
                             IDeletedEntityRepository deletedEntityRepository,
                             IDatingAppAuthorizationService authorizationService)
     {
-        _photoRepository = photoRepository;
+        _userRepository = userRepository;
         _fileStorage = fileStorageService;
         _deletedEntityRepository = deletedEntityRepository;
         _authorizationService = authorizationService;
@@ -33,8 +34,8 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 
     public async Task HandleAsync(DeletePhoto command)
     {
-        var photo = await _photoRepository.GetByIdAsync(command.PhotoId);
-        if (photo == null)
+        var user = await _userRepository.GetByPhotoIdAsync(command.PhotoId);
+        if (user == null)
         {
             if (await _deletedEntityRepository.ExistsAsync(command.PhotoId))
             {
@@ -46,16 +47,19 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             }
         }
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, photo, "OwnerPolicy");
+        var authorizationResult = await _authorizationService.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
         {
             throw new UnauthorizedException();
         }
 
+        var photo = user.Photos.FirstOrDefault(p => p.Id.Value == command.PhotoId);
         var path = $"{photo.Id}.{photo.Extension}";
+        user.RemovePhoto(command.PhotoId);
+
         var tasks = new List<Task>(){
             _fileStorage.DeleteAsync(path),
-            _photoRepository.DeleteAsync(photo),
+            _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
         await _deletedEntityRepository.AddAsync(photo.Id);

@@ -48,6 +48,12 @@ public class Match
     public void AddMessage(Message message)
     {
         if (Messages.Any(m => m.Id == message.Id)) return;
+
+        if (!(new UserId[] { UserId1, UserId2 }).Any(u => u == message.SendFromId))
+        {
+            // TODO: exception: message could be sent only between match parties
+        }
+
         Messages.Add(message);
     }
 
@@ -60,12 +66,14 @@ public class Match
         }
     }
 
-    public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId sendFromId)
+    public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId displayedByUserId)
     {
         var lastMessage = Messages.FirstOrDefault(m => m.Id == lastMessageId);
+        if (lastMessage == null) return;
+
         foreach (var message in Messages)
         {
-            if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId == sendFromId)
+            if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId != displayedByUserId)
             {
                 message.SetDisplayed();
             }

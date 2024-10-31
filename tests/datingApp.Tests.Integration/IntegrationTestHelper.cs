@@ -60,8 +60,10 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Message> CreateMessageAsync(TestDatabase database, Guid matchId, Guid sendFromId, DateTime? createdAt = null)
     {
+        var match = await database.DbContext.Matches.FirstOrDefaultAsync(m => m.Id.Equals(matchId));
         var message = new Message(Guid.NewGuid(), matchId, sendFromId, "test", false, createdAt ?? DateTime.UtcNow);
-        await database.DbContext.Messages.AddAsync(message);
+        match.AddMessage(message);
+        database.DbContext.Matches.Update(match);
         await database.DbContext.SaveChangesAsync();
         return message;
     }

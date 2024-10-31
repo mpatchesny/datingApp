@@ -60,8 +60,8 @@ public class SetMessagesAsDisplayedHandlerTests : IDisposable
         _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 
-        var messageRepository = new DbMessageRepository(_testDb.DbContext);
-        _handler = new SetMessagesAsDisplayedHandler(messageRepository);
+        var matchRepository = new DbMatchRepository(_testDb.DbContext);
+        _handler = new SetMessagesAsDisplayedHandler(matchRepository);
     }
 
     // Teardown

@@ -19,6 +19,7 @@ public class SetMessagesAsDisplayedHandler : ICommandHandler<SetMessagesAsDispla
     public async Task HandleAsync(SetMessagesAsDisplayed command)
     {
         var match = await _matchRepository.GetByMessageIdAsync(command.LastMessageId);
+        if (match == null) return;
         match.SetPreviousMessagesAsDisplayed(command.LastMessageId, command.DisplayedByUserId);
         await _matchRepository.UpdateAsync(match);
     }

@@ -65,7 +65,7 @@ public class GetUpdatesHandlerTests : IDisposable
         _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match1.Id, user2.Id, timeAfterLastActivityTime);
         _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match2.Id, user3.Id, timeAfterLastActivityTime);
 
-        var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow};
+        var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow };
         var result = await _handler.HandleAsync(query);
         Assert.NotEmpty(result);
         Assert.Equal(2, result.Count());

@@ -163,6 +163,29 @@ public class MatchRepositoryTests : IDisposable
         Assert.Equal(2, matches.Count());
     }
 
+    [Fact]
+    public async void get_match_by_nonexisting_message_id_returns_null()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+
+        var match = await _repository.GetByMessageIdAsync(Guid.NewGuid());
+        Assert.Null(match);
+    }
+
+    [Fact]
+    public async void get_match_by_existing_message_id_returns_match()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, DateTime.UtcNow);
+
+        var retrievedMatch = await _repository.GetByMessageIdAsync(message.Id);
+        Assert.Same(match, retrievedMatch);
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly IMatchRepository _repository;

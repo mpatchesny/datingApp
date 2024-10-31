@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
@@ -49,9 +50,9 @@ public class Match
     {
         if (Messages.Any(m => m.Id == message.Id)) return;
 
-        if (!(new UserId[] { UserId1, UserId2 }).Any(u => u == message.SendFromId))
+        if (message.SendFromId != UserId1 && message.SendFromId != UserId2)
         {
-            // TODO: exception: message could be sent only between match parties
+            throw new MessageSenderNotMatchMatchUsers();
         }
 
         Messages.Add(message);

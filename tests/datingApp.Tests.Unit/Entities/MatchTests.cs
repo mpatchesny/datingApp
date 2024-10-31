@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.Exceptions;
 using Xunit;
 
 namespace datingApp.Tests.Unit.Entities;
@@ -40,7 +41,7 @@ public class MatchTests
     public void given_message_not_in_Match_AddMessage_adds_message()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
-        var message = new Message(Guid.NewGuid(), match.Id, Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), match.Id, match.UserId1, "abc", false, DateTime.UtcNow);
         
         Assert.Empty(match.Messages);
         match.AddMessage(message);
@@ -48,15 +49,26 @@ public class MatchTests
     }
 
     [Fact]
-    public void given_message_in_Match_AddMessage_adds_message_do_nothing()
+    public void given_message_in_Match_AddMessage_do_nothing()
     {
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
         var messages = new List<Message> { message };
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
-        
+        var match = new Match(message.MatchId, message.SendFromId, Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+
         Assert.Single(match.Messages);
         match.AddMessage(message);
         Assert.Single(match.Messages);
+    }
+
+    [Fact]
+    public void given_message_SendFrom_not_match_Match_UserId_AddMessage_throw_MessageSenderNotMatchMatchUsers_1()
+    {
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+
+        var exception = Record.Exception(() => match.AddMessage(message));
+        Assert.NotNull(exception);
+        Assert.IsType<MessageSenderNotMatchMatchUsers>(exception);
     }
 
     [Fact]

@@ -62,7 +62,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
         var data = await dbQuery.AsNoTracking().ToListAsync();
 
-        List<MatchDto> dataDto = new List<MatchDto>();
+        var dataDto = new List<MatchDto>();
         foreach (var item in data)
         {
             dataDto.Add(

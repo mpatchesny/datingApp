@@ -51,10 +51,10 @@ public class MatchTests
     [Fact]
     public void given_message_in_Match_AddMessage_do_nothing()
     {
-        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
-        var messages = new List<Message> { message };
-        var match = new Match(message.MatchId, message.SendFromId, Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), match.UserId1, "abc", false, DateTime.UtcNow);
 
+        match.AddMessage(message);
         Assert.Single(match.Messages);
         match.AddMessage(message);
         Assert.Single(match.Messages);

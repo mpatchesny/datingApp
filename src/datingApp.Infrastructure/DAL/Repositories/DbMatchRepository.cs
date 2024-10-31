@@ -16,6 +16,7 @@ internal sealed class DbMatchRepository : IMatchRepository
     {
         _dbContext = dbContext;
     }
+
     public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId)
     {
         return await _dbContext.Matches.Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
@@ -24,6 +25,7 @@ internal sealed class DbMatchRepository : IMatchRepository
                                 .Take(1))
                         .ToListAsync();
     }
+
     public async Task<Match> GetByIdAsync(MatchId matchId)
     {
         return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id.Equals(matchId));

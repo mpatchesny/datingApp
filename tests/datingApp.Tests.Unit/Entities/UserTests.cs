@@ -137,8 +137,8 @@ public class UserTests
 
     public static TheoryData<DateTime> BadUserAgeData => new()
     {
-        { new DateTime(DateTime.Now.Year - 18, DateTime.Now.Month, DateTime.Now.Day + 1)},
-        { new DateTime(DateTime.Now.Year - 101, DateTime.Now.Month, DateTime.Now.Day)},
+        { new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddYears(-18).AddDays(1) },
+        { new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddYears(-101)},
     };
 
     [Theory]

@@ -59,7 +59,7 @@ internal static class Extensions
         return new()
         {
             Id = entity.Id,
-            MatchId = entity.MatchId,
+            MatchId = Guid.NewGuid(),
             SendFromId = entity.SendFromId,
             Text = entity.Text,
             IsDisplayed = entity.IsDisplayed,

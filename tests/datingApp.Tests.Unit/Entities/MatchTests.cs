@@ -93,4 +93,55 @@ public class MatchTests
         match.RemoveMessage(message.Id);
         Assert.Empty(match.Messages);
     }
+
+    [Fact]
+    public void given_message_not_in_Match_SetPreviousMessagesAsDisplayed_do_nothing()
+    {
+        var matchId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var messages = new List<Message> { 
+            new Message(Guid.NewGuid(), matchId, userId, "abc", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), matchId, userId, "abc", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), matchId, userId, "abc", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), matchId, userId, "abc", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), matchId, userId, "abc", false, DateTime.UtcNow),
+         };
+        var match = new Match(matchId, userId, Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+
+        var exception = Record.Exception(() => match.SetPreviousMessagesAsDisplayed(Guid.NewGuid(), match.UserId1));
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void SetPreviousMessagesAsDisplayed_sets_messages_as_displayed_if_message_is_created_before_last_message_and_send_from_is_different_than_displayedUser()
+    {
+        var matchId = Guid.NewGuid();
+        var userId1 = Guid.NewGuid();
+        var userId2 = Guid.NewGuid();
+
+        var createdAt = DateTime.UtcNow - TimeSpan.FromSeconds(1);
+        var lastMessage = new Message(Guid.NewGuid(), matchId, userId1, "abc", false, createdAt);
+
+        var messages = new List<Message> { 
+            lastMessage,
+            new Message(Guid.NewGuid(), matchId, userId1, "abc", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), matchId, userId1, "abc", false, createdAt - TimeSpan.FromMinutes(1)),
+            new Message(Guid.NewGuid(), matchId, userId1, "abc", true, createdAt - TimeSpan.FromHours(1)),
+            new Message(Guid.NewGuid(), matchId, userId2, "abc", false, createdAt),
+            new Message(Guid.NewGuid(), matchId, userId2, "abc", false, createdAt),
+            new Message(Guid.NewGuid(), matchId, userId2, "abc", false, createdAt),
+         };
+        var match = new Match(matchId, userId1, userId2, false, false, messages, DateTime.UtcNow);
+        
+        match.SetPreviousMessagesAsDisplayed(lastMessage.Id, userId2);
+        Assert.Collection(match.Messages, 
+            m => Assert.True(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.True(m.IsDisplayed),
+            m => Assert.True(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed)
+        );
+    }
 }

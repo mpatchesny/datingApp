@@ -110,6 +110,32 @@ public class MatchTests
 
         var exception = Record.Exception(() => match.SetPreviousMessagesAsDisplayed(Guid.NewGuid(), match.UserId1));
         Assert.Null(exception);
+        Assert.Collection(match.Messages, 
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed)
+        );
+    }
+
+    [Fact]
+    public void SetPreviousMessagesAsDisplayed_sets_last_message_as_displayed()
+    {
+        var matchId = Guid.NewGuid();
+        var userId1 = Guid.NewGuid();
+        var userId2 = Guid.NewGuid();
+
+        var createdAt = DateTime.UtcNow - TimeSpan.FromSeconds(1);
+        var lastMessage = new Message(Guid.NewGuid(), matchId, userId1, "abc", false, createdAt);
+        var messages = new List<Message> { lastMessage };
+
+        var match = new Match(matchId, userId1, userId2, false, false, messages, DateTime.UtcNow);
+
+        match.SetPreviousMessagesAsDisplayed(lastMessage.Id, userId2);
+        Assert.Collection(match.Messages, 
+            m => Assert.True(m.IsDisplayed)
+        );
     }
 
     [Fact]
@@ -121,7 +147,6 @@ public class MatchTests
 
         var createdAt = DateTime.UtcNow - TimeSpan.FromSeconds(1);
         var lastMessage = new Message(Guid.NewGuid(), matchId, userId1, "abc", false, createdAt);
-
         var messages = new List<Message> { 
             lastMessage,
             new Message(Guid.NewGuid(), matchId, userId1, "abc", false, DateTime.UtcNow),
@@ -130,7 +155,7 @@ public class MatchTests
             new Message(Guid.NewGuid(), matchId, userId2, "abc", false, createdAt),
             new Message(Guid.NewGuid(), matchId, userId2, "abc", false, createdAt),
             new Message(Guid.NewGuid(), matchId, userId2, "abc", false, createdAt),
-         };
+        };
         var match = new Match(matchId, userId1, userId2, false, false, messages, DateTime.UtcNow);
         
         match.SetPreviousMessagesAsDisplayed(lastMessage.Id, userId2);

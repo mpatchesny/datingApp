@@ -40,7 +40,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         }
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
-        var photo = new Photo(command.PhotoId, command.UserId, photoUrl, 0);
+        var photo = new Photo(command.PhotoId, photoUrl, 0);
         user.AddPhoto(photo);
 
         var path = $"{photo.Id}.{extension}";

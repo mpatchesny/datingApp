@@ -82,7 +82,7 @@ public class UserRepositoryTests : IDisposable
     public async Task given_user_photo_is_added_update_user_should_update_photos()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        user.AddPhoto(new Photo(Guid.NewGuid(), user.Id, "abcdef", 0));
+        user.AddPhoto(new Photo(Guid.NewGuid(), "abcdef", 0));
 
         await _userRepository.UpdateAsync(user);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);

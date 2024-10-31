@@ -49,7 +49,8 @@ internal static class Extensions
             Id = entity.Id,
             Oridinal = entity.Oridinal,
             Url = entity.Url,
-            UserId = entity.UserId
+            // UserId = entity.UserId
+            UserId = Guid.NewGuid()
         };
     }
 
@@ -58,7 +59,7 @@ internal static class Extensions
         return new()
         {
             Id = entity.Id,
-            MatchId = entity.MatchId,
+            MatchId = Guid.NewGuid(),
             SendFromId = entity.SendFromId,
             Text = entity.Text,
             IsDisplayed = entity.IsDisplayed,

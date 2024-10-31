@@ -59,7 +59,6 @@ internal static class Extensions
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<IAuthorizationHandler, MatchPermissionHandler>();
         services.AddSingleton<IAuthorizationHandler, UserPermissionHandler>();
-        services.AddSingleton<IAuthorizationHandler, PhotoPermissionHandler>();
         services.AddSingleton<IDatingAppAuthorizationService, AuthorizationServiceWrapper>();
         return services;
     }

@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using MailKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -36,18 +37,17 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             throw new UnauthorizedException();
         }
 
-        var dbQuery = _dbContext.Messages
+        var dbQuery = _dbContext.Matches
+                            .Where(match => match.Id.Equals(query.MatchId))
                             .AsNoTracking()
-                            .Where(x => x.MatchId.Equals(query.MatchId))
-                            .OrderByDescending(x => x.CreatedAt);
+                            .SelectMany(match => match.Messages)
+                            .OrderBy(message => message.CreatedAt);
 
         var data = await dbQuery
                         .Skip((query.Page - 1) * query.PageSize)
                         .Take(query.PageSize)
                         .Select(x => x.AsDto())
                         .ToListAsync();
-
-        data = data.OrderBy(x => x.CreatedAt).ToList();
 
         var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
 

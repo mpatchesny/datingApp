@@ -17,9 +17,6 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, x => new MessageId(x))
             .IsRequired();
-        builder.Property(x => x.MatchId)
-            .HasConversion(x => x.Value, x => new MatchId(x))
-            .IsRequired();
         builder.Property(x => x.SendFromId)
             .HasConversion(x => x.Value, x => new UserId(x))
             .IsRequired();
@@ -35,6 +32,6 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
             .WithMany()
             .HasForeignKey(x => x.SendFromId);
 
-        builder.HasIndex(x => new {x.MatchId, x.CreatedAt});
+        builder.HasIndex(x => x.CreatedAt);
     }
 }

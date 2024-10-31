@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Xunit.Sdk;
 
@@ -37,8 +38,14 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 0)
     {
-        var photo = new Photo(Guid.NewGuid(), userId, "abc", oridinal);
-        await database.DbContext.Photos.AddAsync(photo);
+        var user = await database.DbContext.Users
+                                    .Include(u => u.Photos)
+                                    .FirstOrDefaultAsync(u => u.Id.Equals(userId));
+
+        var photo = new Photo(Guid.NewGuid(), "abc", oridinal);
+        user.AddPhoto(photo);
+
+        database.DbContext.Users.Update(user);
         await database.DbContext.SaveChangesAsync();
         return photo;
     }
@@ -53,8 +60,10 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Message> CreateMessageAsync(TestDatabase database, Guid matchId, Guid sendFromId, DateTime? createdAt = null)
     {
-        var message = new Message(Guid.NewGuid(), matchId, sendFromId, "test", false, createdAt ?? DateTime.UtcNow);
-        await database.DbContext.Messages.AddAsync(message);
+        var match = await database.DbContext.Matches.FirstOrDefaultAsync(m => m.Id.Equals(matchId));
+        var message = new Message(Guid.NewGuid(), sendFromId, "test", false, createdAt ?? DateTime.UtcNow);
+        match.AddMessage(message);
+        database.DbContext.Matches.Update(match);
         await database.DbContext.SaveChangesAsync();
         return message;
     }

@@ -49,15 +49,14 @@ public class SetMessagesAsDisplayedHandlerTests : IDisposable
         var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings2);
 
         var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
-        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"),"hello",false, DateTime.UtcNow);
+        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"),"hello",false, DateTime.UtcNow);
+        match.AddMessage(message);
 
         _testDb = new TestDatabase();
         _testDb.DbContext.Users.Add(user);
         _testDb.DbContext.Users.Add(user2);
         _testDb.DbContext.SaveChanges();
         _testDb.DbContext.Matches.Add(match);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Messages.Add(message);
         _testDb.DbContext.SaveChanges();
 
         var matchRepository = new DbMatchRepository(_testDb.DbContext);

@@ -10,7 +10,6 @@ namespace datingApp.Core.Entities;
 public class Message
 {
     public MessageId Id { get; }
-    public MatchId MatchId { get; private set; }
     public UserId SendFromId { get; private set; }
     public MessageText Text { get; private set; }
     public bool IsDisplayed { get; private set; }
@@ -24,7 +23,6 @@ public class Message
     public Message(MessageId id, MatchId matchId, UserId sendFromId, MessageText text, bool isDisplayed, DateTime createdAt)
     {
         Id = id;
-        MatchId = matchId;
         SendFromId = sendFromId;
         Text = text;
         IsDisplayed = isDisplayed;

@@ -49,7 +49,8 @@ internal static class Extensions
             Id = entity.Id,
             Oridinal = entity.Oridinal,
             Url = entity.Url,
-            UserId = entity.UserId
+            // UserId = entity.UserId
+            UserId = Guid.NewGuid()
         };
     }
 

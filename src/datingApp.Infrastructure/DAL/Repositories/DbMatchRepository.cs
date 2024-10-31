@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
@@ -28,7 +29,17 @@ internal sealed class DbMatchRepository : IMatchRepository
 
     public async Task<Match> GetByIdAsync(MatchId matchId)
     {
-        return await _dbContext.Matches.FirstOrDefaultAsync(x => x.Id.Equals(matchId));
+        return await _dbContext.Matches
+                        .Include(match => match.Messages)
+                        .FirstOrDefaultAsync(x => x.Id.Equals(matchId));
+    }
+
+    public async Task<Match> GetByMessageIdAsync(MessageId messageId)
+    {
+        return await _dbContext.Matches
+                        .Include(match => match.Messages)
+                        .Where(x => x.Messages.Any(m => m.Id == messageId))
+                        .FirstOrDefaultAsync();
     }
 
     public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)

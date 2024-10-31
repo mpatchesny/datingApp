@@ -180,10 +180,15 @@ public class MatchRepositoryTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, DateTime.UtcNow);
+        var message1 = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, DateTime.UtcNow);
+        var message2 = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user2.Id, DateTime.UtcNow);
+        var message3 = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, DateTime.UtcNow);
 
-        var retrievedMatch = await _repository.GetByMessageIdAsync(message.Id);
-        Assert.Same(match, retrievedMatch);
+        foreach (var message in new Message[]{ message1, message2, message3 })
+        {
+            var retrievedMatch = await _repository.GetByMessageIdAsync(message.Id);
+            Assert.Same(match, retrievedMatch);
+        }
     }
 
     // Arrange

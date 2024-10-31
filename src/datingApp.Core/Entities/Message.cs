@@ -20,7 +20,7 @@ public class Message
         // EF
     }
 
-    public Message(MessageId id, MatchId matchId, UserId sendFromId, MessageText text, bool isDisplayed, DateTime createdAt)
+    public Message(MessageId id, UserId sendFromId, MessageText text, bool isDisplayed, DateTime createdAt)
     {
         Id = id;
         SendFromId = sendFromId;

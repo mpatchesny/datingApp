@@ -38,7 +38,7 @@ public sealed class SendMessageHandler : ICommandHandler<SendMessage>
             throw new UnauthorizedException();
         }
 
-        var message = new Message(command.MessageId, command.MatchId, command.SendFromId, command.Text, false, DateTime.UtcNow);
+        var message = new Message(command.MessageId, command.SendFromId, command.Text, false, DateTime.UtcNow);
         match.AddMessage(message);
         await _matchRepository.UpdateAsync(match);
     }

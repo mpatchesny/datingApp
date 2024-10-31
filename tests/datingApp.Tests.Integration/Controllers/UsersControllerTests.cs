@@ -111,6 +111,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_expired_access_code_sign_in_post_request_returns_400_bad_request()
     {
+        // FIXME: test fails when run with other tests, but succeed when run alone
         var email = "test@test.com";
         await IntegrationTestHelper.CreateUserAsync(_testDb, email);
         var expiredAccessCode = "12345";

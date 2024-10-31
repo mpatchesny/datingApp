@@ -10,24 +10,17 @@ namespace datingApp.Application.Commands.Handlers;
 
 public class SetMessagesAsDisplayedHandler : ICommandHandler<SetMessagesAsDisplayed>
 {
-    private readonly IMessageRepository _messageRepository;
-    public SetMessagesAsDisplayedHandler(IMessageRepository messageRepository)
+    private readonly IMatchRepository _matchRepository;
+    public SetMessagesAsDisplayedHandler(IMatchRepository matchRepository)
     {
-        _messageRepository = messageRepository;
+        _matchRepository = matchRepository;
     }
 
     public async Task HandleAsync(SetMessagesAsDisplayed command)
     {
-        var messages = (await _messageRepository.GetPreviousNotDisplayedMessages(command.LastMessageId))
-                        .Where(x => !x.SendFromId.Equals(command.DisplayedByUserId))
-                        .ToList();
-
-        if (messages.Count() == 0) return;
-        
-        foreach (var message in messages)
-        {
-            message.SetDisplayed();
-        }
-        await _messageRepository.UpdateRangeAsync(messages.ToArray());
+        var match = await _matchRepository.GetByMessageIdAsync(command.LastMessageId);
+        if (match == null) return;
+        match.SetPreviousMessagesAsDisplayed(command.LastMessageId, command.DisplayedByUserId);
+        await _matchRepository.UpdateAsync(match);
     }
 }

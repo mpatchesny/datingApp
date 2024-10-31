@@ -66,9 +66,8 @@ public class SendMessageHandlerTests : IDisposable
     {
         _testDb = new TestDatabase();
         _authService = new Mock<IDatingAppAuthorizationService>();
-        var messageRepository = new DbMessageRepository(_testDb.DbContext);
         var matchRepository = new DbMatchRepository(_testDb.DbContext);
-        _handler = new SendMessageHandler(messageRepository, matchRepository, _authService.Object);
+        _handler = new SendMessageHandler(matchRepository, _authService.Object);
     }
 
     // Teardown

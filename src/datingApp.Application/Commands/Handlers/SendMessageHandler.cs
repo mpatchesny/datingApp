@@ -15,13 +15,11 @@ namespace datingApp.Application.Commands.Handlers;
 
 public sealed class SendMessageHandler : ICommandHandler<SendMessage>
 {
-    private readonly IMessageRepository _messageRepository;
     private readonly IMatchRepository _matchRepository;
     private readonly IDatingAppAuthorizationService  _authorizationService;
 
-    public SendMessageHandler(IMessageRepository messageRepository, IMatchRepository matchRepository, IDatingAppAuthorizationService authorizationService)
+    public SendMessageHandler(IMatchRepository matchRepository, IDatingAppAuthorizationService authorizationService)
     {
-        _messageRepository = messageRepository;
         _matchRepository = matchRepository;
         _authorizationService = authorizationService;
     }
@@ -41,6 +39,7 @@ public sealed class SendMessageHandler : ICommandHandler<SendMessage>
         }
 
         var message = new Message(command.MessageId, command.MatchId, command.SendFromId, command.Text, false, DateTime.UtcNow);
-        await _messageRepository.AddAsync(message);
+        match.AddMessage(message);
+        await _matchRepository.UpdateAsync(match);
     }
 }

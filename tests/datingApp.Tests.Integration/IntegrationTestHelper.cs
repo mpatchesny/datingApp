@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Xunit.Sdk;
 
@@ -37,8 +38,10 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Photo> CreatePhotoAsync(TestDatabase database, Guid userId, int oridinal = 0)
     {
-        var photo = new Photo(Guid.NewGuid(), userId, "abc", oridinal);
-        await database.DbContext.Photos.AddAsync(photo);
+        var user = await database.DbContext.Users.FirstOrDefaultAsync(u => u.Id.Value == userId);
+        var photo = new Photo(Guid.NewGuid(), "abc", oridinal);
+        user.AddPhoto(photo);
+        database.DbContext.Users.Update(user);
         await database.DbContext.SaveChangesAsync();
         return photo;
     }

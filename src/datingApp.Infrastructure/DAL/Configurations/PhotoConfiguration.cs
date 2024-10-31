@@ -17,9 +17,6 @@ internal sealed class PhotoConfiguration : IEntityTypeConfiguration<Photo>
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, x => new PhotoId(x))
             .IsRequired();
-        builder.Property(x => x.UserId)
-            .HasConversion(x => x.Value, x => new UserId(x))
-            .IsRequired();
         builder.Property(x => x.Oridinal)
             .HasConversion(x => x.Value, x => new Oridinal(x))
             .IsRequired();

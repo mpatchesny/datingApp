@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.Replication;
 
@@ -22,17 +23,21 @@ public class MatchWithMessagesSpecification : BaseSpecification<Match>
         return this;
     }
 
-    public MatchWithMessagesSpecification GetOnlyNotDisplayedMessages()
+    public MatchWithMessagesSpecification GetMessageById(MessageId messageId)
     {
-        AddCriteria(match => match.Messages.Any(m => !m.IsDisplayed));
+        AddCriteria(match => match.Messages.Any(m => m.Id == messageId));
         return this;
     }
 
-    public MatchWithMessagesSpecification SetMessageLimit(int messageLimit)
+    public MatchWithMessagesSpecification GetMessagesByDisplayed(bool isDisplayed)
     {
-        Expression<Func<Match, object>> include = match => 
-            match.Messages.OrderBy(message => message.CreatedAt).Take(messageLimit);
-        AddInclude(include);
+        AddCriteria(match => match.Messages.Any(m => isDisplayed));
+        return this;
+    }
+
+    public MatchWithMessagesSpecification SetMessageFetchLimit(int messageLimit)
+    {
+        AddInclude(match => match.Messages.OrderBy(message => message.CreatedAt).Take(messageLimit));
         return this;
     }
 

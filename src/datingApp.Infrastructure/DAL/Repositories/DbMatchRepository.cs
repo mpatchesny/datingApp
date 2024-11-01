@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
@@ -27,26 +28,22 @@ internal sealed class DbMatchRepository : IMatchRepository
 
     public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId, ISpecification<Match> specification)
     {
-        return await _dbContext.Matches.Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
-                        .Include(match => match.Messages
-                                .OrderByDescending(message => message.CreatedAt)
-                                .Take(1))
-                        .ToListAsync();
+        var query = GetBaseGetQuery(specification);
+        query = query.Where(match => match.UserId1.Equals(userId) || match.UserId2.Equals(userId));
+        return await query.ToListAsync();
     }
 
     public async Task<Match> GetByIdAsync(MatchId matchId, ISpecification<Match> specification)
     {
-        return await _dbContext.Matches
-                        .Include(match => match.Messages)
-                        .FirstOrDefaultAsync(x => x.Id.Equals(matchId));
+        var query = GetBaseGetQuery(specification);
+        return await query.FirstOrDefaultAsync(match => match.Id == match.Id);
     }
 
     public async Task<Match> GetByMessageIdAsync(MessageId messageId, ISpecification<Match> specification)
     {
-        return await _dbContext.Matches
-                        .Include(match => match.Messages)
-                        .Where(x => x.Messages.Any(m => m.Id == messageId))
-                        .FirstOrDefaultAsync();
+        var query = GetBaseGetQuery(specification);
+        query = query.Where(match => match.Messages.Any(message => message.Id == messageId));
+        return await query.FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(Match match)
@@ -67,8 +64,10 @@ internal sealed class DbMatchRepository : IMatchRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    private static void ApplySpecification(IQueryable query, ISpecification<Match> specification)
+    private IQueryable<Match> GetBaseGetQuery(ISpecification<Match> specification)
     {
-        // TODO
+        var query = _dbContext.Matches.AsQueryable<Match>();
+        if (specification != null) query = specification.Apply(query);
+        return query;
     }
 }

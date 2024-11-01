@@ -183,7 +183,7 @@ public class UserRepositoryTests : IDisposable
         await _testDb.DbContext.SaveChangesAsync();
 
         await _userRepository.DeleteAsync(user);
-        var deletedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        var deletedUser = await _testDb.CreateNewDbContext().Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.Null(deletedUser);
     }
 
@@ -203,7 +203,7 @@ public class UserRepositoryTests : IDisposable
         var user = IntegrationTestHelper.CreateUser();
 
         await _userRepository.AddAsync(user);
-        var addedUser = await _testDb.DbContext.Users
+        var addedUser = await _testDb.CreateNewDbContext().Users
                             .Include(u => u.Settings)
                             .Include(u => u.Photos)
                             .FirstOrDefaultAsync(x => x.Id == user.Id);

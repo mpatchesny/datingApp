@@ -16,8 +16,9 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     public async Task given_token_exists_ExistsAsync_returns_true()
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
-        await _testDb.DbContext.RevokedRefreshTokens.AddAsync(token);
-        await _testDb.DbContext.SaveChangesAsync();
+        var dbContext = _testDb.CreateNewDbContext();
+        await dbContext.RevokedRefreshTokens.AddAsync(token);
+        await dbContext.SaveChangesAsync();
 
         var exists = await _repository.ExistsAsync(token.Token);
         Assert.True(exists);
@@ -36,7 +37,7 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
         await _repository.AddAsync(token);
-        var exists = await _testDb.DbContext.RevokedRefreshTokens.AnyAsync(x => x.Token == token.Token);
+        var exists = await _testDb.CreateNewDbContext().RevokedRefreshTokens.AnyAsync(x => x.Token == token.Token);
         Assert.True(exists);
     }
 
@@ -45,8 +46,9 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     {
         var tokenToken = "abcdef";
         var token = new TokenDto(tokenToken, DateTime.UtcNow);
-        await _testDb.DbContext.RevokedRefreshTokens.AddAsync(token);
-        await _testDb.DbContext.SaveChangesAsync();
+        var dbContext = _testDb.CreateNewDbContext();
+        await dbContext.RevokedRefreshTokens.AddAsync(token);
+        await dbContext.SaveChangesAsync();
 
         var badToken = new TokenDto(tokenToken, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(badToken));

@@ -101,8 +101,8 @@ public class Match
 
         if (equals)
         {
-            var messages1 = match.Messages.OrderBy(p => p.Id).ToList();
-            var messages2 = Messages.OrderBy(p => p.Id).ToList();
+            var messages1 = match.Messages.OrderBy(m => m.Id.Value).ToList();
+            var messages2 = Messages.OrderBy(m => m.Id.Value).ToList();
             for (int i = 0; i < messages1.Count; i++)
             {
                 equals = equals && messages1[i].Equals(messages2[i]);

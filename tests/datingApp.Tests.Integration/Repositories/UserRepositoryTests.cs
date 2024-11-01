@@ -16,49 +16,49 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task given_user_exists_and_has_photos_get_user_by_id_should_succeed()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
         
         var retrievedUser = await _userRepository.GetByIdAsync(user.Id);
-        Assert.True(user.Equals(retrievedUser));
+        Assert.True(user.IsEqualTo(retrievedUser));
     }
 
     [Fact]
     public async Task given_user_exists_and_has_no_photos_get_user_by_id_should_succeed()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
         
         var retrievedUser = await _userRepository.GetByIdAsync(user.Id);
-        Assert.True(user.Equals(retrievedUser));
+        Assert.True(user.IsEqualTo(retrievedUser));
     }
 
     [Fact]
     public async Task given_user_exists_and_has_photos_get_user_by_photo_id_should_succeed()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var photo3 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        var photo3 = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
 
         foreach (var photo in new Photo[] {photo1, photo2, photo3})
         {
             var retrievedUser = await _userRepository.GetByPhotoIdAsync(photo.Id);
-            Assert.True(user.Equals(retrievedUser));
+            Assert.True(user.IsEqualTo(retrievedUser));
         }
     }
 
     [Fact]
     public async Task given_user_exists_get_user_by_nonexisting_photo_id_should_return_null()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id);
 
         var retrievedUser = await _userRepository.GetByPhotoIdAsync(Guid.NewGuid());
         Assert.Null(retrievedUser);
@@ -68,38 +68,38 @@ public class UserRepositoryTests : IDisposable
     public async Task given_user_exists_get_user_by_phone_should_succeed()
     {
         var phone = "123456789";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, phone : phone);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), phone : phone);
 
         var retrievedUser = await _userRepository.GetByPhoneAsync(phone);
-        Assert.True(user.Equals(retrievedUser));
+        Assert.True(user.IsEqualTo(retrievedUser));
     }
 
     [Fact]
     public async Task given_user_exists_get_user_by_email_should_succeed()
     {
         var email = "test@test.com";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email : email);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), email : email);
 
         var retrievedUser = await _userRepository.GetByEmailAsync(email);
-        Assert.True(user.Equals(retrievedUser));
+        Assert.True(user.IsEqualTo(retrievedUser));
     }
 
     [Fact]
     public async Task update_existing_user_should_succeed()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
         user.ChangeBio("new bio");
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateAsync(user));
         Assert.Null(exception);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.True(user.Equals(updatedUser));
+        Assert.True(user.IsEqualTo(updatedUser));
     }
 
     [Fact]
     public async Task given_user_photo_is_added_update_user_should_update_photos()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
         user.AddPhoto(new Photo(Guid.NewGuid(), "abcdef", 0));
 
         await _userRepository.UpdateAsync(user);
@@ -110,21 +110,21 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task given_user_photo_is_removed_update_user_should_update_photos()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id, 0);
         user.RemovePhoto(photo.Id);
 
         await _userRepository.UpdateAsync(user);
         var updatedUser = await _testDb.CreateNewDbContext().Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.True(user.Equals(updatedUser));
+        Assert.True(user.IsEqualTo(updatedUser));
     }
 
     [Fact]
     public async Task given_user_photo_oridinal_change_update_user_should_update_photos()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 0);
-        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 1);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id, 0);
+        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb.CreateNewDbContext(), user.Id, 1);
         user.ChangeOridinal(photo2.Id, 0);
 
         await _userRepository.UpdateAsync(user);
@@ -139,7 +139,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task delete_existing_user_should_succeed()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.Null(exception);
@@ -169,13 +169,13 @@ public class UserRepositoryTests : IDisposable
                             .Include(u => u.Settings)
                             .Include(u => u.Photos)
                             .FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.True(user.Equals(addedUser));
+        Assert.True(user.IsEqualTo(addedUser));
     }
 
     [Fact]
     public async Task add_user_with_existing_id_throws_exception()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
         var settings = new UserSettings(user.Id, PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
@@ -186,7 +186,7 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task add_user_with_existing_email_throws_exception()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(settings.UserId, "000000000", user.Email, "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
@@ -197,7 +197,7 @@ public class UserRepositoryTests : IDisposable
     [Fact (Skip = "email is not unique apparently")]
     public async Task add_user_with_existing_phone_throws_exception()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(settings.UserId, user.Phone, "test@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 

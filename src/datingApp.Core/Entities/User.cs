@@ -123,14 +123,11 @@ public class User
         if (obj is not User) return false;
         User user = (User) obj;
         var equals = user.Id == Id && 
-            user.Id == Id &&
             user.Phone == Phone &&
             user.Email == Email &&
             user.Name == Name &&
             user.Sex == Sex &&
             user.DateOfBirth == DateOfBirth &&
-            user.Photos == Photos &&
-            user.Settings == Settings &&
             user.Job == Job &&
             user.Bio == Bio &&
             user.Photos.Count == Photos.Count &&

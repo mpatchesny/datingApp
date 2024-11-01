@@ -138,8 +138,8 @@ public class User
 
         if (equals)
         {
-            var photos1 = user.Photos.OrderBy(p => p.Id).ToList();
-            var photos2 = Photos.OrderBy(p => p.Id).ToList();
+            var photos1 = user.Photos.OrderBy(p => p.Id.Value).ToList();
+            var photos2 = Photos.OrderBy(p => p.Id.Value).ToList();
             for (int i = 0; i < photos1.Count; i++)
             {
                 equals = equals && photos1[i].Equals(photos2[i]);

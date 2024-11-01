@@ -80,4 +80,17 @@ public class Match
             }
         }
     }
+
+    public override bool Equals(object obj)
+    {
+        return obj is Match match &&
+            match.Id == Id && 
+            match.UserId1  == UserId1 &&
+            match.UserId2  == UserId2 &&
+            match.IsDisplayedByUser1  == IsDisplayedByUser1 &&
+            match.IsDisplayedByUser2  == IsDisplayedByUser2 &&
+            match.CreatedAt == CreatedAt &&
+            match.Messages.Count == Messages.Count;
+    }
+
 }

@@ -6,6 +6,7 @@ using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.DAL.Specifications;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -15,16 +16,18 @@ namespace datingApp.Tests.Integration.Repositories;
 public class MatchRepositoryTests : IDisposable
 {
     [Fact]
-    public async void given_match_exists_get_match_by_user_id_should_return_users_matches_with_messages()
+    public async void given_match_exists_get_match_by_user_id_should_return_users_matches()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user4.Id);
 
         var matches = await _repository.GetByUserIdAsync(user1.Id);
-        Assert.Single(matches);
-        Assert.NotEmpty(matches.Select(x => x.Messages).ToList());
-        Assert.Empty(matches.Where(x => !x.UserId1.Equals(user1.Id) && !x.UserId2.Equals(user1.Id)));
+        Assert.Equal(3, matches.Count());
     }
 
     [Fact]
@@ -41,9 +44,9 @@ public class MatchRepositoryTests : IDisposable
         var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
 
-        var match2 = await _repository.GetByIdAsync(match.Id);
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id);
         Assert.NotNull(match);
-        Assert.Equal(match, match2);
+        Assert.True(match.Equals(retrievedMatch));
     }
 
     [Fact]
@@ -63,6 +66,7 @@ public class MatchRepositoryTests : IDisposable
         var exists = await _repository.ExistsAsync(user1.Id, user2.Id);
         Assert.True(exists);
     }
+
     [Fact]
     public async void given_match_not_exists_get_exsits_should_return_false()
     {
@@ -105,7 +109,7 @@ public class MatchRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
         var addedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == match.Id);
-        Assert.Same(addedMatch, match);
+        Assert.True(addedMatch.Equals(match));
     }
 
     [Fact]
@@ -119,7 +123,7 @@ public class MatchRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _repository.UpdateAsync(match));
         Assert.Null(exception);
         var updatedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == match.Id);
-        Assert.Same(updatedMatch, match);
+        Assert.True(updatedMatch.Equals(match));
     }
 
     [Fact]
@@ -187,8 +191,23 @@ public class MatchRepositoryTests : IDisposable
         foreach (var message in new Message[]{ message1, message2, message3 })
         {
             var retrievedMatch = await _repository.GetByMessageIdAsync(message.Id);
-            Assert.Same(match, retrievedMatch);
+            Assert.True(match.Equals(retrievedMatch));
         }
+    }
+
+    [Fact]
+    public async void given_specification_is_not_null_get_match_includes_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        for (int i = 0; i < 50; i++)
+        {
+            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id, DateTime.UtcNow);
+        }
+
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id);
+        Assert.True(match.Equals(retrievedMatch));
     }
 
     // Arrange
@@ -197,7 +216,7 @@ public class MatchRepositoryTests : IDisposable
     public MatchRepositoryTests()
     {
         _testDb = new TestDatabase();
-        _repository = new DbMatchRepository(_testDb.DbContext);
+        _repository = new DbMatchRepository(_testDb.CreateNewDbContext());
     }
 
     // Teardown

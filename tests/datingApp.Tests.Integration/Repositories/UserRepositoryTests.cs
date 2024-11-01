@@ -19,7 +19,7 @@ public class UserRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         
         var retrievedUser = await _userRepository.GetByIdAsync(user.Id);
-        Assert.Same(user, retrievedUser);
+        Assert.True(user.Equals(retrievedUser));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class UserRepositoryTests : IDisposable
         foreach (var photo in new Photo[] {photo1, photo2, photo3})
         {
             var retrievedUser = await _userRepository.GetByPhotoIdAsync(photo.Id);
-            Assert.Same(user, retrievedUser);
+            Assert.True(user.Equals(retrievedUser));
         }
     }
 
@@ -53,7 +53,7 @@ public class UserRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb, phone : phone);
 
         var retrievedUser = await _userRepository.GetByPhoneAsync(phone);
-        Assert.Same(user, retrievedUser);
+        Assert.True(user.Equals(retrievedUser));
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class UserRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email : email);
 
         var retrievedUser = await _userRepository.GetByEmailAsync(email);
-        Assert.Same(user, retrievedUser);
+        Assert.True(user.Equals(retrievedUser));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class UserRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _userRepository.UpdateAsync(user));
         Assert.Null(exception);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.Same(user, updatedUser);
+        Assert.True(user.Equals(updatedUser));
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class UserRepositoryTests : IDisposable
 
         await _userRepository.UpdateAsync(user);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.Same(user, updatedUser);
+        Assert.True(user.Equals(updatedUser));
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class UserRepositoryTests : IDisposable
 
         await _userRepository.UpdateAsync(user);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.Same(user, updatedUser);
+        Assert.True(user.Equals(updatedUser));
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class UserRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
         Assert.Null(exception);
         var addedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.Same(addedUser, user);
+        Assert.True(user.Equals(addedUser));
     }
 
     [Fact]

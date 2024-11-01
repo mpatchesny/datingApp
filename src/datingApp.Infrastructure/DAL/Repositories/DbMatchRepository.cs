@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.Specifications;
 using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,13 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId)
+    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
+    {
+        return await _dbContext.Matches
+                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
+    }
+
+    public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId, ISpecification<Match> specification)
     {
         return await _dbContext.Matches.Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
                         .Include(match => match.Messages
@@ -27,25 +34,19 @@ internal sealed class DbMatchRepository : IMatchRepository
                         .ToListAsync();
     }
 
-    public async Task<Match> GetByIdAsync(MatchId matchId)
+    public async Task<Match> GetByIdAsync(MatchId matchId, ISpecification<Match> specification)
     {
         return await _dbContext.Matches
                         .Include(match => match.Messages)
                         .FirstOrDefaultAsync(x => x.Id.Equals(matchId));
     }
 
-    public async Task<Match> GetByMessageIdAsync(MessageId messageId)
+    public async Task<Match> GetByMessageIdAsync(MessageId messageId, ISpecification<Match> specification)
     {
         return await _dbContext.Matches
                         .Include(match => match.Messages)
                         .Where(x => x.Messages.Any(m => m.Id == messageId))
                         .FirstOrDefaultAsync();
-    }
-
-    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
-    {
-        return await _dbContext.Matches
-                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
     public async Task AddAsync(Match match)
@@ -64,5 +65,10 @@ internal sealed class DbMatchRepository : IMatchRepository
     {
         _dbContext.Matches.Remove(match);
         await _dbContext.SaveChangesAsync();
+    }
+
+    private static void ApplySpecification(IQueryable query, ISpecification<Match> specification)
+    {
+        // TODO
     }
 }

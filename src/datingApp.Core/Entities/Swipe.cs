@@ -30,4 +30,20 @@ public class Swipe
         Like = like;
         CreatedAt = createdAt;
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is not Swipe) return false;
+        Swipe swipe = (Swipe) obj;
+        return swipe.SwipedById == SwipedById && 
+            swipe.SwipedWhoId == SwipedWhoId &&
+            swipe.Like == Like &&
+            swipe.CreatedAt.Year == CreatedAt.Year &&
+            swipe.CreatedAt.Month == CreatedAt.Month &&
+            swipe.CreatedAt.Day == CreatedAt.Day &&
+            swipe.CreatedAt.Hour == CreatedAt.Hour &&
+            swipe.CreatedAt.Minute == CreatedAt.Minute &&
+            swipe.CreatedAt.Second == CreatedAt.Second &&
+            swipe.CreatedAt.Millisecond == CreatedAt.Millisecond;
+    }
 }

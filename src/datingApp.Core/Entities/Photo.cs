@@ -32,4 +32,13 @@ public class Photo
     {
         Oridinal = oridinal;
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is not Photo) return false;
+        Photo photo = (Photo) obj;
+        return photo.Id == Id && 
+            photo.Url == Url &&
+            photo.Extension == Extension;
+    }
 }

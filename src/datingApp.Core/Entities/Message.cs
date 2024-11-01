@@ -33,4 +33,21 @@ public class Message
     {
         IsDisplayed = true;
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is not Message) return false;
+        Message message = (Message) obj;
+        return message.Id == Id && 
+            message.SendFromId == SendFromId &&
+            message.IsDisplayed == IsDisplayed &&
+            message.Text == Text &&
+            message.CreatedAt.Year == CreatedAt.Year &&
+            message.CreatedAt.Month == CreatedAt.Month &&
+            message.CreatedAt.Day == CreatedAt.Day &&
+            message.CreatedAt.Hour == CreatedAt.Hour &&
+            message.CreatedAt.Minute == CreatedAt.Minute &&
+            message.CreatedAt.Second == CreatedAt.Second &&
+            message.CreatedAt.Millisecond == CreatedAt.Millisecond;
+    }
 }

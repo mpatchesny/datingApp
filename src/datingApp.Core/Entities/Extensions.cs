@@ -21,8 +21,17 @@ public static class Extensions
             user.DateOfBirth == entity.DateOfBirth &&
             user.Job == entity.Job &&
             user.Bio == entity.Bio &&
-            user.Photos.Count == entity.Photos.Count &&
-            user.Settings.IsEqualTo(entity.Settings);
+            user.Photos.Count == entity.Photos.Count;
+        
+        if (user.Settings != null && entity.Settings !=null)
+        {
+            equals = equals && user.Settings.IsEqualTo(entity.Settings);
+        }
+        else if (!(user.Settings == null && entity.Settings ==null))
+        {
+            equals = false;
+        }
+
 
         if (equals)
         {

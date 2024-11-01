@@ -60,15 +60,4 @@ public class UserSettings
         if (PreferredSex == sex) return;
         PreferredSex = sex;
     }
-
-    public override bool Equals(object obj)
-    {
-        if (obj is not UserSettings) return false;
-        UserSettings userSettings = (UserSettings) obj;
-        return userSettings.UserId == UserId && 
-            userSettings.PreferredSex == PreferredSex &&
-            userSettings.PreferredAge == PreferredAge &&
-            userSettings.PreferredMaxDistance == PreferredMaxDistance &&
-            userSettings.Location == Location;
-    }
 }

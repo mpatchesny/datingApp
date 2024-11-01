@@ -117,32 +117,4 @@ public class User
 
         photoToChange.ChangeOridinal(newOridinal);
     }
-
-    public override bool Equals(object obj)
-    {
-        if (obj is not User) return false;
-        User user = (User) obj;
-        var equals = user.Id == Id && 
-            user.Phone == Phone &&
-            user.Email == Email &&
-            user.Name == Name &&
-            user.Sex == Sex &&
-            user.DateOfBirth == DateOfBirth &&
-            user.Job == Job &&
-            user.Bio == Bio &&
-            user.Photos.Count == Photos.Count &&
-            user.Settings.Equals(Settings);
-
-        if (equals)
-        {
-            var photos1 = user.Photos.OrderBy(p => p.Id.Value).ToList();
-            var photos2 = Photos.OrderBy(p => p.Id.Value).ToList();
-            for (int i = 0; i < photos1.Count; i++)
-            {
-                equals = equals && photos1[i].Equals(photos2[i]);
-            }
-        }
-
-        return equals;
-    }
 }

@@ -80,35 +80,4 @@ public class Match
             }
         }
     }
-
-    public override bool Equals(object obj)
-    {
-        if (obj is not Match) return false;
-        Match match = (Match) obj;
-        var equals = match.Id == Id && 
-            match.UserId1 == UserId1 &&
-            match.UserId2 == UserId2 &&
-            match.IsDisplayedByUser1 == IsDisplayedByUser1 &&
-            match.IsDisplayedByUser2 == IsDisplayedByUser2 &&
-            match.CreatedAt.Year == CreatedAt.Year &&
-            match.CreatedAt.Month == CreatedAt.Month &&
-            match.CreatedAt.Day == CreatedAt.Day &&
-            match.CreatedAt.Hour == CreatedAt.Hour &&
-            match.CreatedAt.Minute == CreatedAt.Minute &&
-            match.CreatedAt.Second == CreatedAt.Second &&
-            match.CreatedAt.Millisecond == CreatedAt.Millisecond &&
-            match.Messages.Count == Messages.Count;
-
-        if (equals)
-        {
-            var messages1 = match.Messages.OrderBy(m => m.Id.Value).ToList();
-            var messages2 = Messages.OrderBy(m => m.Id.Value).ToList();
-            for (int i = 0; i < messages1.Count; i++)
-            {
-                equals = equals && messages1[i].Equals(messages2[i]);
-            }
-        }
-
-        return equals;
-    }
 }

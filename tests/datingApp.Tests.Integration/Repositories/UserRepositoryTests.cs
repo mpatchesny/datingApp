@@ -14,9 +14,24 @@ namespace datingApp.Tests.Integration.Repositories;
 public class UserRepositoryTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_get_user_by_id_should_succeed()
+    public async Task given_user_exists_and_has_photos_get_user_by_id_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        
+        var retrievedUser = await _userRepository.GetByIdAsync(user.Id);
+        Assert.True(user.Equals(retrievedUser));
+    }
+
+    [Fact]
+    public async Task given_user_exists_and_has_no_photos_get_user_by_id_should_succeed()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
         
         var retrievedUser = await _userRepository.GetByIdAsync(user.Id);
         Assert.True(user.Equals(retrievedUser));
@@ -41,6 +56,9 @@ public class UserRepositoryTests : IDisposable
     public async Task given_user_exists_get_user_by_nonexisting_photo_id_should_return_null()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        _ = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
 
         var retrievedUser = await _userRepository.GetByPhotoIdAsync(Guid.NewGuid());
         Assert.Null(retrievedUser);
@@ -86,7 +104,7 @@ public class UserRepositoryTests : IDisposable
 
         await _userRepository.UpdateAsync(user);
         var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
-        Assert.True(user.Equals(updatedUser));
+        Assert.True(user.IsEqualTo(updatedUser));
     }
 
     [Fact]
@@ -97,7 +115,7 @@ public class UserRepositoryTests : IDisposable
         user.RemovePhoto(photo.Id);
 
         await _userRepository.UpdateAsync(user);
-        var updatedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        var updatedUser = await _testDb.CreateNewDbContext().Users.FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.True(user.Equals(updatedUser));
     }
 
@@ -147,7 +165,10 @@ public class UserRepositoryTests : IDisposable
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(user));
         Assert.Null(exception);
-        var addedUser = await _testDb.DbContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+        var addedUser = await _testDb.DbContext.Users
+                            .Include(u => u.Settings)
+                            .Include(u => u.Photos)
+                            .FirstOrDefaultAsync(x => x.Id == user.Id);
         Assert.True(user.Equals(addedUser));
     }
 
@@ -215,7 +236,7 @@ public class UserRepositoryTests : IDisposable
     public UserRepositoryTests()
     {
         _testDb = new TestDatabase();
-        _userRepository = new DbUserRepository(_testDb.DbContext);
+        _userRepository = new DbUserRepository(_testDb.CreateNewDbContext());
     }
 
     // Teardown

@@ -15,7 +15,7 @@ public class Match
     public UserId UserId2 { get; private set; }
     public bool IsDisplayedByUser1 { get; private set; }
     public bool IsDisplayedByUser2 { get; private set; }
-    public ICollection<Message> Messages { get; private set; }
+    public virtual ICollection<Message> Messages { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
     private Match()

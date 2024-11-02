@@ -7,6 +7,7 @@ using datingApp.Application.Commands.Handlers;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Security;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
@@ -22,9 +23,10 @@ public class SendMessageHandlerTests : IDisposable
     public async Task given_match_exists_send_message_within_match_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SendMessage(Guid.NewGuid(), match.Id, user1.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -35,9 +37,10 @@ public class SendMessageHandlerTests : IDisposable
     public async Task given_authorization_fail_send_message_within_existsing_match_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SendMessage(Guid.NewGuid(), match.Id, user1.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -49,8 +52,9 @@ public class SendMessageHandlerTests : IDisposable
     public async Task given_match_not_exists_send_message_within_match_throws_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SendMessage(Guid.NewGuid(), Guid.NewGuid(), user1.Id, "hello");
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -60,13 +64,16 @@ public class SendMessageHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly SendMessageHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
+
     public SendMessageHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _authService = new Mock<IDatingAppAuthorizationService>();
-        var matchRepository = new DbMatchRepository(_testDb.DbContext);
+        var matchRepository = new DbMatchRepository(_dbContext);
         _handler = new SendMessageHandler(matchRepository, _authService.Object);
     }
 

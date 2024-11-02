@@ -9,6 +9,7 @@ using datingApp.Application.Security;
 using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.Spatial;
 using Microsoft.AspNetCore.Authorization;
@@ -24,9 +25,10 @@ public class GetPublicUserHanlderTests : IDisposable
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var query = new GetPublicUser() { RequestByUserId = user1.Id, RequestWhoUserId = user2.Id };
         var userDto = await _handler.HandleAsync(query);
 
@@ -39,7 +41,8 @@ public class GetPublicUserHanlderTests : IDisposable
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
         var userDto = await _handler.HandleAsync(query);
@@ -51,7 +54,8 @@ public class GetPublicUserHanlderTests : IDisposable
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetPublicUser() { RequestByUserId = Guid.NewGuid(), RequestWhoUserId = user.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
@@ -64,10 +68,10 @@ public class GetPublicUserHanlderTests : IDisposable
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = user.Id };
-
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
@@ -75,12 +79,14 @@ public class GetPublicUserHanlderTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly GetPublicUserHandler _handler;
     private readonly Mock<ISpatial> _mockedSpatial;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetPublicUserHanlderTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _mockedSpatial = new Mock<ISpatial>();
         _authService = new Mock<IDatingAppAuthorizationService>();
         _handler = new GetPublicUserHandler(_testDb.DbContext, _mockedSpatial.Object, _authService.Object);

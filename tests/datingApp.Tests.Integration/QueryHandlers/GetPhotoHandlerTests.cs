@@ -6,6 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using Xunit;
 
@@ -17,7 +18,8 @@ public class GetPhotoHandlerTests : IDisposable
     [Fact]
     public async void given_photo_not_exists_get_photo_returns_PhotoNotExistsException()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.NewGuid() }));
         Assert.NotNull(exception);
@@ -26,10 +28,12 @@ public class GetPhotoHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly GetPhotoHandler _handler;
     public GetPhotoHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _handler = new GetPhotoHandler(_testDb.DbContext);
     }
 

@@ -10,6 +10,7 @@ using datingApp.Application.Repositories;
 using datingApp.Application.Services;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
 using FluentStorage.Blobs;
@@ -24,7 +25,9 @@ public class AddPhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_user_exists_add_photo_to_user_should_succeed_and_add_photo_file_to_storage()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
         var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
@@ -45,7 +48,9 @@ public class AddPhotoHandlerTests : IDisposable
     [Fact]
     public async Task given_user_exists_and_photo_service_process_photo_failed_add_photo_to_user_throws_exception()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
         var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
         _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Throws(new InvalidPhotoException());
 
@@ -68,12 +73,14 @@ public class AddPhotoHandlerTests : IDisposable
     // Arrange
     private readonly AddPhotoHandler _handler;
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly Mock<IPhotoService> _mockPhotoService;
     private readonly Mock<IBlobStorage> _mockStorage;
     public AddPhotoHandlerTests()
     {
         _testDb = new TestDatabase();
-        var userRepository = new DbUserRepository(_testDb.DbContext);
+        _dbContext = _testDb.DbContext;
+        var userRepository = new DbUserRepository(_dbContext);
         _mockPhotoService = new Mock<IPhotoService>();
         _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Returns(new PhotoServiceProcessOutput(new byte[10], "jpg"));
         _mockStorage = new Mock<IBlobStorage>();

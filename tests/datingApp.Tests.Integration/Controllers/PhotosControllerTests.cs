@@ -150,7 +150,8 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_photo_was_alread_deleted_delete_photo_returns_410_gone()
     {
-        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var photo = IntegrationTestHelper.CreatePhoto();
+        var photos = new List<Photo>() { photo };
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         await IntegrationTestHelper.DeletePhotoAsync(_dbContext, photos[0]);
         _dbContext.ChangeTracker.Clear();
@@ -158,11 +159,11 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.DeleteAsync($"/photos/{photos[0].Id.Value}");
+        var response = await Client.DeleteAsync($"/photos/{photo.Id.Value}");
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
-        Assert.Equal($"Photo {photos[0].Id.Value} is deleted permanently.", error.Reason);
+        Assert.Equal($"Photo {photo.Id.Value} is deleted permanently.", error.Reason);
     }
 
     [Fact]

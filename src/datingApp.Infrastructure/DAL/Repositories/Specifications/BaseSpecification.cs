@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using datingApp.Core.Specifications;
 
-namespace datingApp.Infrastructure.DAL.Specifications;
+namespace datingApp.Infrastructure.DAL.Repositories.Specifications;
 
 public abstract class BaseSpecification<T> : ISpecification<T>
 {

@@ -8,7 +8,7 @@ using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.Replication;
 
-namespace datingApp.Infrastructure.DAL.Specifications;
+namespace datingApp.Infrastructure.DAL.Repositories.Specifications;
 
 public class MatchWithMessagesSpecification : BaseSpecification<Match>
 {

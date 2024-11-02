@@ -178,7 +178,7 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var messages = new List<Message>();
         for (int i=0; i<15; i++)
         {
-            messages.Add(IntegrationTestHelper.CreateMessage(user2.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user2.Id));
         }
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
         _dbContext.ChangeTracker.Clear();

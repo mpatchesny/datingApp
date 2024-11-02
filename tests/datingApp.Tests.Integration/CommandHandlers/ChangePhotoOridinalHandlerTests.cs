@@ -8,6 +8,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
@@ -21,10 +22,11 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     public async Task given_photo_exists_change_oridinal_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto(), };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        _dbContext.ChangeTracker.Clear();
 
-        var command = new ChangePhotoOridinal(photo.Id, 2);
+        var command = new ChangePhotoOridinal(photos[0].Id, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -33,11 +35,11 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     public async Task given_photo_exists_and_has_that_oridinal_change_oridinal_should_succeed()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo1 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
-        var photo2 = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id, 2);
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto(0), IntegrationTestHelper.CreatePhoto(1), };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        _dbContext.ChangeTracker.Clear();
 
-        var command = new ChangePhotoOridinal(photo1.Id, 2);
+        var command = new ChangePhotoOridinal(photos[0].Id, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -57,10 +59,11 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
     public async Task given_authorization_fail_and_photo_exists_change_oridinal_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id);
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto(0),  };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        _dbContext.ChangeTracker.Clear();
 
-        var command = new ChangePhotoOridinal(photo.Id, 2);
+        var command = new ChangePhotoOridinal(photos[0].Id, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
@@ -68,12 +71,14 @@ public class ChangePhotoOridinalHandlerTests : IDisposable
         
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly ChangePhotoOridinalHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
     public ChangePhotoOridinalHandlerTests()
     {
         _testDb = new TestDatabase();
-        var userRepository = new DbUserRepository(_testDb.DbContext);
+        _dbContext = _testDb.DbContext;
+        var userRepository = new DbUserRepository(_dbContext);
         _authService = new Mock<IDatingAppAuthorizationService>();
         _handler = new ChangePhotoOridinalHandler(userRepository, _authService.Object);
     }

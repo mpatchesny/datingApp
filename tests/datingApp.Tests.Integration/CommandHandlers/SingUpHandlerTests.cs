@@ -8,6 +8,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Xunit;
 
@@ -20,7 +21,8 @@ public class SingUpHandlerTests : IDisposable
     public async Task given_email_already_exists_signup_user_throws_EmailAlreadyInUseException()
     {
         var email = "test@test.com";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SignUp(Guid.NewGuid(), "111111111", email, "Janusz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -32,7 +34,8 @@ public class SingUpHandlerTests : IDisposable
     public async Task given_phone_already_exists_signup_user_throws_PhoneAlreadyInUseException()
     {
         var phone = "123456789";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, phone: phone);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, phone: phone);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SignUp(Guid.NewGuid(), phone, "test@test.com", "Janusz", "2000-01-01", 1, 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -59,11 +62,14 @@ public class SingUpHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly SignUpHandler _handler;
+
     public SingUpHandlerTests()
     {
         _testDb = new TestDatabase();
-        var userRepository = new DbUserRepository(_testDb.DbContext);
+        _dbContext = _testDb.DbContext;
+        var userRepository = new DbUserRepository(_dbContext);
         _handler = new SignUpHandler(userRepository);
     }
 

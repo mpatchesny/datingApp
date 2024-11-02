@@ -176,9 +176,9 @@ public class UserRepositoryTests : IDisposable
     [Fact]
     public async Task add_user_should_succeed()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-
+        var user = IntegrationTestHelper.CreateUser();
         await _userRepository.AddAsync(user);
+
         _dbContext.ChangeTracker.Clear();
         var addedUser = await _dbContext.Users
                             .Include(u => u.Settings)
@@ -191,9 +191,6 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_id_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        await _dbContext.Users.AddAsync(user);
-        await _dbContext.SaveChangesAsync();
-
         var settings = new UserSettings(user.Id, PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 

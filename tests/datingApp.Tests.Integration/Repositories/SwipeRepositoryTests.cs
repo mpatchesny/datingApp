@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -37,9 +38,9 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task given_swipe_exists_get_by_swiped_by_swiped_who_returns_swipe()
     {
-        var dbContext = _testDb.CreateNewDbContext();
-        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        _dbContext.ChangeTracker.Clear();
 
         var swipe = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
         Assert.NotNull(swipe);
@@ -48,9 +49,9 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task given_swipe_exists_exists_returns_true()
     {
-        var dbContext = _testDb.CreateNewDbContext();
-        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        _dbContext.ChangeTracker.Clear();
 
         var swipe = await _repository.SwipeExists(swipe1.SwipedById, swipe1.SwipedWhoId);
         Assert.True(swipe);
@@ -61,9 +62,9 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task when_no_swipes_match_get_by_swiped_by_returns_null()
     {
-        var dbContext = _testDb.CreateNewDbContext();
-        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        _dbContext.ChangeTracker.Clear();
 
         var swipe = await _repository.GetBySwipedBy(swipe2.SwipedById, swipe2.SwipedById);
         Assert.Null(swipe);
@@ -80,9 +81,9 @@ public class SwipeRepositoryTests : IDisposable
     [Fact]
     public async Task when_no_swipes_match_swipe_exists_returns_false()
     {
-        var dbContext = _testDb.CreateNewDbContext();
-        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        _dbContext.ChangeTracker.Clear();
 
         var swipe = await _repository.SwipeExists(swipe2.SwipedById, swipe2.SwipedById);
         Assert.False(swipe);
@@ -98,12 +99,14 @@ public class SwipeRepositoryTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly ISwipeRepository _repository;
     
     public SwipeRepositoryTests()
     {
         _testDb = new TestDatabase();
-        _repository = new DbSwipeRepository(_testDb.DbContext);
+        _dbContext = _testDb.DbContext;
+        _repository = new DbSwipeRepository(_dbContext);
     }
 
     // Teardown

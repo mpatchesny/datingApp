@@ -15,6 +15,7 @@ using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -28,14 +29,14 @@ public class DeletePhotoHandlerTests : IDisposable
     public async Task given_photo_exists_delete_photo_should_succeed_and_add_deleted_photo_id_to_deleted_entities_and_delete_photo_file_from_storage()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_dbContext, user.Id);
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         _dbContext.ChangeTracker.Clear();
 
-        var command = new DeletePhoto(photo.Id);
+        var command = new DeletePhoto(photos[0].Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id.Equals(photo.Id)));
+        Assert.True(await _testDb.DbContext.DeletedEntities.AnyAsync(x => x.Id.Equals(photos[0].Id)));
         _mockStorage.Verify(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -43,11 +44,11 @@ public class DeletePhotoHandlerTests : IDisposable
     public async Task given_authorization_fail_delete_existing_photo_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_dbContext, user.Id);
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         _dbContext.ChangeTracker.Clear();
 
-        var command = new DeletePhoto(photo.Id);
+        var command = new DeletePhoto(photos[0].Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
@@ -71,9 +72,10 @@ public class DeletePhotoHandlerTests : IDisposable
     public async Task given_photo_not_exists_and_photo_id_in_deleted_entities_repository_delete_photo_throws_PhotoAlreadyDeletedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var photo = await IntegrationTestHelper.CreatePhotoAsync(_dbContext, user.Id);
-        await IntegrationTestHelper.DeletePhotoAsync(_dbContext, photo);
+        var photo = IntegrationTestHelper.CreatePhoto();
+        var photos = new List<Photo>() { photo };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        await IntegrationTestHelper.DeletePhotoAsync(_dbContext, photos[0]);
         _dbContext.ChangeTracker.Clear();
 
         var command = new DeletePhoto(photo.Id);

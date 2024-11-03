@@ -128,6 +128,7 @@ public class MatchRepositoryTests : IDisposable
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var match2 = new Match(match.Id, user1.Id, user3.Id, false, false, null, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
@@ -140,6 +141,7 @@ public class MatchRepositoryTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var match2 = new Match(Guid.NewGuid(), user1.Id, user2.Id, false, false, null, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
@@ -152,6 +154,7 @@ public class MatchRepositoryTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var match = await _repository.GetByMessageIdAsync(Guid.NewGuid());
         Assert.Null(match);
@@ -162,12 +165,15 @@ public class MatchRepositoryTests : IDisposable
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
-        var message1 = await IntegrationTestHelper.CreateMessageAsync(_dbContext, match.Id, user1.Id, DateTime.UtcNow);
-        var message2 = await IntegrationTestHelper.CreateMessageAsync(_dbContext, match.Id, user2.Id, DateTime.UtcNow);
-        var message3 = await IntegrationTestHelper.CreateMessageAsync(_dbContext, match.Id, user1.Id, DateTime.UtcNow);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
-        foreach (var message in new Message[]{ message1, message2, message3 })
+        foreach (var message in messages)
         {
             _dbContext.ChangeTracker.Clear();
             var retrievedMatch = await _repository.GetByMessageIdAsync(message.Id);
@@ -180,11 +186,12 @@ public class MatchRepositoryTests : IDisposable
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        var messages = new List<Message>();
         for (int i = 0; i < 10; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_dbContext, match.Id, user1.Id, DateTime.UtcNow);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
 
         _dbContext.ChangeTracker.Clear();
         var retrievedMatch = await _repository.GetByIdAsync(match.Id, new MatchWithMessagesSpecification());

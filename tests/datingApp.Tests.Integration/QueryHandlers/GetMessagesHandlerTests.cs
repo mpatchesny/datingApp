@@ -8,6 +8,7 @@ using datingApp.Application.Queries;
 using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
@@ -23,28 +24,31 @@ public class GetMessagesHandlerTests : IDisposable
     public async Task given_match_exists_get_messages_by_match_id_returns_nonempty_collection_of_messages_dto()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
         for (int i = 0; i < 5; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id};
-        var messages = await _handler.HandleAsync(query);
-        Assert.NotEmpty(messages.Data);
-        Assert.IsType<MessageDto>(messages.Data.First());
+        var retrievedMessages = await _handler.HandleAsync(query);
+        Assert.NotEmpty(retrievedMessages.Data);
+        Assert.IsType<MessageDto>(retrievedMessages.Data.First());
     }
 
     [Fact]
     public async Task given_authorization_serivce_returns_fail_GetMessages_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(user1.Id) };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
@@ -66,70 +70,78 @@ public class GetMessagesHandlerTests : IDisposable
     public async Task returned_messages_count_is_lower_or_equal_to_page_size()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
         for (int i = 0; i < 10; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(5);
-        var messages = await _handler.HandleAsync(query);
-        Assert.InRange(messages.Data.Count(), 0, query.PageSize);
+        var retrievedMessages = await _handler.HandleAsync(query);
+        Assert.InRange(retrievedMessages.Data.Count(), 0, query.PageSize);
     }
 
     [Fact]
     public async Task given_page_above_1_proper_number_of_messages_are()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(5);
         query.SetPage(2);
-        var messages = await _handler.HandleAsync(query);
-        Assert.NotEmpty(messages.Data);
-        Assert.Equal(4, messages.Data.Count());
+        var retrievedMessages = await _handler.HandleAsync(query);
+        Assert.NotEmpty(retrievedMessages.Data);
+        Assert.Equal(4, retrievedMessages.Data.Count());
     }
 
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_page_count()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(1);
         query.SetPage(1);
-        var messages = await _handler.HandleAsync(query);
-        Assert.Equal(9, messages.PageCount);
+        var retrievedMessages = await _handler.HandleAsync(query);
+        Assert.Equal(9, retrievedMessages.PageCount);
     }
 
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_of_page_size()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(1);
@@ -142,13 +154,15 @@ public class GetMessagesHandlerTests : IDisposable
     public async Task paginated_data_dto_returns_proper_page()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
         for (int i = 0; i < 9; i++)
         {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
         }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessages() { MatchId = match.Id };
         query.SetPageSize(1);
@@ -159,11 +173,13 @@ public class GetMessagesHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly GetMessagesHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetMessagesHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _authService = new Mock<IDatingAppAuthorizationService>();
         _handler = new GetMessagesHandler(_testDb.DbContext, _authService.Object);
     }

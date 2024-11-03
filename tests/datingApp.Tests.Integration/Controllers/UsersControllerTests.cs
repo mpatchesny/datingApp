@@ -11,7 +11,9 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using FluentStorage.Utils.Extensions;
+using MailKit;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -39,7 +41,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task given_email_already_exists_sign_up_post_request_returns_400_bad_request()
     {
         var email = "test@test.com";
-        await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
@@ -50,7 +53,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task given_phone_already_exists_sign_up_post_request_returns_400_bad_request()
     {
         var phone = "123456789";
-        await IntegrationTestHelper.CreateUserAsync(_testDb, phone : phone);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, phone : phone);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SignUp(Guid.Empty, phone, "test@test.com", "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
@@ -61,7 +65,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task given_email_exists_auth_post_request_returns_200_ok()
     {
         var email = "test@test.com";
-        await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new RequestEmailAccessCode(email);
         var response = await Client.PostAsJsonAsync("users/auth", command);
@@ -82,9 +87,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task given_valid_access_code_sign_in_post_request_returns_200_ok_and_token()
     {
         var email = "test@test.com";
-        await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
         var accessCode = "12345";
-        await CreateAccessCode(email, accessCode);
+        await CreateAccessCode(_dbContext, email, accessCode);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SignInByEmail(email, accessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
@@ -98,9 +104,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task given_invalid_access_code_sign_in_post_request_returns_400_bad_request()
     {
         var email = "test@test.com";
-        await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
         var accessCode = "12345";
-        await CreateAccessCode(email, accessCode);
+        await CreateAccessCode(_dbContext, email, accessCode);
+        _dbContext.ChangeTracker.Clear();
 
         var invalidAccessCode = "67890";
         var command = new SignInByEmail(email, invalidAccessCode);
@@ -113,9 +120,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     {
         // FIXME: test fails when run with other tests, but succeed when run alone
         var email = "test@test.com";
-        await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
         var expiredAccessCode = "12345";
-        await CreateAccessCode(email, expiredAccessCode, TimeSpan.FromMilliseconds(1));
+        await CreateAccessCode(_dbContext, email, expiredAccessCode, TimeSpan.FromMilliseconds(1));
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SignInByEmail(email, expiredAccessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
@@ -125,7 +133,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_missing_token_get_users_returns_401_unauthorized()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var response = await Client.GetAsync($"users/{user.Id.Value}");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -134,7 +143,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_invalid_token_get_users_returns_401_unauthorized()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var token = Authorize(user.Id);
         var badToken = token.AccessToken.Token + "x";
 
@@ -146,7 +156,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_valid_refresh_token_used_to_authorize_get_me_returns_401_unauthorized()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var tokens = Authorize(user.Id);
         var refreshToken = tokens.RefreshToken.Token;
 
@@ -158,7 +169,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var badToken = Authorize(user.Id).AccessToken.Token;
 
         var command = new RefreshJWT(badToken);
@@ -169,7 +181,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_valid_refresh_token_auth_refresh_returns_200_with_new_access_and_refresh_tokens()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var tokens = Authorize(user.Id);
         var accessToken = tokens.AccessToken.Token;
         var refreshToken = tokens.RefreshToken.Token;
@@ -193,7 +206,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_valid_refresh_token_used_more_than_once_auth_refresh_returns_401_unauthorized()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var tokens = Authorize(user.Id);
         var refreshToken = tokens.RefreshToken.Token;
 
@@ -210,7 +224,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_expired_refresh_token_auth_refresh_returns_401_unauthorized()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var tokenExpirtaionTimeInMilliseconds = 1000;
         var tokens = Authorize(user.Id, refreshTokenExpirtyTime: TimeSpan.FromMilliseconds(tokenExpirtaionTimeInMilliseconds));
         var refreshToken = tokens.RefreshToken.Token;
@@ -228,9 +243,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_two_users_have_match_get_users_returns_200_ok_and_public_user()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -243,8 +259,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_two_users_dont_have_match_get_users_returns_403_forbidden()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -256,7 +273,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_user_get_himself_get_users_returns_403_forbidden()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -268,7 +286,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_requested_user_not_exists_get_users_returns_no_content()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -281,7 +300,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_users_me_returns_200_ok_and_private_user()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -294,7 +314,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_user_exists_delete_users_returns_204_no_content()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -306,7 +327,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_user_not_exists_delete_users_returns_404_not_found_and_proper_error_reason()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -322,8 +344,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task given_user_was_already_deleted_delete_users_returns_410_gone()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        await IntegrationTestHelper.DeleteUserAsync(_testDb, user);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        await IntegrationTestHelper.DeleteUserAsync(_dbContext, user);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -338,7 +361,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_recommendations_returns_200_and_list_of_public_user_dto()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -349,11 +373,12 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_recommendations_returns_max_10_private_user_dtos()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         for (int i=0; i<20; i++)
         {
-            await IntegrationTestHelper.CreateUserAsync(_testDb, $"test{i}@test.com");
+            await IntegrationTestHelper.CreateUserAsync(_dbContext, email: $"test{i}@test.com");
         }
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -365,7 +390,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_updates_returns_200_and_list_of_matches_dto()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -376,42 +402,24 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     [Fact]
     public async Task get_updates_without_lastActivityTime_specified_returns_list_of_all_not_displayed_messages_and_matches_as_matches_dto()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var users = new List<User>();
         for (int i=0; i<100; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
             users.Add(tempUser);
         }
 
-        var matches = new List<Match>();
         var random = new Random();
-        for (int i=0; i<50; i++)
+        var matches = new List<Match>();
+        for (int i=0; i<100; i++)
         {
-            var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user.Id, users[i].Id, createdAt : DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            var message = IntegrationTestHelper.CreateMessage(users[i].Id, createdAt: DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            var messages = new List<Message>() { message };
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, users[i].Id, messages: messages, createdAt : DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
             matches.Add(match);
         }
-    
-        for (int i=50; i<100; i++)
-        {
-            var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user.Id, users[i].Id, createdAt : DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
-            matches.Add(match);
-        }
-
-        for (int i=0; i<50; i++)
-        {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, matches[i].Id, matches[i].UserId2, createdAt: DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
-        }
-
-        for (int i=50; i<75; i++)
-        {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, matches[i].Id, matches[i].UserId2, createdAt: DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
-        }
-
-        for (int i=75; i<100; i++)
-        {
-            _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, matches[i].Id, matches[i].UserId2, createdAt: DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
-        }
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -424,21 +432,21 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task get_updates_returns_list_of_matches_dto_since_last_activity_time_parameter()
     {
         var time = DateTime.UtcNow;
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user5 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user6 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user5 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user6 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: time - TimeSpan.FromSeconds(1));
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: time - TimeSpan.FromSeconds(1));
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user4.Id, createdAt: time - TimeSpan.FromSeconds(1));
-        var match1 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user5.Id, createdAt: time - TimeSpan.FromHours(2));
-        var match2 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user6.Id, createdAt: time - TimeSpan.FromHours(2));
-
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match1.Id, user5.Id, createdAt: time - TimeSpan.FromSeconds(1));
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match2.Id, user6.Id, createdAt: time - TimeSpan.FromSeconds(1));
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, createdAt: time - TimeSpan.FromSeconds(1));
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, createdAt: time - TimeSpan.FromSeconds(1));
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user4.Id, createdAt: time - TimeSpan.FromSeconds(1));
+        var messages1 = new List<Message>() { IntegrationTestHelper.CreateMessage(user5.Id, createdAt: time - TimeSpan.FromSeconds(1)) };
+        var messages2 = new List<Message>() { IntegrationTestHelper.CreateMessage(user6.Id, createdAt: time - TimeSpan.FromSeconds(1)) };
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user5.Id, messages: messages1, createdAt: time - TimeSpan.FromHours(2));
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user6.Id, messages: messages2, createdAt: time - TimeSpan.FromHours(2));
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -453,7 +461,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task patch_users_with_no_changes_returns_204_no_content()
     {
         var email = "test@test.com";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -468,7 +477,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task patch_users_with_changes_returns_204_no_content()
     {
         var email = "test@test.com";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -483,7 +493,8 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     public async Task given_user_not_exists_patch_users_returns_404_not_found()
     {
         var email = "test@test.com";
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb, email);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
+        _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
@@ -495,7 +506,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    private async Task<AccessCodeDto> CreateAccessCode(string email, string accessCode = "123456", TimeSpan? expirationTime = null)
+    private static async Task<AccessCodeDto> CreateAccessCode(DatingAppDbContext dbContext, string email, string accessCode = "123456", TimeSpan? expirationTime = null)
     {
         var code = new AccessCodeDto()
             {
@@ -504,15 +515,18 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
                 ExpirationTime = DateTime.UtcNow + (expirationTime ?? TimeSpan.FromMinutes(15)),
                 Expiry = expirationTime ?? TimeSpan.FromMinutes(15)
             };
-        await _testDb.DbContext.AccessCodes.AddAsync(code);
-        await _testDb.DbContext.SaveChangesAsync();
+        await dbContext.AccessCodes.AddAsync(code);
+        await dbContext.SaveChangesAsync();
         return code;
     }
 
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
+
     public UsersControllerTests(OptionsProvider optionsProvider) : base(optionsProvider)
     {
         _testDb = new TestDatabase(false);
+        _dbContext = _testDb.DbContext;
     }
 
     public void Dispose()

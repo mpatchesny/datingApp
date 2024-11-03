@@ -64,7 +64,7 @@ public class UserRepositoryTests : IDisposable
             IntegrationTestHelper.CreatePhoto(),
             IntegrationTestHelper.CreatePhoto()
         };
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         _dbContext.ChangeTracker.Clear();
 
         var retrievedUser = await _userRepository.GetByPhotoIdAsync(Guid.NewGuid());
@@ -191,6 +191,7 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_id_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var settings = new UserSettings(user.Id, PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
         var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
 
@@ -202,6 +203,7 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_email_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var badUser = IntegrationTestHelper.CreateUser(email: user.Email);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
@@ -212,6 +214,7 @@ public class UserRepositoryTests : IDisposable
     public async Task add_user_with_existing_phone_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
         var badUser = IntegrationTestHelper.CreateUser(phone: user.Phone);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));

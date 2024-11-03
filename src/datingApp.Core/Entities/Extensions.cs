@@ -62,7 +62,7 @@ public static class Extensions
         match.CreatedAt.Minute == entity.CreatedAt.Minute &&
         match.CreatedAt.Second == entity.CreatedAt.Second &&
         match.CreatedAt.Millisecond == entity.CreatedAt.Millisecond &&
-        match.Messages.Count == entity.Messages.Count;
+        match.Messages.Count() == entity.Messages.Count();
 
         if (equals)
         {

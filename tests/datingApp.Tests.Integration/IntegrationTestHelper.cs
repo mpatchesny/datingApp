@@ -69,7 +69,7 @@ internal static class IntegrationTestHelper
         return new Message(Guid.NewGuid(), sendFromId, "test", isDisplayed, createdAt ?? DateTime.UtcNow);
     }
 
-    internal static async Task<Match> CreateMatchAsync(DatingAppDbContext dbContext, Guid userId1, Guid userId2, ICollection<Message> messages = null, bool isDisplayedByUser1 = false, bool isDisplayedByUser2 = false, DateTime? createdAt = null)
+    internal static async Task<Match> CreateMatchAsync(DatingAppDbContext dbContext, Guid userId1, Guid userId2, List<Message> messages = null, bool isDisplayedByUser1 = false, bool isDisplayedByUser2 = false, DateTime? createdAt = null)
     {
         var match = new Match(Guid.NewGuid(), userId1, userId2, isDisplayedByUser1, isDisplayedByUser2, messages, createdAt ?? DateTime.UtcNow);
         await dbContext.Matches.AddAsync(match);

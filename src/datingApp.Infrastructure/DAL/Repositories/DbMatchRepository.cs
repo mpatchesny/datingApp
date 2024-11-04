@@ -26,13 +26,6 @@ internal sealed class DbMatchRepository : IMatchRepository
                     .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
-    public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId, ISpecification<Match> specification)
-    {
-        var query = GetBaseGetQuery(specification);
-        query = query.Where(match => match.UserId1.Equals(userId) || match.UserId2.Equals(userId));
-        return await query.ToListAsync();
-    }
-
     public async Task<Match> GetByIdAsync(MatchId matchId, ISpecification<Match> specification)
     {
         var query = GetBaseGetQuery(specification);

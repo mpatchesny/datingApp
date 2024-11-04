@@ -4,55 +4,62 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
+using datingApp.Core.Specifications;
 using datingApp.Core.ValueObjects;
+using MailKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Npgsql.Replication;
 
 namespace datingApp.Infrastructure.DAL.Repositories.Specifications;
 
-public class MatchWithMessagesSpecification : BaseSpecification<Match>
+public class MatchWithMessagesSpecification : ISpecification<Match>
 {
+    readonly List<Expression<Func<Message, bool>>> _predicates = new();
+    private int messageLimit = int.MaxValue;
+
     public MatchWithMessagesSpecification()
     {
-        AddInclude(match => match.Messages);
     }
 
     public MatchWithMessagesSpecification GetMessagesBeforeDate(DateTime createdBefore)
     {
-        AddCriteria(match => match.Messages.Any(m => m.CreatedAt <= createdBefore));
+        _predicates.Add(message => message.CreatedAt < createdBefore);
         return this;
     }
 
     public MatchWithMessagesSpecification GetMessageById(MessageId messageId)
     {
-        AddCriteria(match => match.Messages.Any(m => m.Id == messageId));
+        _predicates.Add(message => message.Id == messageId);
         return this;
     }
 
     public MatchWithMessagesSpecification GetMessagesByDisplayed(bool isDisplayed)
     {
-        AddCriteria(match => match.Messages.Any(m => isDisplayed));
+        _predicates.Add(message => message.IsDisplayed == isDisplayed);
         return this;
     }
 
     public MatchWithMessagesSpecification SetMessageFetchLimit(int messageLimit)
     {
-        AddInclude(match => match.Messages.OrderBy(message => message.CreatedAt).Take(messageLimit));
+        this.messageLimit = messageLimit;
         return this;
     }
 
-    public override IQueryable<Match> Apply(IQueryable<Match> query)
+    public IQueryable<Match> Apply(IQueryable<Match> query)
     {
-        foreach (var include in Include)
+        Expression<Func<Match, IEnumerable<Message>>> navigationPropertyPath = 
+            match => match.Messages;
+
+        if (_predicates.Count > 0)
         {
-            query = query.Include(include);
+            navigationPropertyPath = match => match.Messages
+                //.Where(_predicates[0])
+                .OrderByDescending(message => message.CreatedAt)
+                .Take(messageLimit);
         }
 
-        foreach (var criteria in Criteria)
-        {
-            query = query.Where(criteria);
-        }
-
-        return query;
+        return query.Include(navigationPropertyPath);
     }
 }

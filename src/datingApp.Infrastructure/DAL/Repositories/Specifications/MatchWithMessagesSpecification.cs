@@ -16,28 +16,32 @@ namespace datingApp.Infrastructure.DAL.Repositories.Specifications;
 
 public class MatchWithMessagesSpecification : ISpecification<Match>
 {
-    readonly List<Expression<Func<Message, bool>>> _predicates = new();
+    private Expression<Func<Match, IEnumerable<Message>>> navigationPropertyPath;
+    private DateTime createdBefore = DateTime.MaxValue;
+    private bool? isDisplayed;
+    private Guid? messageId;
     private int messageLimit = int.MaxValue;
 
     public MatchWithMessagesSpecification()
     {
+        navigationPropertyPath = match => match.Messages;
     }
 
     public MatchWithMessagesSpecification GetMessagesBeforeDate(DateTime createdBefore)
     {
-        _predicates.Add(message => message.CreatedAt < createdBefore);
+        this.createdBefore = createdBefore;
         return this;
     }
 
     public MatchWithMessagesSpecification GetMessageById(MessageId messageId)
     {
-        _predicates.Add(message => message.Id == messageId);
+        this.messageId = messageId;
         return this;
     }
 
     public MatchWithMessagesSpecification GetMessagesByDisplayed(bool isDisplayed)
     {
-        _predicates.Add(message => message.IsDisplayed == isDisplayed);
+        this.isDisplayed = isDisplayed;
         return this;
     }
 
@@ -49,17 +53,12 @@ public class MatchWithMessagesSpecification : ISpecification<Match>
 
     public IQueryable<Match> Apply(IQueryable<Match> query)
     {
-        Expression<Func<Match, IEnumerable<Message>>> navigationPropertyPath = 
-            match => match.Messages;
-
-        if (_predicates.Count > 0)
-        {
-            navigationPropertyPath = match => match.Messages
-                //.Where(_predicates[0])
-                .OrderByDescending(message => message.CreatedAt)
-                .Take(messageLimit);
-        }
-
+        navigationPropertyPath = match => match.Messages
+            .Where(message => message.CreatedAt <= createdBefore)
+            .Where(message => !isDisplayed.HasValue || message.IsDisplayed == isDisplayed.Value)
+            .Where(message => !messageId.HasValue || message.Id.Equals(messageId.Value))
+            .OrderByDescending(message => message.CreatedAt)
+            .Take(messageLimit);
         return query.Include(navigationPropertyPath);
     }
 }

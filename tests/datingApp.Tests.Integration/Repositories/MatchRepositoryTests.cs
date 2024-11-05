@@ -8,7 +8,9 @@ using datingApp.Core.Repositories;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.DAL.Repositories.Specifications;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Frameworks;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Repositories;
@@ -16,29 +18,6 @@ namespace datingApp.Tests.Integration.Repositories;
 
 public class MatchRepositoryTests : IDisposable
 {
-    [Fact]
-    public async void given_match_exists_get_match_by_user_id_should_return_users_matches()
-    {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user4.Id);
-        _dbContext.ChangeTracker.Clear();
-
-        var matches = await _repository.GetByUserIdAsync(user1.Id);
-        Assert.Equal(3, matches.Count());
-    }
-
-    [Fact]
-    public async void get_match_by_nonexisting_user_id_should_return_empty_collection()
-    {
-        var matches = await _repository.GetByUserIdAsync(Guid.NewGuid());
-        Assert.Empty(matches);
-    }
-
     [Fact]
     public async void given_match_exists_get_match_by_id_should_succeed()
     {
@@ -196,6 +175,137 @@ public class MatchRepositoryTests : IDisposable
         _dbContext.ChangeTracker.Clear();
         var retrievedMatch = await _repository.GetByIdAsync(match.Id, new MatchWithMessagesSpecification());
         Assert.True(match.IsEqualTo(retrievedMatch));
+    }
+
+    [Fact]
+    public async void get_match_respects_specification_get_message_before_date()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
+        var date1 = DateTime.UtcNow.AddHours(-1);
+        var date2 = DateTime.UtcNow;
+        for (int i = 0; i < 3; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, createdAt: date1));
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, createdAt: date2));
+        }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var specification = new MatchWithMessagesSpecification().GetMessagesBeforeDate(date1);
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id, specification);
+        Assert.Equal(3, retrievedMatch.Messages.Count());
+    }
+
+    [Fact]
+    public async void get_match_respects_specification_get_messages_by_displayed()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
+        for (int i = 0; i < 3; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, isDisplayed: true));
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, isDisplayed: false));
+        }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var specification1 = new MatchWithMessagesSpecification().GetMessagesByDisplayed(true);
+        var retrievedMatch1 = await _repository.GetByIdAsync(match.Id, specification1);
+        Assert.Equal(3, retrievedMatch1.Messages.Count());
+        _dbContext.ChangeTracker.Clear();
+
+        var specification2 = new MatchWithMessagesSpecification().GetMessagesByDisplayed(false);
+        var retrievedMatch2 = await _repository.GetByIdAsync(match.Id, specification2);
+        Assert.Equal(4, retrievedMatch2.Messages.Count());
+    }
+
+    [Fact]
+    public async void get_match_respects_specification_get_message_by_id()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
+        for (int i = 0; i < 10; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id));
+        }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var specification = new MatchWithMessagesSpecification().GetMessageById(messages[5].Id);
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id, specification);
+        Assert.Single(retrievedMatch.Messages);
+        Assert.Equal(messages[5].Id, retrievedMatch.Messages.FirstOrDefault().Id);
+    }
+
+    [Fact]
+    public async void get_match_respects_specification_set_message_fetch_limit()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
+        for (int i = 0; i < 10; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow.AddSeconds(i)));
+        }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var specification = new MatchWithMessagesSpecification().SetMessageFetchLimit(5);
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id, specification);
+        Assert.Collection(retrievedMatch.Messages, 
+            message => Assert.Equal(message.Id, messages[^1].Id),
+            message => Assert.Equal(message.Id, messages[^2].Id),
+            message => Assert.Equal(message.Id, messages[^3].Id),
+            message => Assert.Equal(message.Id, messages[^4].Id),
+            message => Assert.Equal(message.Id, messages[^5].Id)
+            );
+    }
+
+    [Fact]
+    public async void get_match_respects_specification_with_more_than_one_argument()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>();
+        var beforeDate = DateTime.UtcNow;
+        for (int i = 0; i < 7; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, createdAt: beforeDate));
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, isDisplayed: true, createdAt: beforeDate.AddSeconds(-i)));
+        }
+        for (int i = 0; i < 9; i++)
+        {
+            messages.Add(IntegrationTestHelper.CreateMessage(user1.Id, createdAt: beforeDate));
+        }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var specification = new MatchWithMessagesSpecification()
+                                .GetMessagesBeforeDate(beforeDate)
+                                .GetMessagesByDisplayed(true)
+                                .SetMessageFetchLimit(5);
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id, specification);
+        Assert.Equal(5, retrievedMatch.Messages.Count());
+        Assert.Collection(retrievedMatch.Messages, 
+            message => Assert.Equal(message.Id, messages[7].Id),
+            message => Assert.Equal(message.Id, messages[8].Id),
+            message => Assert.Equal(message.Id, messages[9].Id),
+            message => Assert.Equal(message.Id, messages[10].Id),
+            message => Assert.Equal(message.Id, messages[11].Id)
+            );
     }
 
     // TODO: dodać testy żeby sprawdzić, czy UpdateAsync łapie zmiany w wiadomościach (AddMessage, RemoveMEssage itd.)

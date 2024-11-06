@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Core.Entities;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,7 +44,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         var data = await dbQuery
                         .AsNoTracking()
                         .FirstOrDefaultAsync();
-        
+
         if (data == null) 
         {
             throw new MatchNotExistsException(query.MatchId);
@@ -60,8 +61,26 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             Id = data.Match.Id,
             User = data.User.AsPublicDto(0),
             IsDisplayed = (data.Match.UserId1.Equals(query.UserId)) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
-            Messages = data.Match.Messages.OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
+            Messages = MessagesToListOfMessagesDto(data.Match),
             CreatedAt = data.Match.CreatedAt
         }; 
+    }
+
+    private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
+    {
+        var messages = new List<MessageDto>();
+        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
+        {
+            messages.Add(new MessageDto
+            {
+                Id = message.Id,
+                MatchId = match.Id,
+                SendFromId = message.SendFromId,
+                Text = message.Text,
+                IsDisplayed = message.IsDisplayed,
+                CreatedAt = message.CreatedAt
+            });
+        }
+        return messages;
     }
 }

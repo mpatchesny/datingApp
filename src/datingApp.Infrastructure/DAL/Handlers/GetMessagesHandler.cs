@@ -73,7 +73,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
     private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
     {
         var messages = new List<MessageDto>();
-        foreach (var message in match.Messages)
+        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
         {
             messages.Add(new MessageDto
             {

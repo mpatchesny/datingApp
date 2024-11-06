@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using datingApp.Infrastructure.DAL.Options;
-using datingApp.Application.Repositories;
 
 namespace datingApp.Infrastructure.DAL;
 
@@ -22,12 +21,6 @@ internal static class Extensions
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
         var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);
         services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
-
-        services.Scan(s => s.FromCallingAssembly()
-            .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.DAL.Repositories"))
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
-
         services.AddHostedService<DatabaseInitializer>();
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
         services.AddHostedService<ExpiredDataRemover>();

@@ -7,7 +7,6 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Notifications;
 using datingApp.Application.Queries;
-using datingApp.Application.Repositories;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Application.Spatial;

@@ -6,13 +6,13 @@ using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
-using datingApp.Application.Repositories;
 using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Services;
 using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -98,7 +98,7 @@ public class DeletePhotoHandlerTests : IDisposable
         _authService = new Mock<IDatingAppAuthorizationService>();
 
         var userRepository = new DbUserRepository(_dbContext);
-        var deletedEntitiesRepository = new DbDeletedEntityRepository(_dbContext);
+        var deletedEntitiesRepository = new DeletedEntityService(_dbContext);
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
         _handler = new DeletePhotoHandler(userRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);

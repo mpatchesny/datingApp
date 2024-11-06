@@ -61,26 +61,8 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             Id = data.Match.Id,
             User = data.User.AsPublicDto(0),
             IsDisplayed = (data.Match.UserId1.Equals(query.UserId)) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
-            Messages = MessagesToListOfMessagesDto(data.Match),
+            Messages = data.Match.MessagesListAsDto(),
             CreatedAt = data.Match.CreatedAt
         }; 
-    }
-
-    private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
-    {
-        var messages = new List<MessageDto>();
-        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
-        {
-            messages.Add(new MessageDto
-            {
-                Id = message.Id,
-                MatchId = match.Id,
-                SendFromId = message.SendFromId,
-                Text = message.Text,
-                IsDisplayed = message.IsDisplayed,
-                CreatedAt = message.CreatedAt
-            });
-        }
-        return messages;
     }
 }

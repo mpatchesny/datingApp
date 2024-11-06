@@ -80,4 +80,22 @@ internal static class Extensions
             Lon = entity.Location.Lon
         };
     }
+
+    public static List<MessageDto> MessagesListAsDto(this Match match)
+    {
+        var messages = new List<MessageDto>();
+        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
+        {
+            messages.Add(new MessageDto
+            {
+                Id = message.Id,
+                MatchId = match.Id,
+                SendFromId = message.SendFromId,
+                Text = message.Text,
+                IsDisplayed = message.IsDisplayed,
+                CreatedAt = message.CreatedAt
+            });
+        }
+        return messages;
+    }
 }

@@ -39,8 +39,6 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             throw new UnauthorizedException();
         }
 
-        var messagesDto = MessagesToListOfMessagesDto(match);
-
         var recordsCount = await _dbContext.Matches
                         .Where(match => match.Id.Equals(query.MatchId))
                         .AsNoTracking()
@@ -54,7 +52,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(messagesDto)
+            Data = new List<dynamic>(match.MessagesListAsDto())
         };
     }
 
@@ -68,23 +66,5 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize))
             .FirstOrDefaultAsync();
-    }
-
-    private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
-    {
-        var messages = new List<MessageDto>();
-        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
-        {
-            messages.Add(new MessageDto
-            {
-                Id = message.Id,
-                MatchId = match.Id,
-                SendFromId = message.SendFromId,
-                Text = message.Text,
-                IsDisplayed = message.IsDisplayed,
-                CreatedAt = message.CreatedAt
-            });
-        }
-        return messages;
     }
 }

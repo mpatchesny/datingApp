@@ -55,7 +55,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                     Id = record.Match.Id,
                     User = record.User.AsPublicDto(0),
                     IsDisplayed = (record.Match.UserId1.Equals(query.UserId)) ? record.Match.IsDisplayedByUser1 : record.Match.IsDisplayedByUser2,
-                    Messages =  MessagesToListOfMessagesDto(record.Match),
+                    Messages =  record.Match.MessagesListAsDto(),
                     CreatedAt = record.Match.CreatedAt
                 });
         }
@@ -68,23 +68,5 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             PageCount = pageCount,
             Data = new List<dynamic>(dataDto)
             };
-    }
-
-    private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
-    {
-        var messages = new List<MessageDto>();
-        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
-        {
-            messages.Add(new MessageDto
-            {
-                Id = message.Id,
-                MatchId = match.Id,
-                SendFromId = message.SendFromId,
-                Text = message.Text,
-                IsDisplayed = message.IsDisplayed,
-                CreatedAt = message.CreatedAt
-            });
-        }
-        return messages;
     }
 }

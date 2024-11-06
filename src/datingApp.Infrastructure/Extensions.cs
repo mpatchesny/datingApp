@@ -79,8 +79,8 @@ public static class Extensions
             .WithSingletonLifetime());
 
         services.AddSingleton<ExceptionMiddleware>();
-        services.AddScoped<RevokedRefreshTokensService>();
-        services.AddScoped<DeletedEntityService>();
+        services.AddScoped<IRevokedRefreshTokensService, RevokedRefreshTokensService>();
+        services.AddScoped<IDeletedEntityService, DeletedEntityService>();
 
         return services;
     }

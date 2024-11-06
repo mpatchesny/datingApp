@@ -25,6 +25,11 @@ internal static class Extensions
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
         services.AddHostedService<ExpiredDataRemover>();
 
+        services.Scan(s => s.FromCallingAssembly()
+            .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.DAL.Repositories"))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
         // EF Core + Npgsql issue
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         return services;

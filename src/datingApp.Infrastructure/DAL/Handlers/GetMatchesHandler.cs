@@ -26,8 +26,8 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         }
 
         var dbQuery = 
-            from match in _dbContext.Matches.Include(m => m.Messages)
-            from user in _dbContext.Users.Include(u => u.Photos)
+            from match in _dbContext.Matches.Include(match => match.Messages)
+            from user in _dbContext.Users.Include(user => user.Photos)
             where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
             where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
             select new 
@@ -43,16 +43,16 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                             .ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
-        foreach (var x in data)
+        foreach (var record in data)
         {
             dataDto.Add(
                 new MatchDto()
                 {
-                    Id = x.Match.Id,
-                    User = x.User.AsPublicDto(0),
-                    IsDisplayed = (x.Match.UserId1.Equals(query.UserId)) ? x.Match.IsDisplayedByUser1 : x.Match.IsDisplayedByUser2,
-                    Messages =  x.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
-                    CreatedAt = x.Match.CreatedAt
+                    Id = record.Match.Id,
+                    User = record.User.AsPublicDto(0),
+                    IsDisplayed = (record.Match.UserId1.Equals(query.UserId)) ? record.Match.IsDisplayedByUser1 : record.Match.IsDisplayedByUser2,
+                    Messages =  record.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
+                    CreatedAt = record.Match.CreatedAt
                 });
         }
 

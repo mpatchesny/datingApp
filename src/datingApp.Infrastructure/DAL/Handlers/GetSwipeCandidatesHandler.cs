@@ -47,10 +47,10 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
                     .Where(candidate => candidate.DateOfBirth <= maxDob)
-                    .Where(x => x.Settings.Location.Lat <= spatialSquare.NorthLat)
-                    .Where(x => x.Settings.Location.Lat >= spatialSquare.SouthLat)
-                    .Where(x => x.Settings.Location.Lon <= spatialSquare.EastLon)
-                    .Where(x => x.Settings.Location.Lon >= spatialSquare.WestLon)
+                    .Where(candidate => candidate.Settings.Location.Lat <= spatialSquare.NorthLat)
+                    .Where(candidate => candidate.Settings.Location.Lat >= spatialSquare.SouthLat)
+                    .Where(candidate => candidate.Settings.Location.Lon <= spatialSquare.EastLon)
+                    .Where(candidate => candidate.Settings.Location.Lon >= spatialSquare.WestLon)
                     .AsNoTracking()
                     .Select(candidate => candidate.Id.Value);
     }
@@ -59,16 +59,16 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     {
         // we want candidates sorted by number of likes descending
         return _dbContext.Users
-                    .Where(x => initialCandidates.Contains(x.Id))
-                    .Select(x => new 
+                    .Where(user => initialCandidates.Contains(user.Id))
+                    .Select(candidate => new 
                         {
-                            User = x,
-                            LikesCount = _dbContext.Swipes.Where(s => s.SwipedWhoId.Equals(x.Id) && s.Like == Like.Like).Count()
+                            User = candidate,
+                            LikesCount = _dbContext.Swipes.Where(swipe => swipe.SwipedWhoId.Equals(candidate.Id) && swipe.Like == Like.Like).Count()
                         })
-                    .OrderByDescending(x => x.LikesCount)
-                    .Select(x => x.User)
-                    .Include(x => x.Settings)
-                    .Include(x => x.Photos)
+                    .OrderByDescending(likes => likes.LikesCount)
+                    .Select(user => user.User)
+                    .Include(user => user.Settings)
+                    .Include(user => user.Photos)
                     .AsNoTracking()
                     .ToListAsync();
     }

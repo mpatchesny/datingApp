@@ -20,12 +20,6 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext = dbContext;
     }
 
-    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
-    {
-        return await _dbContext.Matches
-                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
-    }
-
     public async Task<Match> GetByUserIdAsync(UserId userId1, UserId userId2)
     {
         Expression<Func<Match, bool>> predicate = x => 

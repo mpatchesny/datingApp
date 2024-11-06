@@ -70,7 +70,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             .FirstOrDefaultAsync();
     }
 
-    private List<MessageDto> MessagesToListOfMessagesDto(Match match)
+    private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
     {
         var messages = new List<MessageDto>();
         foreach (var message in match.Messages)

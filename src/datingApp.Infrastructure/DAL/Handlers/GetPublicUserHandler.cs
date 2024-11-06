@@ -30,9 +30,9 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
     {
         var users = await _dbContext.Users
                             .AsNoTracking()
-                            .Include(x => x.Settings)
-                            .Include(x => x.Photos)
-                            .Where(x => x.Id.Equals(query.RequestByUserId) || x.Id.Equals(query.RequestWhoUserId))
+                            .Include(user => user.Settings)
+                            .Include(user => user.Photos)
+                            .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
                             .ToListAsync();
 
         var requestedWho = users.FirstOrDefault(x => x.Id.Equals(query.RequestWhoUserId));

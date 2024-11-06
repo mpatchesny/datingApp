@@ -47,19 +47,6 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_swipe_exists_exists_returns_true()
-    {
-        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
-        _dbContext.ChangeTracker.Clear();
-
-        var swipe = await _repository.SwipeExists(swipe1.SwipedById, swipe1.SwipedWhoId);
-        Assert.True(swipe);
-        swipe = await _repository.SwipeExists(swipe2.SwipedById, swipe2.SwipedWhoId);
-        Assert.True(swipe);
-    }
-
-    [Fact]
     public async Task when_no_swipes_match_get_by_swiped_by_returns_null()
     {
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
@@ -76,25 +63,6 @@ public class SwipeRepositoryTests : IDisposable
         Assert.Null(swipe);
         swipe = await _repository.GetBySwipedBy(swipe1.SwipedById, Guid.NewGuid());
         Assert.Null(swipe);
-    }
-
-    [Fact]
-    public async Task when_no_swipes_match_swipe_exists_returns_false()
-    {
-        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
-        _dbContext.ChangeTracker.Clear();
-
-        var swipe = await _repository.SwipeExists(swipe2.SwipedById, swipe2.SwipedById);
-        Assert.False(swipe);
-        swipe = await _repository.SwipeExists(swipe2.SwipedWhoId, swipe2.SwipedWhoId);
-        Assert.False(swipe);
-        swipe = await _repository.SwipeExists(swipe1.SwipedById, swipe1.SwipedById);
-        Assert.False(swipe);
-        swipe = await _repository.SwipeExists(swipe1.SwipedWhoId, swipe1.SwipedWhoId);
-        Assert.False(swipe);
-        swipe = await _repository.SwipeExists(swipe1.SwipedById, Guid.NewGuid());
-        Assert.False(swipe);
     }
 
     // Arrange

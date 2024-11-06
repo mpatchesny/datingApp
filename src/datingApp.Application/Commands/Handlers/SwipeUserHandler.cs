@@ -28,11 +28,11 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
     {
         var isLikedByOtherUser = new IsLikedByOtherUserDto() { IsLikedByOtherUser = false };
 
-        var swipeExists = await _swipeRepository.SwipeExists(command.SwipedById, command.SwipedWhoId);
-        if (!swipeExists)
+        var swipe = await _swipeRepository.GetBySwipedBy(command.SwipedById, command.SwipedWhoId);
+        if (swipe == null)
         {
-            var swipe = new Swipe(command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
-            await _swipeRepository.AddAsync(swipe);
+            var newSwipe = new Swipe(command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
+            await _swipeRepository.AddAsync(newSwipe);
         }
 
         var otherUserSwipe = await _swipeRepository.GetBySwipedBy(command.SwipedWhoId, command.SwipedById);

@@ -20,10 +20,12 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext = dbContext;
     }
 
-    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
+    public async Task<Match> GetByUserIdAsync(UserId userId1, UserId userId2)
     {
-        return await _dbContext.Matches
-                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
+        Expression<Func<Match, bool>> predicate = x => 
+            x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2) ||
+            x.UserId1.Equals(userId2) && x.UserId2.Equals(userId1);
+        return await _dbContext.Matches.Include(match => match.Messages).FirstOrDefaultAsync(predicate);
     }
 
     public async Task<Match> GetByIdAsync(MatchId matchId)
@@ -58,4 +60,6 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext.Matches.Remove(match);
         await _dbContext.SaveChangesAsync();
     }
+
+
 }

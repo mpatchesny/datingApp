@@ -25,7 +25,7 @@ internal sealed class DbMatchRepository : IMatchRepository
         Expression<Func<Match, bool>> predicate = x => 
             x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2) ||
             x.UserId1.Equals(userId2) && x.UserId2.Equals(userId1);
-        return await _dbContext.Matches.FirstOrDefaultAsync(predicate);
+        return await _dbContext.Matches.Include(match => match.Messages).FirstOrDefaultAsync(predicate);
     }
 
     public async Task<Match> GetByIdAsync(MatchId matchId)

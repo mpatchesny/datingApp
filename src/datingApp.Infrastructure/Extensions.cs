@@ -72,11 +72,15 @@ public static class Extensions
 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
-                .Where(t => !t.Name.StartsWith("Dummy") && !t.Name.EndsWith("Options")))
+                .Where(t => !t.Name.EndsWith("Options") 
+                    && t.Name != "RevokedRefreshTokensService" 
+                    && t.Name != "DeletedEntityService"))
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
 
         services.AddSingleton<ExceptionMiddleware>();
+        services.AddScoped<RevokedRefreshTokensService>();
+        services.AddScoped<DeletedEntityService>();
 
         return services;
     }

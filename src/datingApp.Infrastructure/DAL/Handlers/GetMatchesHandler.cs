@@ -32,7 +32,8 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                     .OrderByDescending(message => message.CreatedAt)
                     .Take(1))
             from user in _dbContext.Users.Include(user => user.Photos)
-            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
+            where !user.Id.Equals(query.UserId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
             where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
             select new 
             {

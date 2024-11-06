@@ -20,7 +20,7 @@ internal static class Extensions
             Job = entity.Job,
             Name = entity.Name,
             Sex = (int) entity.Sex,
-            Photos = entity.Photos.Select(x => x.AsDto()).ToList()
+            Photos = PhotosAsDto(entity)
         };
     }
 
@@ -38,19 +38,7 @@ internal static class Extensions
             Name = entity.Name,
             Sex = (int) entity.Sex,
             Settings = entity.Settings.AsDto(),
-            Photos = entity.Photos.Select(x => x.AsDto()).ToList()
-        };
-    }
-
-    public static PhotoDto AsDto(this Photo entity)
-    {
-        return new()
-        {
-            Id = entity.Id,
-            Oridinal = entity.Oridinal,
-            Url = entity.Url,
-            // UserId = entity.UserId
-            UserId = Guid.NewGuid()
+            Photos = PhotosAsDto(entity)
         };
     }
 
@@ -84,5 +72,21 @@ internal static class Extensions
             });
         }
         return messages;
+    }
+
+    public static List<PhotoDto> PhotosAsDto(this User user)
+    {
+        var photos = new List<PhotoDto>();
+        foreach (var photo in user.Photos.OrderBy(p => p.Oridinal))
+        {
+            photos.Add(new PhotoDto
+            {
+                Id = photo.Id,
+                Oridinal = photo.Oridinal,
+                Url = photo.Url,
+                UserId = user.Id
+            });
+        }
+        return photos;
     }
 }

@@ -26,7 +26,10 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
     public async Task<MatchDto> HandleAsync(GetMatch query)
     {
         var dbQuery = 
-            from match in _dbContext.Matches.Include(m => m.Messages)
+            from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                    .Take(query.HowManyMessages))
             from user in _dbContext.Users.Include(u => u.Photos)
             where match.Id.Equals(query.MatchId)
             where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
@@ -57,7 +60,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             Id = data.Match.Id,
             User = data.User.AsPublicDto(0),
             IsDisplayed = (data.Match.UserId1.Equals(query.UserId)) ? data.Match.IsDisplayedByUser1 : data.Match.IsDisplayedByUser2,
-            Messages = data.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(query.HowManyMessages).OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
+            Messages = data.Match.Messages.OrderBy(m => m.CreatedAt).Select(m => m.AsDto()),
             CreatedAt = data.Match.CreatedAt
         }; 
     }

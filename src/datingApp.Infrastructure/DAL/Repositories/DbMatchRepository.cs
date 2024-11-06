@@ -26,17 +26,23 @@ internal sealed class DbMatchRepository : IMatchRepository
                     .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
-    public async Task<Match> GetByIdAsync(MatchId matchId, ISpecification<Match> specification)
+    public async Task<Match> GetByQuery(IQueryObject<Match> query)
     {
-        var query = GetBaseGetQuery(specification);
-        return await query.FirstOrDefaultAsync(match => match.Id == match.Id);
+        return await query.Apply(_dbContext.Matches.AsQueryable<Match>())
+            .FirstOrDefaultAsync();
     }
 
-    public async Task<Match> GetByMessageIdAsync(MessageId messageId, ISpecification<Match> specification)
+    public async Task<Match> GetByIdAsync(MatchId matchId)
     {
-        var query = GetBaseGetQuery(specification);
-        query = query.Where(match => match.Messages.Any(message => message.Id == messageId));
-        return await query.FirstOrDefaultAsync();
+        return await _dbContext.Matches
+            .FirstOrDefaultAsync(match => match.Id == matchId);
+    }
+
+    public async Task<Match> GetByMessageIdAsync(MessageId messageId)
+    {
+        return await _dbContext.Matches
+            .Where(match => match.Messages.Any(message => message.Id == messageId))
+            .FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(Match match)
@@ -55,12 +61,5 @@ internal sealed class DbMatchRepository : IMatchRepository
     {
         _dbContext.Matches.Remove(match);
         await _dbContext.SaveChangesAsync();
-    }
-
-    private IQueryable<Match> GetBaseGetQuery(ISpecification<Match> specification)
-    {
-        var query = _dbContext.Matches.AsQueryable<Match>();
-        if (specification != null) query = specification.Apply(query);
-        return query;
     }
 }

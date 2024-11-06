@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Core.Entities;
 using MailKit;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +26,8 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
-        var match = _dbContext.Matches.FirstOrDefault(x => x.Id.Equals(query.MatchId));
+        var match = await GetMatchAsync(query.MatchId, query.Page, query.PageSize);
+
         if (match == null)
         {
             throw new MatchNotExistsException(query.MatchId);
@@ -37,25 +39,52 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             throw new UnauthorizedException();
         }
 
-        var dbQuery = _dbContext.Matches
-                            .Where(match => match.Id.Equals(query.MatchId))
-                            .AsNoTracking()
-                            .SelectMany(match => match.Messages)
-                            .OrderBy(message => message.CreatedAt);
+        var messagesDto = MessagesToListOfMessagesDto(match);
 
-        var data = await dbQuery
-                        .Skip((query.Page - 1) * query.PageSize)
-                        .Take(query.PageSize)
-                        .Select(x => x.AsDto())
-                        .ToListAsync();
+        var recordsCount = await _dbContext.Matches
+                        .Where(match => match.Id.Equals(query.MatchId))
+                        .AsNoTracking()
+                        .SelectMany(match => match.Messages)
+                        .CountAsync();
 
-        var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
+        var pageCount = (int)(recordsCount + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto{
+        return new PaginatedDataDto
+        {
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(data)
+            Data = new List<dynamic>(messagesDto)
         };
+    }
+
+    private async Task<Match> GetMatchAsync(Guid matchId, int page, int pageSize)
+    {
+        return await _dbContext.Matches
+            .AsNoTracking()
+            .Where(match => match.Id.Equals(matchId))
+            .Include(match =>
+                match.Messages.OrderByDescending(message => message.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize))
+            .FirstOrDefaultAsync();
+    }
+
+    private List<MessageDto> MessagesToListOfMessagesDto(Match match)
+    {
+        var messages = new List<MessageDto>();
+        foreach (var message in match.Messages)
+        {
+            messages.Add(new MessageDto
+            {
+                Id = message.Id,
+                MatchId = match.Id,
+                SendFromId = message.SendFromId,
+                Text = message.Text,
+                IsDisplayed = message.IsDisplayed,
+                CreatedAt = message.CreatedAt
+            });
+        }
+        return messages;
     }
 }

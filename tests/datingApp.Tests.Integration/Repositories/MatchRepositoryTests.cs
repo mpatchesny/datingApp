@@ -158,7 +158,66 @@ public class MatchRepositoryTests : IDisposable
             Assert.True(match.Id == retrievedMatch.Id);
         }
     }
-    // TODO: dodać testy żeby sprawdzić, czy UpdateAsync łapie zmiany w wiadomościach (AddMessage, RemoveMEssage itd.)
+
+    [Fact]
+    public async Task given_match_message_is_added_update_match_should_update_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow);
+        match.AddMessage(newMessage);
+
+        await _repository.UpdateAsync(match);
+        
+        _dbContext.ChangeTracker.Clear();
+        var updatedMatch = await _dbContext.Matches.Include(m => m.Messages).FirstOrDefaultAsync(x => x.Id == match.Id);
+        Assert.True(match.IsEqualTo(updatedMatch));
+    }
+
+    [Fact]
+    public async Task given_match_message_is_removed_update_match_should_update_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        match.RemoveMessage(messages[1].Id);
+
+        await _repository.UpdateAsync(match);
+        
+        _dbContext.ChangeTracker.Clear();
+        var updatedMatch = await _dbContext.Matches.Include(m => m.Messages).FirstOrDefaultAsync(x => x.Id == match.Id);
+        Assert.True(match.IsEqualTo(updatedMatch));
+    }
+
+    [Fact]
+    public async Task given_match_messages_is_set_as_displayed_update_match_should_update_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow.AddSeconds(-1)),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow.AddSeconds(-1)),
+            IntegrationTestHelper.CreateMessage(user1.Id, isDisplayed: true, createdAt: DateTime.UtcNow.AddSeconds(-1)),
+            IntegrationTestHelper.CreateMessage(user1.Id, isDisplayed: true, createdAt: DateTime.UtcNow.AddSeconds(-1)),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        match.SetPreviousMessagesAsDisplayed(messages[0].Id, user2.Id);
+
+        await _repository.UpdateAsync(match);
+        
+        _dbContext.ChangeTracker.Clear();
+        var updatedMatch = await _dbContext.Matches.Include(m => m.Messages).FirstOrDefaultAsync(x => x.Id == match.Id);
+        Assert.True(match.IsEqualTo(updatedMatch));
+    }
 
     // Arrange
     private readonly TestDatabase _testDb;

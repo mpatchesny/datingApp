@@ -54,19 +54,6 @@ internal static class Extensions
         };
     }
 
-    public static MessageDto AsDto(this Message entity)
-    {
-        return new()
-        {
-            Id = entity.Id,
-            MatchId = Guid.NewGuid(),
-            SendFromId = entity.SendFromId,
-            Text = entity.Text,
-            IsDisplayed = entity.IsDisplayed,
-            CreatedAt = entity.CreatedAt
-        };
-    }
-
     public static UserSettingsDto AsDto(this UserSettings entity)
     {
         return new()
@@ -81,7 +68,7 @@ internal static class Extensions
         };
     }
 
-    public static List<MessageDto> MessagesListAsDto(this Match match)
+    public static List<MessageDto> MessagesAsDto(this Match match)
     {
         var messages = new List<MessageDto>();
         foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))

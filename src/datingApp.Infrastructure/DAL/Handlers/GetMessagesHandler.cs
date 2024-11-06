@@ -52,7 +52,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(match.MessagesListAsDto())
+            Data = new List<dynamic>(match.MessagesAsDto())
         };
     }
 

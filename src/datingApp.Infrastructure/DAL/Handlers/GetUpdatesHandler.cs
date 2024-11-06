@@ -50,7 +50,9 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var newMessagesAndMatches = newMessagesMatchId.Union(newMatchesId);
 
         var dbQuery = 
-            from match in _dbContext.Matches.Include(match => match.Messages)
+            from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .Where(message => message.CreatedAt >= query.LastActivityTime))
             from user in _dbContext.Users.Include(user => user.Photos)
             where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
             where newMessagesAndMatches.Contains(match.Id)
@@ -71,7 +73,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                     Id = item.Match.Id,
                     User = item.User.AsPublicDto(0),
                     IsDisplayed = item.Match.UserId1.Equals(query.UserId) ? item.Match.IsDisplayedByUser1 : item.Match.IsDisplayedByUser2,
-                    Messages =  item.Match.Messages.Where(m => m.CreatedAt >= query.LastActivityTime).OrderBy(m => m.CreatedAt).Select(x => x.AsDto()).ToList(),
+                    Messages =  item.Match.MessagesAsDto(),
                     CreatedAt = item.Match.CreatedAt
                 });
         }

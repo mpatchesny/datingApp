@@ -55,7 +55,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                     Id = record.Match.Id,
                     User = record.User.AsPublicDto(0),
                     IsDisplayed = (record.Match.UserId1.Equals(query.UserId)) ? record.Match.IsDisplayedByUser1 : record.Match.IsDisplayedByUser2,
-                    Messages =  record.Match.MessagesListAsDto(),
+                    Messages =  record.Match.MessagesAsDto(),
                     CreatedAt = record.Match.CreatedAt
                 });
         }

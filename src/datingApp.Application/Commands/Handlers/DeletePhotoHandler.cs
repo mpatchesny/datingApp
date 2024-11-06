@@ -18,7 +18,7 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IBlobStorage _fileStorage;
-    private readonly IDeletedEntityService _deletedEntityRepository;
+    private readonly IDeletedEntityService _deletedEntityService;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public DeletePhotoHandler(IUserRepository userRepository,
@@ -28,7 +28,7 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
     {
         _userRepository = userRepository;
         _fileStorage = fileStorageService;
-        _deletedEntityRepository = deletedEntityRepository;
+        _deletedEntityService = deletedEntityRepository;
         _authorizationService = authorizationService;
     }
 
@@ -37,7 +37,7 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
         var user = await _userRepository.GetByPhotoIdAsync(command.PhotoId);
         if (user == null)
         {
-            if (await _deletedEntityRepository.ExistsAsync(command.PhotoId))
+            if (await _deletedEntityService.ExistsAsync(command.PhotoId))
             {
                 throw new PhotoAlreadyDeletedException(command.PhotoId);
             }
@@ -62,6 +62,6 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
-        await _deletedEntityRepository.AddAsync(photo.Id);
+        await _deletedEntityService.AddAsync(photo.Id);
     }
 }

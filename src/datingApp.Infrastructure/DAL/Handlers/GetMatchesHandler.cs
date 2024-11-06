@@ -47,16 +47,16 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                             .ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
-        foreach (var record in data)
+        foreach (var item in data)
         {
             dataDto.Add(
                 new MatchDto()
                 {
-                    Id = record.Match.Id,
-                    User = record.User.AsPublicDto(0),
-                    IsDisplayed = (record.Match.UserId1.Equals(query.UserId)) ? record.Match.IsDisplayedByUser1 : record.Match.IsDisplayedByUser2,
-                    Messages =  record.Match.MessagesAsDto(),
-                    CreatedAt = record.Match.CreatedAt
+                    Id = item.Match.Id,
+                    User = item.User.AsPublicDto(0),
+                    IsDisplayed = (item.Match.UserId1.Equals(query.UserId)) ? item.Match.IsDisplayedByUser1 : item.Match.IsDisplayedByUser2,
+                    Messages =  item.Match.MessagesAsDto(),
+                    CreatedAt = item.Match.CreatedAt
                 });
         }
 

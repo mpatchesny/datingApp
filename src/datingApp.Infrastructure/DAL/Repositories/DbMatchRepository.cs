@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
-using datingApp.Core.Specifications;
 using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
@@ -26,22 +26,18 @@ internal sealed class DbMatchRepository : IMatchRepository
                     .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
-    public async Task<Match> GetByQuery(IQueryObject<Match> query)
-    {
-        return await query.Apply(_dbContext.Matches.AsQueryable<Match>())
-            .FirstOrDefaultAsync();
-    }
-
     public async Task<Match> GetByIdAsync(MatchId matchId)
     {
         return await _dbContext.Matches
+            .Include(match => match.Messages)
             .FirstOrDefaultAsync(match => match.Id == matchId);
     }
 
     public async Task<Match> GetByMessageIdAsync(MessageId messageId)
     {
         return await _dbContext.Matches
-            .Where(match => match.Messages.Any(message => message.Id == messageId))
+            .Where(match => match.Messages.Any(message => message.Id.Equals(messageId)))
+            .Include(match => match.Messages)
             .FirstOrDefaultAsync();
     }
 

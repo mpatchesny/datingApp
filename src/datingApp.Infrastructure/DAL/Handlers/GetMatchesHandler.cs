@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -26,7 +27,10 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         }
 
         var dbQuery = 
-            from match in _dbContext.Matches.Include(match => match.Messages)
+            from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                    .Take(1))
             from user in _dbContext.Users.Include(user => user.Photos)
             where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
             where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
@@ -51,7 +55,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                     Id = record.Match.Id,
                     User = record.User.AsPublicDto(0),
                     IsDisplayed = (record.Match.UserId1.Equals(query.UserId)) ? record.Match.IsDisplayedByUser1 : record.Match.IsDisplayedByUser2,
-                    Messages =  record.Match.Messages.OrderByDescending(m => m.CreatedAt).Take(1).Select(x => x.AsDto()).ToList(),
+                    Messages =  MessagesToListOfMessagesDto(record.Match),
                     CreatedAt = record.Match.CreatedAt
                 });
         }
@@ -64,5 +68,23 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             PageCount = pageCount,
             Data = new List<dynamic>(dataDto)
             };
+    }
+
+    private static List<MessageDto> MessagesToListOfMessagesDto(Match match)
+    {
+        var messages = new List<MessageDto>();
+        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
+        {
+            messages.Add(new MessageDto
+            {
+                Id = message.Id,
+                MatchId = match.Id,
+                SendFromId = message.SendFromId,
+                Text = message.Text,
+                IsDisplayed = message.IsDisplayed,
+                CreatedAt = message.CreatedAt
+            });
+        }
+        return messages;
     }
 }

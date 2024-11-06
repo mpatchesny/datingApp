@@ -28,9 +28,4 @@ internal sealed class DbSwipeRepository : ISwipeRepository
         var swipe = await _dbContext.Swipes.SingleOrDefaultAsync(x => x.SwipedById.Equals(swipedById) & x.SwipedWhoId.Equals(swipedWhoId));
         return swipe;
     }
-
-    public async Task<bool> SwipeExists(UserId swipedById, UserId swipedWhoId)
-    {
-        return await _dbContext.Swipes.AnyAsync(x => x.SwipedById.Equals(swipedById) & x.SwipedWhoId.Equals(swipedWhoId));
-    }
 }

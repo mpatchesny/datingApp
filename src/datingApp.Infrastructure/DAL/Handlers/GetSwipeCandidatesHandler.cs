@@ -75,24 +75,23 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
+        var user = await _dbContext.Users
+            .AsNoTracking()
+            .Include(user => user.Settings)
+            .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
+
+        if (user == null)
         {
             throw new UserNotExistsException(query.UserId);
         }
 
-        var settings = await _dbContext.UserSettings
-                                .Where(x => x.UserId.Equals(query.UserId))
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync();
-        if (settings == null) return null;
-
-        var initialCandidates = await GetInitialCandidatesToSwipe(settings, query.UserId).ToListAsync();
+        var initialCandidates = await GetInitialCandidatesToSwipe(user.Settings, query.UserId).ToListAsync();
         var candidates = await GetCandidatesAsync(initialCandidates);
 
         // we want candidates within range of user who requested
         return candidates
-                .Select(u => u.AsPublicDto(_spatial.CalculateDistanceInKms(settings.Location.Lat, settings.Location.Lon, u.Settings.Location.Lat, u.Settings.Location.Lon)))
-                .Where(u => u.DistanceInKms <= settings.PreferredMaxDistance)
+                .Select(candidate => candidate.AsPublicDto(_spatial.CalculateDistanceInKms(user.Settings.Location.Lat, user.Settings.Location.Lon, candidate.Settings.Location.Lat, candidate.Settings.Location.Lon)))
+                .Where(candidate => candidate.DistanceInKms <= user.Settings.PreferredMaxDistance)
                 .Take(query.HowMany)
                 .ToList();
     }

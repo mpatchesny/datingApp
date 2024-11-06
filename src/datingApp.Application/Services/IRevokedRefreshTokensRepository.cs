@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
 
-namespace datingApp.Application.Repositories;
+namespace datingApp.Application.Services;
 
-public interface IRevokedRefreshTokensRepository
+public interface IRevokedRefreshTokensService
 {
     public Task<bool> ExistsAsync(string token);
     public Task AddAsync(TokenDto token);

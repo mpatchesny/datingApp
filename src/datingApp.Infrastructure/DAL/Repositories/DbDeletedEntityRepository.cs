@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class DbDeletedEntityRepository : IDeletedEntityRepository
+internal sealed class DbDeletedEntityRepository : IDeletedEntityService
 {
     private readonly DatingAppDbContext _dbContext;
     public DbDeletedEntityRepository(DatingAppDbContext dbContext)

@@ -14,10 +14,10 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
 {
     private readonly IMatchRepository _matchRepository;
-    private readonly IDeletedEntityRepository _deletedEntityRepository;
+    private readonly IDeletedEntityService _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public DeleteMatchHandler(IMatchRepository matchRepository, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
+    public DeleteMatchHandler(IMatchRepository matchRepository, IDeletedEntityService deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
     {
         _matchRepository = matchRepository;
         _deletedEntityRepository = deletedEntityRepository;

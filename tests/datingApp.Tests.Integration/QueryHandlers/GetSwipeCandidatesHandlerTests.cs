@@ -8,6 +8,7 @@ using datingApp.Application.Spatial;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.ValueObjects;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using datingApp.Infrastructure.Spatial;
 using Moq;
@@ -32,8 +33,9 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -52,8 +54,9 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, null, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -77,8 +80,9 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, null, settings2);
         
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -102,8 +106,9 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, null, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb, user2);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
+        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -114,8 +119,9 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_candidates_within_range_exist_get_swipe_candidates_returns_nonempty_list()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -130,8 +136,8 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         _spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
             .Returns((double x, double y, int z) => mockedCoordsResult);
 
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -142,18 +148,19 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task get_swipe_candidates_returns_candidates_sorted_by_number_of_likes_descending()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user5 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user5 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user3.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user4.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user4.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user3.Id, user4.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user3.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user3.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user4.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user4.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user3.Id, user4.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user3.Id, Like.Like);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
@@ -167,10 +174,11 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task get_swipe_candidates_not_returns_users_already_swiped()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user1.Id, user2.Id, Like.Like);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user1.Id, user2.Id, Like.Like);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2 };
         var candidates = await _handler.HandleAsync(query);
@@ -181,11 +189,12 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task get_swipe_candidates_returns_candidates_count_equals_to_how_many()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2};
         var candidates = await _handler.HandleAsync(query);
@@ -204,11 +213,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly Mock<ISpatial> _spatial;
     private readonly GetSwipeCandidatesHandler _handler;
     public GetSwipeCandidatesHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _spatial = new Mock<ISpatial>();
         _handler = new GetSwipeCandidatesHandler(_testDb.DbContext, _spatial.Object);
     }

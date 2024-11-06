@@ -23,7 +23,7 @@ public class User
     public UserSex Sex { get; private set; }
     public Job Job { get; private set; }
     public Bio Bio { get; private set; }
-    public ICollection<Photo> Photos { get; private set; }
+    public ICollection<Photo> Photos { get; private set; } = new List<Photo>();
     public UserSettings Settings { get; private set; }
     private const int PhotoCountLimit = 6;
 

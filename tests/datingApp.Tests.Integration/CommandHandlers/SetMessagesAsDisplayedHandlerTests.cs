@@ -8,7 +8,9 @@ using datingApp.Application.Exceptions;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.ValueObjects;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
+using MailKit;
 using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
@@ -19,12 +21,13 @@ public class SetMessagesAsDisplayedHandlerTests : IDisposable
     [Fact]
     public async Task given_message_exists_set_messages_as_displayed_should_succeed()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
-        var message = await IntegrationTestHelper.CreateMessageAsync(_testDb, match.Id, user1.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext());
+        var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(user1.Id) };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_testDb.CreateNewDbContext(), user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
 
-        var command = new SetMessagesAsDisplayed(message.Id, user2.Id);
+        var command = new SetMessagesAsDisplayed(messages[0].Id, user2.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
     }
@@ -38,28 +41,14 @@ public class SetMessagesAsDisplayedHandlerTests : IDisposable
     }
 
     // Arrange
-    private readonly SetMessagesAsDisplayedHandler _handler;
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
+    private readonly SetMessagesAsDisplayedHandler _handler;
     public SetMessagesAsDisplayedHandlerTests()
     {
-        var settings = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000001"), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(40.5, 40.5));
-        var user = new User(Guid.Parse("00000000-0000-0000-0000-000000000001"), "123456789", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings);
-
-        var settings2 = new UserSettings(Guid.Parse("00000000-0000-0000-0000-000000000002"), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(40.5, 40.5));
-        var user2 = new User(Guid.Parse("00000000-0000-0000-0000-000000000002"), "111111111", "test2@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, null, settings2);
-
-        var match = new Match(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000002"), false, false, null, DateTime.UtcNow);
-        var message = new Message(Guid.Parse("00000000-0000-0000-0000-000000000001"), Guid.Parse("00000000-0000-0000-0000-000000000001"),"hello",false, DateTime.UtcNow);
-        match.AddMessage(message);
-
         _testDb = new TestDatabase();
-        _testDb.DbContext.Users.Add(user);
-        _testDb.DbContext.Users.Add(user2);
-        _testDb.DbContext.SaveChanges();
-        _testDb.DbContext.Matches.Add(match);
-        _testDb.DbContext.SaveChanges();
-
-        var matchRepository = new DbMatchRepository(_testDb.DbContext);
+        _dbContext = _testDb.DbContext;
+        var matchRepository = new DbMatchRepository(_dbContext);
         _handler = new SetMessagesAsDisplayedHandler(matchRepository);
     }
 

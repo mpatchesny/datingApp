@@ -7,6 +7,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using Xunit;
 
@@ -18,9 +19,10 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task given_user_exists_GetMatchesHandler_by_user_id_should_return_nonempty_collection_of_matches_dto()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
@@ -40,13 +42,14 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task returned_matches_count_is_lower_or_equal_to_page_size()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 10;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
-            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
@@ -57,13 +60,14 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task given_page_above_1_returns_proper_number_of_matches()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 9;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
-            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
@@ -76,9 +80,10 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task returned_match_dto_user_is_not_the_user_who_make_request()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
@@ -88,9 +93,10 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task given_match_is_displayed_GetMatches_returns_is_displayed_by_the_user_who_make_request()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, true);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, isDisplayedByUser1: true);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
@@ -100,13 +106,14 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_page_count()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 9;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
-            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(1);
@@ -118,13 +125,14 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_number_of_page_size()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 15;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
-            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(9);
@@ -136,13 +144,14 @@ public class GetMatchesHandlerTests : IDisposable
     [Fact]
     public async Task paginated_data_dto_returns_proper_page()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 10;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_testDb);
-            _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, tempUser.Id);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(1);
@@ -153,10 +162,12 @@ public class GetMatchesHandlerTests : IDisposable
     
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly GetMatchesHandler _handler;
     public GetMatchesHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _handler = new GetMatchesHandler(_testDb.DbContext);
     }
 

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
+using MailKit;
 using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
@@ -17,15 +19,17 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task get_updates_returns_matches_for_given_user()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: DateTime.UtcNow);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user2.Id, user3.Id, createdAt: DateTime.UtcNow);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user3.Id, user4.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user2.Id, user3.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user3.Id, user4.Id, createdAt: DateTime.UtcNow);
+
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
@@ -36,13 +40,15 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task get_updates_returns_matches_after_last_activity_time()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
         var timeAfterLastActivityTime = DateTime.UtcNow - TimeSpan.FromHours(1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: timeAfterLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, createdAt: timeAfterLastActivityTime);
+
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
@@ -53,17 +59,18 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task get_updates_returns_matches_that_have_messages_send_after_last_activity_time()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
         var timeBeforeLastActivityTime = DateTime.UtcNow - TimeSpan.FromHours(1);
-        var match1 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user2.Id, createdAt: timeBeforeLastActivityTime);
-        var match2 = await IntegrationTestHelper.CreateMatchAsync(_testDb, user1.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
-
         var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromHours(1);
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match1.Id, user2.Id, timeAfterLastActivityTime);
-        _ = await IntegrationTestHelper.CreateMessageAsync(_testDb, match2.Id, user3.Id, timeAfterLastActivityTime);
+        var messages1 = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id, createdAt: timeAfterLastActivityTime) };
+        var messages2 = new List<Message>() { IntegrationTestHelper.CreateMessage(user3.Id, createdAt: timeAfterLastActivityTime) };
+        var match1 = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1, createdAt: timeBeforeLastActivityTime);
+        var match2 = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, messages: messages2, createdAt: timeBeforeLastActivityTime);
+
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow };
         var result = await _handler.HandleAsync(query);
@@ -74,17 +81,19 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task given_no_matches_match_criteria_get_updates_returns_empty_collection()
     {
-        var userWithNotMatch = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user4 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var userWithoutMatch = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
         var timeBeforeLastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user2.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user2.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
         var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromMinutes(1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_testDb, user3.Id, user4.Id, createdAt: timeAfterLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user3.Id, user4.Id, createdAt: timeAfterLastActivityTime);
 
-        var query = new GetUpdates{ UserId = userWithNotMatch.Id, LastActivityTime = DateTime.UtcNow};
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates{ UserId = userWithoutMatch.Id, LastActivityTime = DateTime.UtcNow};
         var result = await _handler.HandleAsync(query);
         Assert.Empty(result);
     }
@@ -100,10 +109,12 @@ public class GetUpdatesHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly GetUpdatesHandler _handler;
     public GetUpdatesHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _handler = new GetUpdatesHandler(_testDb.DbContext);
     }
 

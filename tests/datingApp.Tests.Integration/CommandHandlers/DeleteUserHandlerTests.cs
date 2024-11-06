@@ -10,6 +10,7 @@ using datingApp.Application.Security;
 using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Services;
 using FluentStorage.Blobs;
@@ -28,12 +29,13 @@ public class DeleteUserHandlerTests : IDisposable
     public async void given_user_exists_delete_user_should_succeed_and_add_user_id_to_deleted_entities_and_delete_user_photo_files_from_storage()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
         var photos = new List<Photo> { 
-            await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id),
-            await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id),
-            await IntegrationTestHelper.CreatePhotoAsync(_testDb, user.Id),
+            IntegrationTestHelper.CreatePhoto(),
+            IntegrationTestHelper.CreatePhoto(),
+            IntegrationTestHelper.CreatePhoto(),
         };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new DeleteUser(user.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -46,7 +48,8 @@ public class DeleteUserHandlerTests : IDisposable
     public async void given_authorization_fail_delete_existing_user_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new DeleteUser(user.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -71,8 +74,9 @@ public class DeleteUserHandlerTests : IDisposable
     public async void given_user_not_exists_and_id_in_deleted_entities_repository_delete_user_throws_UserAlreadyDeletedExceptionn()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        await IntegrationTestHelper.DeleteUserAsync(_testDb, user);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        await IntegrationTestHelper.DeleteUserAsync(_dbContext, user);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new DeleteUser(user.Id);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -83,15 +87,17 @@ public class DeleteUserHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly DeleteUserHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
     private readonly Mock<IBlobStorage> _mockStorage;
     public DeleteUserHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _authService = new Mock<IDatingAppAuthorizationService>();
-        var userRepository = new DbUserRepository(_testDb.DbContext);
-        var deletedEntitiesRepository = new DbDeletedEntityRepository(_testDb.DbContext);
+        var userRepository = new DbUserRepository(_dbContext);
+        var deletedEntitiesRepository = new DbDeletedEntityRepository(_dbContext);
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
         _handler = new DeleteUserHandler(userRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);

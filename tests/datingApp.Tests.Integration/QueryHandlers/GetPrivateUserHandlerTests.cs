@@ -7,6 +7,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using Xunit;
 
@@ -18,7 +19,8 @@ public class GetPrivateUserHandlerTests : IDisposable
     [Fact]
     public async Task given_user_exists_get_private_user_returns_private_user_dto()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var query = new GetPrivateUser() {UserId = user.Id};
         var userDto = await _handler.HandleAsync(query);
@@ -37,10 +39,12 @@ public class GetPrivateUserHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly GetPrivateUserHandler _handler;
     public GetPrivateUserHandlerTests()
     {
         _testDb = new TestDatabase();
+        _dbContext = _testDb.DbContext;
         _handler = new GetPrivateUserHandler(_testDb.DbContext);
     }
 

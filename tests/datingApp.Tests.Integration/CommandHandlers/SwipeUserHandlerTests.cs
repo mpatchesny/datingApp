@@ -10,6 +10,7 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Storage;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +27,9 @@ public class SwipeUserHandlerTests : IDisposable
     [InlineData(Like.Pass)]
     public async Task given_users_exist_add_swipe_should_succeed(Like like)
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -39,8 +41,9 @@ public class SwipeUserHandlerTests : IDisposable
     [InlineData(Like.Pass)]
     public async Task add_swipe_should_add_IsLikedByOtherUserDto_to_storage_only_once_with_false_IsLikedByOtherUserValue_if_other_users_not_liked(Like like)
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -53,9 +56,10 @@ public class SwipeUserHandlerTests : IDisposable
     [InlineData(Like.Pass)]
     public async Task add_swipe_should_add_IsLikedByOtherUserDto_to_storage_only_once_with_true_IsLikedByOtherUserValue_if_other_users_liked(Like like)
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Like);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user1.Id, Like.Like);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -66,13 +70,14 @@ public class SwipeUserHandlerTests : IDisposable
     [Fact]
     public async Task given_swipe_with_like_value_from_other_user_exists_add_swipe_with_like_value_should_create_new_match()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Like);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user1.Id, Like.Like);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
+        var match = await _dbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
             (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user2.Id)));
         Assert.NotNull(match);
         Assert.True(match.UserId1.Equals(user1.Id));
@@ -82,13 +87,14 @@ public class SwipeUserHandlerTests : IDisposable
     [Fact]
     public async Task given_swipe_with_pass_value_from_other_user_exists_add_swipe_with_like_value_should_not_create_new_match()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Pass);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user1.Id, Like.Pass);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
+        var match = await _dbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
             (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user1.Id)));
         Assert.Null(match);
     }
@@ -96,13 +102,14 @@ public class SwipeUserHandlerTests : IDisposable
     [Fact]
     public async Task given_swipe_from_other_user_not_exists_add_swipe_with_like_value_should_not_create_new_match()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_testDb);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb, user2.Id, user1.Id, Like.Pass);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user1.Id, Like.Pass);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _testDb.DbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
+        var match = await _dbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
             (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user1.Id)));
         Assert.Null(match);
     }
@@ -110,7 +117,8 @@ public class SwipeUserHandlerTests : IDisposable
     [Fact]
     public async Task given_user_does_not_exists_add_swipe_should_not_throw_exception()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_testDb);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
 
         var command = new SwipeUser(user1.Id, Guid.NewGuid(), 1);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -119,13 +127,16 @@ public class SwipeUserHandlerTests : IDisposable
 
     // Arrange
     private readonly TestDatabase _testDb;
+    private readonly DatingAppDbContext _dbContext;
     private readonly SwipeUserHandler _handler;
     private readonly Mock<IIsLikedByOtherUserStorage> _isLikedByOtherUserStorage;
+
     public SwipeUserHandlerTests()
     {
         _testDb = new TestDatabase();
-        var swipeRepository = new DbSwipeRepository(_testDb.DbContext);
-        var matchRepository = new DbMatchRepository(_testDb.DbContext);
+        _dbContext = _testDb.DbContext;
+        var swipeRepository = new DbSwipeRepository(_dbContext);
+        var matchRepository = new DbMatchRepository(_dbContext);
         _isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();
         _handler = new SwipeUserHandler(swipeRepository, matchRepository, _isLikedByOtherUserStorage.Object);
     }

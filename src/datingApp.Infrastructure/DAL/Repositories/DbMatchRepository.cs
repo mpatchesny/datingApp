@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
@@ -18,34 +20,25 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Match>> GetByUserIdAsync(UserId userId)
+    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
     {
-        return await _dbContext.Matches.Where(x => x.UserId1.Equals(userId) || x.UserId2.Equals(userId))
-                        .Include(match => match.Messages
-                                .OrderByDescending(message => message.CreatedAt)
-                                .Take(1))
-                        .ToListAsync();
+        return await _dbContext.Matches
+                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
     }
 
     public async Task<Match> GetByIdAsync(MatchId matchId)
     {
         return await _dbContext.Matches
-                        .Include(match => match.Messages)
-                        .FirstOrDefaultAsync(x => x.Id.Equals(matchId));
+            .Include(match => match.Messages)
+            .FirstOrDefaultAsync(match => match.Id == matchId);
     }
 
     public async Task<Match> GetByMessageIdAsync(MessageId messageId)
     {
         return await _dbContext.Matches
-                        .Include(match => match.Messages)
-                        .Where(x => x.Messages.Any(m => m.Id == messageId))
-                        .FirstOrDefaultAsync();
-    }
-
-    public async Task<bool> ExistsAsync(UserId userId1, UserId userId2)
-    {
-        return await _dbContext.Matches
-                    .AnyAsync(x => x.UserId1.Equals(userId1) && x.UserId2.Equals(userId2));
+            .Where(match => match.Messages.Any(message => message.Id.Equals(messageId)))
+            .Include(match => match.Messages)
+            .FirstOrDefaultAsync();
     }
 
     public async Task AddAsync(Match match)

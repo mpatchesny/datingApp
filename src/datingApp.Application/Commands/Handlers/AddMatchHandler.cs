@@ -27,8 +27,8 @@ public sealed class AddMatchHandler : ICommandHandler<AddMatch>
             userId2 = command.SwipedById;
         }
 
-        var matchExists = await _matchRepository.ExistsAsync(userId1, userId2);
-        if (matchExists) return;
+        var existingMatch = await _matchRepository.GetByUserIdAsync(userId1, userId2);
+        if (existingMatch != null) return;
 
         Match match = new Match(Guid.NewGuid(), userId1, userId2, false, false, null, DateTime.UtcNow);
         await _matchRepository.AddAsync(match);

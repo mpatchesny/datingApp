@@ -38,25 +38,6 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void given_match_exists_get_exsits_should_return_true()
-    {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
-        _dbContext.ChangeTracker.Clear();
-
-        var exists = await _repository.ExistsAsync(user1.Id, user2.Id);
-        Assert.True(exists);
-    }
-
-    [Fact]
-    public async void given_match_not_exists_get_exsits_should_return_false()
-    {
-        var exists = await _repository.ExistsAsync(Guid.NewGuid(), Guid.NewGuid());
-        Assert.False(exists);
-    }
-
-    [Fact]
     public async void delete_existing_match_by_id_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

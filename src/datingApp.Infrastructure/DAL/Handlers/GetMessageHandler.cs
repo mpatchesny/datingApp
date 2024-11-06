@@ -52,6 +52,14 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
             throw new UnauthorizedException();
         }
 
-        return data.Message.AsDto();
+        return new MessageDto()
+        {
+            Id = data.Message.Id,
+            MatchId = data.Match.Id, 
+            SendFromId = data.Message.SendFromId,
+            Text = data.Message.Text,
+            IsDisplayed = data.Message.IsDisplayed,
+            CreatedAt = data.Message.CreatedAt
+        };
     }
 }

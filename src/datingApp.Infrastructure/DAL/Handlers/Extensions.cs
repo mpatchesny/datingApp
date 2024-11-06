@@ -20,7 +20,7 @@ internal static class Extensions
             Job = entity.Job,
             Name = entity.Name,
             Sex = (int) entity.Sex,
-            Photos = entity.Photos.Select(x => x.AsDto()).ToList()
+            Photos = PhotosAsDto(entity)
         };
     }
 
@@ -38,32 +38,7 @@ internal static class Extensions
             Name = entity.Name,
             Sex = (int) entity.Sex,
             Settings = entity.Settings.AsDto(),
-            Photos = entity.Photos.Select(x => x.AsDto()).ToList()
-        };
-    }
-
-    public static PhotoDto AsDto(this Photo entity)
-    {
-        return new()
-        {
-            Id = entity.Id,
-            Oridinal = entity.Oridinal,
-            Url = entity.Url,
-            // UserId = entity.UserId
-            UserId = Guid.NewGuid()
-        };
-    }
-
-    public static MessageDto AsDto(this Message entity)
-    {
-        return new()
-        {
-            Id = entity.Id,
-            MatchId = Guid.NewGuid(),
-            SendFromId = entity.SendFromId,
-            Text = entity.Text,
-            IsDisplayed = entity.IsDisplayed,
-            CreatedAt = entity.CreatedAt
+            Photos = PhotosAsDto(entity)
         };
     }
 
@@ -79,5 +54,39 @@ internal static class Extensions
             Lat = entity.Location.Lat,
             Lon = entity.Location.Lon
         };
+    }
+
+    public static List<MessageDto> MessagesAsDto(this Match match)
+    {
+        var messages = new List<MessageDto>();
+        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
+        {
+            messages.Add(new MessageDto
+            {
+                Id = message.Id,
+                MatchId = match.Id,
+                SendFromId = message.SendFromId,
+                Text = message.Text,
+                IsDisplayed = message.IsDisplayed,
+                CreatedAt = message.CreatedAt
+            });
+        }
+        return messages;
+    }
+
+    public static List<PhotoDto> PhotosAsDto(this User user)
+    {
+        var photos = new List<PhotoDto>();
+        foreach (var photo in user.Photos.OrderBy(p => p.Oridinal))
+        {
+            photos.Add(new PhotoDto
+            {
+                Id = photo.Id,
+                Oridinal = photo.Oridinal,
+                Url = photo.Url,
+                UserId = user.Id
+            });
+        }
+        return photos;
     }
 }

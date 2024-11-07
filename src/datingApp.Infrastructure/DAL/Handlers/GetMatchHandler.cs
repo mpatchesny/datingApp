@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
@@ -26,26 +27,12 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 
     public async Task<MatchDto> HandleAsync(GetMatch query)
     {
-        var dbQuery = 
-            from match in _dbContext.Matches
-                .Include(match => match.Messages
-                    .OrderByDescending(message => message.CreatedAt)
-                    .Take(query.HowManyMessages))
-            from user in _dbContext.Users.Include(u => u.Photos)
-            where !user.Id.Equals(query.UserId)
-            where match.Id.Equals(query.MatchId)
-            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            select new 
-            {
-                Match = match,
-                User = user
-            };
+        int limit = query.HowManyMessages;
 
-        var data = await dbQuery
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync();
+        var dbQuery = GetMatchesQuery(query.UserId, query.MatchId, limit: 1, offset: 0, messageOffset: 0, messageLimit: limit);
+        var data = await dbQuery.FirstOrDefaultAsync();
 
-        if (data == null) 
+        if (data.Match == null) 
         {
             throw new MatchNotExistsException(query.MatchId);
         }
@@ -64,5 +51,31 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             Messages = data.Match.MessagesAsDto(),
             CreatedAt = data.Match.CreatedAt
         }; 
+    }
+
+    private dynamic GetMatchesQuery(Guid userId, Guid matchId, int limit, int offset, int messageLimit, int messageOffset)
+    {
+        var query = from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                    .Skip(messageOffset)
+                    .Take(messageLimit)
+                    .OrderBy(message => message.CreatedAt))
+            from user in _dbContext.Users.Include(user => user.Photos)
+            where !user.Id.Equals(userId)
+            where match.Id.Equals(matchId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            where match.UserId1.Equals(userId) || match.UserId2.Equals(userId)
+            select new 
+            {
+                Match = match,
+                User = user
+            };
+
+        return query
+            .AsNoTracking()
+            .OrderByDescending(item => item.Match.CreatedAt)
+            .Skip(offset)
+            .Take(limit);
     }
 }

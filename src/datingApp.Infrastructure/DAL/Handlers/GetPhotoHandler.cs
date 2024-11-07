@@ -21,13 +21,13 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
     {
         var user = await _dbContext.Users
                                 .AsNoTracking()
-                                .Include(user => user.Photos
-                                    .Where(photo => photo.Id.Equals(query.PhotoId)))
                                 .Where(user => 
                                     user.Photos.Any(photo => photo.Id.Equals(query.PhotoId)))
+                                .Include(user => user.Photos
+                                    .Where(photo => photo.Id.Equals(query.PhotoId)))
                                 .FirstOrDefaultAsync();
 
-        if (user == null)
+        if (user.Photos == null || user.Photos.Count == 0)
         {
             throw new PhotoNotExistsException(query.PhotoId);
         }

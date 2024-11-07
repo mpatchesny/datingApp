@@ -40,8 +40,8 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
         }
 
         var recordsCount = await _dbContext.Matches
-                        .Where(match => match.Id.Equals(query.MatchId))
                         .AsNoTracking()
+                        .Where(match => match.Id.Equals(query.MatchId))
                         .SelectMany(match => match.Messages)
                         .CountAsync();
 

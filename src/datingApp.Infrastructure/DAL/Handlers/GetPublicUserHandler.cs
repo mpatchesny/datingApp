@@ -35,13 +35,13 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
                             .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
                             .ToListAsync();
 
-        var requestedWho = users.FirstOrDefault(x => x.Id.Equals(query.RequestWhoUserId));
+        var requestedWho = users.FirstOrDefault(user => user.Id.Equals(query.RequestWhoUserId));
         if (requestedWho == null) 
         {
             return null;
         };
 
-        var requestedBy = users.FirstOrDefault(x => x.Id.Equals(query.RequestByUserId));
+        var requestedBy = users.FirstOrDefault(user => user.Id.Equals(query.RequestByUserId));
         if (requestedBy == null)
         {
             throw new UserNotExistsException(query.RequestByUserId);

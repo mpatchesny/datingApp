@@ -7,7 +7,10 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
+using datingApp.Core.ValueObjects;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities.IO;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
@@ -21,31 +24,16 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
+        int offset = (query.Page - 1) * query.PageSize;
+        int limit = query.PageSize;
+
+        var dbQuery = GetMatchesQuery(query.UserId, limit: limit, offset: offset, messageLimit: 1, messageOffset: 0);
+        var data = await dbQuery.ToListAsync();
+
+        if (data.user == null)
         {
             throw new UserNotExistsException(query.UserId);
         }
-
-        var dbQuery = 
-            from match in _dbContext.Matches
-                .Include(match => match.Messages
-                    .OrderByDescending(message => message.CreatedAt)
-                    .Take(1))
-            from user in _dbContext.Users.Include(user => user.Photos)
-            where !user.Id.Equals(query.UserId)
-            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
-            select new 
-            {
-                Match = match,
-                User = user
-            };
-
-        var data = await dbQuery
-                            .AsNoTracking()
-                            .Skip((query.Page - 1) * query.PageSize)
-                            .Take(query.PageSize)
-                            .ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
         foreach (var item in data)
@@ -55,13 +43,14 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 {
                     Id = item.Match.Id,
                     User = item.User.AsPublicDto(0),
-                    IsDisplayed = (item.Match.UserId1.Equals(query.UserId)) ? item.Match.IsDisplayedByUser1 : item.Match.IsDisplayedByUser2,
+                    IsDisplayed = item.Match.UserId1.Equals(query.UserId) ? item.Match.IsDisplayedByUser1 : item.Match.IsDisplayedByUser2,
                     Messages =  item.Match.MessagesAsDto(),
                     CreatedAt = item.Match.CreatedAt
                 });
         }
 
-        var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
+        var recordsCount = await dbQuery.CountAsync();
+        var pageCount = (int) (recordsCount + query.PageSize - 1) / query.PageSize;
 
         return new PaginatedDataDto
         {
@@ -70,5 +59,30 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             PageCount = pageCount,
             Data = new List<dynamic>(dataDto)
         };
+    }
+
+    private dynamic GetMatchesQuery(Guid userId, int limit, int offset, int messageLimit, int messageOffset)
+    {
+        var query = from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                    .Skip(messageOffset)
+                    .Take(messageLimit)
+                    .OrderBy(message => message.CreatedAt))
+            from user in _dbContext.Users.Include(user => user.Photos)
+            where !user.Id.Equals(userId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            where match.UserId1.Equals(userId) || match.UserId2.Equals(userId)
+            select new 
+            {
+                Match = match,
+                User = user
+            };
+
+        return query
+            .AsNoTracking()
+            .OrderByDescending(item => item.Match.CreatedAt)
+            .Skip(offset)
+            .Take(limit);
     }
 }

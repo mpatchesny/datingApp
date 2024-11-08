@@ -25,7 +25,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         _spatial = spatial;
     }
 
-    private IQueryable<Guid> GetInitialCandidatesToSwipe(UserSettings settings, Guid userId)
+    private async Task<IQueryable<Guid>> GetInitialCandidatesToSwipeAsync(UserSettings settings, Guid userId)
     {
         // we want only candidates who haven't been swiped by user who requested
         // we want candidates that matches sex, age and are within approx range of user who requested
@@ -39,11 +39,12 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Location.Lat, settings.Location.Lon, 
             settings.PreferredMaxDistance + 5);
 
-        var swipedCandidates = _dbContext.Swipes.Where(s => s.SwipedById.Equals(userId)).Select(x => x.SwipedWhoId.Value).ToList();
+        var alreadySwipedUserIds = await _dbContext.Swipes.Where(swipe => swipe.SwipedById.Equals(userId)).Select(swipe => swipe.SwipedWhoId.Value).ToListAsync();
 
         return _dbContext.Users
+                    .AsNoTracking()
                     .Where(candidate => !candidate.Id.Equals(userId))
-                    .Where(candidate => !swipedCandidates.Contains(candidate.Id))
+                    .Where(candidate => !alreadySwipedUserIds.Contains(candidate.Id))
                     .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
                     .Where(candidate => candidate.DateOfBirth >= minDob)
                     .Where(candidate => candidate.DateOfBirth <= maxDob)
@@ -51,7 +52,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                     .Where(candidate => candidate.Settings.Location.Lat >= spatialSquare.SouthLat)
                     .Where(candidate => candidate.Settings.Location.Lon <= spatialSquare.EastLon)
                     .Where(candidate => candidate.Settings.Location.Lon >= spatialSquare.WestLon)
-                    .AsNoTracking()
                     .Select(candidate => candidate.Id.Value);
     }
 
@@ -59,17 +59,11 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     {
         // we want candidates sorted by number of likes descending
         return _dbContext.Users
+                    .AsNoTracking()
                     .Where(user => initialCandidates.Contains(user.Id))
-                    .Select(candidate => new 
-                        {
-                            User = candidate,
-                            LikesCount = _dbContext.Swipes.Where(swipe => swipe.SwipedWhoId.Equals(candidate.Id) && swipe.Like == Like.Like).Count()
-                        })
-                    .OrderByDescending(likes => likes.LikesCount)
-                    .Select(user => user.User)
+                    .OrderByDescending(user => _dbContext.Swipes.Where(swipe => swipe.SwipedWhoId.Equals(user.Id) && swipe.Like == Like.Like).Count())
                     .Include(user => user.Settings)
                     .Include(user => user.Photos)
-                    .AsNoTracking()
                     .ToListAsync();
     }
 
@@ -77,7 +71,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     {
         var user = await _dbContext.Users
             .AsNoTracking()
-            .Include(user => user.Settings)
             .Include(user => user.Photos)
             .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
 
@@ -86,7 +79,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
             throw new UserNotExistsException(query.UserId);
         }
 
-        var initialCandidates = await GetInitialCandidatesToSwipe(user.Settings, query.UserId).ToListAsync();
+        var initialCandidates = await GetInitialCandidatesToSwipeAsync(user.Settings, query.UserId);
         var candidates = await GetCandidatesAsync(initialCandidates);
 
         // we want candidates within range of user who requested

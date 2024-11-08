@@ -28,11 +28,12 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
 
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
+        var userIds = new List<Guid>() { query.RequestByUserId, query.RequestWhoUserId };
         var users = await _dbContext.Users
                             .AsNoTracking()
                             .Include(user => user.Settings)
                             .Include(user => user.Photos)
-                            .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
+                            .Where(user => userIds.Contains(user.Id.Value))
                             .ToListAsync();
 
         var requestedWho = users.FirstOrDefault(user => user.Id.Equals(query.RequestWhoUserId));
@@ -50,8 +51,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
         // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(m => (m.UserId1.Equals(requestedBy.Id) || m.UserId2.Equals(requestedBy.Id)) && 
-                            (m.UserId1.Equals(requestedWho.Id) || m.UserId2.Equals(requestedWho.Id)));
+                        .FirstOrDefaultAsync(match => userIds.Contains(match.UserId1) && userIds.Contains(match.UserId2));
 
         var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)

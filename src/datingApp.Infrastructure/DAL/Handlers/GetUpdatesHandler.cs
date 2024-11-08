@@ -54,7 +54,8 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 .Include(match => match.Messages
                     .Where(message => message.CreatedAt >= query.LastActivityTime))
             from user in _dbContext.Users.Include(user => user.Photos).Include(user => user.Settings)
-            where (match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)) && !user.Id.Equals(query.UserId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            where !user.Id.Equals(query.UserId)
             where newMessagesAndMatches.Contains(match.Id)
             select new 
             {

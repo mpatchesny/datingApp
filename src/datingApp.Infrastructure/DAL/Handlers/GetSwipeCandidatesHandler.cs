@@ -78,6 +78,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var user = await _dbContext.Users
             .AsNoTracking()
             .Include(user => user.Settings)
+            .Include(user => user.Photos)
             .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
 
         if (user == null)

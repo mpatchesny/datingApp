@@ -49,7 +49,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 });
         }
 
-        var recordsCount = await dbQuery.CountAsync();
+        var recordsCount = await GetMatchesRecordsCountQuery(query.UserId).CountAsync();
         var pageCount = (int) (recordsCount + query.PageSize - 1) / query.PageSize;
 
         return new PaginatedDataDto
@@ -84,5 +84,20 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             .OrderByDescending(item => item.Match.CreatedAt)
             .Skip(offset)
             .Take(limit);
+    }
+
+    private dynamic GetMatchesRecordsCountQuery(Guid userId)
+    {
+        var query = from match in _dbContext.Matches
+            from user in _dbContext.Users
+            where !user.Id.Equals(userId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            where match.UserId1.Equals(userId) || match.UserId2.Equals(userId)
+            select new 
+            {
+                Match = match,
+                User = user
+            };
+        return query.AsNoTracking();
     }
 }

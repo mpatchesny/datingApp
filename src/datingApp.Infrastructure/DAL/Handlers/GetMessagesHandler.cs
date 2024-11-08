@@ -56,15 +56,15 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
         };
     }
 
-    private async Task<Match> GetMatchAsync(Guid matchId, int page, int pageSize)
+    private async Task<Match> GetMatchAsync(Guid matchId, int offset, int limit)
     {
         return await _dbContext.Matches
             .AsNoTracking()
             .Where(match => match.Id.Equals(matchId))
             .Include(match =>
                 match.Messages.OrderByDescending(message => message.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize))
+                .Skip(offset)
+                .Take(limit))
             .FirstOrDefaultAsync();
     }
 }

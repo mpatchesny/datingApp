@@ -40,7 +40,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
         if (requestedWho == null) 
         {
             return null;
-        };
+        }
 
         var requestedBy = users.FirstOrDefault(user => user.Id.Equals(query.RequestByUserId));
         if (requestedBy == null)

@@ -17,19 +17,22 @@ internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, Priv
     {
         _dbContext = dbContext;
     }
+
     public async Task<PrivateUserDto> HandleAsync(GetPrivateUser query)
     {
         var user = await _dbContext.Users
                                 .AsNoTracking()
                                 .Include(user => user.Settings)
                                 .Include(user => user.Photos)
-                                .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
+                                .Where(user => user.Id.Equals(query.UserId))
+                                .Select(user => user.AsPrivateDto())
+                                .FirstOrDefaultAsync();
 
         if (user == null)
         {
             throw new UserNotExistsException(query.UserId);
         }
 
-        return user.AsPrivateDto();
+        return user;
     }
 }

@@ -69,7 +69,7 @@ internal sealed class MatchReadService
         return matchesReadModel;
     }
 
-    private static MatchReadModel MatchToMatchReadModel(Match match, PrivateUserReadModel user, Guid userWhoRequestedId)
+    private static MatchReadModel MatchToMatchReadModel(Match match, UserReadModel user, Guid userWhoRequestedId)
     {
         var matchReadModel = new MatchReadModel()
         {
@@ -96,7 +96,7 @@ internal sealed class MatchReadService
         return matchReadModel;
     }
 
-    private static List<PhotoReadModel> PhotosToListOfPhotosReadModel(ICollection<Photo> photos, PrivateUserReadModel user)
+    private static List<PhotoReadModel> PhotosToListOfPhotosReadModel(ICollection<Photo> photos, UserReadModel user)
     {
         return photos
             .OrderBy(photo => photo.Oridinal)
@@ -110,9 +110,9 @@ internal sealed class MatchReadService
             .ToList();
     }
 
-    private static PrivateUserReadModel UserToUserReadModel(User user)
+    private static UserReadModel UserToUserReadModel(User user)
     {
-        var userReadModel = new PrivateUserReadModel()
+        var userReadModel = new UserReadModel()
         {
             Id = user.Id,
             Name = user.Name,

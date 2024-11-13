@@ -14,7 +14,7 @@ internal static class Extensions
         var dto = new MatchDto()
         {
             Id = readModel.Id,
-            User = readModel.User.AsDto(),
+            User = readModel.User.AsPublicDto(),
             IsDisplayed = readModel.IsDisplayed,
             Messages = MessagesAsDto(readModel.Messages, readModel),
             CreatedAt = readModel.CreatedAt
@@ -23,18 +23,43 @@ internal static class Extensions
         return dto;
     }
 
-    public static PublicUserDto AsDto(this PublicUserReadModel readModel, int distance = 0)
+    public static PublicUserDto AsPublicDto(this UserReadModel readModel, int distance = 0)
+    {
+        return new()
+        {
+            Id = readModel.Id,
+            Name = readModel.Name,
+            Age = readModel.Age,
+            Sex = (int) readModel.Sex,
+            DistanceInKms = distance,
+            Job = readModel.Job,
+            Bio = readModel.Bio,
+            Photos = PhotosAsDto(readModel)
+        };
+    }
+
+    public static PrivateUserDto AsPrivateDto(this UserReadModel readModel)
     {
         return new()
         {
             Id = readModel.Id,
             Age = readModel.Age,
-            DistanceInKms = distance,
+            DateOfBirth = readModel.DateOfBirth,
             Bio = readModel.Bio,
             Job = readModel.Job,
             Name = readModel.Name,
-            Sex = (int) readModel.Sex,
-            Photos = PhotosAsDto(readModel)
+            Sex = readModel.Sex,
+            Photos = PhotosAsDto(readModel),
+            Settings = new UserSettingsDto
+            {
+                UserId = readModel.Id,
+                PreferredSex = readModel.Settings.PreferredSex,
+                PreferredAgeFrom  = readModel.Settings.PreferredAgeFrom,
+                PreferredAgeTo  = readModel.Settings.PreferredAgeTo,
+                PreferredMaxDistance  = readModel.Settings.PreferredMaxDistance,
+                Lat = readModel.Settings.Lat,
+                Lon = readModel.Settings.Lon
+            }
         };
     }
 
@@ -62,48 +87,7 @@ internal static class Extensions
         };
     }
 
-    public static PrivateUserDto AsDto(this PrivateUserReadModel readModel)
-    {
-        return new()
-        {
-            Id = readModel.Id,
-            Age = readModel.Age,
-            DateOfBirth = readModel.DateOfBirth,
-            Bio = readModel.Bio,
-            Job = readModel.Job,
-            Name = readModel.Name,
-            Sex = readModel.Sex,
-            Photos = PhotosAsDto(readModel),
-            Settings = new UserSettingsDto
-            {
-                UserId = readModel.Id,
-                PreferredSex = readModel.Settings.PreferredSex,
-                PreferredAgeFrom  = readModel.Settings.PreferredAgeFrom,
-                PreferredAgeTo  = readModel.Settings.PreferredAgeTo,
-                PreferredMaxDistance  = readModel.Settings.PreferredMaxDistance,
-                Lat = readModel.Settings.Lat,
-                Lon = readModel.Settings.Lon
-            }
-        };
-    }
-
-    private static List<PhotoDto> PhotosAsDto(this PublicUserReadModel user)
-    {
-        var photos = new List<PhotoDto>();
-        foreach (var photo in user.Photos.OrderBy(photo => photo.Oridinal))
-        {
-            photos.Add(new PhotoDto
-            {
-                Id = photo.Id,
-                Oridinal = photo.Oridinal,
-                Url = photo.Url,
-                UserId = user.Id
-            });
-        }
-        return photos;
-    }
-
-    private static List<PhotoDto> PhotosAsDto(this PrivateUserReadModel user)
+    private static List<PhotoDto> PhotosAsDto(this UserReadModel user)
     {
         var photos = new List<PhotoDto>();
         foreach (var photo in user.Photos.OrderBy(photo => photo.Oridinal))

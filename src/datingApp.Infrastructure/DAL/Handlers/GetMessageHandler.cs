@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Infrastructure.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -14,6 +15,7 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
 {
     private readonly DatingAppDbContext _dbContext;
+    private readonly DatingAppReadDbContext _readDbContext;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public GetMessageHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
@@ -24,6 +26,12 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
 
     public async Task<MessageDto> HandleAsync(GetMessage query)
     {
+        var altQuery = await _readDbContext.Matches
+            .Include(match => match.Messages)
+            .Where(match => match.Messages.Any(message => message.Id == query.MessageId))
+            .Select(match => match.Messages.FirstOrDefault().AsDto())
+            .FirstOrDefaultAsync();
+
         var dbQuery = 
             from match in _dbContext.Matches.Include(m => m.Messages)
             where match.Messages.Any(m => m.Id.Equals(query.MessageId))

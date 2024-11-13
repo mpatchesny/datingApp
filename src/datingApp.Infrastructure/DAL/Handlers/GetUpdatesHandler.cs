@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Infrastructure.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -13,6 +15,7 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<MatchDto>>
 {
     private readonly DatingAppDbContext _dbContext;
+    private readonly DatingAppReadDbContext _readDbContext;
     public GetUpdatesHandler(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
@@ -37,6 +40,16 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         }
 
         var newMatchesAndMessages = await GetMatchesAndMessagesPastGivenActivityTimeAsync(query.UserId, query.LastActivityTime);
+
+        var altQuery = await _readDbContext.Matches
+            .Include(match => match.User)
+            .Include(match => match.Messages
+                    .Where(message => message.CreatedAt >= query.LastActivityTime))
+            .Where(match => match.LastChangeTime >= query.LastActivityTime)
+            .Where(match => match.User.Id == query.UserId)
+            .OrderByDescending(match => match.LastChangeTime)
+            .Select(match => match.AsDto())
+            .ToListAsync();
 
         var dbQuery = 
             from match in _dbContext.Matches

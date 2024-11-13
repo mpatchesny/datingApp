@@ -8,14 +8,17 @@ using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
 using datingApp.Core.Entities;
+using datingApp.Infrastructure.DAL.Models;
 using MailKit;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Utilities.IO;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedDataDto>
 {
     private readonly DatingAppDbContext _dbContext;
+    private readonly DatingAppReadDbContext _readDbContext;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public GetMessagesHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
@@ -26,6 +29,18 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
+        int offset = (query.Page - 1) * query.PageSize;
+        int limit = query.PageSize;
+
+        var altQuery = await _readDbContext.Matches
+            .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt))
+            .Where(match => match.Id == query.MatchId)
+            .SelectMany(match => match.Messages)
+            .Select(message => message.AsDto())
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync();
+
         var match = await GetMatchAsync(query.MatchId, query.Page, query.PageSize);
 
         if (match == null)

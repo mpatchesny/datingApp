@@ -16,6 +16,7 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, PublicUserDto>
 {
     private readonly DatingAppDbContext _dbContext;
+    private readonly DatingAppReadDbContext _readDbContext;
     private readonly ISpatial _spatial;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
@@ -28,7 +29,15 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
 
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
+
         var userIds = new List<Guid>() { query.RequestByUserId, query.RequestWhoUserId };
+
+        var altUsers = await _readDbContext.Users
+                    .Include(user => user.Settings)
+                    .Include(user => user.Photos)
+                    .Where(user => userIds.Contains(user.Id))
+                    .ToListAsync();
+
         var users = await _dbContext.Users
                             .AsNoTracking()
                             .Include(user => user.Settings)

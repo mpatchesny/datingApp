@@ -41,13 +41,15 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
         var newMatchesAndMessages = await GetMatchesAndMessagesPastGivenActivityTimeAsync(query.UserId, query.LastActivityTime);
 
-        var altQuery = await _readDbContext.Matches
-            .Include(match => match.User)
-            .Include(match => match.Messages
-                    .Where(message => message.CreatedAt >= query.LastActivityTime))
-            .Where(match => match.LastChangeTime >= query.LastActivityTime)
-            .Where(match => match.User.Id == query.UserId)
-            .OrderByDescending(match => match.LastChangeTime)
+        var altQuery = await _readDbContext.Users
+            .Where(user => user.Id == query.UserId)
+            .Include(user => user.Matches)
+            .ThenInclude(match => match.Messages
+                .Where(message => message.CreatedAt >= query.LastActivityTime))
+            .Include(user => user.Matches)
+            .ThenInclude(match => match.LastChangeTime >= query.LastActivityTime)
+            // .OrderByDescending(match => match.LastChangeTime)
+            .SelectMany(user => user.Matches)
             .Select(match => match.AsDto())
             .ToListAsync();
 

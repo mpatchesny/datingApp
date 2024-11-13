@@ -32,9 +32,9 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
         int limit = query.HowManyMessages;
 
         var altQuery = await _readDbContext.Matches
+            .Where(match => match.Id == query.MatchId)
             .Include(match => match.User)
             .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt).Take(limit))
-            .Where(match => match.Id == query.MatchId)
             .Select(match => match.AsDto())
             .FirstOrDefaultAsync();
 

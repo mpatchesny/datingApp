@@ -29,10 +29,13 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         int offset = (query.Page - 1) * query.PageSize;
         int limit = query.PageSize;
 
-        var altQuery = await _readDbContext.Matches
-            .Include(match => match.User)
-            .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt).Take(limit))
-            .Where(match => match.User.Id == query.UserId)
+        var altQuery = await _readDbContext.Users
+            .Where(user => user.Id == query.UserId)
+            .Include(user => user.Matches)
+            .ThenInclude(match => match.User)
+            .Include(user => user.Matches)
+            .ThenInclude(match => match.Messages.OrderByDescending(message => message.CreatedAt).Take(limit))
+            .SelectMany(user => user.Matches)
             .Skip(offset)
             .Take(limit)
             .Select(match => match.AsDto())

@@ -33,8 +33,8 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
         int limit = query.PageSize;
 
         var altQuery = await _readDbContext.Matches
-            .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt))
             .Where(match => match.Id == query.MatchId)
+            .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt))
             .SelectMany(match => match.Messages)
             .Select(message => message.AsDto())
             .Skip(offset)

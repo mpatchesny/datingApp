@@ -44,10 +44,10 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var altQuery = await _readDbContext.Users
             .Where(user => user.Id == query.UserId)
             .Include(user => user.Matches)
+            .ThenInclude(match => match.LastChangeTime >= query.LastActivityTime)
+            .Include(user => user.Matches)
             .ThenInclude(match => match.Messages
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
-            .Include(user => user.Matches)
-            .ThenInclude(match => match.LastChangeTime >= query.LastActivityTime)
             // .OrderByDescending(match => match.LastChangeTime)
             .SelectMany(user => user.Matches)
             .Select(match => match.AsDto())

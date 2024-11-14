@@ -43,5 +43,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => new {x.Sex, x.DateOfBirth});
+
+        builder.ToTable("Users");
     }
 }

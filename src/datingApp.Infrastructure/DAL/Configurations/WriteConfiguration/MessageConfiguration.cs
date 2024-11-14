@@ -33,5 +33,7 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
             .HasForeignKey(x => x.SendFromId);
 
         builder.HasIndex(x => x.CreatedAt);
+
+        builder.ToTable("Messages");
     }
 }

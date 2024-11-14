@@ -37,5 +37,7 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
             .HasForeignKey(x => x.UserId2);
 
         builder.HasIndex(x => new {x.UserId1, x.UserId2, x.CreatedAt});
+
+        builder.ToTable("Matches");
     }
 }

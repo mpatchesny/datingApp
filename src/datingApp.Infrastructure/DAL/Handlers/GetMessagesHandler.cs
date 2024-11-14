@@ -36,10 +36,15 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             .Where(match => match.Id == query.MatchId)
             .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt))
             .SelectMany(match => match.Messages)
-            .Select(message => message.AsDto())
             .Skip(offset)
             .Take(limit)
+            .Select(message => message.AsDto())
             .ToListAsync();
+
+        var countQuery = _readDbContext.Matches
+            .Where(match => match.Id == query.MatchId)
+            .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt))
+            .SelectMany(match => match.Messages);
 
         var match = await GetMatchAsync(query.MatchId, query.Page, query.PageSize);
 

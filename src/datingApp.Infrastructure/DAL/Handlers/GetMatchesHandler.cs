@@ -41,6 +41,11 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             .Select(match => match.AsDto())
             .ToListAsync();
 
+        var countQuery = _readDbContext.Users
+            .Where(user => user.Id == query.UserId)
+            .Include(user => user.Matches)
+            .SelectMany(user => user.Matches);
+
         var dbQuery = GetMatchesQuery(query.UserId, limit: limit, offset: offset, messageLimit: 1, messageOffset: 0);
         var data = await dbQuery.ToListAsync();
 

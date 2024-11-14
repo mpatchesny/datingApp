@@ -24,6 +24,7 @@ internal sealed class UserReadModel
 
 internal sealed class UserSettingsReadModel
 {
+    public UserReadModel User { get; set; }
     public int PreferredSex { get; set; }
     public int PreferredAgeFrom { get; set; }
     public int PreferredAgeTo { get; set; }

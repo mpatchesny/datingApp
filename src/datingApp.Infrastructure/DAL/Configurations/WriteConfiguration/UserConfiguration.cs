@@ -7,7 +7,7 @@ using datingApp.Core.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace datingApp.Infrastructure.DAL.Configurations;
+namespace datingApp.Infrastructure.DAL.Configurations.WriteConfiguration;
 
 internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {

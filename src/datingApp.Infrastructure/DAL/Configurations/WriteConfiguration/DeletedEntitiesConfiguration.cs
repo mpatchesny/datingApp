@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace datingApp.Infrastructure.DAL.Configurations;
+namespace datingApp.Infrastructure.DAL.Configurations.WriteConfiguration;
 
 internal sealed class DeletedEntitiesConfiguration : IEntityTypeConfiguration<DeletedEntityDto>
 {

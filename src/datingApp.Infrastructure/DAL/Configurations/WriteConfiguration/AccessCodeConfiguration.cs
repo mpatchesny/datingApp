@@ -7,7 +7,7 @@ using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace datingApp.Infrastructure.DAL.Configurations;
+namespace datingApp.Infrastructure.DAL.Configurations.WriteConfiguration;
 
 internal sealed class AccessCodeConfiguration : IEntityTypeConfiguration<AccessCodeDto>
 {

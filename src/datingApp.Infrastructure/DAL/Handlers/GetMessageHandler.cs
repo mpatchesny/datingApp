@@ -27,8 +27,7 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
     public async Task<MessageDto> HandleAsync(GetMessage query)
     {
         var altQuery = await _readDbContext.Matches
-            .Include(match => match.Messages)
-            .Where(match => match.Messages.Any(message => message.Id == query.MessageId))
+            .Include(match => match.Messages.Where(message => message.Id == query.MessageId))
             .Select(match => match.Messages.FirstOrDefault().AsDto())
             .FirstOrDefaultAsync();
 

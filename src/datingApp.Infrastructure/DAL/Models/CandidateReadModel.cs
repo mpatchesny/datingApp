@@ -7,7 +7,7 @@ namespace datingApp.Infrastructure.DAL.Models;
 
 internal sealed class CandidateReadModel
 {
-    public PublicUserReadModel User { get; set; }
+    public UserReadModel User { get; set; }
     public int LikesCount { get; set; }
     public DateOnly DateOfBirth { get; set; }
     public int Sex { get; set; }

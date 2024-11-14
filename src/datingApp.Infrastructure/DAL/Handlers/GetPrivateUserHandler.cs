@@ -26,7 +26,7 @@ internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, Priv
                     .Include(user => user.Settings)
                     .Include(user => user.Photos)
                     .Where(user => user.Id.Equals(query.UserId))
-                    .Select(user => user.AsDto())
+                    .Select(user => user.AsPrivateDto())
                     .FirstOrDefaultAsync();
 
         var user = await _dbContext.Users

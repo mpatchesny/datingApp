@@ -11,6 +11,7 @@ namespace datingApp.Tests.Integration;
 internal sealed class TestDatabase : IDisposable
 {
     public DatingAppDbContext DbContext { get; }
+    public DatingAppReadDbContext ReadDbContext { get; }
     private readonly string _connectionString;
     public TestDatabase(bool randomDbName = true)
     {
@@ -20,6 +21,7 @@ internal sealed class TestDatabase : IDisposable
         DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(_connectionString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();
+        ReadDbContext = new DatingAppReadDbContext(new DbContextOptionsBuilder<DatingAppReadDbContext>().UseNpgsql(_connectionString).Options);
     }
 
     public DatingAppDbContext CreateNewDbContext()
@@ -29,6 +31,7 @@ internal sealed class TestDatabase : IDisposable
 
     public void Dispose()
     {
+        ReadDbContext.Dispose();
         DbContext.Database.EnsureDeleted();
         DbContext.Dispose();
     }

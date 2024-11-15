@@ -14,8 +14,8 @@ internal static class Extensions
         var dto = new MatchDto()
         {
             Id = readModel.Id,
-            User = readModel.User.AsPublicDto(),
-            IsDisplayed = readModel.IsDisplayed,
+            User = readModel.User1.AsPublicDto(),
+            // IsDisplayed = readModel.IsDisplayed,
             Messages = MessagesAsDto(readModel.Messages, readModel),
             CreatedAt = readModel.CreatedAt
         };

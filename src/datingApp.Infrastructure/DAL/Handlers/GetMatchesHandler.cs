@@ -32,8 +32,6 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         var altQuery = await _readDbContext.Users
             .Where(user => user.Id == query.UserId)
             .Include(user => user.Matches)
-            .ThenInclude(match => match.User)
-            .Include(user => user.Matches)
             .ThenInclude(match => match.Messages.OrderByDescending(message => message.CreatedAt).Take(limit))
             .SelectMany(user => user.Matches)
             .Skip(offset)

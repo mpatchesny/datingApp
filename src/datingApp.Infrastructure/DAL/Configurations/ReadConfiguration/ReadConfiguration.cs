@@ -15,43 +15,43 @@ internal sealed class ReadConfiguration : IEntityTypeConfiguration<UserReadModel
 {
     public void Configure(EntityTypeBuilder<UserReadModel> builder)
     {
-        builder
-            .HasOne<UserSettingsReadModel>()
-            .WithOne(us => us.User);
-
-        builder.HasMany(user => user.Photos)
-            .WithOne(photo => photo.User)
-            .HasForeignKey(photo => photo.User);
-
-        builder.HasMany(user => user.Matches)
-            .WithOne(match => match.User)
-            .HasForeignKey(match => match.Owner)
-            .HasForeignKey(match => match.User);
-
         builder.ToTable("Users");
+        builder.HasKey(user => user.Id);
+        builder.Ignore(user => user.Distance);
+        builder
+            .HasOne(user => user.Settings)
+            .WithOne(us => us.User)
+            .HasForeignKey<UserSettingsReadModel>(us => us.UserId);
+        builder
+            .HasMany(user => user.Matches1)
+            .WithOne(match => match.User1);
+        builder
+            .HasMany(user => user.Matches2)
+            .WithOne(match => match.User2);
     }
 
     public void Configure(EntityTypeBuilder<UserSettingsReadModel> builder)
     {
         builder.ToTable("UserSettings");
+        builder.HasKey(us => us.UserId);
     }
 
     public void Configure(EntityTypeBuilder<PhotoReadModel> builder)
     {
         builder.ToTable("Photos");
+        builder.HasKey(photo => photo.Id);
     }
 
     public void Configure(EntityTypeBuilder<MatchReadModel> builder)
     {
-        builder.HasMany(match => match.Messages)
-            .WithOne(message => message.Match)
-            .HasForeignKey(message => message.Match);
-
         builder.ToTable("Matches");
+        builder.HasKey(match => match.Id);
+        builder.Ignore(match => match.LastChangeTime);
     }
 
     public void Configure(EntityTypeBuilder<MessageReadModel> builder)
     {
         builder.ToTable("Messages");
+        builder.HasKey(message => message.Id);
     }
 }

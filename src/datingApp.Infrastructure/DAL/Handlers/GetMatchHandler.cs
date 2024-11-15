@@ -33,7 +33,6 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 
         var altQuery = await _readDbContext.Matches
             .Where(match => match.Id == query.MatchId)
-            .Include(match => match.User)
             .Include(match => match.Messages.OrderByDescending(message => message.CreatedAt).Take(limit))
             .Select(match => match.AsDto())
             .FirstOrDefaultAsync();

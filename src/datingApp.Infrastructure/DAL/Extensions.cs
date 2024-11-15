@@ -21,6 +21,8 @@ internal static class Extensions
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
         var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);
         services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
+        services.AddDbContext<DatingAppReadDbContext>(x => x.UseNpgsql(connStringOptions.datingApp)
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
         services.AddHostedService<DatabaseInitializer>();
         services.Configure<ExpiredAccessCodesRemoverOptions>(configuration.GetRequiredSection(ExpiredAccessCodesRemoverSectionName));
         services.AddHostedService<ExpiredDataRemover>();

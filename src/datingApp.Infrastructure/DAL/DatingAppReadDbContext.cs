@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Infrastructure.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace datingApp.Infrastructure.DAL;
+namespace datingApp.Infrastructure;
 
 internal sealed class DatingAppReadDbContext : DbContext
 {

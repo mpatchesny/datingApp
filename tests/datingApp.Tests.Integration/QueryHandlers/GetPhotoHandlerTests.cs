@@ -25,11 +25,11 @@ public class GetPhotoHandlerTests : IDisposable
         _ = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos2);
         _dbContext.ChangeTracker.Clear();
         
-        var photo = await _handler.HandleAsync(new GetPhoto { PhotoId = photos1[1].Id });
-        Assert.NotNull(photo);
-        Assert.IsType<PhotoDto>(photo);
-        Assert.Equal(photo.Id, photos1[1].Id.Value);
-        Assert.Equal(photo.UserId, user1.Id.Value);
+        var photoDto = await _handler.HandleAsync(new GetPhoto { PhotoId = photos1[1].Id });
+        Assert.NotNull(photoDto);
+        Assert.IsType<PhotoDto>(photoDto);
+        Assert.Equal(photos1[1].Id.Value, photoDto.Id);
+        Assert.Equal(user1.Id.Value, photoDto.UserId);
     }
 
     [Fact]

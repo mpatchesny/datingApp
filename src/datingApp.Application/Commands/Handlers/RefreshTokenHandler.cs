@@ -16,7 +16,7 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
 {
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
-    private readonly IRevokedRefreshTokensService _revokedRefreshTokensRepository;
+    private readonly IRevokedRefreshTokensService _revokedRefreshTokensService;
 
     public RefreshJWTHandler(IAuthenticator authenticator,
                                 ITokenStorage tokenStorage,
@@ -24,11 +24,11 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
     {
         _authenticator = authenticator;
         _tokenStorage = tokenStorage;
-        _revokedRefreshTokensRepository = revokedRefreshTokensRepository;
+        _revokedRefreshTokensService = revokedRefreshTokensRepository;
     }
     public async Task HandleAsync(RefreshJWT command)
     {
-        bool isTokenRevoked = await _revokedRefreshTokensRepository.ExistsAsync(command.RefreshToken);
+        bool isTokenRevoked = await _revokedRefreshTokensService.ExistsAsync(command.RefreshToken);
         if (isTokenRevoked)
         {
             throw new RefreshTokenRevokedException();
@@ -44,7 +44,7 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
         }
 
         TokenDto tokenToRevoke = new TokenDto(command.RefreshToken, DateTime.UtcNow + TimeSpan.FromDays(180));
-        await _revokedRefreshTokensRepository.AddAsync(tokenToRevoke);
+        await _revokedRefreshTokensService.AddAsync(tokenToRevoke);
 
         var jwt = _authenticator.CreateToken(userId);
         _tokenStorage.Set(jwt);

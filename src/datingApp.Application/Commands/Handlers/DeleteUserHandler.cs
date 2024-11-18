@@ -18,7 +18,7 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
     private readonly IBlobStorage _fileStorage;
-    private readonly IDeletedEntityService _deletedEntityRepository;
+    private readonly IDeletedEntityService _deletedEntityService;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public DeleteUserHandler(IUserRepository userRepository,
@@ -28,7 +28,7 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
     {
         _userRepository = userRepository;
         _fileStorage = fileStorageService;
-        _deletedEntityRepository = deletedEntityRepository;
+        _deletedEntityService = deletedEntityRepository;
         _authorizationService = authorizationService;
     }
 
@@ -37,7 +37,7 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         var user = await _userRepository.GetByIdAsync(command.UserId);
         if (user == null)
         {
-            if (await _deletedEntityRepository.ExistsAsync(command.UserId))
+            if (await _deletedEntityService.ExistsAsync(command.UserId))
             {
                 throw new UserAlreadyDeletedException(command.UserId);
             }
@@ -61,6 +61,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
             _userRepository.DeleteAsync(user),
         };
         await Task.WhenAll(tasks);
-        await _deletedEntityRepository.AddAsync(user.Id);
+        await _deletedEntityService.AddAsync(user.Id);
     }
 }

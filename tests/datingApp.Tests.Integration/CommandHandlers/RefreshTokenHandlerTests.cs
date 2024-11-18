@@ -92,14 +92,14 @@ public class RefreshTokenHandlerTests : IDisposable
     private readonly RefreshJWTHandler _handler;
     private readonly Mock<ITokenStorage> _tokenStorage;
     private readonly Mock<IAuthenticator> _authenticator;
-    private readonly RevokedRefreshTokensService _revokedRefreshTokensRepository;
+    private readonly RevokedRefreshTokensService _revokedRefreshTokensService;
     public RefreshTokenHandlerTests()
     {
         _testDb = new TestDatabase();
-        _revokedRefreshTokensRepository = new RevokedRefreshTokensService(_testDb.DbContext);
+        _revokedRefreshTokensService = new RevokedRefreshTokensService(_testDb.DbContext);
         _tokenStorage = new Mock<ITokenStorage>();
         _authenticator = new Mock<IAuthenticator>();
-        _handler = new RefreshJWTHandler(_authenticator.Object, _tokenStorage.Object, _revokedRefreshTokensRepository);
+        _handler = new RefreshJWTHandler(_authenticator.Object, _tokenStorage.Object, _revokedRefreshTokensService);
     }
 
     // Teardown

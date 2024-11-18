@@ -6,6 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
@@ -119,14 +120,17 @@ public class GetMatchHandlerTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
+    private readonly Mock<ISpatial> _mockedSpatial;
     private readonly GetMatchHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetMatchHandlerTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
+        _mockedSpatial = new Mock<ISpatial>();
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object, null);
+        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object, _mockedSpatial.Object);
     }
 
     // Teardown

@@ -5,10 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using MailKit;
+using Moq;
 using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
@@ -110,12 +112,15 @@ public class GetUpdatesHandlerTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
+    private readonly Mock<ISpatial> _mockedSpatial;
     private readonly GetUpdatesHandler _handler;
     public GetUpdatesHandlerTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _handler = new GetUpdatesHandler(_testDb.DbContext);
+        _mockedSpatial = new Mock<ISpatial>();
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
+        _handler = new GetUpdatesHandler(_testDb.DbContext, _mockedSpatial.Object);
     }
 
     // Teardown

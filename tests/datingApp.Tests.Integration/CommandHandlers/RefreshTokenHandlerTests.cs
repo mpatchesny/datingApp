@@ -11,6 +11,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Security;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.DAL.Services;
 using datingApp.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Moq;

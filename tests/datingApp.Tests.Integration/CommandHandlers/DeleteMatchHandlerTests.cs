@@ -10,6 +10,7 @@ using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.DAL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Moq;

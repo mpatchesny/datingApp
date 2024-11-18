@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
-using datingApp.Application.Repositories;
 using datingApp.Application.Security;
+using datingApp.Application.Services;
 
 namespace datingApp.Application.Commands.Handlers;
 

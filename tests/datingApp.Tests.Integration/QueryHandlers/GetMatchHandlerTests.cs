@@ -111,10 +111,29 @@ public class GetMatchHandlerTests : IDisposable
     public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = Guid.NewGuid() };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = user1.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);
+    }
+
+    [Fact]
+    public async Task given_user_not_exists_get_match_handler_returns_UserNotExistsException()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatch{ MatchId = match.Id, UserId = Guid.NewGuid() };
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     // Arrange

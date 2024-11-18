@@ -72,7 +72,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 {
                     Id = item.Match.Id,
                     User = item.User.AsPublicDto(0),
-                    IsDisplayed = item.Match.UserId1.Equals(query.UserId) ? item.Match.IsDisplayedByUser1 : item.Match.IsDisplayedByUser2,
+                    IsDisplayed = item.Match.IsDisplayedByUser(query.UserId),
                     Messages =  item.Match.MessagesAsDto(),
                     CreatedAt = item.Match.CreatedAt
                 });

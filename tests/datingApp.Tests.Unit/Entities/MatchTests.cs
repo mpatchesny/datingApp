@@ -37,6 +37,27 @@ public class MatchTests
         Assert.False(match.IsDisplayedByUser1);
     }
 
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    public void is_displayed_by_user_returns_proper_bool(bool isDisplayedByUser1, bool isDisplayedByUser2)
+    {
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), isDisplayedByUser1, isDisplayedByUser2, null, DateTime.UtcNow);
+
+        Assert.Equal(isDisplayedByUser1, match.IsDisplayedByUser(match.UserId1));
+        Assert.Equal(isDisplayedByUser2, match.IsDisplayedByUser(match.UserId2));
+    }
+
+    [Fact]
+    public void is_displayed_by_user_not_in_match_returns_false()
+    {
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), true, true, null, DateTime.UtcNow);
+
+        Assert.False(match.IsDisplayedByUser(Guid.NewGuid()));
+    }
+
     [Fact]
     public void given_message_not_in_Match_AddMessage_adds_message()
     {

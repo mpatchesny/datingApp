@@ -36,6 +36,22 @@ public class Match
         CreatedAt = createdAt;
     }
 
+    public bool IsDisplayedByUser(UserId userId)
+    {
+        if (UserId1.Equals(userId))
+        {
+            return IsDisplayedByUser1;
+        }
+        else if (UserId2.Equals(userId))
+        {
+            return IsDisplayedByUser2;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void SetDisplayed(UserId userId)
     {
         if (UserId1.Equals(userId))

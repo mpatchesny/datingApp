@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace datingApp.Infrastructure.DAL.Services;
+namespace datingApp.Infrastructure.Services;
 
 internal sealed class RevokedRefreshTokensService : IRevokedRefreshTokensService
 {

@@ -6,7 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Services;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
-using datingApp.Infrastructure.DAL.Services;
+using datingApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

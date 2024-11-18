@@ -19,8 +19,8 @@ public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
     private readonly IRevokedRefreshTokensService _revokedRefreshTokensService;
 
     public RefreshJWTHandler(IAuthenticator authenticator,
-                                ITokenStorage tokenStorage,
-                                IRevokedRefreshTokensService revokedRefreshTokensRepository)
+                            ITokenStorage tokenStorage,
+                            IRevokedRefreshTokensService revokedRefreshTokensRepository)
     {
         _authenticator = authenticator;
         _tokenStorage = tokenStorage;

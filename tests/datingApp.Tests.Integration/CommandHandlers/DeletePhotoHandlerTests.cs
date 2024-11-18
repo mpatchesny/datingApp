@@ -12,7 +12,7 @@ using datingApp.Application.Storage;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
-using datingApp.Infrastructure.DAL.Services;
+using datingApp.Infrastructure.Services;
 using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

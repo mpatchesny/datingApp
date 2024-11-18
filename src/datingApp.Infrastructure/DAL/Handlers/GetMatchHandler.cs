@@ -63,6 +63,6 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             IsDisplayed = data.Match.IsDisplayedByUser(query.UserId),
             Messages = data.Match.MessagesAsDto(),
             CreatedAt = data.Match.CreatedAt
-        }; 
+        };
     }
 }

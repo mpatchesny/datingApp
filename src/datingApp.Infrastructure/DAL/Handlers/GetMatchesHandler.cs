@@ -63,11 +63,12 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
         var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto{
+        return new PaginatedDataDto
+        {
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
             Data = new List<dynamic>(dataDto)
-            };
+        };
     }
 }

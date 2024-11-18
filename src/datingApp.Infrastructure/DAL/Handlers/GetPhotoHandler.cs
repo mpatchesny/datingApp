@@ -31,7 +31,6 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
         }
 
         var photo = user.Photos.FirstOrDefault();
-
         return new PhotoDto
         {
             Id = photo.Id,

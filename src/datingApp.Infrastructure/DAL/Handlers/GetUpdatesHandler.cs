@@ -22,7 +22,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         _spatial = spatial;
     }
 
-    private async Task<IEnumerable<Guid>> GetMatchesByMessagesPastGivenActivityTimeAsync(Guid userId, DateTime lastActivityTime)
+    private async Task<IEnumerable<Guid>> GetMatchesWithMessagesPastActivityTimeAsync(Guid userId, DateTime lastActivityTime)
     {
         return await _dbContext.Matches
             .AsNoTracking()
@@ -32,7 +32,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
             .ToListAsync();
     }
 
-    private async Task<IEnumerable<Guid>> GetMatchesPastGivenActivityTimeAsync(Guid userId, DateTime lastActivityTime)
+    private async Task<IEnumerable<Guid>> GetMatchesPastActivityTimeAsync(Guid userId, DateTime lastActivityTime)
     {
         return await _dbContext.Matches
             .AsNoTracking()
@@ -54,8 +54,8 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
             throw new UserNotExistsException(query.UserId);
         }
 
-        var newMessagesMatchId = await GetMatchesByMessagesPastGivenActivityTimeAsync(query.UserId, query.LastActivityTime);
-        var newMatchesId = await GetMatchesPastGivenActivityTimeAsync(query.UserId, query.LastActivityTime);
+        var newMessagesMatchId = await GetMatchesWithMessagesPastActivityTimeAsync(query.UserId, query.LastActivityTime);
+        var newMatchesId = await GetMatchesPastActivityTimeAsync(query.UserId, query.LastActivityTime);
         var newMessagesAndMatches = newMessagesMatchId.Union(newMatchesId);
 
         var dbQuery = 

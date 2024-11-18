@@ -18,12 +18,12 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IBlobStorage _fileStorage;
-    private readonly IDeletedEntityRepository _deletedEntityRepository;
+    private readonly IDeletedEntityService _deletedEntityRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public DeletePhotoHandler(IUserRepository userRepository,
                             IBlobStorage fileStorageService,
-                            IDeletedEntityRepository deletedEntityRepository,
+                            IDeletedEntityService deletedEntityRepository,
                             IDatingAppAuthorizationService authorizationService)
     {
         _userRepository = userRepository;

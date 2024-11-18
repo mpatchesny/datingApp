@@ -61,12 +61,12 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
-    private readonly IRevokedRefreshTokensRepository _repository;
+    private readonly IRevokedRefreshTokensService _repository;
     public RevokedRefreshTokensRepositoryTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _repository = new DbRevokedRefreshTokensRepository(_dbContext);
+        _repository = new RevokedRefreshTokensService(_dbContext);
     }
 
     // Teardown

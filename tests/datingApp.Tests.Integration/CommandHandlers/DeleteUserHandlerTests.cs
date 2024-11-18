@@ -97,7 +97,7 @@ public class DeleteUserHandlerTests : IDisposable
         _dbContext = _testDb.DbContext;
         _authService = new Mock<IDatingAppAuthorizationService>();
         var userRepository = new DbUserRepository(_dbContext);
-        var deletedEntitiesRepository = new DbDeletedEntityRepository(_dbContext);
+        var deletedEntitiesRepository = new DeletedEntityService(_dbContext);
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()));
         _handler = new DeleteUserHandler(userRepository, _mockStorage.Object, deletedEntitiesRepository, _authService.Object);

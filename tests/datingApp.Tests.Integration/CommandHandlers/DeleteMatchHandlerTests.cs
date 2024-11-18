@@ -88,7 +88,7 @@ public class DeleteMatchHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
         var matchRepository = new DbMatchRepository(_dbContext);
-        var deletedEntitiesRepository = new DbDeletedEntityRepository(_dbContext);
+        var deletedEntitiesRepository = new DeletedEntityService(_dbContext);
         _authService = new Mock<IDatingAppAuthorizationService>();
         _handler = new DeleteMatchHandler(matchRepository, deletedEntitiesRepository, _authService.Object);
     }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Repositories;
 
-public interface IDeletedEntityRepository
+public interface IDeletedEntityService
 {
     public Task<bool> ExistsAsync(Guid id);
     public Task AddAsync(Guid id);

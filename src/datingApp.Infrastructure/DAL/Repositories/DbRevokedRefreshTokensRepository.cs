@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Repositories;
 
-internal sealed class DbRevokedRefreshTokensRepository : IRevokedRefreshTokensRepository
+internal sealed class RevokedRefreshTokensService : IRevokedRefreshTokensService
 {
     DatingAppDbContext _dbContext;
-    public DbRevokedRefreshTokensRepository(DatingAppDbContext dbContext)
+    public RevokedRefreshTokensService(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

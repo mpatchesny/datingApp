@@ -108,7 +108,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsExceptionn()
+    public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = Guid.NewGuid() };

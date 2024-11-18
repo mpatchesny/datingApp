@@ -29,11 +29,11 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
         var users = await _dbContext.Users
-                            .AsNoTracking()
-                            .Include(user => user.Settings)
-                            .Include(user => user.Photos)
-                            .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
-                            .ToListAsync();
+            .AsNoTracking()
+            .Include(user => user.Settings)
+            .Include(user => user.Photos)
+            .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
+            .ToListAsync();
 
         var requestedWho = users.FirstOrDefault(x => x.Id.Equals(query.RequestWhoUserId));
         if (requestedWho == null) 

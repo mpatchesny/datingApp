@@ -29,6 +29,16 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 
     public async Task<MatchDto> HandleAsync(GetMatch query)
     {
+        var requestedBy = await _dbContext.Users
+            .AsNoTracking()
+            .Include(user => user.Settings)
+            .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
+
+        if (requestedBy == null)
+        {
+            throw new UserNotExistsException(query.UserId);
+        }
+
         var dbQuery = 
             from match in _dbContext.Matches
                 .Include(match => match.Messages
@@ -59,10 +69,13 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             throw new UnauthorizedException();
         }
 
+        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
+            data.User.Settings.Location.Lat, data.User.Settings.Location.Lon);
+
         return new MatchDto
         {
             Id = data.Match.Id,
-            User = data.User.AsPublicDto(0),
+            User = data.User.AsPublicDto(distanceInKms),
             IsDisplayed = data.Match.IsDisplayedByUser(query.UserId),
             Messages = data.Match.MessagesAsDto(),
             CreatedAt = data.Match.CreatedAt

@@ -17,6 +17,7 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
     {
         _dbContext = dbContext;
     }
+
     public async Task<PhotoDto> HandleAsync(GetPhoto query)
     {
         var user = await _dbContext.Users

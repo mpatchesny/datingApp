@@ -35,13 +35,13 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
             .ToListAsync();
 
-        var requestedWho = users.FirstOrDefault(x => x.Id.Equals(query.RequestWhoUserId));
+        var requestedWho = users.FirstOrDefault(user => user.Id.Equals(query.RequestWhoUserId));
         if (requestedWho == null) 
         {
             return null;
         };
 
-        var requestedBy = users.FirstOrDefault(x => x.Id.Equals(query.RequestByUserId));
+        var requestedBy = users.FirstOrDefault(user => user.Id.Equals(query.RequestByUserId));
         if (requestedBy == null)
         {
             throw new UserNotExistsException(query.RequestByUserId);
@@ -50,9 +50,14 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
         // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
             .AsNoTracking()
-            .Where(m => m.UserId1.Equals(requestedBy.Id) || m.UserId2.Equals(requestedBy.Id))
-            .Where(m => m.UserId1.Equals(requestedWho.Id) || m.UserId2.Equals(requestedWho.Id))
+            .Where(match => match.UserId1.Equals(requestedBy.Id) || match.UserId2.Equals(requestedBy.Id))
+            .Where(match => match.UserId1.Equals(requestedWho.Id) || match.UserId2.Equals(requestedWho.Id))
             .FirstOrDefaultAsync();
+
+        if (match == null)
+        {
+            throw new UnauthorizedException();
+        }
 
         var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
@@ -60,7 +65,8 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UnauthorizedException();
         }
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, requestedWho.Settings.Location.Lat, requestedWho.Settings.Location.Lon);
+        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
+            requestedWho.Settings.Location.Lat, requestedWho.Settings.Location.Lon);
         return requestedWho.AsPublicDto(distanceInKms);
     }
 }

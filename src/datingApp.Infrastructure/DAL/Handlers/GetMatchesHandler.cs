@@ -25,7 +25,12 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
+        var requestedBy = await _dbContext.Users
+            .AsNoTracking()
+            .Include(user => user.Settings)
+            .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
+
+        if (requestedBy == null)
         {
             throw new UserNotExistsException(query.UserId);
         }
@@ -56,18 +61,21 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         List<MatchDto> dataDto = new List<MatchDto>();
         foreach (var item in data)
         {
+            var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
+                item.User.Settings.Location.Lat, item.User.Settings.Location.Lon);
+
             dataDto.Add(
                 new MatchDto()
                 {
                     Id = item.Match.Id,
-                    User = item.User.AsPublicDto(0),
+                    User = item.User.AsPublicDto(distanceInKms),
                     IsDisplayed = item.Match.IsDisplayedByUser(query.UserId),
                     Messages =  item.Match.MessagesAsDto(),
                     CreatedAt = item.Match.CreatedAt
                 });
         }
 
-        var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
+        var pageCount = (int) (await dbQuery.CountAsync() + query.PageSize - 1) / query.PageSize;
 
         return new PaginatedDataDto
         {

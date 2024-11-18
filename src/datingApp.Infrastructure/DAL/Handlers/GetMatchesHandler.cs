@@ -36,7 +36,21 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery = GetQuery(query.UserId);
+        var dbQuery = from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                    .Take(1))
+            from user in _dbContext.Users
+                .Include(user => user.Photos)
+                .Include(user => user.Settings)
+            where !user.Id.Equals(query.UserId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
+            select new
+            {
+                User = user,
+                Match = match
+            };
 
         var data = await dbQuery
             .AsNoTracking()
@@ -70,25 +84,5 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             PageCount = pageCount,
             Data = new List<dynamic>(dataDto)
         };
-    }
-
-    private IQueryable<dynamic> GetQuery(Guid userId)
-    {
-        return
-            from match in _dbContext.Matches
-                .Include(match => match.Messages
-                    .OrderByDescending(message => message.CreatedAt)
-                    .Take(1))
-            from user in _dbContext.Users
-                .Include(user => user.Photos)
-                .Include(user => user.Settings)
-            where !user.Id.Equals(userId)
-            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            where match.UserId1.Equals(userId) || match.UserId2.Equals(userId)
-            select new
-            {
-                User = user,
-                Match = match
-            };
     }
 }

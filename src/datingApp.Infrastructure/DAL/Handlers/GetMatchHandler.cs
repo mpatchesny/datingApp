@@ -39,7 +39,20 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery = GetQuery(query.UserId, query.MatchId, query.HowManyMessages);
+        var dbQuery =  
+            from match in _dbContext.Matches
+                .Include(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                    .Take(query.HowManyMessages))
+            from user in _dbContext.Users.Include(u => u.Photos)
+            where !user.Id.Equals(query.UserId)
+            where match.Id.Equals(query.MatchId)
+            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
+            select new 
+            {
+                Match = match,
+                User = user
+            };
 
         var data = await dbQuery
             .AsNoTracking()
@@ -67,23 +80,5 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             Messages = data.Match.MessagesAsDto(),
             CreatedAt = data.Match.CreatedAt
         };
-    }
-
-    private IQueryable<dynamic> GetQuery(Guid userId, Guid matchId, int howManyMessages)
-    {
-        return 
-            from match in _dbContext.Matches
-                .Include(match => match.Messages
-                    .OrderByDescending(message => message.CreatedAt)
-                    .Take(howManyMessages))
-            from user in _dbContext.Users.Include(u => u.Photos)
-            where !user.Id.Equals(userId)
-            where match.Id.Equals(matchId)
-            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            select new 
-            {
-                Match = match,
-                User = user
-            };
     }
 }

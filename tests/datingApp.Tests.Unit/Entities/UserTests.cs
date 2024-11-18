@@ -17,7 +17,7 @@ public class UserTests
     [InlineData(null)]
     public void empty_user_phone_throws_InvalidPhoneException(string phone)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
     }
@@ -26,7 +26,7 @@ public class UserTests
     public void empty_user_phone_throws_InvalidPhoneException2()
     {
         string phone = new string(' ', 0);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
     }
@@ -35,7 +35,7 @@ public class UserTests
     public void user_phone_longer_than_9_chars_throws_InvalidPhoneException()
     {
         string phone = new string('1', 10);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
     }
@@ -47,7 +47,7 @@ public class UserTests
     [InlineData("000a000=0")]
     public void user_phone_with_non_numeric_characters_throws_InvalidPhoneException(string phone)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), phone, "email@email.com", "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhoneException>(exception);
     }
@@ -60,7 +60,7 @@ public class UserTests
     // [InlineData("user@ex ample.com")]
     public void invalid_user_email_throws_InvalidEmailExceptions(string badEmail)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
     }
@@ -70,7 +70,7 @@ public class UserTests
     {
         string badEmail = new string('a', 250);
         badEmail += "@test.com";
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), UserSex.Male,null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", badEmail, "janusz", new System.DateOnly(1999,1,1), UserSex.Male,_properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
     }
@@ -80,7 +80,7 @@ public class UserTests
     [InlineData(null)]
     public void empty_or_null_user_email_throws_InvalidEmailException(string email)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", email, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", email, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
     }
@@ -89,7 +89,7 @@ public class UserTests
     public void empty_or_null_user_email_throws_InvalidEmailException2()
     {
         string email = new string('a', 0);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", email, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", email, "janusz", new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidEmailException>(exception);
     }
@@ -99,7 +99,7 @@ public class UserTests
     [InlineData(null)]
     public void empty_or_null_user_name_throws_InvalidUsernameException(string username)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
     }
@@ -108,7 +108,7 @@ public class UserTests
     public void empty_or_null_user_name_throws_InvalidUsernameException2()
     {
         string username = new string('a', 0);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
     }
@@ -121,7 +121,7 @@ public class UserTests
     [InlineData("#")]
     public void user_name_should_with_invalid_chars_throws_InvalidUsernameException(string username)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
     }
@@ -130,7 +130,7 @@ public class UserTests
     public void user_name_above_15_chars_throws_InvalidUsernameException()
     {
         string username = new string('a', 16);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
     }
@@ -146,7 +146,7 @@ public class UserTests
     public void user_age_below_18_or_above_100_throws_InvalidDateOfBirthException(DateTime date)
     {
         var invalidDob = new DateOnly(date.Year, date.Month, date.Day);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", invalidDob, UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", invalidDob, UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidDateOfBirthException>(exception);
     }
@@ -154,7 +154,7 @@ public class UserTests
     [Fact]
     public void empty_date_of_birth_throws_DateOfBirthCannotBeEmptyException()
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(), UserSex.Male, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<DateOfBirthCannotBeEmptyException>(exception);
     }
@@ -163,7 +163,7 @@ public class UserTests
     public void user_bio_longer_than_400_chars_throws_BioTooLongException()
     {
         string bio = new string('a', 401);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings, "", bio));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: "", bio: bio));
         Assert.NotNull(exception);
         Assert.IsType<BioTooLongException>(exception);
     }
@@ -172,7 +172,7 @@ public class UserTests
     public void user_job_longer_than_50_chars_throws_JobTooLongException()
     {
         string job = new string('a', 51);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings, job));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: job));
         Assert.NotNull(exception);
         Assert.IsType<JobTooLongException>(exception);
     }
@@ -182,7 +182,7 @@ public class UserTests
     {
         var actualYear = DateTime.UtcNow.Year;
         var dob = new DateOnly(actualYear - 18, 1, 1);
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", dob, UserSex.Male, null, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", dob, UserSex.Male, _properUserSettings);
         Assert.Equal(18, user.GetAge());
     }
 
@@ -192,7 +192,7 @@ public class UserTests
     [InlineData(7)]
     public void invalid_user_sex_throws_InvalidUserSexException(int sex)
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), (UserSex) sex, null, _properUserSettings));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), (UserSex) sex, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUserSexException>(exception);
     }
@@ -200,7 +200,7 @@ public class UserTests
     [Fact]
     public void change_user_date_of_birth_should_take_effect()
     {
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings);
         user.ChangeDateOfBirth(new DateOnly(1999,1,2));
         Assert.Equal(new DateOnly(1999,1,2), user.DateOfBirth.Value);
     }
@@ -208,7 +208,7 @@ public class UserTests
     [Fact]
     public void change_user_bio_should_take_effect()
     {
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings, "", "bio");
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: "", bio: "bio");
         user.ChangeBio("new bio");
         Assert.Equal("new bio", user.Bio);
     }
@@ -216,7 +216,7 @@ public class UserTests
     [Fact]
     public void change_user_job_should_take_effect()
     {
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, null, _properUserSettings, "job");
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: "job");
         user.ChangeJob("new job");
         Assert.Equal("new job", user.Job);
     }
@@ -232,14 +232,14 @@ public class UserTests
     [Fact]
     public void create_new_user_with_empty_bio_and_job_should_succeed()
     {
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, _properUserSettings, "", ""));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, job: "", bio: ""));
         Assert.Null(exception);
     }
 
     [Fact]
     public void add_photo_adds_photo_to_user_Photos_with_oridinal_set_to_photos_count()
     {
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, null, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings);
 
         Assert.Empty(user.Photos);
         user.AddPhoto(new Photo(Guid.NewGuid(),  "abcde", 5));
@@ -252,7 +252,7 @@ public class UserTests
     {
         var photo = new Photo(Guid.NewGuid(),  "abcde", 0);
         var photos = new List<Photo>{ photo };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         Assert.Single(user.Photos);
         user.AddPhoto(photo);
@@ -264,7 +264,7 @@ public class UserTests
     {
         var photo = new Photo(Guid.NewGuid(),  "abcde", 0); 
         var photos = new List<Photo>{ photo };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         Assert.Single(user.Photos);
         user.RemovePhoto(photo.Id);
@@ -278,7 +278,7 @@ public class UserTests
         var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
         var photo3 = new Photo(Guid.NewGuid(),  "abcde", 2);
         var photos = new List<Photo>{ photo1, photo2, photo3 };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.RemovePhoto(photo2.Id);
         Assert.Collection(user.Photos,
@@ -298,7 +298,7 @@ public class UserTests
         var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
         var photo3 = new Photo(Guid.NewGuid(),  "abcde", 2);
         var photos = new List<Photo>{ photo1, photo2, photo3 };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.RemovePhoto(photo1.Id);
         Assert.Collection(user.Photos,
@@ -318,7 +318,7 @@ public class UserTests
         var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
         var photo3 = new Photo(Guid.NewGuid(),  "abcde", 2);
         var photos = new List<Photo>{ photo1, photo2, photo3 };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.RemovePhoto(photo3.Id);
         Assert.Collection(user.Photos,
@@ -336,7 +336,7 @@ public class UserTests
     {
         var photo = new Photo(Guid.NewGuid(),  "abcde", 0); 
         var photos = new List<Photo>();
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         Assert.Empty(user.Photos);
         user.RemovePhoto(photo.Id);
@@ -351,7 +351,7 @@ public class UserTests
         {
             photos.Add(new Photo(Guid.NewGuid(),  "abcde", i));
         }
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         var newPhoto = new Photo(Guid.NewGuid(),  "abcde", 6);
         var exception = Record.Exception(() => user.AddPhoto(newPhoto));
@@ -367,7 +367,7 @@ public class UserTests
             new Photo(Guid.NewGuid(),  "abcde", 1),
             new Photo(Guid.NewGuid(),  "abcde", 2),
         };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
         var photo = new Photo(Guid.NewGuid(),  "abcde", 4);
 
         user.ChangeOridinal(photo.Id, 1);
@@ -391,7 +391,7 @@ public class UserTests
             new Photo(Guid.NewGuid(),  "abcde", 1),
             new Photo(Guid.NewGuid(),  "abcde", 2),
         };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.ChangeOridinal(photos[1].Id, 1);
         Assert.Collection(user.Photos,
@@ -414,7 +414,7 @@ public class UserTests
             new Photo(Guid.NewGuid(),  "abcde", 1),
             new Photo(Guid.NewGuid(),  "abcde", 2),
         };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.ChangeOridinal(photos[0].Id, 5);
         Assert.Equal(2, photos[0].Oridinal.Value);
@@ -428,7 +428,7 @@ public class UserTests
             new Photo(Guid.NewGuid(),  "abcde", 1),
             new Photo(Guid.NewGuid(),  "abcde", 2),
         };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.ChangeOridinal(photos[2].Id, 0);
         Assert.Collection(user.Photos,
@@ -451,7 +451,7 @@ public class UserTests
             new Photo(Guid.NewGuid(),  "abcde", 1),
             new Photo(Guid.NewGuid(),  "abcde", 2),
         };
-        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, photos, _properUserSettings);
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
         user.ChangeOridinal(photos[1].Id, 2);
         Assert.Collection(user.Photos,

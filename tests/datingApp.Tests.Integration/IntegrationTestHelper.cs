@@ -23,7 +23,7 @@ internal static class IntegrationTestHelper
         if (email == null) email = "test_" + Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, new PreferredAge(18, 100), 100, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, photos, settings);
+        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings, photos: photos);
         return user;
     }
 
@@ -71,7 +71,7 @@ internal static class IntegrationTestHelper
 
     internal static async Task<Match> CreateMatchAsync(DatingAppDbContext dbContext, Guid userId1, Guid userId2, List<Message> messages = null, bool isDisplayedByUser1 = false, bool isDisplayedByUser2 = false, DateTime? createdAt = null)
     {
-        var match = new Match(Guid.NewGuid(), userId1, userId2, isDisplayedByUser1, isDisplayedByUser2, messages, createdAt ?? DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), userId1, userId2, createdAt ?? DateTime.UtcNow, isDisplayedByUser1, isDisplayedByUser2, messages);
         await dbContext.Matches.AddAsync(match);
         await dbContext.SaveChangesAsync();
         return match;

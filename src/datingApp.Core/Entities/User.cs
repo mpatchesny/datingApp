@@ -33,7 +33,7 @@ public class User
     }
 
     public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
-                ICollection<Photo> photos, UserSettings settings, Job job=null, Bio bio=null)
+                UserSettings settings, ICollection<Photo> photos=null, Job job=null, Bio bio=null)
     {
         if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
         if (settings == null) throw new UserSettingsIsNullException();

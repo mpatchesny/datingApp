@@ -40,7 +40,7 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
         {
             if ((Like) command.Like == Like.Like)
             {
-                var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, false, false, null, DateTime.UtcNow);
+                var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, DateTime.UtcNow);
                 await _matchRepository.AddAsync(match);
             }
             isLikedByOtherUser.IsLikedByOtherUser = true;

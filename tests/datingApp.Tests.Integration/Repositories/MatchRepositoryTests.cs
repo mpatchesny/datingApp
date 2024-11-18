@@ -90,7 +90,7 @@ public class MatchRepositoryTests : IDisposable
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var match = new Match(Guid.NewGuid(), user1.Id, user2.Id, false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), user1.Id, user2.Id, DateTime.UtcNow);
 
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.Null(exception);
@@ -123,7 +123,7 @@ public class MatchRepositoryTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
         _dbContext.ChangeTracker.Clear();
 
-        var match2 = new Match(match.Id, user1.Id, user3.Id, false, false, null, DateTime.UtcNow);
+        var match2 = new Match(match.Id, user1.Id, user3.Id, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.NotNull(exception);
     }
@@ -136,7 +136,7 @@ public class MatchRepositoryTests : IDisposable
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
         _dbContext.ChangeTracker.Clear();
 
-        var match2 = new Match(Guid.NewGuid(), user1.Id, user2.Id, false, false, null, DateTime.UtcNow);
+        var match2 = new Match(Guid.NewGuid(), user1.Id, user2.Id, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
         Assert.NotNull(exception);
     }

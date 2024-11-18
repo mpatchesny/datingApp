@@ -55,7 +55,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 {
                     Id = item.Match.Id,
                     User = item.User.AsPublicDto(0),
-                    IsDisplayed = (item.Match.UserId1.Equals(query.UserId)) ? item.Match.IsDisplayedByUser1 : item.Match.IsDisplayedByUser2,
+                    IsDisplayed = item.Match.IsDisplayedByUser(query.UserId),
                     Messages =  item.Match.MessagesAsDto(),
                     CreatedAt = item.Match.CreatedAt
                 });
@@ -63,11 +63,12 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
         var pageCount = (int) (dbQuery.Count() + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto{
+        return new PaginatedDataDto
+        {
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
             Data = new List<dynamic>(dataDto)
-            };
+        };
     }
 }

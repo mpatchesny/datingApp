@@ -72,7 +72,7 @@ public class SignUpByEmailHandlerTests
     public async Task given_no_access_code_in_storage_sign_in_by_email_throws_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings);
         _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns((AccessCodeDto) null);
         _tokenStorage.Setup(m => m.Get()).Returns((JwtDto) null);
@@ -90,7 +90,7 @@ public class SignUpByEmailHandlerTests
     public async Task given_negative_access_code_verification_sign_in_by_email_throws_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user = new User(settings.UserId, "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+        var user = new User(settings.UserId, "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings);
         _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
         var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);
@@ -109,7 +109,7 @@ public class SignUpByEmailHandlerTests
     public async Task given_valid_email_and_code_sign_in_by_email_should_succeed()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, null, settings);
+        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings);
         _userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
         var code = CreateAccessCodeDto();
         _accessCodeStorage.Setup(m => m.Get(It.IsAny<string>())).Returns(code);

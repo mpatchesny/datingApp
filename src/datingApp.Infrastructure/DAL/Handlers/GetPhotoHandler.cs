@@ -23,8 +23,6 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
             .AsNoTracking()
             .Include(user => user.Photos
                 .Where(photo => photo.Id.Equals(query.PhotoId)))
-            .Where(user => 
-                user.Photos.Any(photo => photo.Id.Equals(query.PhotoId)))
             .FirstOrDefaultAsync();
 
         if (user == null)

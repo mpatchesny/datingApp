@@ -7,6 +7,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,14 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 {
     private readonly DatingAppDbContext _dbContext;
+    private readonly ISpatial _spatial;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetMatchHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
+    public GetMatchHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService, ISpatial spatial)
     {
         _dbContext = dbContext;
         _authorizationService = authorizationService;
+        _spatial = spatial;
     }
 
     public async Task<MatchDto> HandleAsync(GetMatch query)

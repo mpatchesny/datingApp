@@ -126,7 +126,7 @@ public class GetMatchHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object);
+        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object, null);
     }
 
     // Teardown

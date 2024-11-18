@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +16,11 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDataDto>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetMatchesHandler(DatingAppDbContext dbContext)
+    private readonly ISpatial _spatial;
+    public GetMatchesHandler(DatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
+        _spatial = spatial;
     }
 
     public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
@@ -31,21 +35,23 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 .Include(match => match.Messages
                     .OrderByDescending(message => message.CreatedAt)
                     .Take(1))
-            from user in _dbContext.Users.Include(user => user.Photos)
+            from user in _dbContext.Users
+                .Include(user => user.Photos)
+                .Include(user => user.Settings)
             where !user.Id.Equals(query.UserId)
             where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
             where match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId)
-            select new 
+            select new
             {
-                Match = match,
-                User = user
+                User = user,
+                Match = match
             };
 
         var data = await dbQuery
-                            .AsNoTracking()
-                            .Skip((query.Page - 1) * query.PageSize)
-                            .Take(query.PageSize)
-                            .ToListAsync();
+            .AsNoTracking()
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
         foreach (var item in data)

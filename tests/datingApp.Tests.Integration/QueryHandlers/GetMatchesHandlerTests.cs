@@ -168,7 +168,7 @@ public class GetMatchesHandlerTests : IDisposable
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _handler = new GetMatchesHandler(_testDb.DbContext);
+        _handler = new GetMatchesHandler(_testDb.DbContext, null);
     }
 
     // Teardown

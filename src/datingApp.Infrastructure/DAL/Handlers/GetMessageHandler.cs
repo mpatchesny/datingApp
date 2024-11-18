@@ -29,11 +29,7 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (match == null)
-        {
-            throw new MessageNotExistsException(query.MessageId);
-        }
-        else if (!match.Messages.Any())
+        if (match == null || !match.Messages.Any())
         {
             throw new MessageNotExistsException(query.MessageId);
         }

@@ -13,28 +13,28 @@ public class MatchTests
     [Fact]
     public void set_is_displayed_changes_enitity_state_1()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         match.SetDisplayed(match.UserId1);
-        Assert.True(match.IsDisplayedByUser1);
-        Assert.False(match.IsDisplayedByUser2);
+        Assert.True(match.IsDisplayedByUser(match.UserId1));
+        Assert.False(match.IsDisplayedByUser(match.UserId2));
     }
 
     [Fact]
     public void set_is_displayed_changes_enitity_state_2()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         match.SetDisplayed(match.UserId2);
-        Assert.True(match.IsDisplayedByUser2);
-        Assert.False(match.IsDisplayedByUser1);
+        Assert.True(match.IsDisplayedByUser(match.UserId2));
+        Assert.False(match.IsDisplayedByUser(match.UserId1));
     }
 
     [Fact]
     public void set_is_displayed_by_wrong_user_id_does_not_change_entity_state()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         match.SetDisplayed(Guid.NewGuid());
-        Assert.False(match.IsDisplayedByUser2);
-        Assert.False(match.IsDisplayedByUser1);
+        Assert.False(match.IsDisplayedByUser(match.UserId1));
+        Assert.False(match.IsDisplayedByUser(match.UserId2));
     }
 
     [Theory]
@@ -44,7 +44,7 @@ public class MatchTests
     [InlineData(true, false)]
     public void is_displayed_by_user_returns_proper_bool(bool isDisplayedByUser1, bool isDisplayedByUser2)
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), isDisplayedByUser1, isDisplayedByUser2, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, isDisplayedByUser1: isDisplayedByUser1, isDisplayedByUser2: isDisplayedByUser2);
 
         Assert.Equal(isDisplayedByUser1, match.IsDisplayedByUser(match.UserId1));
         Assert.Equal(isDisplayedByUser2, match.IsDisplayedByUser(match.UserId2));
@@ -53,7 +53,7 @@ public class MatchTests
     [Fact]
     public void is_displayed_by_user_not_in_match_returns_false()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), true, true, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, isDisplayedByUser1: true, isDisplayedByUser2: true);
 
         Assert.False(match.IsDisplayedByUser(Guid.NewGuid()));
     }
@@ -61,7 +61,7 @@ public class MatchTests
     [Fact]
     public void given_message_not_in_Match_AddMessage_adds_message()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var message = new Message(Guid.NewGuid(), match.UserId1, "abc", false, DateTime.UtcNow);
         
         Assert.Empty(match.Messages);
@@ -72,7 +72,7 @@ public class MatchTests
     [Fact]
     public void given_message_in_Match_AddMessage_do_nothing()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var message = new Message(Guid.NewGuid(), match.UserId1, "abc", false, DateTime.UtcNow);
 
         match.AddMessage(message);
@@ -84,7 +84,7 @@ public class MatchTests
     [Fact]
     public void given_message_SendFrom_not_match_Match_UserId_AddMessage_throw_MessageSenderNotMatchMatchUsers_1()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
 
         var exception = Record.Exception(() => match.AddMessage(message));
@@ -95,7 +95,7 @@ public class MatchTests
     [Fact]
     public void given_message_not_in_Match_RemoveMessage_do_nothing()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
         
         Assert.Empty(match.Messages);
@@ -108,7 +108,7 @@ public class MatchTests
     {
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
         var messages = new List<Message> { message };
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, messages: messages);
         
         Assert.Single(match.Messages);
         match.RemoveMessage(message.Id);
@@ -127,7 +127,7 @@ public class MatchTests
             new Message(Guid.NewGuid(), userId, "abc", false, DateTime.UtcNow),
             new Message(Guid.NewGuid(), userId, "abc", false, DateTime.UtcNow),
          };
-        var match = new Match(matchId, userId, Guid.NewGuid(), false, false, messages, DateTime.UtcNow);
+        var match = new Match(matchId, userId, Guid.NewGuid(), DateTime.UtcNow, messages: messages);
 
         var exception = Record.Exception(() => match.SetPreviousMessagesAsDisplayed(Guid.NewGuid(), match.UserId1));
         Assert.Null(exception);
@@ -151,7 +151,7 @@ public class MatchTests
         var lastMessage = new Message(Guid.NewGuid(), userId1, "abc", false, createdAt);
         var messages = new List<Message> { lastMessage };
 
-        var match = new Match(matchId, userId1, userId2, false, false, messages, DateTime.UtcNow);
+        var match = new Match(matchId, userId1, userId2, DateTime.UtcNow, messages: messages);
 
         match.SetPreviousMessagesAsDisplayed(lastMessage.Id, userId2);
         Assert.Collection(match.Messages, 
@@ -177,7 +177,7 @@ public class MatchTests
             new Message(Guid.NewGuid(), userId2, "abc", false, createdAt),
             new Message(Guid.NewGuid(), userId2, "abc", false, createdAt),
         };
-        var match = new Match(matchId, userId1, userId2, false, false, messages, DateTime.UtcNow);
+        var match = new Match(matchId, userId1, userId2, DateTime.UtcNow, messages: messages);
         
         match.SetPreviousMessagesAsDisplayed(lastMessage.Id, userId2);
         Assert.Collection(match.Messages, 

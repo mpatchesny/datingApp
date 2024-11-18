@@ -25,7 +25,7 @@ public class Match
         // EF
     }
 
-    public Match(MatchId id, UserId userId1, UserId userId2, bool isDisplayedByUser1, bool isDisplayedByUser2, List<Message> messages, DateTime createdAt)
+    public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
     {
         Id = id;
         UserId1 = userId1;

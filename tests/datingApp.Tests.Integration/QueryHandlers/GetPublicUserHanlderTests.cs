@@ -34,6 +34,7 @@ public class GetPublicUserHanlderTests : IDisposable
 
         Assert.NotNull(userDto);
         Assert.IsType<PublicUserDto>(userDto);
+        Assert.Equal(user2.Id.Value, userDto.Id);
     }
 
     [Fact]

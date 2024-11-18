@@ -44,7 +44,9 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
                 .Include(match => match.Messages
                     .OrderByDescending(message => message.CreatedAt)
                     .Take(query.HowManyMessages))
-            from user in _dbContext.Users.Include(u => u.Photos)
+            from user in _dbContext.Users
+                .Include(user => user.Photos)
+                .Include(user => user.Settings)
             where !user.Id.Equals(query.UserId)
             where match.Id.Equals(query.MatchId)
             where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)

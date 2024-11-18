@@ -46,7 +46,7 @@ public class AuthorizationServiceWrapperTests
         var userId = Guid.NewGuid();
         var user = CreateClaimsPrincipal(userId);
         _httpContextAccessor.Setup(x => x.HttpContext.User).Returns(user);
-        var someObject = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), false, false, null, DateTime.UtcNow);
+        var someObject = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, false, false, null);
 
         var exception = await Record.ExceptionAsync(() => _authorizationServiceWrapper.AuthorizeAsync(userId, someObject, "some policy"));
         Assert.Null(exception);

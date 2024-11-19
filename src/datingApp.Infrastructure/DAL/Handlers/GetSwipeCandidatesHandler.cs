@@ -64,14 +64,8 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // we want candidates sorted by number of likes descending
         return await _dbContext.Users
             .Where(candidate => initialCandidates.Contains(candidate.Id))
-            .Select(candidate => new 
-                {
-                    User = candidate,
-                    LikesCount = 
-                        _dbContext.Swipes.Where(swipe => swipe.SwipedWhoId.Equals(candidate.Id) && swipe.Like == Like.Like).Count()
-                })
-            .OrderByDescending(x => x.LikesCount)
-            .Select(candidate => candidate.User)
+            .OrderByDescending(candidate => 
+                _dbContext.Swipes.Where(swipe => swipe.SwipedWhoId.Equals(candidate.Id) && swipe.Like == Like.Like).Count())
             .Include(candidate => candidate.Settings)
             .Include(candidate => candidate.Photos)
             .AsNoTracking()

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Org.BouncyCastle.Crypto;
 using Xunit;
 
@@ -16,6 +17,61 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 
 public class Sandbox : IDisposable
 {
+    public class MatchReadModel
+    {
+        public Guid Id { get; set; }
+        public UserReadModel User { get; set; }
+        public bool IsDisplayed { get; set; }
+        public DateTime LastChangeTime { get; set; }
+        public IEnumerable<MessageReadModel> Messages { get; set; }
+    }
+
+    public class MessageReadModel
+    {
+        public Guid Id { get; set; }
+        public Guid SendById { get; set; }
+        public bool IsDisplayed { get; set; }
+        public string Text { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+    public class UserReadModel
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public int Age { get; set; }
+        public DateOnly DateOfBirth { get; set; }
+        public int Distance { get; set; }
+        public int Sex { get; set; }
+        public string Job { get; set; }
+        public string Bio { get; set; }
+        public int LikesCount { get; set; }
+        public UserSettingsReadModel Settings { get; set; }
+        public IEnumerable<MatchReadModel> Matches { get; set; }
+        public IEnumerable<PhotoReadModel> Photos { get; set; }
+    }
+
+    public class PhotoReadModel
+    {
+        public Guid Id { get; set; }
+        public string Url { get; set; }
+        public int Oridinal { get; set; }
+    }
+
+    public class UserSettingsReadModel
+    {
+        public int PreferredSex { get; set; }
+        public int PreferredAgeFrom { get; set; }
+        public int PreferredAgeTo { get; set; }
+        public int PreferredMaxDistance { get; set; }
+        public double Lat { get; set; }
+        public double Lon { get; set; }
+    }
+
+
+
     [Fact]
     public async Task Test1Async()
     {

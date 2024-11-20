@@ -22,6 +22,7 @@ public class Sandbox : IDisposable
         public Guid Id { get; set; }
         public UserReadModel User { get; set; }
         public bool IsDisplayed { get; set; }
+        public DateTime CreatedAt { get; set; }
         public DateTime LastChangeTime { get; set; }
         public IEnumerable<MessageReadModel> Messages { get; set; }
     }

@@ -24,42 +24,31 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
 
     public async Task<MessageDto> HandleAsync(GetMessage query)
     {
-        var dbQuery = 
-            from match in _dbContext.Matches.Include(m => m.Messages)
-            where match.Messages.Any(m => m.Id.Equals(query.MessageId))
-            select new
-            {
-                Match = match,
-                Message = match.Messages.FirstOrDefault(m => m.Id.Equals(query.MessageId))
-            };
+        var match = await _dbContext.Matches
+            .Include(match => match.Messages.Where(message => message.Id.Equals(query.MessageId)))
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
-        var data = await dbQuery
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync();
-
-        if (data == null)
-        {
-            throw new MessageNotExistsException(query.MessageId);
-        }
-        else if (data.Message == null)
+        if (match == null || !match.Messages.Any())
         {
             throw new MessageNotExistsException(query.MessageId);
         }
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, data.Match, "OwnerPolicy");
+        var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
         {
             throw new UnauthorizedException();
         }
 
+        var message = match.Messages.First();
         return new MessageDto()
         {
-            Id = data.Message.Id,
-            MatchId = data.Match.Id, 
-            SendFromId = data.Message.SendFromId,
-            Text = data.Message.Text,
-            IsDisplayed = data.Message.IsDisplayed,
-            CreatedAt = data.Message.CreatedAt
+            Id = message.Id,
+            MatchId = match.Id, 
+            SendFromId = message.SendFromId,
+            Text = message.Text,
+            IsDisplayed = message.IsDisplayed,
+            CreatedAt = message.CreatedAt
         };
     }
 }

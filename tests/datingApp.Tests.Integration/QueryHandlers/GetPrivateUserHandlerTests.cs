@@ -20,12 +20,14 @@ public class GetPrivateUserHandlerTests : IDisposable
     public async Task given_user_exists_get_private_user_returns_private_user_dto()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetPrivateUser() {UserId = user.Id};
         var userDto = await _handler.HandleAsync(query);
         Assert.NotNull(userDto);
         Assert.IsType<PrivateUserDto>(userDto);
+        Assert.Equal(user.Id.Value, userDto.Id);
     }
 
     [Fact]

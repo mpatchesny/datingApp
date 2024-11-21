@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Exceptions;
-using datingApp.Application.Repositories;
 using datingApp.Application.Security;
+using datingApp.Application.Services;
 using datingApp.Core.Repositories;
 
 namespace datingApp.Application.Commands.Handlers;
@@ -14,13 +14,13 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
 {
     private readonly IMatchRepository _matchRepository;
-    private readonly IDeletedEntityRepository _deletedEntityRepository;
+    private readonly IDeletedEntityService _deletedEntityService;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public DeleteMatchHandler(IMatchRepository matchRepository, IDeletedEntityRepository deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
+    public DeleteMatchHandler(IMatchRepository matchRepository, IDeletedEntityService deletedEntityRepository, IDatingAppAuthorizationService authorizationService)
     {
         _matchRepository = matchRepository;
-        _deletedEntityRepository = deletedEntityRepository;
+        _deletedEntityService = deletedEntityRepository;
         _authorizationService = authorizationService;
     }
     public async Task HandleAsync(DeleteMatch command)
@@ -28,7 +28,7 @@ public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
         var match = await _matchRepository.GetByIdAsync(command.MatchId);
         if (match == null)
         {
-            if (await _deletedEntityRepository.ExistsAsync(command.MatchId))
+            if (await _deletedEntityService.ExistsAsync(command.MatchId))
             {
                 throw new MatchAlreadyDeletedException(command.MatchId);
             }
@@ -45,6 +45,6 @@ public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
         }
 
         await _matchRepository.DeleteAsync(match);
-        await _deletedEntityRepository.AddAsync(match.Id);
+        await _deletedEntityService.AddAsync(match.Id);
     }
 }

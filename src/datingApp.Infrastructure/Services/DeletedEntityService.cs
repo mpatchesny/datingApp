@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
-using datingApp.Application.Repositories;
+using datingApp.Application.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace datingApp.Infrastructure.DAL.Repositories;
+namespace datingApp.Infrastructure.Services;
 
-internal sealed class DbDeletedEntityRepository : IDeletedEntityRepository
+internal sealed class DeletedEntityService : IDeletedEntityService
 {
     private readonly DatingAppDbContext _dbContext;
-    public DbDeletedEntityRepository(DatingAppDbContext dbContext)
+    public DeletedEntityService(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

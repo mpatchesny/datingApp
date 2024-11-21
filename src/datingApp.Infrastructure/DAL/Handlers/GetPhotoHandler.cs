@@ -17,23 +17,21 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
     {
         _dbContext = dbContext;
     }
+
     public async Task<PhotoDto> HandleAsync(GetPhoto query)
     {
         var user = await _dbContext.Users
-                                .AsNoTracking()
-                                .Include(user => user.Photos
-                                    .Where(photo => photo.Id.Equals(query.PhotoId)))
-                                .Where(user => 
-                                    user.Photos.Any(photo => photo.Id.Equals(query.PhotoId)))
-                                .FirstOrDefaultAsync();
+            .AsNoTracking()
+            .Include(user => user.Photos
+                .Where(photo => photo.Id.Equals(query.PhotoId)))
+            .FirstOrDefaultAsync();
 
-        if (user == null)
+        if (user == null || !user.Photos.Any())
         {
             throw new PhotoNotExistsException(query.PhotoId);
         }
 
         var photo = user.Photos.FirstOrDefault();
-
         return new PhotoDto
         {
             Id = photo.Id,

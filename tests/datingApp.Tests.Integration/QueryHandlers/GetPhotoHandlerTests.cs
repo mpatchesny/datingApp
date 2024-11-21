@@ -8,6 +8,7 @@ using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
@@ -15,6 +16,22 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 
 public class GetPhotoHandlerTests : IDisposable
 {
+    [Fact]
+    public async void given_photo_exists_get_photo_returns_proper_photo_Dto()
+    {
+        var photos1 = new List<Photo>() { IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(), };
+        var photos2 = new List<Photo>() { IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(), };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos1);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos2);
+        _dbContext.ChangeTracker.Clear();
+        
+        var photoDto = await _handler.HandleAsync(new GetPhoto { PhotoId = photos1[1].Id });
+        Assert.NotNull(photoDto);
+        Assert.IsType<PhotoDto>(photoDto);
+        Assert.Equal(photos1[1].Id.Value, photoDto.Id);
+        Assert.Equal(user1.Id.Value, photoDto.UserId);
+    }
+
     [Fact]
     public async void given_photo_not_exists_get_photo_returns_PhotoNotExistsException()
     {

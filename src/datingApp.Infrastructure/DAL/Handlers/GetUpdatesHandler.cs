@@ -6,6 +6,7 @@ using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Spatial;
 using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
@@ -13,14 +14,22 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<MatchDto>>
 {
     private readonly DatingAppDbContext _dbContext;
-    public GetUpdatesHandler(DatingAppDbContext dbContext)
+    private readonly ISpatial _spatial;
+
+    public GetUpdatesHandler(DatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
+        _spatial = spatial;
     }
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
-        if (!await _dbContext.Users.AnyAsync(x => x.Id.Equals(query.UserId)))
+        var requestedBy = await _dbContext.Users
+            .AsNoTracking()
+            .Include(user => user.Settings)
+            .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
+
+        if (requestedBy == null)
         {
             throw new UserNotExistsException(query.UserId);
         }
@@ -52,11 +61,14 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         var dataDto = new List<MatchDto>();
         foreach (var item in data)
         {
+            var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
+                item.User.Settings.Location.Lat, item.User.Settings.Location.Lon);
+
             dataDto.Add(
                 new MatchDto()
                 {
                     Id = item.Match.Id,
-                    User = item.User.AsPublicDto(0),
+                    User = item.User.AsPublicDto(distanceInKms),
                     IsDisplayed = item.Match.IsDisplayedByUser(query.UserId),
                     Messages =  item.Match.MessagesAsDto(),
                     CreatedAt = item.Match.CreatedAt

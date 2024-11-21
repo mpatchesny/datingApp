@@ -16,8 +16,6 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_file_which_is_not_image_ValidateExtension_throws_InvalidPhotoException()
     {
-        _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 999999;
         var validator = new StreamPhotoValidator(_options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64DocxSample);
 
@@ -29,8 +27,6 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_unsupported_image_file_ValidateExtension_throws_InvalidPhotoException()
     {
-        _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 999999;
         var validator = new StreamPhotoValidator(_options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64GifSample);
 
@@ -42,8 +38,6 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_bmp_file_ValidateExtension_throws_InvalidPhotoException()
     {
-        _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 999999;
         var validator = new StreamPhotoValidator(_options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64BmpSample);
 
@@ -55,8 +49,6 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_jpg_file_ValidateExtension_return_jpg_extension()
     {
-        _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 999999;
         var validator = new StreamPhotoValidator(_options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64JpgSample);
 
@@ -67,8 +59,6 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_png_file_ValidateExtension_return_jpg_extension()
     {
-        _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 999999;
         var validator = new StreamPhotoValidator(_options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64PngSample);
 
@@ -79,8 +69,6 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_webp_file_ValidateExtension_return_jpg_extension()
     {
-        _options.Value.MinPhotoSizeBytes = 1;
-        _options.Value.MaxPhotoSizeBytes = 999999;
         var validator = new StreamPhotoValidator(_options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64PngSample);
 
@@ -120,6 +108,7 @@ public class StreamPhotoValidatorTests
         _options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         _options.Value.MinPhotoSizeBytes = 1;
         _options.Value.MaxPhotoSizeBytes = 999999;
+        _options.Value.AcceptedFileFormats = "png,webp,jpg";
     }
 
     private static MemoryStream Base64ToMemoryStream(string base64)

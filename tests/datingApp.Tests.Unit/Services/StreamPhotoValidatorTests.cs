@@ -10,7 +10,7 @@ using Xunit;
 
 namespace datingApp.Tests.Unit.Services;
 
-public class PhotoServiceTests
+public class StreamPhotoValidatorTests
 {
     [Fact]
     public void given_empty_base64_content_ProcessBase64Photo_throws_EmptyBase64StringException()
@@ -128,7 +128,7 @@ public class PhotoServiceTests
     }
    
     private readonly IOptions<PhotoServiceOptions> _options;
-    public PhotoServiceTests()
+    public StreamPhotoValidatorTests()
     {
         _options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         _options.Value.MinPhotoSizeBytes = 1;

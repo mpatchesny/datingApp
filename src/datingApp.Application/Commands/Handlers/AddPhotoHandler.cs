@@ -11,13 +11,13 @@ using FluentStorage.Blobs;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public sealed class AddPhoto2Handler : ICommandHandler<AddPhoto2>
+public sealed class AddPhotoHandler : ICommandHandler<AddPhoto2>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPhotoValidator<Stream> _photoValidator;
     private readonly IPhotoConverter _photoConverter;
     private readonly IBlobStorage _fileStorage;
-    public AddPhoto2Handler(IUserRepository userRepository,
+    public AddPhotoHandler(IUserRepository userRepository,
                             IPhotoValidator<Stream> photoService,
                             IBlobStorage fileStorage,
                             IPhotoConverter photoConverter)

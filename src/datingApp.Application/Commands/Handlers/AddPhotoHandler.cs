@@ -11,7 +11,7 @@ using FluentStorage.Blobs;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public sealed class AddPhotoHandler : ICommandHandler<AddPhoto2>
+public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPhotoValidator<Stream> _photoValidator;
@@ -28,7 +28,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto2>
         _photoConverter = photoConverter;
     }
 
-    public async Task HandleAsync(AddPhoto2 command)
+    public async Task HandleAsync(AddPhoto command)
     {
         _photoValidator.ValidateSize(command.PhotoStream);
         _photoValidator.ValidateExtension(command.PhotoStream, out var extension);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Services;
+using datingApp.Infrastructure.Exceptions;
 using Microsoft.Extensions.Logging.TraceSource;
 using Microsoft.Extensions.Options;
 
@@ -10,35 +11,35 @@ namespace datingApp.Infrastructure.Services;
 
 public class FormFilePhotoValidator : IPhotoValidator<IFormFile>
 {
-    private readonly IOptions<PhotoServiceOptions> _options;
+    private readonly int _minPhotoSizeBytes;
+    private readonly int _maxPhotoSizeBytes;
+    private readonly string[] _acceptedFileFormats;
     public FormFilePhotoValidator(IOptions<PhotoServiceOptions> options)
     {
-        _options = options;
+        _minPhotoSizeBytes = options.Value.MinPhotoSizeBytes;
+        _maxPhotoSizeBytes = options.Value.MaxPhotoSizeBytes;
+        _acceptedFileFormats = options.Value.AcceptedFileFormats
+            .Split(",")
+            .Select(format => format.Trim().ToLowerInvariant())
+            .ToArray();
     }
 
-    public bool ValidateSize(IFormFile photo)
+    public void ValidateSize(IFormFile photo)
     {
-        if (photo.Length < _options.Value.MinPhotoSizeBytes)
+        if (photo.Length < _minPhotoSizeBytes || photo.Length > _maxPhotoSizeBytes)
         {
-            return false;
+            throw new InvalidPhotoSizeException(_minPhotoSizeBytes, _maxPhotoSizeBytes);
         }
-        if (photo.Length > _options.Value.MaxPhotoSizeBytes)
-        {
-            return false;
-        }
-        return true;
     }
 
-    public bool ValidateExtension(IFormFile photo, out string extension)
+    public void ValidateExtension(IFormFile photo, out string extension)
     {
         var ext = Path.GetExtension(photo.FileName).Trim().ToLowerInvariant();
         extension = ext;
 
-        var acceptedFileFormats = _options.Value.AcceptedFileFormats.Split(",");
-        if (!acceptedFileFormats.Any(format => format.Trim().ToLowerInvariant() == ext))
+        if (!_acceptedFileFormats.Any(format => format == ext))
         {
-            return false;
+            throw new InvalidPhotoException();
         }
-        return true;
     }
 }

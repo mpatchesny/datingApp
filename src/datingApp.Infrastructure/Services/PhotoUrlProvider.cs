@@ -6,7 +6,7 @@ using datingApp.Application.Services;
 
 namespace datingApp.Infrastructure.Services;
 
-public class PhotoUrlProvider : IPhotoUrlProvider
+internal sealed class PhotoUrlProvider : IPhotoUrlProvider
 {
     public string GetPhotoUrl(string name, string extension)
     {

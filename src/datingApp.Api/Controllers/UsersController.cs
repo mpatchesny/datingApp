@@ -5,9 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.Commands;
+using datingApp.Application.Commands.Handlers;
 using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Application.Services;
+using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure.DAL.Handlers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -24,16 +27,19 @@ public class UserController : ApiControllerBase
     private readonly IQueryDispatcher _queryDispatcher;
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
+    private readonly IPhotoValidator<IFormFile> _photoService;
 
     public UserController(ICommandDispatcher commandDispatcher,
                           IQueryDispatcher queryDispatcher,
                           IAccessCodeStorage codeStorage,
-                          ITokenStorage tokenStorage)
+                          ITokenStorage tokenStorage,
+                          IPhotoValidator<IFormFile> photoService)
     {
         _commandDispatcher = commandDispatcher;
         _queryDispatcher = queryDispatcher;
         _codeStorage = codeStorage;
         _tokenStorage = tokenStorage;
+        _photoService = photoService;
     }
 
     [HttpGet("me")]
@@ -126,5 +132,22 @@ public class UserController : ApiControllerBase
         await _commandDispatcher.DispatchAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;
+    }
+
+    [HttpPost("me/photos/")]
+    public async Task<ActionResult> Post(IFormFile fileContent)
+    {
+        _photoService.ValidateSize(fileContent);
+        _photoService.ValidateExtension(fileContent, out var extension);
+
+        var stream = new MemoryStream();
+        await fileContent.CopyToAsync(stream);
+
+        var command = Authenticate(new AddPhoto2(Guid.NewGuid(), AuthenticatedUserId, stream));
+        await _commandDispatcher.DispatchAsync(command);
+
+        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
+        var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
+        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
     }
 }

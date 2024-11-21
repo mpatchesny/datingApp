@@ -33,17 +33,6 @@ public class PhotosController : ApiControllerBase
         return photo;
     }
 
-    [HttpPost]
-    public async Task<ActionResult> Post(AddPhoto command)
-    {
-        command = Authenticate(command with {PhotoId = Guid.NewGuid()});
-        await _commandDispatcher.DispatchAsync(command);
-
-        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
-        var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
-        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
-    }
-
     [HttpPatch("{photoId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid photoId, ChangePhotoOridinal command)
     {

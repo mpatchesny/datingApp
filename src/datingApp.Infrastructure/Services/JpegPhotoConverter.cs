@@ -18,6 +18,11 @@ internal sealed class JpegPhotoConverter : IPhotoConverter
 
     public async Task<Stream> ConvertAsync(Stream input)
     {
+        if (_compressedImageQuality < 0 || _compressedImageQuality > 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(_compressedImageQuality), "Compressed image quality should be between 0 and 100.");
+        }
+
         using (var job = new ImageJob())
         {
             var r = await job

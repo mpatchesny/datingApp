@@ -111,6 +111,4 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
         return await GetCandidatesAsync(requestedBy, query.HowMany);
     }
-
-
 }

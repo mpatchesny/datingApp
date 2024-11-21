@@ -8,5 +8,5 @@ namespace datingApp.Application.Services;
 
 public interface IPhotoConverter
 {
-    public Task<Stream> ConvertToJpegAsync(Stream input);
+    public Task<Stream> ConvertAsync(Stream input);
 }

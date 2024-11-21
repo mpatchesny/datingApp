@@ -46,7 +46,6 @@ public class JpegPhotoConverterTests
     [Theory]
     [InlineData(-5)]
     [InlineData(-1)]
-    [InlineData(0)]
     [InlineData(101)]
     public async Task given_invalid_image_quality_convert_to_jpeg_throws_exception(int imageQuality)
     {

@@ -43,7 +43,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        var convertedPhotoStream = await _photoConverter.ConvertToJpegAsync(command.PhotoStream);
+        var convertedPhotoStream = await _photoConverter.ConvertAsync(command.PhotoStream);
         var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
         var photo = new Photo(command.PhotoId, photoUrl, 0);

@@ -8,15 +8,15 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class PhotoConverter : IPhotoConverter
+internal sealed class JpegPhotoConverter : IPhotoConverter
 {
     private readonly int _compressedImageQuality;
-    public PhotoConverter(IOptions<PhotoServiceOptions> options)
+    public JpegPhotoConverter(IOptions<PhotoServiceOptions> options)
     {
         _compressedImageQuality = options.Value.CompressedImageQuality;
     }
 
-    public async Task<Stream> ConvertToJpegAsync(Stream input)
+    public async Task<Stream> ConvertAsync(Stream input)
     {
         using (var job = new ImageJob())
         {

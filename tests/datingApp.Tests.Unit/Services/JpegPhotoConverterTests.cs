@@ -50,9 +50,12 @@ public class JpegPhotoConverterTests
     [InlineData(101)]
     public async Task given_invalid_image_quality_convert_to_jpeg_throws_exception(int imageQuality)
     {
-        _options.Value.CompressedImageQuality = imageQuality;
+        var options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
+        options.Value.CompressedImageQuality = imageQuality;
+        var converter = new JpegPhotoConverter(options);
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64PngSample);
-        var exception = await Record.ExceptionAsync(() => _converter.ConvertAsync(imageStream));
+
+        var exception = await Record.ExceptionAsync(() => converter.ConvertAsync(imageStream));
         Assert.NotNull(exception);
     }
 
@@ -61,7 +64,6 @@ public class JpegPhotoConverterTests
     public JpegPhotoConverterTests()
     {
         _options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
-        _options.Value.CompressedImageQuality = 80;
         _converter = new JpegPhotoConverter(_options);
     }
 

@@ -39,7 +39,7 @@ public sealed class AddPhoto2Handler : ICommandHandler<AddPhoto2>
             throw new UserNotExistsException(command.UserId);
         }
 
-        var convertedPhotoStream = await _photoConverter.ConvertAsync(command.PhotoStream, targetFormat: "jpg", quality: 80);
+        var convertedPhotoStream = await _photoConverter.ConvertAsync(command.PhotoStream, targetFormat: "jpg");
         // FIXME: photoStorageUrlProvider.GetPhotoUrl(photoId, extension)
 
         var photoUrl = $"~/storage/{command.PhotoId}.{extension}";

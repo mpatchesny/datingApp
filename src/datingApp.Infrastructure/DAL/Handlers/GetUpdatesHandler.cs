@@ -22,26 +22,6 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         _spatial = spatial;
     }
 
-    private async Task<IEnumerable<Guid>> GetMatchesWithMessagesPastActivityTimeAsync(Guid userId, DateTime lastActivityTime)
-    {
-        return await _dbContext.Matches
-            .AsNoTracking()
-            .Where(match => match.UserId1.Equals(userId) || match.UserId2.Equals(userId))
-            .Where(match => match.Messages.Any(message => message.CreatedAt >= lastActivityTime))
-            .Select(match => match.Id.Value)
-            .ToListAsync();
-    }
-
-    private async Task<IEnumerable<Guid>> GetMatchesPastActivityTimeAsync(Guid userId, DateTime lastActivityTime)
-    {
-        return await _dbContext.Matches
-            .AsNoTracking()
-            .Where(match => match.UserId1.Equals(userId) || match.UserId2.Equals(userId))
-            .Where(match => match.CreatedAt >= lastActivityTime)
-            .Select(match => match.Id.Value)
-            .ToListAsync();
-    }
-
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
         var requestedBy = await _dbContext.Users
@@ -54,9 +34,11 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
             throw new UserNotExistsException(query.UserId);
         }
 
-        var newMessagesMatchId = await GetMatchesWithMessagesPastActivityTimeAsync(query.UserId, query.LastActivityTime);
-        var newMatchesId = await GetMatchesPastActivityTimeAsync(query.UserId, query.LastActivityTime);
-        var newMessagesAndMatches = newMessagesMatchId.Union(newMatchesId);
+        var newMessagesAndMatches = _dbContext.Matches
+            .Where(match => match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId))
+            .Where(match => match.CreatedAt >= query.LastActivityTime ||
+                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime))
+            .Select(match => match.Id);
 
         var dbQuery = 
             from match in _dbContext.Matches

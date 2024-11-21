@@ -8,10 +8,10 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-public class FormFilePhotoService : IPhotoValidator<IFormFile>
+public class FormFilePhotoValidator : IPhotoValidator<IFormFile>
 {
     private readonly IOptions<PhotoServiceOptions> _options;
-    public FormFilePhotoService(IOptions<PhotoServiceOptions> options)
+    public FormFilePhotoValidator(IOptions<PhotoServiceOptions> options)
     {
         _options = options;
     }

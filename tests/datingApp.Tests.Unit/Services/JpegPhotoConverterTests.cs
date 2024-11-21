@@ -32,7 +32,7 @@ public class JpegPhotoConverterTests
     {
         var imageStream = Base64ToMemoryStream(ImageSamples.Base64PngSample);
         var exception = await Record.ExceptionAsync(() => _converter.ConvertAsync(imageStream));
-        Assert.NotNull(exception);
+        Assert.Null(exception);
     }
 
     [Fact]

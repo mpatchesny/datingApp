@@ -6,6 +6,7 @@ using datingApp.Application.Services;
 using datingApp.Infrastructure.Exceptions;
 using Imageflow.Fluent;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic;
 
 namespace datingApp.Infrastructure.Services;
 
@@ -26,15 +27,25 @@ internal sealed class StreamPhotoValidator : IPhotoValidator<Stream>
 
     public void ValidateExtension(Stream content, out string extension)
     {
-        var info = ImageJob.GetImageInfoAsync(stream, SourceLifetime.TransferOwnership);
-        info.AsTask().Wait();
-        var ext = info.Result.PreferredExtension.ToLowerInvariant();
-        extension = ext;
+        var ext = "";
+
+        try
+        {
+            IAsyncMemorySource memorySource = BufferedStreamSource.BorrowEntireStream(content);
+            var info = ImageJob.GetImageInfoAsync(memorySource, SourceLifetime.TransferOwnership);
+            info.AsTask().Wait();
+            ext = info.Result.PreferredExtension.ToLowerInvariant();
+        }
+        catch (System.Exception)
+        {
+            // pass
+        }
 
         if (!_acceptedFileFormats.Any(format => format == ext))
         {
             throw new InvalidPhotoException();
         }
+        extension = ext;
     }
 
     public void ValidateSize(Stream content)

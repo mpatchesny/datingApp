@@ -17,15 +17,19 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoValidator<Stream> _photoValidator;
     private readonly IPhotoConverter _photoConverter;
     private readonly IBlobStorage _fileStorage;
+    private readonly IPhotoUrlProvider _photoStorageUrlProvider;
+
     public AddPhotoHandler(IUserRepository userRepository,
                             IPhotoValidator<Stream> photoService,
                             IBlobStorage fileStorage,
-                            IPhotoConverter photoConverter)
+                            IPhotoConverter photoConverter,
+                            IPhotoUrlProvider photoStorageUrlProvider)
     {
         _userRepository = userRepository;
         _photoValidator = photoService;
         _fileStorage = fileStorage;
         _photoConverter = photoConverter;
+        _photoStorageUrlProvider = photoStorageUrlProvider;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -39,10 +43,10 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        var convertedPhotoStream = await _photoConverter.ConvertAsync(command.PhotoStream, targetFormat: "jpg");
-        // FIXME: photoStorageUrlProvider.GetPhotoUrl(photoId, extension)
+        var convertedPhotoStream = await _photoConverter.ConvertToJpegAsync(command.PhotoStream);
+        var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
-        var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
+        // var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         var photo = new Photo(command.PhotoId, photoUrl, 0);
         user.AddPhoto(photo);
 

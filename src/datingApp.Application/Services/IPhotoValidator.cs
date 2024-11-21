@@ -7,6 +7,6 @@ namespace datingApp.Application.Services;
 
 public interface IPhotoValidator<T> where T: class
 {
-    public bool ValidateSize(T content);
-    public bool ValidateExtension(T content, out string extension);
+    public void ValidateSize(T content);
+    public void ValidateExtension(T content, out string extension);
 }

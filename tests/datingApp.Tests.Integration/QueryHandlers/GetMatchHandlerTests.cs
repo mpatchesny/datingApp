@@ -6,6 +6,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
 using datingApp.Application.Security;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
@@ -107,26 +108,48 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsExceptionn()
+    public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
-        var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = Guid.NewGuid() };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = user1.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);
     }
 
+    [Fact]
+    public async Task given_user_not_exists_get_match_handler_returns_UserNotExistsException()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatch{ MatchId = match.Id, UserId = Guid.NewGuid() };
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
+    private readonly Mock<ISpatial> _mockedSpatial;
     private readonly GetMatchHandler _handler;
     private readonly Mock<IDatingAppAuthorizationService> _authService;
     public GetMatchHandlerTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
+        _mockedSpatial = new Mock<ISpatial>();
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object);
+        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object, _mockedSpatial.Object);
     }
 
     // Teardown

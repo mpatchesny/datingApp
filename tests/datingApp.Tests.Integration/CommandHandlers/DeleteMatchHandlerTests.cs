@@ -10,6 +10,7 @@ using datingApp.Application.Security;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -88,7 +89,7 @@ public class DeleteMatchHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
         var matchRepository = new DbMatchRepository(_dbContext);
-        var deletedEntitiesRepository = new DbDeletedEntityRepository(_dbContext);
+        var deletedEntitiesRepository = new DeletedEntityService(_dbContext);
         _authService = new Mock<IDatingAppAuthorizationService>();
         _handler = new DeleteMatchHandler(matchRepository, deletedEntitiesRepository, _authService.Object);
     }

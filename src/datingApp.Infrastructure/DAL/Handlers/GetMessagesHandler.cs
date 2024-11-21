@@ -40,10 +40,10 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
         }
 
         var recordsCount = await _dbContext.Matches
-                        .Where(match => match.Id.Equals(query.MatchId))
-                        .AsNoTracking()
-                        .SelectMany(match => match.Messages)
-                        .CountAsync();
+            .Where(match => match.Id.Equals(query.MatchId))
+            .AsNoTracking()
+            .SelectMany(match => match.Messages)
+            .CountAsync();
 
         var pageCount = (int)(recordsCount + query.PageSize - 1) / query.PageSize;
 
@@ -61,8 +61,8 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
         return await _dbContext.Matches
             .AsNoTracking()
             .Where(match => match.Id.Equals(matchId))
-            .Include(match =>
-                match.Messages.OrderByDescending(message => message.CreatedAt)
+            .Include(match => match.Messages
+                .OrderByDescending(message => message.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize))
             .FirstOrDefaultAsync();

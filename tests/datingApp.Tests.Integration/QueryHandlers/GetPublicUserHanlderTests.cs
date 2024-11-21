@@ -21,7 +21,25 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPublicUserHanlderTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_and_authorization_serivce_success_get_public_user_returns_public_user_dto()
+    public async Task given_users_exists_and_are_in_a_match_get_public_user_returns_public_user_dto()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetPublicUser() { RequestByUserId = user1.Id, RequestWhoUserId = user2.Id };
+        var userDto = await _handler.HandleAsync(query);
+
+        Assert.NotNull(userDto);
+        Assert.IsType<PublicUserDto>(userDto);
+        Assert.Equal(user2.Id.Value, userDto.Id);
+    }
+
+    [Fact]
+    public async Task given_users_exists_and_are_not_in_a_match_get_public_user_returns_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Core.Entities.Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(0.0, 0.0, 0.0, 0.0)).Returns(0);
@@ -30,10 +48,9 @@ public class GetPublicUserHanlderTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetPublicUser() { RequestByUserId = user1.Id, RequestWhoUserId = user2.Id };
-        var userDto = await _handler.HandleAsync(query);
-
-        Assert.NotNull(userDto);
-        Assert.IsType<PublicUserDto>(userDto);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+        Assert.NotNull(exception);
+        Assert.IsType<UnauthorizedException>(exception);
     }
 
     [Fact]

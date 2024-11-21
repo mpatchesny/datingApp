@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
-using datingApp.Application.Repositories;
+using datingApp.Application.Services;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
+using datingApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -61,12 +62,12 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
-    private readonly IRevokedRefreshTokensRepository _repository;
+    private readonly IRevokedRefreshTokensService _repository;
     public RevokedRefreshTokensRepositoryTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _repository = new DbRevokedRefreshTokensRepository(_dbContext);
+        _repository = new RevokedRefreshTokensService(_dbContext);
     }
 
     // Teardown

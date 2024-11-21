@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using datingApp.Infrastructure.DAL.Options;
-using datingApp.Application.Repositories;
 
 namespace datingApp.Infrastructure.DAL;
 

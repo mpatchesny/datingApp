@@ -20,19 +20,23 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMessageHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_message_exists_get_message_by_id_returns_nonempty_message_dto()
+    public async Task given_message_exists_get_message_returns_proper_message_dto()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id) };
-        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        var messages1 = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id), IntegrationTestHelper.CreateMessage(user2.Id), IntegrationTestHelper.CreateMessage(user2.Id) };
+        var messages2 = new List<Message>() { IntegrationTestHelper.CreateMessage(user1.Id), IntegrationTestHelper.CreateMessage(user1.Id), IntegrationTestHelper.CreateMessage(user1.Id) };
+        var match1 = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages2);
         _dbContext.ChangeTracker.Clear();
 
-        var query = new GetMessage() { MessageId = messages[0].Id };
+        var query = new GetMessage() { MessageId = messages1[2].Id };
         var messageDto = await _handler.HandleAsync(query);
         Assert.NotNull(messageDto);
         Assert.IsType<MessageDto>(messageDto);
+        Assert.Equal(query.MessageId, messageDto.Id);
+        Assert.Equal(match1.Id.Value, messageDto.MatchId);
     }
 
     [Fact]

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Services;
 
-public class FormFilePhotoValidator : IPhotoValidator<IFormFile>
+internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
 {
     private readonly int _minPhotoSizeBytes;
     private readonly int _maxPhotoSizeBytes;

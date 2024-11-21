@@ -7,8 +7,8 @@ namespace datingApp.Infrastructure.Services;
 
 public sealed class PhotoServiceOptions
 {
-    public uint MinPhotoSizeBytes { get; set; }
-    public uint MaxPhotoSizeBytes { get; set; }
+    public int MinPhotoSizeBytes { get; set; }
+    public int MaxPhotoSizeBytes { get; set; }
     public string AcceptedFileFormats { get; set; }
     public int CompressedImageQuality{ get; set; }
 }

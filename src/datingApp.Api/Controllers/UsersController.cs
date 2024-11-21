@@ -143,7 +143,7 @@ public class UserController : ApiControllerBase
         var stream = new MemoryStream();
         await fileContent.CopyToAsync(stream);
 
-        var command = Authenticate(new AddPhoto2(Guid.NewGuid(), AuthenticatedUserId, stream));
+        var command = Authenticate(new AddPhoto(Guid.NewGuid(), AuthenticatedUserId, stream));
         await _commandDispatcher.DispatchAsync(command);
 
         var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});

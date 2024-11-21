@@ -15,20 +15,20 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPhotoValidator<Stream> _photoValidator;
-    private readonly IPhotoConverter _photoConverter;
+    private readonly IPhotoConverter _jpegPhotoConverter;
     private readonly IBlobStorage _fileStorage;
     private readonly IPhotoUrlProvider _photoStorageUrlProvider;
 
     public AddPhotoHandler(IUserRepository userRepository,
                             IPhotoValidator<Stream> photoValidator,
                             IBlobStorage fileStorage,
-                            IPhotoConverter photoConverter,
+                            IPhotoConverter jpegPhotoConverter,
                             IPhotoUrlProvider photoStorageUrlProvider)
     {
         _userRepository = userRepository;
         _photoValidator = photoValidator;
         _fileStorage = fileStorage;
-        _photoConverter = photoConverter;
+        _jpegPhotoConverter = jpegPhotoConverter;
         _photoStorageUrlProvider = photoStorageUrlProvider;
     }
 
@@ -43,7 +43,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        var convertedPhotoStream = await _photoConverter.ConvertAsync(command.PhotoStream);
+        var convertedPhotoStream = await _jpegPhotoConverter.ConvertAsync(command.PhotoStream);
         var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
         var photo = new Photo(command.PhotoId, photoUrl, 0);

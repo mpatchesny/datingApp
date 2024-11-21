@@ -21,12 +21,11 @@ internal sealed class PhotoConverter : IPhotoConverter
         using (var job = new ImageJob())
         {
             var r = await job
-                .Decode(content)
+                .Decode(input, false)
                 .EncodeToBytes(new MozJpegEncoder(_compressedImageQuality, true))
                 .Finish()
                 .InProcessAndDisposeAsync();
-
-            return ((ArraySegment<byte>) r.First.TryGetBytes()).Array;
+            return new MemoryStream(((ArraySegment<byte>) r.First.TryGetBytes()).Array);
         }
     }
 }

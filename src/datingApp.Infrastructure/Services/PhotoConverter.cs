@@ -16,7 +16,7 @@ internal sealed class PhotoConverter : IPhotoConverter
         _compressedImageQuality = options.Value.CompressedImageQuality;
     }
 
-    public async Task<Stream> ConvertAsync(Stream input, string targetFormat)
+    public async Task<Stream> ConvertToJpegAsync(Stream input)
     {
         using (var job = new ImageJob())
         {

@@ -20,13 +20,13 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IPhotoUrlProvider _photoStorageUrlProvider;
 
     public AddPhotoHandler(IUserRepository userRepository,
-                            IPhotoValidator<Stream> photoService,
+                            IPhotoValidator<Stream> photoValidator,
                             IBlobStorage fileStorage,
                             IPhotoConverter photoConverter,
                             IPhotoUrlProvider photoStorageUrlProvider)
     {
         _userRepository = userRepository;
-        _photoValidator = photoService;
+        _photoValidator = photoValidator;
         _fileStorage = fileStorage;
         _photoConverter = photoConverter;
         _photoStorageUrlProvider = photoStorageUrlProvider;
@@ -46,7 +46,6 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         var convertedPhotoStream = await _photoConverter.ConvertToJpegAsync(command.PhotoStream);
         var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
-        // var photoUrl = $"~/storage/{command.PhotoId}.{extension}";
         var photo = new Photo(command.PhotoId, photoUrl, 0);
         user.AddPhoto(photo);
 

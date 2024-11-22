@@ -91,8 +91,6 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         formData.Add(fileContent, "fileContent", "file.jpg");
 
         var response = await Client.PostAsync("/users/me/photos", formData);
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 

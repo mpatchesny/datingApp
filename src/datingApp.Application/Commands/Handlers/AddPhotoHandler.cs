@@ -55,7 +55,5 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
-
-        throw new NotImplementedException();
     }
 }

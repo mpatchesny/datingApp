@@ -29,7 +29,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PhotoDto>($"photos/{photos[0].Id.Value}");
+        var response = await Client.GetFromJsonAsync<PhotoDto>($"/photos/{photos[0].Id.Value}");
         Assert.NotNull(response);
         Assert.True(photos[0].Id.Equals(response.Id));
     }
@@ -44,7 +44,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingPhotoId = Guid.NewGuid();
-        var response = await Client.GetAsync($"photos/{notExistingPhotoId}");
+        var response = await Client.GetAsync($"/photos/{notExistingPhotoId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();

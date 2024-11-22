@@ -50,7 +50,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
-    [Fact (Skip = "FIXME: photo DTO does not return proper User Id yet")]
+    [Fact]
     public async Task given_valid_payload_post_photo_returns_201_created_and_photo_dto()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -59,7 +59,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SampleFileBase64Content());
+        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SamplePhotoStream());
         var response = await Client.PostAsJsonAsync("/photos", command);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -76,7 +76,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, "");
+        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SamplePhotoStream());
         var response = await Client.PostAsJsonAsync("/photos", command);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
@@ -175,8 +175,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
-        var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
+        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SamplePhotoStream());
         var postResponse = await Client.PostAsJsonAsync("/photos", command);
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
         var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();

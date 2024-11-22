@@ -10,6 +10,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -59,8 +60,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SamplePhotoStream());
-        var response = await Client.PostAsJsonAsync("/photos", command);
+        var stream = IntegrationTestHelper.SamplePhotoStream();
+        IFormFile file = new FormFile(stream, 0, stream.Length, "foo", "foo.jpg");
+        var response = await Client.PostAsJsonAsync("/users/me/photos", file);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
@@ -68,7 +70,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_empty_base64_photo_post_photo_returns_400_bad_request()
+    public async Task given_empty_formfile_photo_post_photo_returns_400_bad_request()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
@@ -76,13 +78,13 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SamplePhotoStream());
-        var response = await Client.PostAsJsonAsync("/photos", command);
+        IFormFile file = new FormFile(new MemoryStream(), 0, 0, "foo", "foo.jpg");
+        var response = await Client.PostAsJsonAsync("/users/me/photos", file);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
-    public async Task given_valid_payload_patch_photo_post_photo_returns_204_no_content()
+    public async Task given_valid_payload_patch_photo_patch_photo_returns_204_no_content()
     {
         var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
@@ -175,9 +177,11 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SamplePhotoStream());
-        var postResponse = await Client.PostAsJsonAsync("/photos", command);
+        var stream = IntegrationTestHelper.SamplePhotoStream();
+        IFormFile file = new FormFile(stream, 0, stream.Length, "foo", "foo.jpg");
+        var postResponse = await Client.PostAsJsonAsync("/users/me/photos", file);
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
+
         var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
         var photoId = photoDto.Id;
 

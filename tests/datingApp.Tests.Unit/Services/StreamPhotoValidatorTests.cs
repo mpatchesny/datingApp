@@ -67,10 +67,10 @@ public class StreamPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_webp_file_ValidateExtension_return_jpg_extension()
+    public void given_valid_webp_file_ValidateExtension_return_webp_extension()
     {
         var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64WebpSample);
 
         validator.ValidateExtension(imageStream, out var extension);
         Assert.Equal("webp", extension);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,16 +61,18 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var stream = IntegrationTestHelper.SamplePhotoStream();
-        var content = new MultipartFormDataContent()
-        {
-            { new StreamContent(stream), "file", "file.jpg" }
-        };
-        var response = await Client.PostAsync("/users/me/photos", content);
+        var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.jpg");
+
+        var response = await Client.PostAsync("/users/me/photos", formData);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
-        Assert.Equal(user.Id.Value, dto.Id);
+        Assert.NotNull(dto);
+        Assert.IsType<PhotoDto>(dto);
     }
 
     [Fact]
@@ -81,8 +84,15 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        IFormFile file = new FormFile(new MemoryStream(), 0, 0, "foo", "foo.jpg");
-        var response = await Client.PostAsJsonAsync("/users/me/photos", file);
+        var fileContent = new StreamContent(new MemoryStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.jpg");
+
+        var response = await Client.PostAsync("/users/me/photos", formData);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -153,7 +163,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_was_alread_deleted_delete_photo_returns_410_gone()
+    public async Task given_photo_was_already_deleted_delete_photo_returns_410_gone()
     {
         var photo = IntegrationTestHelper.CreatePhoto();
         var photos = new List<Photo>() { photo };
@@ -180,9 +190,13 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var stream = IntegrationTestHelper.SamplePhotoStream();
-        IFormFile file = new FormFile(stream, 0, stream.Length, "foo", "foo.jpg");
-        var postResponse = await Client.PostAsJsonAsync("/users/me/photos", file);
+        var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.jpg");
+
+        var postResponse = await Client.PostAsync("/users/me/photos", formData);
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
 
         var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();

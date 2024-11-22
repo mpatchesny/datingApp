@@ -147,6 +147,10 @@ public class UserController : ApiControllerBase
 
         var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
         var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
-        return CreatedAtAction(nameof(GetPhoto), new { command.PhotoId }, photo);
+        return CreatedAtAction(actionName: nameof(PhotosController.GetPhoto),
+            controllerName: "Photos",
+            routeValues: new { command.PhotoId },
+            value: photo);
+        // nameof(PhotosController.GetPhoto), new { command.PhotoId }, photo);
     }
 }

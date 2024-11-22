@@ -151,6 +151,5 @@ public class UserController : ApiControllerBase
             controllerName: "Photos",
             routeValues: new { command.PhotoId },
             value: photo);
-        // nameof(PhotosController.GetPhoto), new { command.PhotoId }, photo);
     }
 }

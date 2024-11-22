@@ -50,7 +50,7 @@ internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
             throw new EmptyFormFileContentException();
         }
 
-        var ext = Path.GetExtension(photo.FileName).Trim().ToLowerInvariant();
+        var ext = Path.GetExtension(photo.FileName).Trim().Trim('.').ToLowerInvariant();
         extension = ext;
 
         if (!_acceptedFileFormats.Any(format => format == ext))

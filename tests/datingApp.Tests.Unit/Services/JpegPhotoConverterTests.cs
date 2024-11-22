@@ -14,7 +14,7 @@ public class JpegPhotoConverterTests
     [Fact]
     public async void given_valid_webp_file_convert_to_jpeg_should_success()
     {
-        var imageStream = Base64ToMemoryStream(ImageSamples.Base64WebpSample);
+        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64WebpSample);
         var exception = await Record.ExceptionAsync(() => _converter.ConvertAsync(imageStream));
         Assert.Null(exception);
     }
@@ -22,7 +22,7 @@ public class JpegPhotoConverterTests
     [Fact]
     public async void given_valid_jpeg_file_convert_to_jpeg_should_success()
     {
-        var imageStream = Base64ToMemoryStream(ImageSamples.Base64JpgSample);
+        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64JpgSample);
         var exception = await Record.ExceptionAsync(() => _converter.ConvertAsync(imageStream));
         Assert.Null(exception);
     }
@@ -30,7 +30,7 @@ public class JpegPhotoConverterTests
     [Fact]
     public async void given_valid_png_file_convert_to_jpeg_should_success()
     {
-        var imageStream = Base64ToMemoryStream(ImageSamples.Base64PngSample);
+        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
         var exception = await Record.ExceptionAsync(() => _converter.ConvertAsync(imageStream));
         Assert.Null(exception);
     }
@@ -38,7 +38,7 @@ public class JpegPhotoConverterTests
     [Fact]
     public async Task given_invalid_image_file_convert_to_jpeg_throws_exception()
     {
-        var imageStream = Base64ToMemoryStream(ImageSamples.Base64DocxSample);
+        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64DocxSample);
         var exception = await Record.ExceptionAsync(() => _converter.ConvertAsync(imageStream));
         Assert.NotNull(exception);
     }
@@ -52,7 +52,7 @@ public class JpegPhotoConverterTests
         var options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         options.Value.CompressedImageQuality = imageQuality;
         var converter = new JpegPhotoConverter(options);
-        var imageStream = Base64ToMemoryStream(ImageSamples.Base64PngSample);
+        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
 
         var exception = await Record.ExceptionAsync(() => converter.ConvertAsync(imageStream));
         Assert.NotNull(exception);
@@ -64,11 +64,5 @@ public class JpegPhotoConverterTests
     {
         _options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         _converter = new JpegPhotoConverter(_options);
-    }
-
-    private static MemoryStream Base64ToMemoryStream(string base64)
-    {
-        var bytes = Convert.FromBase64String(base64);
-        return new MemoryStream(bytes);
     }
 }

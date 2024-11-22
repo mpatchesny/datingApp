@@ -73,6 +73,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
         Assert.NotNull(dto);
         Assert.IsType<PhotoDto>(dto);
+        Assert.Equal(user.Id.Value, dto.UserId);
     }
 
     [Fact]
@@ -189,18 +190,18 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
-        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
 
         var formData = new MultipartFormDataContent();
-        formData.Add(fileContent, "fileContent", "file.jpg");
+        formData.Add(fileContent, "fileContent", "file.png");
 
         var postResponse = await Client.PostAsync("/users/me/photos", formData);
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
 
         var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
-        var photoId = photoDto.Id;
 
-        var response = await Client.GetAsync($"/storage/{photoId}.jpg");
+        // remove ~ from the beginning, otherwise it won't work
+        var response = await Client.GetAsync(photoDto.Url.Trim('~'));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

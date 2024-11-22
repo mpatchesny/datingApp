@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -28,7 +30,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PhotoDto>($"photos/{photos[0].Id.Value}");
+        var response = await Client.GetFromJsonAsync<PhotoDto>($"/photos/{photos[0].Id.Value}");
         Assert.NotNull(response);
         Assert.True(photos[0].Id.Equals(response.Id));
     }
@@ -43,14 +45,14 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var notExistingPhotoId = Guid.NewGuid();
-        var response = await Client.GetAsync($"photos/{notExistingPhotoId}");
+        var response = await Client.GetAsync($"/photos/{notExistingPhotoId}");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         var error = await response.Content.ReadFromJsonAsync<Error>();
         Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
-    [Fact (Skip = "FIXME: photo DTO does not return proper User Id yet")]
+    [Fact]
     public async Task given_valid_payload_post_photo_returns_201_created_and_photo_dto()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -59,16 +61,23 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, IntegrationTestHelper.SampleFileBase64Content());
-        var response = await Client.PostAsJsonAsync("/photos", command);
+        var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.jpg");
+
+        var response = await Client.PostAsync("/users/me/photos", formData);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
-        Assert.Equal(user.Id.Value, dto.Id);
+        Assert.NotNull(dto);
+        Assert.IsType<PhotoDto>(dto);
+        Assert.Equal(user.Id.Value, dto.UserId);
     }
 
     [Fact]
-    public async Task given_empty_base64_photo_post_photo_returns_400_bad_request()
+    public async Task given_empty_formfile_photo_post_photo_returns_400_bad_request()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
@@ -76,13 +85,18 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var command = new AddPhoto(Guid.Empty, user.Id, "");
-        var response = await Client.PostAsJsonAsync("/photos", command);
+        var fileContent = new StreamContent(new MemoryStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.jpg");
+
+        var response = await Client.PostAsync("/users/me/photos", formData);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
-    public async Task given_valid_payload_patch_photo_post_photo_returns_204_no_content()
+    public async Task given_valid_payload_patch_photo_patch_photo_returns_204_no_content()
     {
         var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
@@ -148,7 +162,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_photo_was_alread_deleted_delete_photo_returns_410_gone()
+    public async Task given_photo_was_already_deleted_delete_photo_returns_410_gone()
     {
         var photo = IntegrationTestHelper.CreatePhoto();
         var photos = new List<Photo>() { photo };
@@ -175,14 +189,19 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var photoBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAWABcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKAP/2Q==";
-        var command = new AddPhoto(Guid.Empty, user.Id, photoBase64);
-        var postResponse = await Client.PostAsJsonAsync("/photos", command);
-        Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
-        var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
-        var photoId = photoDto.Id;
+        var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
 
-        var response = await Client.GetAsync($"/storage/{photoId}.jpg");
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.png");
+
+        var postResponse = await Client.PostAsync("/users/me/photos", formData);
+        Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
+
+        var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
+
+        // remove ~ from the beginning, otherwise it won't work
+        var response = await Client.GetAsync(photoDto.Url.Trim('~'));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 

@@ -22,48 +22,51 @@ namespace datingApp.Tests.Integration.CommandHandlers;
 public class AddPhotoHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_add_photo_to_user_should_succeed_and_add_photo_file_to_storage()
+    public async Task given_user_exists_add_photo_should_succeed()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
+        var extension = "jpg";
+        _mockPhotoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension));
+
+        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SamplePhotoStream());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
 
+        var addedPhoto = _dbContext.Photos.FirstOrDefault(photo => photo.Id.Equals(command.PhotoId));
+        Assert.Equal("foo.jpg", addedPhoto.Url);
         _mockStorage.Verify(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<System.IO.Stream>(), false, It.IsAny<System.Threading.CancellationToken>()), Times.Once());
-        _mockPhotoService.Verify(x => x.ProcessBase64Photo(It.IsAny<string>()), Times.Once());
+        _mockPhotoValidator.Verify(x => x.Validate(It.IsAny<Stream>(), out extension), Times.Once());
+        _mockPhotoConverter.Verify(x => x.ConvertAsync(It.IsAny<Stream>()), Times.Once());
+        _mockUrlProdier.Verify(x => x.GetPhotoUrl(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
     }
 
     [Fact]
     public async Task given_user_not_exists_add_photo_to_user_throws_UserNotExistsException()
     {
-        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), IntegrationTestHelper.SampleFileBase64Content());
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var extension = "jpg";
+        _mockPhotoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension));
+
+        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), IntegrationTestHelper.SamplePhotoStream());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
 
     [Fact]
-    public async Task given_user_exists_and_photo_service_process_photo_failed_add_photo_to_user_throws_exception()
+    public async Task given_user_exists_and_validate_photo_failed_add_photo_to_user_throws_exception()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SampleFileBase64Content());
-        _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Throws(new InvalidPhotoException());
+        var extension = "jpg";
+        _mockPhotoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension)).Throws<InvalidPhotoException>();
 
-        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
-        Assert.NotNull(exception);
-        Assert.IsType<InvalidPhotoException>(exception);
-    }
-
-    [Fact]
-    public async Task given_user_not_exists_and_photo_service_process_photo_failed_add_photo_to_user_throws_exception()
-    {
-        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), IntegrationTestHelper.SampleFileBase64Content());
-        _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Throws(new InvalidPhotoException());
-
+        var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SamplePhotoStream());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoException>(exception);
@@ -73,18 +76,27 @@ public class AddPhotoHandlerTests : IDisposable
     private readonly AddPhotoHandler _handler;
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
-    private readonly Mock<IPhotoService> _mockPhotoService;
     private readonly Mock<IBlobStorage> _mockStorage;
+    private readonly Mock<IPhotoValidator<Stream>> _mockPhotoValidator;
+    private readonly Mock<IPhotoConverter> _mockPhotoConverter;
+    private readonly Mock<IPhotoUrlProvider> _mockUrlProdier;
+
     public AddPhotoHandlerTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
         var userRepository = new DbUserRepository(_dbContext);
-        _mockPhotoService = new Mock<IPhotoService>();
-        _mockPhotoService.Setup(x => x.ProcessBase64Photo(It.IsAny<string>())).Returns(new PhotoServiceProcessOutput(new byte[10], "jpg"));
+
+        _mockPhotoValidator = new Mock<IPhotoValidator<Stream>>();
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<System.IO.Stream>(), false, It.IsAny<System.Threading.CancellationToken>()));
-        _handler = new AddPhotoHandler(userRepository, _mockPhotoService.Object, _mockStorage.Object);
+        _mockPhotoConverter = new Mock<IPhotoConverter>();
+
+        _mockPhotoConverter.Setup(x => x.ConvertAsync(It.IsAny<Stream>())).Returns(Task.FromResult<Stream>(new MemoryStream()));
+        _mockUrlProdier = new Mock<IPhotoUrlProvider>();
+        _mockUrlProdier.Setup(x => x.GetPhotoUrl(It.IsAny<string>(), It.IsAny<string>())).Returns("foo.jpg");
+
+        _handler = new AddPhotoHandler(userRepository, _mockPhotoValidator.Object, _mockStorage.Object, _mockPhotoConverter.Object, _mockUrlProdier.Object);
     }
 
     // Teardown

@@ -6,9 +6,9 @@ using datingApp.Core.Exceptions;
 
 namespace datingApp.Infrastructure.Exceptions;
 
-public class EmptyBase64StringException : CustomException
+public class EmptyFormFileContentException : CustomException
 {
-    public EmptyBase64StringException() : base("Base64 string is empty.")
+    public EmptyFormFileContentException() : base("Empty file.")
     {
     }
 }

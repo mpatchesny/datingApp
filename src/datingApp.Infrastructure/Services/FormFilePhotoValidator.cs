@@ -26,6 +26,11 @@ internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
 
     public void ValidateSize(IFormFile photo)
     {
+        if (photo == null)
+        {
+            throw new EmptyFormFileContentException();
+        }
+
         if (photo.Length < _minPhotoSizeBytes || photo.Length > _maxPhotoSizeBytes)
         {
             throw new InvalidPhotoSizeException(_minPhotoSizeBytes, _maxPhotoSizeBytes);
@@ -34,6 +39,11 @@ internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
 
     public void ValidateExtension(IFormFile photo, out string extension)
     {
+        if (photo == null)
+        {
+            throw new EmptyFormFileContentException();
+        }
+
         var ext = Path.GetExtension(photo.FileName).Trim().ToLowerInvariant();
         extension = ext;
 

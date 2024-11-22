@@ -24,7 +24,13 @@ internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
             .ToArray();
     }
 
-    public void ValidateSize(IFormFile photo)
+    public void Validate(IFormFile content, out string extension)
+    {
+        ValidateSize(content);
+        ValidateExtension(content, out extension);
+    }
+
+    private void ValidateSize(IFormFile photo)
     {
         if (photo == null)
         {
@@ -37,7 +43,7 @@ internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
         }
     }
 
-    public void ValidateExtension(IFormFile photo, out string extension)
+    private void ValidateExtension(IFormFile photo, out string extension)
     {
         if (photo == null)
         {
@@ -52,4 +58,6 @@ internal sealed class FormFilePhotoValidator : IPhotoValidator<IFormFile>
             throw new InvalidPhotoException();
         }
     }
+
+
 }

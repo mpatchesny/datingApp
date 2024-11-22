@@ -34,8 +34,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 
     public async Task HandleAsync(AddPhoto command)
     {
-        _photoValidator.ValidateSize(command.PhotoStream);
-        _photoValidator.ValidateExtension(command.PhotoStream, out var extension);
+        _photoValidator.Validate(command.PhotoStream, out var extension);
 
         var user = await _userRepository.GetByIdAsync(command.UserId);
         if (user == null)

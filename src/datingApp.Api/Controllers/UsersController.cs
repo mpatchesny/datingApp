@@ -137,8 +137,7 @@ public class UserController : ApiControllerBase
     [HttpPost("me/photos/")]
     public async Task<ActionResult> Post(IFormFile fileContent)
     {
-        _photoService.ValidateSize(fileContent);
-        _photoService.ValidateExtension(fileContent, out var extension);
+        _photoService.Validate(fileContent, out var extension);
 
         var stream = new MemoryStream();
         await fileContent.CopyToAsync(stream);

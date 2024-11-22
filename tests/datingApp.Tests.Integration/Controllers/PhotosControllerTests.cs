@@ -61,8 +61,11 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var stream = IntegrationTestHelper.SamplePhotoStream();
-        IFormFile file = new FormFile(stream, 0, stream.Length, "foo", "foo.jpg");
-        var response = await Client.PostAsJsonAsync("/users/me/photos", file);
+        var content = new MultipartFormDataContent()
+        {
+            { new StreamContent(stream), "file", "file.jpg" }
+        };
+        var response = await Client.PostAsync("/users/me/photos", content);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();

@@ -25,7 +25,13 @@ internal sealed class StreamPhotoValidator : IPhotoValidator<Stream>
             .ToArray();
     }
 
-    public void ValidateExtension(Stream content, out string extension)
+    public void Validate(Stream content, out string extension)
+    {
+        ValidateSize(content);
+        ValidateExtension(content, out extension);
+    }
+
+    private void ValidateExtension(Stream content, out string extension)
     {
         var ext = "";
 
@@ -48,7 +54,7 @@ internal sealed class StreamPhotoValidator : IPhotoValidator<Stream>
         extension = ext;
     }
 
-    public void ValidateSize(Stream content)
+    private void ValidateSize(Stream content)
     {
         if (content.Length < _minPhotoSizeBytes || content.Length > _maxPhotoSizeBytes)
         {

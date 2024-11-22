@@ -28,9 +28,8 @@ public class AddPhotoHandlerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        _mockPhotoValidator.Setup(x => x.ValidateSize(It.IsAny<Stream>()));
         var extension = "jpg";
-        _mockPhotoValidator.Setup(x => x.ValidateExtension(It.IsAny<Stream>(), out extension));
+        _mockPhotoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension));
 
         var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SamplePhotoStream());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -39,8 +38,7 @@ public class AddPhotoHandlerTests : IDisposable
         var addedPhoto = _dbContext.Photos.FirstOrDefault(photo => photo.Id.Equals(command.PhotoId));
         Assert.Equal("foo.jpg", addedPhoto.Url);
         _mockStorage.Verify(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<System.IO.Stream>(), false, It.IsAny<System.Threading.CancellationToken>()), Times.Once());
-        _mockPhotoValidator.Verify(x => x.ValidateSize(It.IsAny<Stream>()), Times.Once());
-        _mockPhotoValidator.Verify(x => x.ValidateExtension(It.IsAny<Stream>(), out extension), Times.Once());
+        _mockPhotoValidator.Verify(x => x.Validate(It.IsAny<Stream>(), out extension), Times.Once());
         _mockPhotoConverter.Verify(x => x.ConvertAsync(It.IsAny<Stream>()), Times.Once());
         _mockUrlProdier.Verify(x => x.GetPhotoUrl(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
     }
@@ -51,9 +49,8 @@ public class AddPhotoHandlerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        _mockPhotoValidator.Setup(x => x.ValidateSize(It.IsAny<Stream>()));
         var extension = "jpg";
-        _mockPhotoValidator.Setup(x => x.ValidateExtension(It.IsAny<Stream>(), out extension));
+        _mockPhotoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension));
 
         var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), IntegrationTestHelper.SamplePhotoStream());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
@@ -67,7 +64,8 @@ public class AddPhotoHandlerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        _mockPhotoValidator.Setup(x => x.ValidateSize(It.IsAny<Stream>())).Throws(new InvalidPhotoException());
+        var extension = "jpg";
+        _mockPhotoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension)).Throws<InvalidPhotoException>();
 
         var command = new AddPhoto(Guid.NewGuid(), user.Id, IntegrationTestHelper.SamplePhotoStream());
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));

@@ -24,6 +24,5 @@ internal sealed class UserSettingsConfiguration : IEntityTypeConfiguration<UserS
             .IsRequired();
         builder.OwnsOne(e => e.PreferredAge);
         builder.OwnsOne(e => e.Location);
-        // builder.HasIndex(x => x.Location);
     }
 }

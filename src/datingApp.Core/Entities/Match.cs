@@ -11,10 +11,10 @@ namespace datingApp.Core.Entities;
 public class Match
 {
     public MatchId Id { get; }
-    public UserId UserId1 { get { return _matchDetails[0].UserId; } }
-    public UserId UserId2 { get { return _matchDetails[1].UserId; } }
-    public bool IsDisplayedByUser1 { get { return _matchDetails[0].IsDisplayed; } }
-    public bool IsDisplayedByUser2 { get { return _matchDetails[1].IsDisplayed; } }
+    public UserId UserId1 => MatchDetails.ElementAt(0).UserId;
+    public UserId UserId2 => MatchDetails.ElementAt(1).UserId;
+    public bool IsDisplayedByUser1 => MatchDetails.ElementAt(0).IsDisplayed;
+    public bool IsDisplayedByUser2 => MatchDetails.ElementAt(1).IsDisplayed;
     public IEnumerable<Message> Messages => _messages;
     public IEnumerable<MatchDetail> MatchDetails => _matchDetails;
     public DateTime CreatedAt { get; private set; }

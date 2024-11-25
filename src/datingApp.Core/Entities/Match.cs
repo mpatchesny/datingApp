@@ -69,6 +69,7 @@ public class Match
 
         var detail = _matchDetails.FirstOrDefault(md => md.UserId == message.SendFromId);
         if (detail != null) detail.AddMessage(message);
+        _messages.Add(message);
     }
 
     public void RemoveMessage(MessageId messageId)
@@ -87,7 +88,7 @@ public class Match
         var lastMessage = _messages.FirstOrDefault(m => m.Id == lastMessageId);
         if (lastMessage == null) return;
 
-        foreach (var message in Messages)
+        foreach (var message in _messages)
         {
             if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId != displayedByUserId)
             {

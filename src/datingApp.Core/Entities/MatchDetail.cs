@@ -26,7 +26,7 @@ public class MatchDetail
         MatchId = matchId;
         UserId = userId;
         IsDisplayed = isDisplayed;
-        _messages = messages;
+        _messages = messages ?? new List<Message>();
     }
 
     internal void SetDisplayed()

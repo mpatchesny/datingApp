@@ -17,25 +17,8 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, x => new MatchId(x))
             .IsRequired();
-        builder.Property(x => x.UserId1)
-            .HasConversion(x => x.Value, x => new UserId(x))
-            .IsRequired();
-        builder.Property(x => x.UserId2)
-            .HasConversion(x => x.Value, x => new UserId(x))
-            .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-        builder.Property(x => x.IsDisplayedByUser1)
-            .IsRequired();
-        builder.Property(x => x.IsDisplayedByUser2)
-            .IsRequired();
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.UserId1);
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(x => x.UserId2);
-
-        builder.HasIndex(x => new {x.UserId1, x.UserId2, x.CreatedAt});
+        builder.Navigation(x => x.MatchDetails).AutoInclude();
     }
 }

@@ -11,8 +11,8 @@ namespace datingApp.Core.Entities;
 public class Match
 {
     public MatchId Id { get; }
-    public UserId UserId1 => MatchDetails.ElementAt(0).UserId;
-    public UserId UserId2 => MatchDetails.ElementAt(1).UserId;
+    public UserId UserId1 { get; private set; }
+    public UserId UserId2 { get; private set; }
     public bool IsDisplayedByUser1 => MatchDetails.ElementAt(0).IsDisplayed;
     public bool IsDisplayedByUser2 => MatchDetails.ElementAt(1).IsDisplayed;
     public IEnumerable<Message> Messages => _messages;
@@ -30,6 +30,8 @@ public class Match
     public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
     {
         Id = id;
+        UserId1 = userId1;
+        UserId2 = userId2;
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();

@@ -48,7 +48,7 @@ public class SwipeUserHandlerTests : IDisposable
         var command = new SwipeUser(user1.Id, user2.Id, (int) like);
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(command));
         Assert.Null(exception);
-        _isLikedByOtherUserStorage.Verify(x =>  x.Set(It.Is<IsLikedByOtherUserDto>(i => i.IsLikedByOtherUser == false)), Times.Once);
+        _isLikedByOtherUserStorage.Verify(x => x.Set(It.Is<IsLikedByOtherUserDto>(i => i.IsLikedByOtherUser == false)), Times.Once);
     }
 
     [Theory]

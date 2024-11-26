@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
 using RazorHtmlEmails.RazorClassLib.Services;
 using Scrutor;
 
@@ -60,7 +61,7 @@ public static class Extensions
         services.AddScoped<IEmailGeneratorFactory, EmailGeneratorFactory>();
         services.AddScoped<INotificationSender<Email>, DummyEmailSender>();
 
-        services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>();
+        services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>(); 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>))
                 .Where(t => !t.Name.Equals("GetUpdatesHandler")))
@@ -70,9 +71,17 @@ public static class Extensions
         services.AddSingleton<IIsLikedByOtherUserStorage, HttpContextIsLikedByOtherUserStorage>();
         services.AddSingleton<ISpatial, Spatial.Spatial>();
 
+        services.AddScoped<IRevokedRefreshTokensService, RevokedRefreshTokensService>(); 
+        services.AddScoped<IDeletedEntityService, DeletedEntityService>(); 
+        services.AddScoped<IPhotoValidator<IFormFile>, FormFilePhotoValidator>(); 
+        services.AddScoped<IPhotoValidator<Stream>, StreamPhotoValidator>(); 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
-                .Where(c => !c.Name.EndsWith("Options")))
+                .Where(c => !c.Name.EndsWith("Options"))
+                .Where(c => !c.Name.Equals("RevokedRefreshTokensService"))
+                .Where(c => !c.Name.Equals("DeletedEntityService"))
+                .Where(c => !c.Name.Equals("FormFilePhotoValidator"))
+                .Where(c => !c.Name.Equals("StreamPhotoValidator")))
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
 

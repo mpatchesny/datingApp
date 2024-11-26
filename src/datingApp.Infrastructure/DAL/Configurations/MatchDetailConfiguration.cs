@@ -23,9 +23,6 @@ internal sealed class MatchDetailConfiguration : IEntityTypeConfiguration<MatchD
         builder.Property(x => x.UserId)
             .HasConversion(x => x.Value, x => new UserId(x))
             .IsRequired();
-        // builder.HasOne<Match>()
-        //     .WithMany()
-        //     .HasForeignKey(x => x.MatchId);
         builder.HasOne<User>()
             .WithMany();
         builder.Property(x => x.IsDisplayed)

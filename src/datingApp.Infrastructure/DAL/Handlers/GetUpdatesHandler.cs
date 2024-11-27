@@ -35,7 +35,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         }
 
         var newMessagesAndMatches = _dbContext.Matches
-            .Where(match => match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId))
+            .Where(match => match.MatchDetails.Any(md => md.UserId.Equals(query.UserId)))
             .Where(match => match.CreatedAt >= query.LastActivityTime ||
                 match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime))
             .Select(match => match.Id);

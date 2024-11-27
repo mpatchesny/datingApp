@@ -26,6 +26,7 @@ public class GetMatchHandlerTests : IDisposable
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
         _dbContext.ChangeTracker.Clear();
 

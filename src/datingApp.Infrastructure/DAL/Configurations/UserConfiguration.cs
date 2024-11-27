@@ -40,7 +40,9 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         builder.Property(x => x.Sex)
             .IsRequired();
-
+        builder.HasMany(u => u.Matches)
+            .WithMany(m => m.Users)
+            .UsingEntity<MatchDetail>();
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => new {x.Sex, x.DateOfBirth});
     }

@@ -25,6 +25,7 @@ public class User
     public Bio Bio { get; private set; }
     public UserSettings Settings { get; private set; }
     public ICollection<Photo> Photos { get; private set; } = new List<Photo>();
+    public IEnumerable<Match> Matches { get; private set; } = new List<Match>();
     private const int PhotoCountLimit = 6;
 
     private User()

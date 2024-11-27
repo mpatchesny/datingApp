@@ -36,6 +36,23 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
+        var altQuery = 
+            from user in _dbContext.Users
+                .AsNoTracking()
+                .Include(user => user.Matches
+                    .OrderByDescending(match => match.CreatedAt)
+                    .Skip((query.Page - 1) * query.PageSize)
+                    .Take(query.PageSize))
+                .ThenInclude(match => match.Messages
+                    .OrderByDescending(message => message.CreatedAt)
+                        .Take(1))
+                .Include(match => match.Users
+                    .Where(user => user.Id.Equals(query.UserId)))
+                .Where(user => user.Id.Equals(query.UserId))
+            select user;
+
+        var altQueryResult = await altQuery.FirstOrDefaultAsync();
+
         var dbQuery = 
             from match in _dbContext.Matches
                 .Include(match => match.Messages

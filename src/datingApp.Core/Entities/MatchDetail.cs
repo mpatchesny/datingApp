@@ -8,7 +8,6 @@ namespace datingApp.Core.Entities;
 
 public class MatchDetail
 {
-    public MatchDetailId Id { get; }
     public MatchId MatchId { get; private set; }
     public UserId UserId { get; private set; }
     public bool IsDisplayed { get; private set; }
@@ -20,9 +19,8 @@ public class MatchDetail
     {
     }
 
-    public MatchDetail(MatchDetailId id, MatchId matchId, UserId userId, bool isDisplayed=false, List<Message> messages=null)
+    public MatchDetail(MatchId matchId, UserId userId, bool isDisplayed=false, List<Message> messages=null)
     {
-        Id = id;
         MatchId = matchId;
         UserId = userId;
         IsDisplayed = isDisplayed;

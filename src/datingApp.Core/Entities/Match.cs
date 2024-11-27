@@ -16,7 +16,8 @@ public class Match
     public bool IsDisplayedByUser1 => MatchDetails.ElementAt(0).IsDisplayed;
     public bool IsDisplayedByUser2 => MatchDetails.ElementAt(1).IsDisplayed;
     public IEnumerable<Message> Messages => _messages;
-    public IEnumerable<MatchDetail> MatchDetails => _matchDetails;
+    public IEnumerable<User> Users => new List<User>();
+    private IEnumerable<MatchDetail> MatchDetails => _matchDetails;
     public DateTime CreatedAt { get; private set; }
 
     private readonly List<Message> _messages = new();
@@ -32,8 +33,8 @@ public class Match
         Id = id;
         UserId1 = userId1;
         UserId2 = userId2;
-        _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
-        _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
+        _matchDetails.Add(new MatchDetail(id, userId1, isDisplayedByUser1, messages));
+        _matchDetails.Add(new MatchDetail(id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();
         CreatedAt = createdAt;
     }

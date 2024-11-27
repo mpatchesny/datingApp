@@ -18,6 +18,20 @@ namespace datingApp.Tests.Integration.Repositories;
 public class MatchRepositoryTests : IDisposable
 {
     [Fact]
+    public async void test_123()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _dbContext.ChangeTracker.Clear();
+
+        var usr = await _dbContext.Users
+            .Include(u => u.Matches)
+            .FirstOrDefaultAsync();
+        Assert.NotEmpty(usr.Matches);
+    }
+
+    [Fact]
     public async void given_match_exists_get_match_by_id_should_succeed()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

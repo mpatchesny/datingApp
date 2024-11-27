@@ -25,6 +25,6 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
             .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-        builder.Navigation(x => x.MatchDetails).AutoInclude();
+        // builder.Navigation(x => x.MatchDetails).AutoInclude();
     }
 }

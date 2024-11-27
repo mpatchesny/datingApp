@@ -150,7 +150,7 @@ public class MatchRepositoryTests : IDisposable
         };
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
 
-        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow);
+        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, text: "test2", createdAt: DateTime.UtcNow);
         match.AddMessage(newMessage);
         await _repository.UpdateAsync(match);
         

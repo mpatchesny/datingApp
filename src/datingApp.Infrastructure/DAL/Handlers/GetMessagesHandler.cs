@@ -26,7 +26,15 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
     {
-        var match = await GetMatchAsync(query.MatchId, query.Page, query.PageSize);
+        var match = 
+            await _dbContext.Matches
+            .AsNoTracking()
+            .Where(match => match.Id.Equals(query.MatchId))
+            .Include(match => match.Messages
+                .OrderByDescending(message => message.CreatedAt)
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize))
+            .FirstOrDefaultAsync();
 
         if (match == null)
         {
@@ -45,7 +53,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             .SelectMany(match => match.Messages)
             .CountAsync();
 
-        var pageCount = (int)(recordsCount + query.PageSize - 1) / query.PageSize;
+        var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
         return new PaginatedDataDto
         {
@@ -54,17 +62,5 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
             PageCount = pageCount,
             Data = new List<dynamic>(match.MessagesAsDto())
         };
-    }
-
-    private async Task<Match> GetMatchAsync(Guid matchId, int page, int pageSize)
-    {
-        return await _dbContext.Matches
-            .AsNoTracking()
-            .Where(match => match.Id.Equals(matchId))
-            .Include(match => match.Messages
-                .OrderByDescending(message => message.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize))
-            .FirstOrDefaultAsync();
     }
 }

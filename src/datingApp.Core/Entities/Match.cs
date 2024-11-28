@@ -11,14 +11,15 @@ namespace datingApp.Core.Entities;
 public class Match
 {
     public MatchId Id { get; }
-    public UserId UserId1 { get; private set; }
-    public UserId UserId2 { get; private set; }
-    public bool IsDisplayedByUser1 { get; private set; }
-    public bool IsDisplayedByUser2 { get; private set; }
+    public UserId UserId1 => _matchDetails[0].UserId;
+    public UserId UserId2 => _matchDetails[1].UserId;
+    public IEnumerable<User> Users { get; private set; } = new List<User>();
     public IEnumerable<Message> Messages => _messages;
+    public IEnumerable<MatchDetail> MatchDetails => _matchDetails;
     public DateTime CreatedAt { get; private set; }
 
     private readonly List<Message> _messages = new();
+    private readonly List<MatchDetail> _matchDetails = new();
 
     private Match()
     {
@@ -28,23 +29,18 @@ public class Match
     public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
     {
         Id = id;
-        UserId1 = userId1;
-        UserId2 = userId2;
-        IsDisplayedByUser1 = isDisplayedByUser1;
-        IsDisplayedByUser2 = isDisplayedByUser2;
+        _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
+        _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();
         CreatedAt = createdAt;
     }
 
     public bool IsDisplayedByUser(UserId userId)
     {
-        if (UserId1.Equals(userId))
+        var detail = MatchDetails.FirstOrDefault(md => md.UserId == userId);
+        if (detail != null)
         {
-            return IsDisplayedByUser1;
-        }
-        else if (UserId2.Equals(userId))
-        {
-            return IsDisplayedByUser2;
+            return detail.IsDisplayed;
         }
         else
         {
@@ -54,48 +50,54 @@ public class Match
 
     public void SetDisplayed(UserId userId)
     {
-        if (UserId1.Equals(userId))
+        var detail = _matchDetails.FirstOrDefault(md => md.UserId == userId);
+        if (detail != null)
         {
-            IsDisplayedByUser1 = true;
-        }
-        else if (UserId2.Equals(userId))
-        {
-            IsDisplayedByUser2 = true;
+            detail.SetDisplayed();
         }
     }
 
     public void AddMessage(Message message)
     {
-        if (Messages.Any(m => m.Id == message.Id)) return;
+        if (_messages.Any(m => m.Id == message.Id)) return;
 
         if (message.SendFromId != UserId1 && message.SendFromId != UserId2)
         {
             throw new MessageSenderNotMatchMatchUsers();
         }
 
+        var detail = _matchDetails.FirstOrDefault(md => md.UserId == message.SendFromId);
+        if (detail != null) detail.AddMessage(message);
         _messages.Add(message);
     }
 
     public void RemoveMessage(MessageId messageId)
     {
-        var message = Messages.FirstOrDefault(m => m.Id == messageId);
-        if (message != null) 
-        {
-            _messages.Remove(message);
-        }
+        var detail = _matchDetails
+            .Where(md => md.Messages.Any(message => message.Id == messageId))
+            .FirstOrDefault();
+        if (detail != null) detail.RemoveMessage(messageId);
+
+        var message = _messages.FirstOrDefault(m => m.Id == messageId);
+        if (message != null) _messages.Remove(message);
     }
 
     public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId displayedByUserId)
     {
-        var lastMessage = Messages.FirstOrDefault(m => m.Id == lastMessageId);
+        var lastMessage = _messages.FirstOrDefault(m => m.Id == lastMessageId);
         if (lastMessage == null) return;
 
-        foreach (var message in Messages)
+        foreach (var message in _messages)
         {
             if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId != displayedByUserId)
             {
                 message.SetDisplayed();
             }
         }
+
+        var detail = _matchDetails
+            .Where(md => md.UserId != lastMessage.SendFromId)
+            .FirstOrDefault();
+        if (detail != null) detail.SetPreviousMessagesAsDisplayed(lastMessageId, displayedByUserId);
     }
 }

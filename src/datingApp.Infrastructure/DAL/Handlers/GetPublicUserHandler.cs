@@ -50,8 +50,8 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
         // user who requested information about other user must be in pair (have match) with other user
         var match = await _dbContext.Matches
             .AsNoTracking()
-            .Where(match => match.UserId1.Equals(requestedBy.Id) || match.UserId2.Equals(requestedBy.Id))
-            .Where(match => match.UserId1.Equals(requestedWho.Id) || match.UserId2.Equals(requestedWho.Id))
+            .Where(match => match.Users.Any(user => user.Id.Equals(requestedBy.Id)))
+            .Where(match => match.Users.Any(user => user.Id.Equals(requestedWho.Id)))
             .FirstOrDefaultAsync();
 
         if (match == null)

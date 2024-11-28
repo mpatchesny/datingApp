@@ -29,58 +29,58 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 
     public async Task<MatchDto> HandleAsync(GetMatch query)
     {
-        var requestedBy = await _dbContext.Users
-            .AsNoTracking()
-            .Include(user => user.Settings)
-            .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
-
-        if (requestedBy == null)
+        if (!await _dbContext.Users.AnyAsync(user => user.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery =  
-            from match in _dbContext.Matches
-                .Include(match => match.Messages
-                    .OrderByDescending(message => message.CreatedAt)
-                    .Take(query.HowManyMessages))
-            from user in _dbContext.Users
-                .Include(user => user.Photos)
-                .Include(user => user.Settings)
-            where !user.Id.Equals(query.UserId)
-            where match.Id.Equals(query.MatchId)
-            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            select new 
-            {
-                Match = match,
-                User = user
-            };
+        var dbQuery = 
+            from pair in _dbContext.Matches
+            .Include(match => match.Messages
+                .OrderByDescending(message => message.CreatedAt)
+                .Take(query.HowManyMessages))
+            .Include(match => match.Users)
+                .ThenInclude(user => user.Photos)
+            .Include(match => match.Users)
+                .ThenInclude(user => user.Settings)
+            .Where(match => match.Id.Equals(query.MatchId))
+            select pair;
 
-        var data = await dbQuery
+        var match = await dbQuery
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (data == null) 
+        if (match == null) 
         {
             throw new MatchNotExistsException(query.MatchId);
         }
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, data.Match, "OwnerPolicy");
+        var authorizationResult = await _authorizationService.AuthorizeAsync(query.AuthenticatedUserId, match, "OwnerPolicy");
         if (!authorizationResult.Succeeded)
         {
             throw new UnauthorizedException();
         }
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
-            data.User.Settings.Location.Lat, data.User.Settings.Location.Lon);
+        var user1 = match.Users.ElementAt(0);
+        var user2 = match.Users.ElementAt(1);
 
-        return new MatchDto
+        var distanceInKms = _spatial.CalculateDistanceInKms(
+            user1.Settings.Location.Lat, 
+            user1.Settings.Location.Lon, 
+            user2.Settings.Location.Lat, 
+            user2.Settings.Location.Lon);
+
+        var userDto = user1.Id.Equals(query.UserId) ? 
+            user2.AsPublicDto(distanceInKms) :
+            user1.AsPublicDto(distanceInKms);
+
+        return new MatchDto()
         {
-            Id = data.Match.Id,
-            User = data.User.AsPublicDto(distanceInKms),
-            IsDisplayed = data.Match.IsDisplayedByUser(query.UserId),
-            Messages = data.Match.MessagesAsDto(),
-            CreatedAt = data.Match.CreatedAt
+            Id = match.Id,
+            User = userDto,
+            IsDisplayed = match.IsDisplayedByUser(query.UserId),
+            Messages =  match.MessagesAsDto(),
+            CreatedAt = match.CreatedAt
         };
     }
 }

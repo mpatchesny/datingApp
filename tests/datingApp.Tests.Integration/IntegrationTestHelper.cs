@@ -64,9 +64,9 @@ internal static class IntegrationTestHelper
     #endregion
 
     #region Match
-    internal static Message CreateMessage(Guid sendFromId, bool isDisplayed = false, DateTime? createdAt = null)
+    internal static Message CreateMessage(Guid sendFromId, bool isDisplayed = false, DateTime? createdAt = null, string text="test")
     {
-        return new Message(Guid.NewGuid(), sendFromId, "test", isDisplayed, createdAt ?? DateTime.UtcNow);
+        return new Message(Guid.NewGuid(), sendFromId, text, isDisplayed, createdAt ?? DateTime.UtcNow);
     }
 
     internal static async Task<Match> CreateMatchAsync(DatingAppDbContext dbContext, Guid userId1, Guid userId2, List<Message> messages = null, bool isDisplayedByUser1 = false, bool isDisplayedByUser2 = false, DateTime? createdAt = null)

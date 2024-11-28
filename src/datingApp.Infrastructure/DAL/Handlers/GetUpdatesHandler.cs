@@ -24,54 +24,52 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
     public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
     {
-        var requestedBy = await _dbContext.Users
-            .AsNoTracking()
-            .Include(user => user.Settings)
-            .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
-
-        if (requestedBy == null)
+        if (!await _dbContext.Users.AnyAsync(user => user.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }
 
-        var newMessagesAndMatches = _dbContext.Matches
-            .Where(match => match.UserId1.Equals(query.UserId) || match.UserId2.Equals(query.UserId))
-            .Where(match => match.CreatedAt >= query.LastActivityTime ||
-                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime))
-            .Select(match => match.Id);
-
         var dbQuery = 
             from match in _dbContext.Matches
-                .Include(match => match.Messages
-                    .Where(message => message.CreatedAt >= query.LastActivityTime))
-            from user in _dbContext.Users
-                .Include(user => user.Photos)
-                .Include(user => user.Settings)
-            where !user.Id.Equals(query.UserId)
-            where match.UserId1.Equals(user.Id) || match.UserId2.Equals(user.Id)
-            where newMessagesAndMatches.Contains(match.Id)
-            select new 
-            {
-                Match = match,
-                User = user
-            };
+            .Include(match => match.Messages
+                .Where(message => message.CreatedAt >= query.LastActivityTime))
+            .Where(match => 
+                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
+                match.CreatedAt >= query.LastActivityTime)
+            .Include(match => match.Users)
+                .ThenInclude(user => user.Photos)
+            .Include(match => match.Users)
+                .ThenInclude(user => user.Settings)
+            .Where(match => match.Users
+                .Any(user => user.Id.Equals(query.UserId)))
+            select match;
 
-        var data = await dbQuery.AsNoTracking().ToListAsync();
+        var matches = await dbQuery.AsNoTracking().ToListAsync();
 
-        var dataDto = new List<MatchDto>();
-        foreach (var item in data)
+        List<MatchDto> dataDto = new List<MatchDto>();
+        foreach (var match in matches)
         {
-            var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
-                item.User.Settings.Location.Lat, item.User.Settings.Location.Lon);
+            var user1 = match.Users.ElementAt(0);
+            var user2 = match.Users.ElementAt(1);
+
+            var distanceInKms = _spatial.CalculateDistanceInKms(
+                user1.Settings.Location.Lat, 
+                user1.Settings.Location.Lon, 
+                user2.Settings.Location.Lat, 
+                user2.Settings.Location.Lon);
+
+            var userDto = user1.Id.Equals(query.UserId) ? 
+                user2.AsPublicDto(distanceInKms) :
+                user1.AsPublicDto(distanceInKms);
 
             dataDto.Add(
                 new MatchDto()
                 {
-                    Id = item.Match.Id,
-                    User = item.User.AsPublicDto(distanceInKms),
-                    IsDisplayed = item.Match.IsDisplayedByUser(query.UserId),
-                    Messages =  item.Match.MessagesAsDto(),
-                    CreatedAt = item.Match.CreatedAt
+                    Id = match.Id,
+                    User = userDto,
+                    IsDisplayed = match.IsDisplayedByUser(query.UserId),
+                    Messages =  match.MessagesAsDto(),
+                    CreatedAt = match.CreatedAt
                 });
         }
 

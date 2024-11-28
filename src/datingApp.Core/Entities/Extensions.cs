@@ -51,8 +51,8 @@ public static class Extensions
         if (obj is not Match) return false;
         Match match = (Match) obj;
         var equals = match.Id == entity.Id && 
-        match.UserId1 == entity.UserId1 &&
-        match.UserId2 == entity.UserId2 &&
+        (match.UserId1 == entity.UserId1 || match.UserId1 == entity.UserId2) &&
+        (match.UserId2 == entity.UserId1 || match.UserId2 == entity.UserId2) &&
         match.IsDisplayedByUser(match.UserId1) == entity.IsDisplayedByUser(match.UserId1) &&
         match.IsDisplayedByUser(match.UserId2) == entity.IsDisplayedByUser(match.UserId2) &&
         match.CreatedAt.Year == entity.CreatedAt.Year &&

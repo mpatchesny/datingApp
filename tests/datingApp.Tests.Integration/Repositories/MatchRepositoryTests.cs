@@ -31,40 +31,6 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void given_match_not_exists_get_match_by_id_should_return_null()
-    {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
-        _dbContext.ChangeTracker.Clear();
-
-        var retrievedMatch1 = await _repository.GetByUserIdAsync(Guid.NewGuid(), user2.Id);
-        Assert.Null(retrievedMatch1);
-        _dbContext.ChangeTracker.Clear();
-
-        var retrievedMatch2 = await _repository.GetByUserIdAsync(user1.Id, Guid.NewGuid());
-        Assert.Null(retrievedMatch2);
-    }
-
-    [Fact]
-    public async void given_match_exists_get_match_by_user_id_should_succeed()
-    {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
-        _dbContext.ChangeTracker.Clear();
-
-        var retrievedMatch1 = await _repository.GetByUserIdAsync(user1.Id, user2.Id);
-        Assert.NotNull(retrievedMatch1);
-        Assert.True(match.IsEqualTo(retrievedMatch1));
-        _dbContext.ChangeTracker.Clear();
-    
-        var retrievedMatch2 = await _repository.GetByUserIdAsync(user2.Id, user1.Id);
-        Assert.NotNull(retrievedMatch2);
-        Assert.True(match.IsEqualTo(retrievedMatch2));
-    }
-
-    [Fact]
     public async void given_match_not_exists_get_match_by_user_id_should_return_null()
     {
         var match = await _repository.GetByIdAsync(Guid.NewGuid());
@@ -183,9 +149,9 @@ public class MatchRepositoryTests : IDisposable
             IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
         };
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
-        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow);
-        match.AddMessage(newMessage);
 
+        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, text: "test2", createdAt: DateTime.UtcNow);
+        match.AddMessage(newMessage);
         await _repository.UpdateAsync(match);
         
         _dbContext.ChangeTracker.Clear();

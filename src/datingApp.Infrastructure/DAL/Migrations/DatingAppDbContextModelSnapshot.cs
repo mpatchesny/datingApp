@@ -39,7 +39,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("EmailOrPhone");
 
-                    b.ToTable("AccessCodes");
+                    b.ToTable("AccessCodes", (string)null);
 
                     NpgsqlEntityTypeBuilderExtensions.IsUnlogged(b, true);
                 });
@@ -54,7 +54,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("DeletedEntities");
+                    b.ToTable("DeletedEntities", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Application.DTO.TokenDto", b =>
@@ -67,7 +67,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("Token");
 
-                    b.ToTable("RevokedRefreshTokens");
+                    b.ToTable("RevokedRefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Match", b =>
@@ -78,15 +78,9 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("UserId1")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId2")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Matches");
+                    b.ToTable("Matches", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.MatchDetail", b =>
@@ -109,7 +103,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MatchDetail");
+                    b.ToTable("MatchDetail", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Message", b =>
@@ -147,7 +141,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("SendFromId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Photo", b =>
@@ -169,7 +163,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Photos");
+                    b.ToTable("Photos", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.Swipe", b =>
@@ -191,7 +185,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                     b.HasIndex("SwipedById", "SwipedWhoId", "Like")
                         .IsUnique();
 
-                    b.ToTable("Swipes");
+                    b.ToTable("Swipes", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.User", b =>
@@ -235,7 +229,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasIndex("Sex", "DateOfBirth");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.UserSettings", b =>
@@ -251,7 +245,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("datingApp.Core.Entities.MatchDetail", b =>
@@ -301,7 +295,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("datingApp.Core.ValueObjects.Location", "Location", b1 =>
+                    b.OwnsOne("datingApp.Core.Entities.UserSettings.Location#datingApp.Core.ValueObjects.Location", "Location", b1 =>
                         {
                             b1.Property<Guid>("UserSettingsUserId")
                                 .HasColumnType("uuid");
@@ -314,13 +308,13 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                             b1.HasKey("UserSettingsUserId");
 
-                            b1.ToTable("UserSettings");
+                            b1.ToTable("UserSettings", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserSettingsUserId");
                         });
 
-                    b.OwnsOne("datingApp.Core.ValueObjects.PreferredAge", "PreferredAge", b1 =>
+                    b.OwnsOne("datingApp.Core.Entities.UserSettings.PreferredAge#datingApp.Core.ValueObjects.PreferredAge", "PreferredAge", b1 =>
                         {
                             b1.Property<Guid>("UserSettingsUserId")
                                 .HasColumnType("uuid");
@@ -333,7 +327,7 @@ namespace datingApp.Infrastructure.DAL.Migrations
 
                             b1.HasKey("UserSettingsUserId");
 
-                            b1.ToTable("UserSettings");
+                            b1.ToTable("UserSettings", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserSettingsUserId");

@@ -77,8 +77,11 @@ public class SwipeUserHandlerTests : IDisposable
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _dbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
-            (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user2.Id)));
+        var match = 
+            await _dbContext.Matches
+                .Where(match => match.Users.Any(user => user.Id.Equals(user1.Id)))
+                .Where(match => match.Users.Any(user => user.Id.Equals(user2.Id)))
+                .FirstOrDefaultAsync();
         Assert.NotNull(match);
         Assert.True(match.UserId1.Equals(user1.Id));
         Assert.True(match.UserId2.Equals(user2.Id));
@@ -94,8 +97,11 @@ public class SwipeUserHandlerTests : IDisposable
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _dbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
-            (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user1.Id)));
+        var match = 
+            await _dbContext.Matches
+                .Where(match => match.Users.Any(user => user.Id.Equals(user1.Id)))
+                .Where(match => match.Users.Any(user => user.Id.Equals(user2.Id)))
+                .FirstOrDefaultAsync();
         Assert.Null(match);
     }
 
@@ -109,8 +115,11 @@ public class SwipeUserHandlerTests : IDisposable
 
         var command = new SwipeUser(user1.Id, user2.Id, (int) Like.Like);
         await _handler.HandleAsync(command);
-        var match = await _dbContext.Matches.FirstOrDefaultAsync(m => (m.UserId1.Equals(user1.Id) && m.UserId2.Equals(user2.Id)) || 
-            (m.UserId1.Equals(user2.Id) && m.UserId2.Equals(user1.Id)));
+        var match = 
+            await _dbContext.Matches
+                .Where(match => match.Users.Any(user => user.Id.Equals(user1.Id)))
+                .Where(match => match.Users.Any(user => user.Id.Equals(user2.Id)))
+                .FirstOrDefaultAsync();
         Assert.Null(match);
     }
 

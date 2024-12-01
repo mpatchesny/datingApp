@@ -12,7 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessCode>
+public sealed class RequestEmailAccessCodeHandler : ICommandHandler<RequestEmailAccessCode>
 {
     private readonly IAccessCodeGenerator _codeGenerator;
     private readonly IAccessCodeStorage _codeStorage;

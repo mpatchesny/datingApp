@@ -6,7 +6,7 @@ using datingApp.Application.Spatial;
 
 namespace datingApp.Infrastructure.Spatial;
 
-public class Spatial : ISpatial
+internal sealed class Spatial : ISpatial
 {
     private const double r = 6371.009; // kilometers
     private const double equator = 40075; // kilometers

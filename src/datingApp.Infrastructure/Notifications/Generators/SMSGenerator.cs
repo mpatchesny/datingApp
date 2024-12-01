@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace datingApp.Infrastructure.Notifications.Generators;
 
-public class SMSGenerator : INotificationMessageGenerator<SMS>
+internal sealed class SMSGenerator : INotificationMessageGenerator<SMS>
 {
     private readonly string _bodyTemplate;
     public SMSGenerator(IOptions<SMSGeneratorOptions> options)

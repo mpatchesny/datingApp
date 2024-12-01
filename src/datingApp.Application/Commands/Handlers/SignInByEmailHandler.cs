@@ -10,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class SignInByEmailHandler : ICommandHandler<SignInByEmail>
+public sealed class SignInByEmailHandler : ICommandHandler<SignInByEmail>
 {
     private readonly IUserRepository _userRepository;
     private readonly IAccessCodeStorage _codeStorage;

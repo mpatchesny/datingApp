@@ -10,7 +10,7 @@ namespace datingApp.Infrastructure.Services;
 
 internal sealed class RevokedRefreshTokensService : IRevokedRefreshTokensService
 {
-    DatingAppDbContext _dbContext;
+    readonly DatingAppDbContext _dbContext;
     public RevokedRefreshTokensService(DatingAppDbContext dbContext)
     {
         _dbContext = dbContext;

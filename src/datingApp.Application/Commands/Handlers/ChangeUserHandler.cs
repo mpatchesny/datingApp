@@ -12,7 +12,7 @@ using datingApp.Core.ValueObjects;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public class ChangeUserHandler : ICommandHandler<ChangeUser>
+public sealed class ChangeUserHandler : ICommandHandler<ChangeUser>
 {
     private readonly IUserRepository _userRepository;
     private readonly IDatingAppAuthorizationService _authorizationService;

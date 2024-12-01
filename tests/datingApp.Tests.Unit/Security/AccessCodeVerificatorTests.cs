@@ -68,11 +68,11 @@ public class AccessCodeVerificatorTests
     }
 
     [Theory]
-    [InlineData("123456")]
-    [InlineData("ABcDe")]
-    [InlineData("aaBBccDD")]
-    [InlineData("abcde")]
-    public void given_valid_code_code_should_be_verified_positive_with_case_sensitive_verification(string accessCode)
+    [InlineData("123456", "123456")]
+    [InlineData("ABcDe", "abcde")]
+    [InlineData("aaBBccDD", "AABBCCDD")]
+    [InlineData("abcde", "ABCDE")]
+    public void given_valid_code_code_should_be_verified_positive_with_case_insensitive_verification(string accessCode, string differentCaseAccessCode)
     {
         var code = new AccessCodeDto
         {
@@ -83,14 +83,14 @@ public class AccessCodeVerificatorTests
         };
 
         var verificator = new AccessCodeVerificator();
-        Assert.True(verificator.Verify(code, accessCode, "test@test.com"));
+        Assert.True(verificator.Verify(code, differentCaseAccessCode, "test@test.com"));
     }
 
     [Theory]
     [InlineData("123456", "12346")]
     [InlineData("ABCDE", "ABCD")]
     [InlineData("ABCDE", "abcd")]
-    public void given_invalid_code_code_should_be_verified_negative_with_case_sensitive_verification(string goodCode, string badCode)
+    public void given_invalid_code_code_should_be_verified_negative_with_case_insensitive_verification(string goodCode, string badCode)
     {
         var code = new AccessCodeDto
         {

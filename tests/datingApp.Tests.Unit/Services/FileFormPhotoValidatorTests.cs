@@ -108,7 +108,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_passed_valid_photo_is_too_small_ValidateSize_throws_InvalidPhotoSizeException()
+    public void given_valid_photo_is_too_small_ValidateSize_throws_InvalidPhotoSizeException()
     {
         var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
@@ -126,7 +126,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_passed_valid_photo_is_too_large_ValidateSize_throws_InvalidPhotoSizeException()
+    public void given_valid_photo_is_too_large_ValidateSize_throws_InvalidPhotoSizeException()
     {
         var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")

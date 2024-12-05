@@ -42,7 +42,7 @@ public class MatchTests
     [InlineData(true, true)]
     [InlineData(false, true)]
     [InlineData(true, false)]
-    public void is_displayed_by_user_returns_proper_bool(bool isDisplayedByUser1, bool isDisplayedByUser2)
+    public void is_displayed_by_user_returns_proper_value(bool isDisplayedByUser1, bool isDisplayedByUser2)
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, isDisplayedByUser1: isDisplayedByUser1, isDisplayedByUser2: isDisplayedByUser2);
 
@@ -82,7 +82,7 @@ public class MatchTests
     }
 
     [Fact]
-    public void given_message_SendFrom_not_match_Match_UserId_AddMessage_throw_MessageSenderNotMatchMatchUsers_1()
+    public void given_message_SendFrom_not_match_Match_UserId_AddMessage_throw_MessageSenderNotMatchMatchUsers()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
@@ -93,7 +93,7 @@ public class MatchTests
     }
 
     [Fact]
-    public void given_message_not_in_Match_RemoveMessage_do_nothing()
+    public void given_message_not_in_Match_Messages_RemoveMessage_do_nothing()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
@@ -104,7 +104,7 @@ public class MatchTests
     }
 
     [Fact]
-    public void given_message_in_Match_RemoveMessage_removes_message()
+    public void given_message_in_Match_Messages_RemoveMessage_removes_message()
     {
         var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
         var messages = new List<Message> { message };
@@ -116,7 +116,7 @@ public class MatchTests
     }
 
     [Fact]
-    public void given_message_not_in_Match_SetPreviousMessagesAsDisplayed_do_nothing()
+    public void given_message_not_in_Match_Messages_SetPreviousMessagesAsDisplayed_do_nothing()
     {
         var matchId = Guid.NewGuid();
         var userId = Guid.NewGuid();

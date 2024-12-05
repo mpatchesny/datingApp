@@ -119,7 +119,7 @@ public class UserTests
     [InlineData(".")]
     [InlineData(",")]
     [InlineData("#")]
-    public void user_name_should_with_invalid_chars_throws_InvalidUsernameException(string username)
+    public void user_name_with_invalid_chars_throws_InvalidUsernameException(string username)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
@@ -178,7 +178,7 @@ public class UserTests
     }
 
     [Fact]
-    public void user_get_age_returns_proper_age()
+    public void user_GetAge_returns_proper_age()
     {
         var actualYear = DateTime.UtcNow.Year;
         var dob = new DateOnly(actualYear - 18, 1, 1);
@@ -198,7 +198,7 @@ public class UserTests
     }
 
     [Fact]
-    public void change_user_date_of_birth_should_take_effect()
+    public void user_ChangeDateOfBirth_should_change_date_of_birth()
     {
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings);
         user.ChangeDateOfBirth(new DateOnly(1999,1,2));
@@ -206,7 +206,7 @@ public class UserTests
     }
 
     [Fact]
-    public void change_user_bio_should_take_effect()
+    public void user_ChangeBio_should_change_bio()
     {
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: "", bio: "bio");
         user.ChangeBio("new bio");
@@ -214,7 +214,7 @@ public class UserTests
     }
 
     [Fact]
-    public void change_user_job_should_take_effect()
+    public void user_ChangeJob_should_change_job()
     {
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: "job");
         user.ChangeJob("new job");
@@ -312,7 +312,7 @@ public class UserTests
     }
 
     [Fact]
-    public void remove_photo_from_beginning_not_change_remain_Photos_oridinal()
+    public void remove_photo_from_end_not_change_remain_Photos_oridinal()
     {
         var photo1 = new Photo(Guid.NewGuid(),  "abcde", 0);
         var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
@@ -384,7 +384,7 @@ public class UserTests
     }
 
     [Fact]
-    public void given_new_oridinal_is_the_same_change_oridinal_do_nothing()
+    public void given_new_oridinal_is_the_same_as_old_change_oridinal_do_nothing()
     {
         var photos = new List<Photo>{
             new Photo(Guid.NewGuid(),  "abcde", 0),

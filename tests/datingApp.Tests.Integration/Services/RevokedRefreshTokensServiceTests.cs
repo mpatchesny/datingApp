@@ -22,7 +22,7 @@ public class RevokedRefreshTokensServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
-        var exists = await _repository.ExistsAsync(token.Token);
+        var exists = await _service.ExistsAsync(token.Token);
         Assert.True(exists);
     }
 
@@ -30,7 +30,7 @@ public class RevokedRefreshTokensServiceTests : IDisposable
     public async Task given_token_not_exists_ExistsAsync_returns_false()
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
-        var exists = await _repository.ExistsAsync(token.Token);
+        var exists = await _service.ExistsAsync(token.Token);
         Assert.False(exists);
     }
 
@@ -38,7 +38,7 @@ public class RevokedRefreshTokensServiceTests : IDisposable
     public async Task AddAsync_adds_token_to_repository()
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
-        await _repository.AddAsync(token);
+        await _service.AddAsync(token);
 
         _dbContext.ChangeTracker.Clear();
         var exists = await _testDb.CreateNewDbContext().RevokedRefreshTokens.AnyAsync(x => x.Token == token.Token);
@@ -55,19 +55,19 @@ public class RevokedRefreshTokensServiceTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var badToken = new TokenDto(tokenToken, DateTime.UtcNow);
-        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(badToken));
+        var exception = await Record.ExceptionAsync(async () => await _service.AddAsync(badToken));
         Assert.NotNull(exception);
     }
 
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
-    private readonly IRevokedRefreshTokensService _repository;
+    private readonly IRevokedRefreshTokensService _service;
     public RevokedRefreshTokensServiceTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _repository = new RevokedRefreshTokensService(_dbContext);
+        _service = new RevokedRefreshTokensService(_dbContext);
     }
 
     // Teardown

@@ -15,10 +15,9 @@ public class DeletedEntityServiceTests : IDisposable
     [Fact]
     public async void add_adds_entity_to_database()
     {
-        var service = new DeletedEntityService(_dbContext);
         var deletedEntity = Guid.NewGuid();
 
-        await service.AddAsync(deletedEntity);
+        await _service.AddAsync(deletedEntity);
         _dbContext.ChangeTracker.Clear();
 
         var retrievedDeletedEntity = await _dbContext.DeletedEntities.FirstOrDefaultAsync(x => x.Id == deletedEntity);
@@ -33,8 +32,7 @@ public class DeletedEntityServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
-        var service = new DeletedEntityService(_dbContext);
-        var exception = await Record.ExceptionAsync(async () => await service.AddAsync(deletedEntity));
+        var exception = await Record.ExceptionAsync(async () => await _service.AddAsync(deletedEntity));
         Assert.NotNull(exception);
     }
 
@@ -46,8 +44,7 @@ public class DeletedEntityServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
-        var service = new DeletedEntityService(_dbContext);
-        var exists = await service.ExistsAsync(deletedEntity);
+        var exists = await _service.ExistsAsync(deletedEntity);
         Assert.True(exists);
     }
 
@@ -59,17 +56,18 @@ public class DeletedEntityServiceTests : IDisposable
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
-        var service = new DeletedEntityService(_dbContext);
-        var exists = await service.ExistsAsync(Guid.NewGuid());
+        var exists = await _service.ExistsAsync(Guid.NewGuid());
         Assert.False(exists);
     }
 
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
+    private readonly DeletedEntityService _service;
     public DeletedEntityServiceTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
+        _service = new DeletedEntityService(_dbContext);
     }
 
     public void Dispose()

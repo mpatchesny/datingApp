@@ -10,9 +10,9 @@ using datingApp.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace datingApp.Tests.Integration.Repositories;
+namespace datingApp.Tests.Integration.Services;
 
-public class RevokedRefreshTokensRepositoryTests : IDisposable
+public class RevokedRefreshTokensServiceTests : IDisposable
 {
     [Fact]
     public async Task given_token_exists_ExistsAsync_returns_true()
@@ -63,7 +63,7 @@ public class RevokedRefreshTokensRepositoryTests : IDisposable
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
     private readonly IRevokedRefreshTokensService _repository;
-    public RevokedRefreshTokensRepositoryTests()
+    public RevokedRefreshTokensServiceTests()
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;

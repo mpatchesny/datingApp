@@ -69,6 +69,25 @@ public class UserController : ApiControllerBase
         return Ok(result);
     }
 
+    [HttpPost("me/photos/")]
+    public async Task<ActionResult> Post(IFormFile fileContent)
+    {
+        _photoService.Validate(fileContent, out var extension);
+
+        var stream = new MemoryStream();
+        await fileContent.CopyToAsync(stream);
+
+        var command = Authenticate(new AddPhoto(Guid.NewGuid(), AuthenticatedUserId, stream));
+        await _commandDispatcher.DispatchAsync(command);
+
+        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
+        var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
+        return CreatedAtAction(actionName: nameof(PhotosController.GetPhoto),
+            controllerName: "Photos",
+            routeValues: new { command.PhotoId },
+            value: photo);
+    }
+
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
     {
@@ -132,24 +151,5 @@ public class UserController : ApiControllerBase
         await _commandDispatcher.DispatchAsync(command);
         var jwt = _tokenStorage.Get();
         return jwt;
-    }
-
-    [HttpPost("me/photos/")]
-    public async Task<ActionResult> Post(IFormFile fileContent)
-    {
-        _photoService.Validate(fileContent, out var extension);
-
-        var stream = new MemoryStream();
-        await fileContent.CopyToAsync(stream);
-
-        var command = Authenticate(new AddPhoto(Guid.NewGuid(), AuthenticatedUserId, stream));
-        await _commandDispatcher.DispatchAsync(command);
-
-        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
-        var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
-        return CreatedAtAction(actionName: nameof(PhotosController.GetPhoto),
-            controllerName: "Photos",
-            routeValues: new { command.PhotoId },
-            value: photo);
     }
 }

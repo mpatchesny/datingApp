@@ -41,7 +41,7 @@ public class LikeController : ApiControllerBase
     [HttpPut("pass/{userId:guid}")]
     public async Task<ActionResult<IsLikedByOtherUserDto>> PassUser(Guid userId)
     {
-        var swipedById = Guid.Parse(User.Identity?.Name);
+        var swipedById = AuthenticatedUserId;
         var swipedWhoId = userId;
         var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 1));
         await _commandDispatcher.DispatchAsync(command);

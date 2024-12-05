@@ -63,7 +63,7 @@ public class UserSettingsTests
     }
     [Theory]
     [InlineData(21, 20)]
-    public void user_settings_age_range_with_age_to_below_age_from_throws_InvalidDiscoveryAgeException(int minAge, int maxAge)
+    public void user_settings_age_range_with_age_to_lower_than_age_from_throws_InvalidDiscoveryAgeException(int minAge, int maxAge)
     {
         var exception = Record.Exception(() => new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(minAge, maxAge), 20, new Location(45.5, 45.5)));
         Assert.NotNull(exception);
@@ -93,7 +93,7 @@ public class UserSettingsTests
     }
 
     [Fact]
-    public void user_settings_location_change_should_take_effect()
+    public void user_settings_ChangeLocation_should_change_location()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(40.5, 40.5));
         settings.ChangeLocation(new Location(45.5, 46.5));
@@ -102,7 +102,7 @@ public class UserSettingsTests
     }
 
     [Fact]
-    public void user_settings_discovery_age_range_change_should_take_effect()
+    public void user_settings_ChangePreferredAge_should_change_preferred_age()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(40.5, 40.5));
         settings.ChangePreferredAge(new PreferredAge(18, 60));
@@ -111,7 +111,7 @@ public class UserSettingsTests
     }
 
     [Fact]
-    public void user_settings_change_range_should_take_effect()
+    public void user_settings_ChangePreferredMaxDistance_should_change_preferred_max_distance()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(20, 25), 20, new Location(40.5, 40.5));
         settings.ChangePreferredMaxDistance(40);

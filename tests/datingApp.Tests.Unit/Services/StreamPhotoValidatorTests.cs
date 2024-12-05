@@ -77,7 +77,7 @@ public class StreamPhotoValidatorTests
     }
 
     [Fact]
-    public void given_passed_valid_photo_is_too_small_ValidateSize_throws_InvalidPhotoSizeException()
+    public void given_valid_photo_is_too_small_ValidateSize_throws_InvalidPhotoSizeException()
     {
         _options.Value.MinPhotoSizeBytes = 380;
         _options.Value.MaxPhotoSizeBytes = 390;
@@ -90,7 +90,7 @@ public class StreamPhotoValidatorTests
     }
 
     [Fact]
-    public void given_passed_valid_photo_is_too_large_ValidateSize_throws_InvalidPhotoSizeException()
+    public void given_valid_photo_is_too_large_ValidateSize_throws_InvalidPhotoSizeException()
     {
         _options.Value.MinPhotoSizeBytes = 1;
         _options.Value.MaxPhotoSizeBytes = 378;

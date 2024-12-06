@@ -190,4 +190,37 @@ public class MatchTests
             m => Assert.False(m.IsDisplayed)
         );
     }
+
+    [Fact]
+    public void given_user_id_is_not_in_Match_SetPreviousMessagesAsDisplayed_do_nothing()
+    {
+        var matchId = Guid.NewGuid();
+        var userId1 = Guid.NewGuid();
+        var userId2 = Guid.NewGuid();
+        var userIdNotInMatch = Guid.NewGuid();
+
+        var createdAt = DateTime.UtcNow - TimeSpan.FromSeconds(1);
+        var lastMessage = new Message(Guid.NewGuid(), userId1, "abc", false, createdAt);
+        var messages = new List<Message> { 
+            lastMessage,
+            new Message(Guid.NewGuid(), userId1, "abc", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId1, "abc", false, createdAt - TimeSpan.FromMinutes(1)),
+            new Message(Guid.NewGuid(), userId1, "abc", true, createdAt - TimeSpan.FromHours(1)),
+            new Message(Guid.NewGuid(), userId2, "abc", false, createdAt),
+            new Message(Guid.NewGuid(), userId2, "abc", false, createdAt),
+            new Message(Guid.NewGuid(), userId2, "abc", false, createdAt),
+        };
+        var match = new Match(matchId, userId1, userId2, DateTime.UtcNow, messages: messages);
+        
+        match.SetPreviousMessagesAsDisplayed(lastMessage.Id, userIdNotInMatch);
+        Assert.Collection(match.Messages, 
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.True(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed),
+            m => Assert.False(m.IsDisplayed)
+        );
+    }
 }

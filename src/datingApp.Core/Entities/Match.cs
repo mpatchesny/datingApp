@@ -38,14 +38,7 @@ public class Match
     public bool IsDisplayedByUser(UserId userId)
     {
         var detail = MatchDetails.FirstOrDefault(md => md.UserId == userId);
-        if (detail != null)
-        {
-            return detail.IsDisplayed;
-        }
-        else
-        {
-            return false;
-        }
+        return detail != null ? detail.IsDisplayed : false;
     }
 
     public void SetDisplayed(UserId userId)
@@ -84,16 +77,11 @@ public class Match
 
     public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId displayedByUserId)
     {
+        var userExists = _matchDetails.Any(md => md.UserId == displayedByUserId);
+        if (!userExists) return;
+
         var lastMessage = _messages.FirstOrDefault(m => m.Id == lastMessageId);
         if (lastMessage == null) return;
-
-        foreach (var message in _messages)
-        {
-            if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId != displayedByUserId)
-            {
-                message.SetDisplayed();
-            }
-        }
 
         var detail = _matchDetails
             .Where(md => md.UserId != lastMessage.SendFromId)

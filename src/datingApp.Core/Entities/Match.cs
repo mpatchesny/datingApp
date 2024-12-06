@@ -84,6 +84,9 @@ public class Match
 
     public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId displayedByUserId)
     {
+        var userExists = _matchDetails.Any(md => md.UserId == displayedByUserId);
+        if (!userExists) return;
+
         var lastMessage = _messages.FirstOrDefault(m => m.Id == lastMessageId);
         if (lastMessage == null) return;
 

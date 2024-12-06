@@ -83,14 +83,6 @@ public class Match
         var lastMessage = _messages.FirstOrDefault(m => m.Id == lastMessageId);
         if (lastMessage == null) return;
 
-        foreach (var message in _messages)
-        {
-            if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId != displayedByUserId)
-            {
-                message.SetDisplayed();
-            }
-        }
-
         var detail = _matchDetails
             .Where(md => md.UserId != lastMessage.SendFromId)
             .FirstOrDefault();

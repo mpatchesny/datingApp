@@ -7,7 +7,7 @@ using datingApp.Application.Security;
 
 namespace datingApp.Infrastructure.Security;
 
-public class HttpContextTokenStorage : ITokenStorage
+internal sealed class HttpContextTokenStorage : ITokenStorage
 {
     private const string JwtDtoKey = "jwt";
     private readonly IHttpContextAccessor _httpContextAccessor;

@@ -38,14 +38,7 @@ public class Match
     public bool IsDisplayedByUser(UserId userId)
     {
         var detail = MatchDetails.FirstOrDefault(md => md.UserId == userId);
-        if (detail != null)
-        {
-            return detail.IsDisplayed;
-        }
-        else
-        {
-            return false;
-        }
+        return detail != null ? detail.IsDisplayed : false;
     }
 
     public void SetDisplayed(UserId userId)

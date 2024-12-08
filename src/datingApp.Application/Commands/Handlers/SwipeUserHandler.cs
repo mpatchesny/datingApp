@@ -26,7 +26,7 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
 
     public async Task HandleAsync(SwipeUser command)
     {
-        var swipes = await _swipeRepository.GetByUserId(command.SwipedById);
+        var swipes = await _swipeRepository.GetBySwipedBy(command.SwipedById, command.SwipedWhoId);
         var swipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedById));
         var otherUserSwipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedWhoId));
 

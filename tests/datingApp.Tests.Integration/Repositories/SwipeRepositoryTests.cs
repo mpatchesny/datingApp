@@ -36,33 +36,35 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_swipe_exists_get_by_swiped_by_swiped_who_returns_swipe()
+    public async Task given_swipe_exists_get_by_swiped_by_swiped_who_returns_exactly_two_swipes()
     {
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, swipe1.SwipedWhoId, swipe1.SwipedById, Like.Pass);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, swipe1.SwipedWhoId, Guid.NewGuid(), Like.Pass);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), swipe1.SwipedById, Like.Pass);
         _dbContext.ChangeTracker.Clear();
 
-        var swipe = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
-        Assert.NotNull(swipe);
+        var swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
+        Assert.Equal(2, swipes.Count());
     }
 
     [Fact]
-    public async Task when_no_swipes_match_get_by_swiped_by_returns_null()
+    public async Task when_no_swipes_match_get_by_swiped_by_returns_empty_list()
     {
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
         var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
         _dbContext.ChangeTracker.Clear();
 
-        var swipe = await _repository.GetBySwipedBy(swipe2.SwipedById, swipe2.SwipedById);
-        Assert.Null(swipe);
-        swipe = await _repository.GetBySwipedBy(swipe2.SwipedWhoId, swipe2.SwipedWhoId);
-        Assert.Null(swipe);
-        swipe = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedById);
-        Assert.Null(swipe);
-        swipe = await _repository.GetBySwipedBy(swipe1.SwipedWhoId, swipe1.SwipedWhoId);
-        Assert.Null(swipe);
-        swipe = await _repository.GetBySwipedBy(swipe1.SwipedById, Guid.NewGuid());
-        Assert.Null(swipe);
+        var swipes = await _repository.GetBySwipedBy(swipe2.SwipedById, swipe2.SwipedById);
+        Assert.Empty(swipes);
+        swipes = await _repository.GetBySwipedBy(swipe2.SwipedWhoId, swipe2.SwipedWhoId);
+        Assert.Empty(swipes);
+        swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedById);
+        Assert.Empty(swipes);
+        swipes = await _repository.GetBySwipedBy(swipe1.SwipedWhoId, swipe1.SwipedWhoId);
+        Assert.Empty(swipes);
+        swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, Guid.NewGuid());
+        Assert.Empty(swipes);
     }
 
     // Arrange

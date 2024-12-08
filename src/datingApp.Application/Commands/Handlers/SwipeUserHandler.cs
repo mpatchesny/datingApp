@@ -26,26 +26,26 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
 
     public async Task HandleAsync(SwipeUser command)
     {
-        var isLikedByOtherUser = new IsLikedByOtherUserDto() { IsLikedByOtherUser = false };
+        var swipes = await _swipeRepository.GetBySwipedBy(command.SwipedById, command.SwipedWhoId);
+        var swipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedById));
+        var otherUserSwipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedWhoId));
 
-        var swipe = await _swipeRepository.GetBySwipedBy(command.SwipedById, command.SwipedWhoId);
         if (swipe == null)
         {
-            var newSwipe = new Swipe(command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
-            await _swipeRepository.AddAsync(newSwipe);
+            swipe = new Swipe(command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
+            await _swipeRepository.AddAsync(swipe);
         }
 
-        var otherUserSwipe = await _swipeRepository.GetBySwipedBy(command.SwipedWhoId, command.SwipedById);
         if (otherUserSwipe?.Like == Like.Like)
         {
-            if ((Like) command.Like == Like.Like)
+            if (swipe.Like == Like.Like)
             {
                 var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, DateTime.UtcNow);
                 await _matchRepository.AddAsync(match);
             }
-            isLikedByOtherUser.IsLikedByOtherUser = true;
         }
 
+        var isLikedByOtherUser = new IsLikedByOtherUserDto() { IsLikedByOtherUser = otherUserSwipe?.Like == Like.Like };
         _isLikedByOtherUserStorage.Set(isLikedByOtherUser);
     }
 }

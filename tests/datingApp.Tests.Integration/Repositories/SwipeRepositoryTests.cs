@@ -36,7 +36,7 @@ public class SwipeRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task given_swipe_exists_get_by_swiped_by_swiped_who_returns_exactly_two_swipes()
+    public async Task given_swipes_from_two_parties_exists_get_by_swiped_by_swiped_who_returns_exactly_two_swipes()
     {
         var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
         _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, swipe1.SwipedWhoId, swipe1.SwipedById, Like.Pass);
@@ -46,6 +46,18 @@ public class SwipeRepositoryTests : IDisposable
 
         var swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
         Assert.Equal(2, swipes.Count());
+    }
+
+    [Fact]
+    public async Task given_only_swipe_exists_get_by_swiped_by_swiped_who_returns_exactly_one_swipe()
+    {
+        var swipe1 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, swipe1.SwipedWhoId, Guid.NewGuid(), Like.Pass);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), swipe1.SwipedById, Like.Pass);
+        _dbContext.ChangeTracker.Clear();
+
+        var swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
+        Assert.Single(swipes);
     }
 
     [Fact]

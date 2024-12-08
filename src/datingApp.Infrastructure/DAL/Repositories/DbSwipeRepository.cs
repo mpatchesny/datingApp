@@ -29,7 +29,7 @@ internal sealed class DbSwipeRepository : ISwipeRepository
         return swipe;
     }
 
-    async Task<List<Swipe>> ISwipeRepository.GetByUserId(UserId userId)
+    public async Task<List<Swipe>> GetByUserId(UserId userId)
     {
         var swipes = await _dbContext
             .Swipes

@@ -30,7 +30,7 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
         var swipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedById));
         var otherUserSwipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedWhoId));
 
-r        if (swipe == null)
+        if (swipe == null)
         {
             swipe = new Swipe(command.SwipedById, command.SwipedWhoId, (Like) command.Like, DateTime.UtcNow);
             await _swipeRepository.AddAsync(swipe);

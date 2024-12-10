@@ -21,6 +21,7 @@ internal sealed class AzureOutlookEmailSender : INotificationSender<Email>
     private readonly string _clientId;
     private readonly string _tenantId;
     private readonly string _clientSecret;
+    private readonly string _senderDisplayName;
     private AuthenticationResult _auth;
     private readonly ILogger<INotificationSender<Email>> _logger;
 
@@ -32,13 +33,14 @@ internal sealed class AzureOutlookEmailSender : INotificationSender<Email>
         _clientId = options.Value.ClientId;
         _tenantId = options.Value.TenantId;
         _clientSecret = options.Value.ClientSecret;
+        _senderDisplayName = options.Value.SenderDisplayName;
         _logger = logger;
     }
 
     public async Task SendAsync(Email email)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Dating App Notification Service", email.Sender));
+        message.From.Add(new MailboxAddress(_senderDisplayName, email.Sender));
         message.To.Add(new MailboxAddress("datingApp user", email.Recipient));
         message.Subject = email.Subject;
         message.Body = new TextPart(TextFormat.Html)

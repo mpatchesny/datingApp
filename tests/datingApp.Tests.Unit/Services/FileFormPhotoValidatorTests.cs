@@ -15,7 +15,7 @@ namespace datingApp.Tests.Unit.Services;
 public class FileFormPhotoValidatorTests
 {
     [Fact]
-    public void given_valid_file_which_is_not_image_ValidateExtension_throws_InvalidPhotoException()
+    public void given_valid_file_which_is_not_image_Validate_throws_InvalidPhotoException()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64DocxSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.docx")
@@ -31,7 +31,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_unsupported_image_file_ValidateExtension_throws_InvalidPhotoException()
+    public void given_valid_unsupported_image_file_Validate_throws_InvalidPhotoException()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64GifSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.gif")
@@ -47,7 +47,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_bmp_file_ValidateExtension_throws_InvalidPhotoException()
+    public void given_valid_bmp_file_Validate_throws_InvalidPhotoException()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64BmpSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.bmp")
@@ -63,7 +63,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_jpg_file_ValidateExtension_return_jpg_extension()
+    public void given_valid_jpg_file_Validate_return_jpg_extension()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64JpgSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.jpg")
@@ -78,7 +78,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_png_file_ValidateExtension_return_png_extension()
+    public void given_valid_png_file_Validate_return_png_extension()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.png")
@@ -93,7 +93,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_webp_file_ValidateExtension_return_webp_extension()
+    public void given_valid_webp_file_Validate_return_webp_extension()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64WebpSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
@@ -108,7 +108,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_photo_is_too_small_ValidateSize_throws_InvalidPhotoSizeException()
+    public void given_valid_photo_is_too_small_Validate_throws_InvalidPhotoSizeException()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
@@ -126,7 +126,7 @@ public class FileFormPhotoValidatorTests
     }
 
     [Fact]
-    public void given_valid_photo_is_too_large_ValidateSize_throws_InvalidPhotoSizeException()
+    public void given_valid_photo_is_too_large_Validate_throws_InvalidPhotoSizeException()
     {
         var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
@@ -141,6 +141,17 @@ public class FileFormPhotoValidatorTests
         var exception = Record.Exception(() => validator.Validate(formFile, out var extension));
         Assert.NotNull(exception);
         Assert.IsType<InvalidPhotoSizeException>(exception);
+    }
+
+    [Fact]
+    public void given_passed_formfile_is_null_Validate_throws_EmptyFormFileContentException()
+    {
+        FormFile formFile = null;
+        var validator = new FormFilePhotoValidator(_options);
+
+        var exception = Record.Exception(() => validator.Validate(formFile, out var extension));
+        Assert.NotNull(exception);
+        Assert.IsType<EmptyFormFileContentException>(exception);
     }
    
     private readonly IOptions<PhotoServiceOptions> _options;

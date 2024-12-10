@@ -20,6 +20,18 @@ public class JpegPhotoConverterTests
     }
 
     [Fact]
+    public async void given_valid_image_file_convert_to_jpeg_should_success_and_converted_image_smaller_or_equal_to_original()
+    {
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64JpgSample);
+        var options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
+        options.Value.CompressedImageQuality = 10;
+        var converter = new JpegPhotoConverter(options);
+
+        var convertedImage = await converter.ConvertAsync(imageStream);
+        Assert.True(imageStream.Length >= convertedImage.Length);
+    }
+
+    [Fact]
     public async void given_valid_jpeg_file_convert_to_jpeg_should_success()
     {
         var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64JpgSample);

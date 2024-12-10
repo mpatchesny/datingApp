@@ -17,7 +17,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_file_which_is_not_image_ValidateExtension_throws_InvalidPhotoException()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64DocxSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64DocxSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.docx")
         {
             Headers = new HeaderDictionary(),
@@ -33,7 +33,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_unsupported_image_file_ValidateExtension_throws_InvalidPhotoException()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64GifSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64GifSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.gif")
         {
             Headers = new HeaderDictionary(),
@@ -49,7 +49,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_bmp_file_ValidateExtension_throws_InvalidPhotoException()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64BmpSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64BmpSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.bmp")
         {
             Headers = new HeaderDictionary(),
@@ -65,7 +65,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_jpg_file_ValidateExtension_return_jpg_extension()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64JpgSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64JpgSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.jpg")
         {
             Headers = new HeaderDictionary(),
@@ -80,7 +80,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_png_file_ValidateExtension_return_png_extension()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.png")
         {
             Headers = new HeaderDictionary(),
@@ -95,7 +95,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_webp_file_ValidateExtension_return_webp_extension()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64WebpSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64WebpSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
         {
             Headers = new HeaderDictionary(),
@@ -110,7 +110,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_photo_is_too_small_ValidateSize_throws_InvalidPhotoSizeException()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
         {
             Headers = new HeaderDictionary(),
@@ -128,7 +128,7 @@ public class FileFormPhotoValidatorTests
     [Fact]
     public void given_valid_photo_is_too_large_ValidateSize_throws_InvalidPhotoSizeException()
     {
-        var stream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var stream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
         var formFile = new FormFile(stream, 0, stream.Length, "fileContent", "file.webp")
         {
             Headers = new HeaderDictionary(),

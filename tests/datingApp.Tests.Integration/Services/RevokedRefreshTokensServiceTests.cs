@@ -39,8 +39,8 @@ public class RevokedRefreshTokensServiceTests : IDisposable
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
         await _service.AddAsync(token);
-
         _dbContext.ChangeTracker.Clear();
+
         var exists = await _testDb.CreateNewDbContext().RevokedRefreshTokens.AnyAsync(x => x.Token == token.Token);
         Assert.True(exists);
     }

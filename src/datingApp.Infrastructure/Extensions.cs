@@ -29,7 +29,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
-using RazorHtmlEmails.RazorClassLib.Services;
 using Scrutor;
 
 namespace datingApp.Infrastructure;

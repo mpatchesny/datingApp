@@ -77,7 +77,7 @@ public class AddPhotoHandlerTests : IDisposable
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;
     private readonly Mock<IBlobStorage> _mockStorage;
-    private readonly Mock<IPhotoValidator<Stream>> _mockPhotoValidator;
+    private readonly Mock<IPhotoValidator> _mockPhotoValidator;
     private readonly Mock<IPhotoConverter> _mockPhotoConverter;
     private readonly Mock<IPhotoUrlProvider> _mockUrlProdier;
 
@@ -87,7 +87,7 @@ public class AddPhotoHandlerTests : IDisposable
         _dbContext = _testDb.DbContext;
         var userRepository = new DbUserRepository(_dbContext);
 
-        _mockPhotoValidator = new Mock<IPhotoValidator<Stream>>();
+        _mockPhotoValidator = new Mock<IPhotoValidator>();
         _mockStorage = new Mock<IBlobStorage>();
         _mockStorage.Setup(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<System.IO.Stream>(), false, It.IsAny<System.Threading.CancellationToken>()));
         _mockPhotoConverter = new Mock<IPhotoConverter>();

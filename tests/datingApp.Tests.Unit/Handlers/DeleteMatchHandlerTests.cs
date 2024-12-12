@@ -43,7 +43,7 @@ public class DeleteMatchHandlerTests
     }
 
     [Fact]
-    public async Task given_match_id_is_in_deleted_entities_DeleteMatchHandler_returns_MatchAlreadyDeletedException()
+    public async Task given_match_not_exists_and_id_is_in_deleted_entities_DeleteMatchHandler_returns_MatchAlreadyDeletedException()
     {
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Core.Entities.Match>(null));
@@ -108,9 +108,9 @@ public class DeleteMatchHandlerTests
 
         await handler.HandleAsync(command);
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, match, "OwnerPolicy"), Times.Once());
-        repository.Verify(x => x.GetByIdAsync(match.Id), Times.Once());
+        repository.Verify(x => x.GetByIdAsync(command.MatchId), Times.Once());
         repository.Verify(x => x.DeleteAsync(match), Times.Once());
-        deletedEntityService.Verify(x => x.ExistsAsync(match.Id), Times.Once());
+        deletedEntityService.Verify(x => x.ExistsAsync(match.Id), Times.Never());
         deletedEntityService.Verify(x => x.AddAsync(match.Id), Times.Once());
     }
 }

@@ -49,12 +49,10 @@ public class DeletePhotoHandlerTests
     }
 
     [Fact]
-    public async Task given_photo_id_in_deleted_entitites_DeletePhotoHandler_returns_PhotoAlreadyDeletedException()
+    public async Task given_user_or_photo_not_exists_and_photo_id_in_deleted_entitites_DeletePhotoHandler_returns_PhotoAlreadyDeletedException()
     {
-        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
         var repository = new Mock<IUserRepository>();
-        repository.Setup(x => x.GetByPhotoIdAsync(It.IsAny<PhotoId>())).Returns(Task.FromResult<User>(user));
+        repository.Setup(x => x.GetByPhotoIdAsync(It.IsAny<PhotoId>())).Returns(Task.FromResult<User>(null));
 
         var fileStorageService = new Mock<IBlobStorage>();
 

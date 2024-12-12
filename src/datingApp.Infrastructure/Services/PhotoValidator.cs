@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using datingApp.Application.Services;
 using datingApp.Infrastructure.Exceptions;
 using Imageflow.Fluent;
+using Microsoft.Extensions.Logging.TraceSource;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
 
 namespace datingApp.Infrastructure.Services;
 
-internal sealed class StreamPhotoValidator : IPhotoValidator<Stream>
+internal sealed class PhotoValidator : IPhotoValidator
 {
     private readonly int _minPhotoSizeBytes;
     private readonly int _maxPhotoSizeBytes;
     private readonly string[] _acceptedFileFormats;
-    public StreamPhotoValidator(IOptions<PhotoServiceOptions> options)
+    public PhotoValidator(IOptions<PhotoServiceOptions> options)
     {
         _minPhotoSizeBytes = options.Value.MinPhotoSizeBytes;
         _maxPhotoSizeBytes = options.Value.MaxPhotoSizeBytes;
@@ -25,10 +25,45 @@ internal sealed class StreamPhotoValidator : IPhotoValidator<Stream>
             .ToArray();
     }
 
-    public void Validate(Stream content, out string extension)
+    public void Validate(IFormFile content, out string extension)
     {
         ValidateSize(content);
         ValidateExtension(content, out extension);
+    }
+    
+    public void Validate(Stream stream, out string extension)
+    {
+        ValidateSize(stream);
+        ValidateExtension(stream, out extension);
+    }
+
+    private void ValidateSize(IFormFile photo)
+    {
+        if (photo == null)
+        {
+            throw new EmptyFormFileContentException();
+        }
+
+        if (photo.Length < _minPhotoSizeBytes || photo.Length > _maxPhotoSizeBytes)
+        {
+            throw new InvalidPhotoSizeException(_minPhotoSizeBytes, _maxPhotoSizeBytes);
+        }
+    }
+
+    private void ValidateExtension(IFormFile photo, out string extension)
+    {
+        if (photo == null)
+        {
+            throw new EmptyFormFileContentException();
+        }
+
+        var ext = Path.GetExtension(photo.FileName).Trim().Trim('.').ToLowerInvariant();
+        extension = ext;
+
+        if (!_acceptedFileFormats.Any(format => format == ext))
+        {
+            throw new InvalidPhotoException();
+        }
     }
 
     private void ValidateExtension(Stream content, out string extension)

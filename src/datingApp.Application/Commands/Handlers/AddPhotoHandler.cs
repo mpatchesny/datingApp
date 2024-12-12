@@ -14,13 +14,13 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IPhotoValidator<Stream> _photoValidator;
+    private readonly IPhotoValidator _photoValidator;
     private readonly IPhotoConverter _jpegPhotoConverter;
     private readonly IBlobStorage _fileStorage;
     private readonly IPhotoUrlProvider _photoStorageUrlProvider;
 
     public AddPhotoHandler(IUserRepository userRepository,
-                            IPhotoValidator<Stream> photoValidator,
+                            IPhotoValidator photoValidator,
                             IBlobStorage fileStorage,
                             IPhotoConverter jpegPhotoConverter,
                             IPhotoUrlProvider photoStorageUrlProvider)

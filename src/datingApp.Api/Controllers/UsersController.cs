@@ -27,13 +27,13 @@ public class UserController : ApiControllerBase
     private readonly IQueryDispatcher _queryDispatcher;
     private readonly ITokenStorage _tokenStorage;
     private readonly IAccessCodeStorage _codeStorage;
-    private readonly IPhotoValidator<IFormFile> _photoService;
+    private readonly IPhotoValidator _photoService;
 
     public UserController(ICommandDispatcher commandDispatcher,
                           IQueryDispatcher queryDispatcher,
                           IAccessCodeStorage codeStorage,
                           ITokenStorage tokenStorage,
-                          IPhotoValidator<IFormFile> photoService)
+                          IPhotoValidator photoService)
     {
         _commandDispatcher = commandDispatcher;
         _queryDispatcher = queryDispatcher;

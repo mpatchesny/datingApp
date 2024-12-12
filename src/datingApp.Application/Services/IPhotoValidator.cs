@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace datingApp.Application.Services;
 
-public interface IPhotoValidator<T> where T: class
+public interface IPhotoValidator
 {
-    public void Validate(T content, out string extension);
+    public void Validate(Stream stream, out string extension);
+    public void Validate(IFormFile file, out string extension);
 }

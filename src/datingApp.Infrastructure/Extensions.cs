@@ -73,8 +73,7 @@ public static class Extensions
 
         services.AddScoped<IRevokedRefreshTokensService, RevokedRefreshTokensService>(); 
         services.AddScoped<IDeletedEntityService, DeletedEntityService>(); 
-        services.AddScoped<IPhotoValidator<IFormFile>, FormFilePhotoValidator>(); 
-        services.AddScoped<IPhotoValidator<Stream>, StreamPhotoValidator>(); 
+        services.AddScoped<IPhotoValidator, PhotoValidator>(); 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
                 .Where(c => !c.Name.EndsWith("Options"))

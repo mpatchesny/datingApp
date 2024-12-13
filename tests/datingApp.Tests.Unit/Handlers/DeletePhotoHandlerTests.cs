@@ -14,6 +14,7 @@ using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure.Services;
+using datingApp.Tests.Unit.Mocks;
 using FluentStorage;
 using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +27,7 @@ namespace datingApp.Tests.Unit.Handlers;
 public class DeletePhotoHandlerTests
 {
     [Fact]
-    public async Task given_user_or_photo_not_exist_DeletePhotoHandler_returns_PhotoNotExistsException()
+    public async Task given_user_or_photo_not_exist_and_photo_id_not_in_deleted_entities_DeletePhotoHandler_returns_PhotoNotExistsException()
     {
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByPhotoIdAsync(It.IsAny<PhotoId>())).Returns(Task.FromResult<User>(null));
@@ -34,7 +35,7 @@ public class DeletePhotoHandlerTests
         var fileStorageService = new Mock<IBlobStorage>();
 
         var deletedEntityService = new Mock<IDeletedEntityService>();
-        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>()));
+        deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy"))
@@ -129,59 +130,5 @@ public class DeletePhotoHandlerTests
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy"), Times.Once());
         Assert.Single(fileStorageService.DeletedItems);
         Assert.Null(user.Photos.FirstOrDefault(x => x.Id == photo.Id));
-    }
-
-    private class MockFileStorageService : IBlobStorage
-    {
-        public List<string> DeletedItems = new List<string>();
-
-        public Task DeleteAsync(IEnumerable<string> fullPaths, CancellationToken cancellationToken = default)
-        {
-            foreach (var item in fullPaths)
-            {
-                DeletedItems.Add(item);
-            }
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            // throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyCollection<bool>> ExistsAsync(IEnumerable<string> fullPaths, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyCollection<Blob>> GetBlobsAsync(IEnumerable<string> fullPaths, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyCollection<Blob>> ListAsync(ListOptions options = null, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Stream> OpenReadAsync(string fullPath, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ITransaction> OpenTransactionAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetBlobsAsync(IEnumerable<Blob> blobs, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task WriteAsync(string fullPath, Stream dataStream, bool append = false, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

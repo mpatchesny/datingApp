@@ -22,13 +22,13 @@ namespace datingApp.Tests.Unit.Handlers;
 public class DeleteMatchHandlerTests
 {
     [Fact]
-    public async Task given_match_not_exists_DeleteMatchHandler_returns_MatchNotExistsException()
+    public async Task given_match_not_exists_and_match_id_not_in_deleted_entities_DeleteMatchHandler_returns_MatchNotExistsException()
     {
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(null));
 
         var deletedEntityService = new Mock<IDeletedEntityService>();
-        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>()));
+        deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))

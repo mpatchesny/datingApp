@@ -56,7 +56,7 @@ public class RefreshTokenHandlerTests
     }
 
     [Fact]
-    public async Task given_token_is_not_revoked_and_is_valid_RefreshTokenHandler_should_refresh_token()
+    public async Task given_token_is_not_revoked_and_is_valid_RefreshTokenHandler_should_succeed()
     {
         var userId = Guid.NewGuid();
         var claim = CreateClaimsPrincipal(userId);

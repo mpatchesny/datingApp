@@ -26,6 +26,7 @@ public class GetPhotoHandlerTests : IDisposable
         _dbContext.ChangeTracker.Clear();
         
         var photoDto = await _handler.HandleAsync(new GetPhoto { PhotoId = photos1[1].Id });
+
         Assert.NotNull(photoDto);
         Assert.IsType<PhotoDto>(photoDto);
         Assert.Equal(photos1[1].Id.Value, photoDto.Id);
@@ -39,6 +40,7 @@ public class GetPhotoHandlerTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(new GetPhoto { PhotoId = Guid.NewGuid() }));
+
         Assert.NotNull(exception);
         Assert.IsType<PhotoNotExistsException>(exception);
     }

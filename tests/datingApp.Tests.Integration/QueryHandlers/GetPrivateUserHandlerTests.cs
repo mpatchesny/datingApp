@@ -25,6 +25,7 @@ public class GetPrivateUserHandlerTests : IDisposable
 
         var query = new GetPrivateUser() {UserId = user.Id};
         var userDto = await _handler.HandleAsync(query);
+
         Assert.NotNull(userDto);
         Assert.IsType<PrivateUserDto>(userDto);
         Assert.Equal(user.Id.Value, userDto.Id);
@@ -35,6 +36,7 @@ public class GetPrivateUserHandlerTests : IDisposable
     {
         var query = new GetPrivateUser() {UserId = Guid.NewGuid()};
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }

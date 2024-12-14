@@ -28,6 +28,7 @@ public class GetMatchesHandlerTests : IDisposable
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
+
         Assert.NotEmpty(matches.Data);
         Assert.IsType<MatchDto>(matches.Data.First());
     }
@@ -37,6 +38,7 @@ public class GetMatchesHandlerTests : IDisposable
     {
         var query = new GetMatches() { UserId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
@@ -55,6 +57,7 @@ public class GetMatchesHandlerTests : IDisposable
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
+
         var matches = await _handler.HandleAsync(query);
         Assert.InRange(matches.Data.Count(), 0, query.PageSize);
     }
@@ -74,6 +77,7 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
         query.SetPage(2);
+
         var matches = await _handler.HandleAsync(query);
         Assert.NotEmpty(matches.Data);
         Assert.Equal(4, matches.Data.Count());
@@ -89,6 +93,7 @@ public class GetMatchesHandlerTests : IDisposable
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
+
         Assert.Equal(user2.Id.Value, matches.Data.First().User.Id);
     }
 
@@ -102,6 +107,7 @@ public class GetMatchesHandlerTests : IDisposable
 
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
+
         Assert.Equal(matches.Data.First().IsDisplayed, true);
     }
     
@@ -121,6 +127,7 @@ public class GetMatchesHandlerTests : IDisposable
         query.SetPageSize(1);
         query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
+
         Assert.Equal(9, matches.PageCount);
     }
 
@@ -140,6 +147,7 @@ public class GetMatchesHandlerTests : IDisposable
         query.SetPageSize(9);
         query.SetPage(1);
         var matches = await _handler.HandleAsync(query);
+
         Assert.Equal(9, matches.PageSize);
     }
 
@@ -159,6 +167,7 @@ public class GetMatchesHandlerTests : IDisposable
         query.SetPageSize(1);
         query.SetPage(2);
         var matches = await _handler.HandleAsync(query);
+
         Assert.Equal(2, matches.Page);
     }
     

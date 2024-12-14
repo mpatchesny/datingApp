@@ -32,6 +32,7 @@ public class GetMatchHandlerTests : IDisposable
 
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var result = await _handler.HandleAsync(query);
+
         Assert.NotNull(result);
         Assert.IsType<MatchDto>(result);
         Assert.NotNull(result.User);
@@ -48,6 +49,7 @@ public class GetMatchHandlerTests : IDisposable
 
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
     }
@@ -64,6 +66,7 @@ public class GetMatchHandlerTests : IDisposable
 
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var result = await _handler.HandleAsync(query);
+
         Assert.NotNull(result);
         Assert.Single(result.User.Photos);
         Assert.IsType<PhotoDto>(result.User.Photos.FirstOrDefault());
@@ -81,6 +84,7 @@ public class GetMatchHandlerTests : IDisposable
 
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
         var result = await _handler.HandleAsync(query);
+
         Assert.NotNull(result);
         Assert.Single(result.Messages);
         Assert.IsType<MessageDto>(result.Messages.FirstOrDefault());
@@ -103,6 +107,7 @@ public class GetMatchHandlerTests : IDisposable
         int howManyMessages = 5;
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id, HowManyMessages = howManyMessages };
         var result = await _handler.HandleAsync(query);
+
         Assert.NotNull(result);
         Assert.Equal(howManyMessages, result.Messages.Count());
         Assert.IsType<MessageDto>(result.Messages.FirstOrDefault());
@@ -118,6 +123,7 @@ public class GetMatchHandlerTests : IDisposable
 
         var query = new GetMatch{ MatchId = Guid.NewGuid(), UserId = user1.Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<MatchNotExistsException>(exception);
     }
@@ -133,6 +139,7 @@ public class GetMatchHandlerTests : IDisposable
 
         var query = new GetMatch{ MatchId = match.Id, UserId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }

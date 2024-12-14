@@ -23,6 +23,7 @@ public class RevokedRefreshTokensServiceTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var exists = await _service.ExistsAsync(token.Token);
+
         Assert.True(exists);
     }
 
@@ -31,6 +32,7 @@ public class RevokedRefreshTokensServiceTests : IDisposable
     {
         var token = new TokenDto("abcdef", DateTime.UtcNow);
         var exists = await _service.ExistsAsync(token.Token);
+
         Assert.False(exists);
     }
 
@@ -41,7 +43,8 @@ public class RevokedRefreshTokensServiceTests : IDisposable
         await _service.AddAsync(token);
         _dbContext.ChangeTracker.Clear();
 
-        var exists = await _testDb.CreateNewDbContext().RevokedRefreshTokens.AnyAsync(x => x.Token == token.Token);
+        var exists = await _dbContext.RevokedRefreshTokens.AnyAsync(x => x.Token == token.Token);
+
         Assert.True(exists);
     }
 
@@ -56,6 +59,7 @@ public class RevokedRefreshTokensServiceTests : IDisposable
 
         var badToken = new TokenDto(tokenToken, DateTime.UtcNow);
         var exception = await Record.ExceptionAsync(async () => await _service.AddAsync(badToken));
+
         Assert.NotNull(exception);
     }
 

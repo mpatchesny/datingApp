@@ -22,11 +22,6 @@ internal sealed class TestDatabase : IDisposable
         DbContext.Database.EnsureCreated();
     }
 
-    public DatingAppDbContext CreateNewDbContext()
-    {
-        return new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(_connectionString).Options);
-    }
-
     public void Dispose()
     {
         DbContext.Database.EnsureDeleted();

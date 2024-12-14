@@ -19,17 +19,19 @@ public class SwipeRepositoryTests : IDisposable
     public async Task add_swipe_should_succeed()
     {
         var swipe = IntegrationTestHelper.CreateSwipe(Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        _dbContext.ChangeTracker.Clear();
 
         await _repository.AddAsync(swipe);
-        var addedSwipe = await _testDb.CreateNewDbContext().Swipes.FirstOrDefaultAsync(x => x.SwipedById == swipe.SwipedById && x.SwipedWhoId == swipe.SwipedWhoId);
+        var addedSwipe = await _dbContext.Swipes.FirstOrDefaultAsync(x => x.SwipedById == swipe.SwipedById && x.SwipedWhoId == swipe.SwipedWhoId);
         Assert.True(swipe.IsEqualTo(addedSwipe));
     }
 
     [Fact]
     public async Task add_swipe_with_existing_id_throws_exception()
     {
-        var swipe = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), Guid.NewGuid(), Guid.NewGuid(), Like.Like);
+        var swipe = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Like);
         var badSwipe = new Swipe(swipe.SwipedById, swipe.SwipedWhoId, Like.Like, DateTime.UtcNow);
+        _dbContext.ChangeTracker.Clear();
 
         var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(badSwipe));
         Assert.NotNull(exception);

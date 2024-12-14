@@ -33,6 +33,7 @@ public class GetMessageHandlerTests : IDisposable
 
         var query = new GetMessage() { MessageId = messages1[2].Id };
         var messageDto = await _handler.HandleAsync(query);
+
         Assert.NotNull(messageDto);
         Assert.IsType<MessageDto>(messageDto);
         Assert.Equal(query.MessageId, messageDto.Id);
@@ -51,6 +52,7 @@ public class GetMessageHandlerTests : IDisposable
 
         var query = new GetMessage() { MessageId = messages[0].Id };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UnauthorizedException>(exception);
     }
@@ -66,6 +68,7 @@ public class GetMessageHandlerTests : IDisposable
 
         var query = new GetMessage() { MessageId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<MessageNotExistsException>(exception);
     }

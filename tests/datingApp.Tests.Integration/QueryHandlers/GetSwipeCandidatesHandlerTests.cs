@@ -33,12 +33,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
@@ -54,12 +55,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Empty(candidates);
     }
 
@@ -79,12 +81,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, settings2);
         
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
@@ -104,12 +107,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Empty(candidates);
     }
 
@@ -123,6 +127,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
@@ -139,6 +144,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Empty(candidates);
     }
 
@@ -162,6 +168,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.NotEmpty(candidates);
         Assert.Equal(candidates.ToList()[0].Id, user5.Id.Value);
         Assert.Equal(candidates.ToList()[1].Id, user4.Id.Value);
@@ -180,6 +187,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
@@ -196,6 +204,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2};
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Equal(query.HowMany, candidates.Count());
     }
 
@@ -203,8 +212,10 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task given_user_who_requested_not_exists_get_swipe_candidates_returns_UserNotExistsExceptionn()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
+
         var query = new GetSwipeCandidates() { UserId = Guid.NewGuid(), HowMany = 2 };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }

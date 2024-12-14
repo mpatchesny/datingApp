@@ -75,8 +75,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(queryAgeFrom, queryAgeTo), 100, new Location(0.0, 0.0));
         var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Female, settings1);
 
-        int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
-        var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
+        var candidateDateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-candidateAge));
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, settings2);
         
@@ -101,8 +100,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(queryAgeFrom, queryAgeTo), 100, new Location(0.0, 0.0));
         var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), UserSex.Male, settings1);
 
-        int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
-        var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
+        var candidateDateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-candidateAge));
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, settings2);
 
@@ -154,12 +152,12 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user5 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user3.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user4.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user4.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user3.Id, user4.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user3.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user3.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user4.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user4.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user3.Id, user4.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user3.Id, Like.Like);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
@@ -177,7 +175,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user1.Id, user2.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user1.Id, user2.Id, Like.Like);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2 };

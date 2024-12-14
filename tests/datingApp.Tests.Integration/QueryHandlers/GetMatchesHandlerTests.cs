@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Api.Controllers;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
@@ -12,6 +13,7 @@ using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
 using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
@@ -19,18 +21,29 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_GetMatchesHandler_by_user_id_should_return_nonempty_collection_of_matches_dto()
+    public async Task given_user_exists_GetMatchesHandler_should_return_nonempty_collection_of_matches_dto_ordered_by_created_date_descending()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        var createdTime = DateTime.UtcNow;
+        var matches = new List<Match>();
+        for (int i = 0; i < 10; i++)
+        {
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, createdAt: createdTime.AddSeconds(-i));
+            matches.Add(match);
+        }
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatches() { UserId = user1.Id };
-        var matches = await _handler.HandleAsync(query);
+        var retrievedMatches = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(matches.Data);
-        Assert.IsType<MatchDto>(matches.Data.First());
+        Assert.NotEmpty(retrievedMatches.Data);
+        for (int i = 0; i < retrievedMatches.Data.Count; i++)
+        {
+            Assert.NotNull(retrievedMatches.Data[i]);
+            Assert.IsType<MatchDto>(retrievedMatches.Data[i]);
+            Assert.Equal(matches[i].Id.Value, retrievedMatches.Data[i].Id);
+        }
     }
 
     [Fact]
@@ -44,7 +57,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task returned_matches_count_is_lower_or_equal_to_page_size()
+    public async Task returned_matches_count_is_equal_to_page_size_if_enough_matches()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 10;
@@ -57,9 +70,28 @@ public class GetMatchesHandlerTests : IDisposable
 
         var query = new GetMatches() { UserId = user1.Id };
         query.SetPageSize(5);
-
         var matches = await _handler.HandleAsync(query);
-        Assert.InRange(matches.Data.Count(), 0, query.PageSize);
+
+        Assert.Equal(query.PageSize, matches.Data.Count);
+    }
+
+    [Fact]
+    public async Task returned_matches_count_is_less_than_page_size_if_not_enough_matches()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 4;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatches() { UserId = user1.Id };
+        query.SetPageSize(5);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.InRange(matches.Data.Count, 0, query.PageSize);
     }
 
     [Fact]
@@ -112,7 +144,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
     
     [Fact]
-    public async Task paginated_data_dto_returns_proper_number_page_count()
+    public async Task paginated_data_dto_returns_proper_page_count()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 9;
@@ -132,7 +164,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task paginated_data_dto_returns_proper_number_of_page_size()
+    public async Task paginated_data_dto_returns_proper_page_size()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 15;

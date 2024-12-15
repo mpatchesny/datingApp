@@ -65,8 +65,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UnauthorizedException();
         }
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy.Settings.Location.Lat, requestedBy.Settings.Location.Lon, 
-            requestedWho.Settings.Location.Lat, requestedWho.Settings.Location.Lon);
+        var distanceInKms = _spatial.CalculateDistanceInKms(requestedBy, requestedWho);
         return requestedWho.AsPublicDto(distanceInKms);
     }
 }

@@ -80,11 +80,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
             var pontentialCandidatesWithinRange =
                 from candidate in pontentialCandidates
-                let distance = _spatial.CalculateDistanceInKms(
-                    requestedBy.Settings.Location.Lat,
-                    requestedBy.Settings.Location.Lon,
-                    candidate.Settings.Location.Lat,
-                    candidate.Settings.Location.Lon)
+                let distance = _spatial.CalculateDistanceInKms(requestedBy, candidate)
                 where distance <= requestedBy.Settings.PreferredMaxDistance
                 select candidate.AsPublicDto(distance);
 

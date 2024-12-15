@@ -52,11 +52,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
             var user1 = match.Users.ElementAt(0);
             var user2 = match.Users.ElementAt(1);
 
-            var distanceInKms = _spatial.CalculateDistanceInKms(
-                user1.Settings.Location.Lat, 
-                user1.Settings.Location.Lon, 
-                user2.Settings.Location.Lat, 
-                user2.Settings.Location.Lon);
+            var distanceInKms = _spatial.CalculateDistanceInKms(user1, user2);
 
             var userDto = user1.Id.Equals(query.UserId) ? 
                 user2.AsPublicDto(distanceInKms) :

@@ -21,7 +21,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_GetMatchesHandler_should_return_nonempty_collection_of_matches_dto_ordered_by_created_date_descending()
+    public async Task given_user_exists_GetMatchesHandler_should_return_nonempty_collection_of_matches_dto_ordered_by_created_date_descending_with_one_last_message()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -29,7 +29,12 @@ public class GetMatchesHandlerTests : IDisposable
         var matches = new List<Match>();
         for (int i = 0; i < 10; i++)
         {
-            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, createdAt: createdTime.AddSeconds(-i));
+            var messages = new List<Message>();
+            for (int j=0; j < 10; j++)
+            {
+                messages.Add(new Message(Guid.NewGuid(), user2.Id, "hello", false, createdTime.AddSeconds(-j)));
+            }
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages, createdAt: createdTime.AddSeconds(-i));
             matches.Add(match);
         }
         _dbContext.ChangeTracker.Clear();
@@ -43,6 +48,8 @@ public class GetMatchesHandlerTests : IDisposable
             Assert.NotNull(retrievedMatches.Data[i]);
             Assert.IsType<MatchDto>(retrievedMatches.Data[i]);
             Assert.Equal(matches[i].Id.Value, retrievedMatches.Data[i].Id);
+            Assert.InRange(retrievedMatches.Data[i].Messages.Count, 0, 1);
+            Assert.Equal(createdTime, retrievedMatches.Data[i].Messages[0].CreatedAt);
         }
     }
 

@@ -17,13 +17,13 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPrivateUserHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_get_private_user_returns_private_user_dto()
+    public async Task given_user_exists_GetPrivateUserHandler_returns_private_user_dto()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        var query = new GetPrivateUser() {UserId = user.Id};
+        var query = new GetPrivateUser() { UserId = user.Id };
         var userDto = await _handler.HandleAsync(query);
 
         Assert.NotNull(userDto);
@@ -32,9 +32,9 @@ public class GetPrivateUserHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_not_exists_get_private_user_returns_UserNotExistsException()
+    public async Task given_user_not_exists_GetPrivateUserHandler_returns_UserNotExistsException()
     {
-        var query = new GetPrivateUser() {UserId = Guid.NewGuid()};
+        var query = new GetPrivateUser() { UserId = Guid.NewGuid() };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
 
         Assert.NotNull(exception);

@@ -15,7 +15,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPublicUserHanlderTests : IDisposable
 {
     [Fact]
-    public async Task given_users_exists_and_are_in_a_match_get_public_user_returns_public_user_dto()
+    public async Task given_users_exist_and_in_match_GetPublicUserHandler_returns_public_user_dto()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
             .Returns(Task.FromResult(AuthorizationResult.Success()));
@@ -34,7 +34,7 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task given_users_exists_and_are_not_in_a_match_get_public_user_returns_UnauthorizedException()
+    public async Task given_users_exist_and_not_in_match_GetPublicUserHandler_returns_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
             .Returns(Task.FromResult(AuthorizationResult.Success()));
@@ -51,7 +51,7 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_not_exists_get_public_user_returns_null()
+    public async Task given_request_who_user_not_exists_GetPublicUserHandler_returns_null()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
             .Returns(Task.FromResult(AuthorizationResult.Success()));
@@ -66,7 +66,7 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task request_by_nonexisting_user_returns_UserNotExistsException()
+    public async Task given_request_by_user_not_exists_GetPublicUserHandler_returns_UserNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
             .Returns(Task.FromResult(AuthorizationResult.Success()));
@@ -82,7 +82,7 @@ public class GetPublicUserHanlderTests : IDisposable
     }
 
     [Fact]
-    public async Task given_authorization_serivce_fail_GetPublicUser_throws_UnauthorizedException()
+    public async Task given_authorization_failed_GetPublicUser_throws_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
             .Returns(Task.FromResult(AuthorizationResult.Failed()));

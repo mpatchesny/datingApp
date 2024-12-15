@@ -17,10 +17,10 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetPhotoHandlerTests : IDisposable
 {
     [Fact]
-    public async void given_photo_exists_get_photo_returns_proper_photo_Dto()
+    public async void given_photo_exists_GetPhotoHandler_returns_proper_photo_Dto()
     {
-        var photos1 = new List<Photo>() { IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(), };
-        var photos2 = new List<Photo>() { IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(),IntegrationTestHelper.CreatePhoto(), };
+        var photos1 = new List<Photo>() { IntegrationTestHelper.CreatePhoto(), IntegrationTestHelper.CreatePhoto(), IntegrationTestHelper.CreatePhoto(), };
+        var photos2 = new List<Photo>() { IntegrationTestHelper.CreatePhoto(), IntegrationTestHelper.CreatePhoto(), IntegrationTestHelper.CreatePhoto(), };
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos1);
         _ = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos2);
         _dbContext.ChangeTracker.Clear();
@@ -34,7 +34,7 @@ public class GetPhotoHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_photo_not_exists_get_photo_returns_PhotoNotExistsException()
+    public async void given_photo_not_exists_GetPhotoHandler_returns_PhotoNotExistsException()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();

@@ -135,6 +135,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     public async Task when_no_candidates_within_range_GetSwipeCandidates_returns_empty_list()
     {
         _spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(999);
+        _spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<User>(), It.IsAny<User>())).Returns(999);
         var mockedCoordsResult = new Coords(northLat: 100.0d, southLat: -100.0d, eastLon: 100.0d, westLon: -100.0d);
         _spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
             .Returns((double x, double y, int z) => mockedCoordsResult);
@@ -259,6 +260,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     private void SetMockedSpatialDefaultReturnValues(Mock<ISpatial> spatial)
     {
         spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
+        spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<User>(), It.IsAny<User>())).Returns(0);
         var mockedCoordsResult = new Coords(northLat: 100.0d, southLat: -100.0d, eastLon: 100.0d, westLon: -100.0d);
         spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
             .Returns((double x, double y, int z) => mockedCoordsResult);

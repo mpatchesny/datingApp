@@ -22,7 +22,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_user_exists_GetMatchesHandler_should_return_nonempty_collection_of_matches_dto_ordered_by_created_date_descending_with_one_last_message()
+    public async Task given_user_exists_GetMatchesHandler_should_return_nonempty_collection_of_matches_dto_ordered_by_created_date_desc_with_one_last_message()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

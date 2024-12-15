@@ -59,7 +59,7 @@ internal static class Extensions
     public static List<MessageDto> MessagesAsDto(this Match match)
     {
         var messages = new List<MessageDto>();
-        foreach (var message in match.Messages.OrderBy(m => m.CreatedAt))
+        foreach (var message in match.Messages)
         {
             messages.Add(new MessageDto
             {

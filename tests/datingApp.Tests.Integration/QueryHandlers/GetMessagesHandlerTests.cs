@@ -196,7 +196,7 @@ public class GetMessagesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_page_times_page_size_is_above_messages_count_GetMessagesHandler_empty_list()
+    public async Task given_page_exceeds_messages_count_GetMessagesHandler_empty_list()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
             .Returns(Task.FromResult(AuthorizationResult.Success()));

@@ -213,7 +213,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_page_times_page_size_is_above_matches_count_GetMatches_returns_empty_list()
+    public async Task given_page_exceeds_matches_count_GetMatches_returns_empty_list()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 10;

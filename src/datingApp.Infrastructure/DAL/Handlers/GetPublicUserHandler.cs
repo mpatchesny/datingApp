@@ -32,6 +32,9 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             .AsNoTracking()
             .Include(user => user.Settings)
             .Include(user => user.Photos)
+            .Include(user => user.Matches
+                .Where(match => match.Users.Any(user => user.Id.Equals(query.RequestByUserId)))
+                .Where(match => match.Users.Any(user => user.Id.Equals(query.RequestWhoUserId))))
             .Where(user => user.Id.Equals(query.RequestByUserId) || user.Id.Equals(query.RequestWhoUserId))
             .ToListAsync();
 
@@ -47,13 +50,7 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
             throw new UserNotExistsException(query.RequestByUserId);
         }
 
-        // user who requested information about other user must have match with other user
-        var match = await _dbContext.Matches
-            .AsNoTracking()
-            .Where(match => match.Users.Any(user => user.Id.Equals(requestedBy.Id)))
-            .Where(match => match.Users.Any(user => user.Id.Equals(requestedWho.Id)))
-            .FirstOrDefaultAsync();
-
+        var match = requestedWho.Matches.FirstOrDefault();
         if (match == null)
         {
             throw new UnauthorizedException();

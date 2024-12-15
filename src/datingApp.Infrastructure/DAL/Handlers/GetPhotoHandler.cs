@@ -31,13 +31,6 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
             throw new PhotoNotExistsException(query.PhotoId);
         }
 
-        var photo = user.Photos.FirstOrDefault();
-        return new PhotoDto
-        {
-            Id = photo.Id,
-            UserId = user.Id,
-            Url = photo.Url,
-            Oridinal = photo.Oridinal
-        };
+        return user.PhotosAsDto().FirstOrDefault();
     }
 }

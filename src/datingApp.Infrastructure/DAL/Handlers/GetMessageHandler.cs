@@ -40,15 +40,6 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
             throw new UnauthorizedException();
         }
 
-        var message = match.Messages.First();
-        return new MessageDto()
-        {
-            Id = message.Id,
-            MatchId = match.Id, 
-            SendFromId = message.SendFromId,
-            Text = message.Text,
-            IsDisplayed = message.IsDisplayed,
-            CreatedAt = message.CreatedAt
-        };
+        return match.MessagesAsDto().FirstOrDefault();
     }
 }

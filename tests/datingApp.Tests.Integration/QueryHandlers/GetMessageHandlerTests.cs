@@ -20,14 +20,15 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMessageHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_message_exists_get_message_returns_proper_message_dto()
+    public async Task given_message_exists_GetMessageHandler_returns_proper_message_dto()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
+            .Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var messages1 = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id), IntegrationTestHelper.CreateMessage(user2.Id), IntegrationTestHelper.CreateMessage(user2.Id) };
         var messages2 = new List<Message>() { IntegrationTestHelper.CreateMessage(user1.Id), IntegrationTestHelper.CreateMessage(user1.Id), IntegrationTestHelper.CreateMessage(user1.Id) };
-        var match1 = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1);
         _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages2);
         _dbContext.ChangeTracker.Clear();
 
@@ -37,13 +38,14 @@ public class GetMessageHandlerTests : IDisposable
         Assert.NotNull(messageDto);
         Assert.IsType<MessageDto>(messageDto);
         Assert.Equal(query.MessageId, messageDto.Id);
-        Assert.Equal(match1.Id.Value, messageDto.MatchId);
+        Assert.Equal(match.Id.Value, messageDto.MatchId);
     }
 
     [Fact]
-    public async Task given_authorization_fail_get_message_by_id_returns_UnauthorizedException()
+    public async Task given_authorization_fail_GetMessageHandler_returns_UnauthorizedException()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
+            .Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id) };
@@ -58,9 +60,10 @@ public class GetMessageHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_message_not_exists_GetMessageHandler_returns_message_not_exists_exception()
+    public async Task given_message_or_match_not_exists_GetMessageHandler_returns_MessageNotExistsException()
     {
-        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
+            .Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);

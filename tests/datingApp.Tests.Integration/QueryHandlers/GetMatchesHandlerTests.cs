@@ -11,6 +11,7 @@ using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Handlers;
+using FluentStorage.Utils.Extensions;
 using Moq;
 using Xunit;
 using Match = datingApp.Core.Entities.Match;
@@ -30,7 +31,7 @@ public class GetMatchesHandlerTests : IDisposable
         for (int i = 0; i < 10; i++)
         {
             var messages = new List<Message>();
-            for (int j=0; j < 10; j++)
+            for (int j = 0; j < 10; j++)
             {
                 messages.Add(new Message(Guid.NewGuid(), user2.Id, "hello", false, createdTime.AddSeconds(-j)));
             }
@@ -45,11 +46,12 @@ public class GetMatchesHandlerTests : IDisposable
         Assert.NotEmpty(retrievedMatches.Data);
         for (int i = 0; i < retrievedMatches.Data.Count; i++)
         {
-            Assert.NotNull(retrievedMatches.Data[i]);
-            Assert.IsType<MatchDto>(retrievedMatches.Data[i]);
-            Assert.Equal(matches[i].Id.Value, retrievedMatches.Data[i].Id);
-            Assert.InRange(retrievedMatches.Data[i].Messages.Count, 0, 1);
-            Assert.Equal(createdTime, retrievedMatches.Data[i].Messages[0].CreatedAt);
+            var matchDto = retrievedMatches.Data[i];
+            Assert.NotNull(matchDto);
+            Assert.IsType<MatchDto>(matchDto);
+            Assert.Equal(matches[i].Id.Value, matchDto.Id);
+            Assert.InRange(matchDto.Messages.Count, 0, 1);
+            Assert.Equal(RoundToMillisecond(createdTime), RoundToMillisecond(matchDto.Messages[0].CreatedAt));
         }
     }
 
@@ -228,5 +230,11 @@ public class GetMatchesHandlerTests : IDisposable
     public void Dispose()
     {
         _testDb.Dispose();
+    }
+
+    private static DateTime RoundToMillisecond(DateTime dateTime)
+    {
+        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day,
+            dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond);
     }
 }

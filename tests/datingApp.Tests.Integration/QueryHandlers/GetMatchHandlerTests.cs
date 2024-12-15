@@ -21,13 +21,13 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetMatchHandlerTests : IDisposable
 {
     [Fact]
-    public async Task given_match_exists_get_match_handler_should_return_match_dto_with_non_empty_user()
+    public async Task given_match_exists_GetMatchHandler_should_return_match_dto_with_non_empty_user()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, isDisplayedByUser1: true);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetMatch{ MatchId = match.Id, UserId = user1.Id };
@@ -36,10 +36,12 @@ public class GetMatchHandlerTests : IDisposable
         Assert.NotNull(result);
         Assert.IsType<MatchDto>(result);
         Assert.NotNull(result.User);
+        Assert.Equal(user2.Id.Value, result.User.Id);
+        Assert.True(result.IsDisplayed);
     }
 
     [Fact]
-    public async Task given_match_exists_and_auth_service_fail_get_match_handler_should_return_UnauthorizedException()
+    public async Task given_match_exists_and_authorization_failed_GetMatchHandler_should_return_UnauthorizedException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Failed()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -55,7 +57,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_exists_and_user_has_photos_get_match_handler_should_return_match_dto_with_non_empty_user_photos()
+    public async Task given_match_exists_and_user_has_photos_GetMatchHandler_should_return_match_dto_with_non_empty_user_photos()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -73,12 +75,20 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_exists_and_match_has_messages_get_match_handler_should_return_match_dto_with_non_empty_messages()
+    public async Task given_match_exists_and_match_has_messages_GetMatchHandler_should_return_match_dto_with_non_empty_messages_ordered_by_created_date_desc()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id) };
+        var createdTime = DateTime.UtcNow;
+        var messages = new List<Message>() { 
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: createdTime.AddSeconds(-5)),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: createdTime.AddSeconds(-4)),
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: createdTime.AddSeconds(-3)),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: createdTime.AddSeconds(-2)),
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: createdTime.AddSeconds(-1)),
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: createdTime.AddSeconds(0)),
+        };
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
         _dbContext.ChangeTracker.Clear();
 
@@ -86,12 +96,19 @@ public class GetMatchHandlerTests : IDisposable
         var result = await _handler.HandleAsync(query);
 
         Assert.NotNull(result);
-        Assert.Single(result.Messages);
+        Assert.NotEmpty(result.Messages);
         Assert.IsType<MessageDto>(result.Messages.FirstOrDefault());
+        Assert.Collection(result.Messages,
+            m => Assert.Equal(messages[^1].Id.Value, m.Id),
+            m => Assert.Equal(messages[^2].Id.Value, m.Id),
+            m => Assert.Equal(messages[^3].Id.Value, m.Id),
+            m => Assert.Equal(messages[^4].Id.Value, m.Id),
+            m => Assert.Equal(messages[^5].Id.Value, m.Id),
+            m => Assert.Equal(messages[^6].Id.Value, m.Id));
     }
 
     [Fact]
-    public async Task get_match_handler_respects_how_many_messages_query_property()
+    public async Task GetMatchHandler_respects_how_many_messages_query_property()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -114,7 +131,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_match_not_exists_get_match_handler_returns_MatchNotExistsException()
+    public async Task given_match_not_exists_GetMatchHandler_returns_MatchNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -129,7 +146,7 @@ public class GetMatchHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_user_not_exists_get_match_handler_returns_UserNotExistsException()
+    public async Task given_user_not_exists_GetMatchHandler_returns_UserNotExistsException()
     {
         _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy")).Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

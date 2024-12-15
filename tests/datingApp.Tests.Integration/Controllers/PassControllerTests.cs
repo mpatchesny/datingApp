@@ -20,6 +20,7 @@ public class PassControllerTests : ControllerTestBase, IDisposable
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user1.Id, Like.Pass);
         _dbContext.ChangeTracker.Clear();
 
         var token = Authorize(user1.Id);
@@ -32,7 +33,23 @@ public class PassControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_other_user_not_exists_put_pass_returns_404_status_code()
+    public async Task given_other_user_not_swiped_put_pass_returns_200_status_code_and_false_content()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var response = await Client.PutAsync($"pass/{user2.Id.Value}", null);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
+        Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
+    }
+
+    [Fact]
+    public async Task given_other_user_not_exists_put_pass_returns_200_status_code_and_false_content()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
@@ -40,8 +57,10 @@ public class PassControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.PutAsync($"pass/{Guid.NewGuid}", null);
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var response = await Client.PutAsync($"pass/{Guid.NewGuid()}", null);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
+        Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
     }
 
     [Fact]

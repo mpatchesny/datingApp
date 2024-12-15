@@ -104,7 +104,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_page_above_1_returns_proper_number_of_matches()
+    public async Task given_page_above_1_GetMatches_returns_proper_number_of_matches()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 9;
@@ -153,7 +153,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
     
     [Fact]
-    public async Task paginated_data_dto_returns_proper_page_count()
+    public async Task GetMatches_returns_proper_page_count()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 9;
@@ -173,7 +173,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task paginated_data_dto_returns_proper_page_size()
+    public async Task GetMatches_returns_proper_page_size()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 15;
@@ -193,7 +193,7 @@ public class GetMatchesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task paginated_data_dto_returns_proper_page()
+    public async Task GetMatches_returns_proper_page()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var matchesToCreate = 10;
@@ -210,6 +210,26 @@ public class GetMatchesHandlerTests : IDisposable
         var matches = await _handler.HandleAsync(query);
 
         Assert.Equal(2, matches.Page);
+    }
+
+    [Fact]
+    public async Task given_page_times_page_size_is_above_matches_count_GetMatches_returns_empty_list()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatches() { UserId = user1.Id };
+        query.SetPageSize(5);
+        query.SetPage(3);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Empty(matches.Data);
     }
     
     // Arrange

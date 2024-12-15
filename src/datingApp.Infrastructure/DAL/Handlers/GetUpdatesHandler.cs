@@ -35,7 +35,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
             .Where(match => 
                 match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
-                match.CreatedAt >= query.LastActivityTime)
+                    match.CreatedAt >= query.LastActivityTime)
             .Include(match => match.Users)
                 .ThenInclude(user => user.Photos)
             .Include(match => match.Users)
@@ -64,7 +64,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                     Id = match.Id,
                     User = userDto,
                     IsDisplayed = match.IsDisplayedByUser(query.UserId),
-                    Messages =  match.MessagesAsDto(),
+                    Messages =  match.MessagesAsDto().OrderBy(m => m.CreatedAt),
                     CreatedAt = match.CreatedAt
                 });
         }

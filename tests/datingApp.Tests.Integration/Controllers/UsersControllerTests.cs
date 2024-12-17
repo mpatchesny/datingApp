@@ -33,6 +33,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotNull(response.Headers);
 
         var dto = await response.Content.ReadFromJsonAsync<PrivateUserDto>();
+
         Assert.NotNull(dto);
         Assert.Equal(dto.Email, email);
     }
@@ -46,6 +47,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -58,6 +60,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignUp(Guid.Empty, phone, "test@test.com", "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -70,6 +73,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RequestEmailAccessCode(email);
         var response = await Client.PostAsJsonAsync("users/auth", command);
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -80,6 +84,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RequestEmailAccessCode(email);
         var response = await Client.PostAsJsonAsync("users/auth", command);
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -94,8 +99,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignInByEmail(email, accessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var token = await response.Content.ReadFromJsonAsync<JwtDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(token);
         Assert.False(string.IsNullOrWhiteSpace(token.AccessToken.Token));
     }
@@ -112,6 +118,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var invalidAccessCode = "67890";
         var command = new SignInByEmail(email, invalidAccessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -127,6 +134,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignInByEmail(email, expiredAccessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -137,6 +145,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var response = await Client.GetAsync($"users/{user.Id.Value}");
+
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -150,6 +159,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
         var response = await Client.GetAsync($"users/{user.Id.Value}");
+
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -163,6 +173,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
         var response = await Client.GetAsync($"users/me");
+
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -175,6 +186,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(badToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -193,10 +205,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        var responseJson = await response.Content.ReadFromJsonAsync<JwtDto>();
+
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    
-        var responseJson = await response.Content.ReadFromJsonAsync<JwtDto>();
         Assert.NotNull(responseJson.AccessToken);
         Assert.NotNull(responseJson.RefreshToken);
         Assert.NotEqual(responseJson.AccessToken.Token, accessToken);
@@ -213,10 +225,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        var secondResponse = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        var secondResponse = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.NotNull(secondResponse);
         Assert.Equal(HttpStatusCode.Unauthorized, secondResponse.StatusCode);
     }
@@ -236,6 +248,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -252,6 +265,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user2.Id.Value}");
+
         Assert.NotNull(response);
         Assert.Equal(user2.Id.Value, response.Id);
     }
@@ -267,6 +281,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response =  await Client.GetAsync($"users/{user2.Id.Value}");
+
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -280,6 +295,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetAsync($"users/{user1.Id.Value}");
+
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -294,7 +310,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.GetAsync($"users/{notExistingUserId}");
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -307,6 +325,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/me");
+
         Assert.NotNull(response);
         Assert.Equal(user.Id.Value, response.Id);
     }
@@ -321,7 +340,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"users/{user.Id.Value}");
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -335,9 +356,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.DeleteAsync($"users/{notExistingUserId}");
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
     }
 
@@ -352,9 +373,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         
         var response = await Client.DeleteAsync($"users/{user.Id.Value}");
-        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
         Assert.Equal($"User {user.Id.Value} is deleted permanently.", error.Reason);
     }
 
@@ -367,6 +388,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
+
         Assert.NotNull(response);
     }
 
@@ -383,6 +405,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
+
         Assert.NotNull(response);
         Assert.Equal(10, response.Count);
     }
@@ -396,6 +419,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+
         Assert.NotNull(response);
     }
 
@@ -424,6 +448,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+
         Assert.NotNull(response);
         Assert.Equal(100, response.Count);
     }
@@ -453,6 +478,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var lastActivityTime = (time - TimeSpan.FromHours(1)).ToIso8601DateString();
         var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
+
         Assert.NotNull(response);
         Assert.Equal(5, response.Count);
     }
@@ -470,12 +496,14 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var command = new ChangeUser(user.Id);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{user.Id.Value}", payload);
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
-    [Fact]
-    public async Task patch_users_with_changes_returns_204_no_content()
-    {
+        [Fact]
+        public async Task patch_users_with_changes_returns_204_no_content()
+        {
         var email = "test@test.com";
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
         _dbContext.ChangeTracker.Clear();
@@ -486,7 +514,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{user.Id.Value}", content);
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -502,7 +532,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{Guid.NewGuid()}", content);
-        Debug.Print($"users/{Guid.NewGuid()}");
+
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 

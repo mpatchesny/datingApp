@@ -27,8 +27,9 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"like/{user2.Id.Value}", null);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
     }
 
@@ -44,8 +45,9 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"like/{user2.Id.Value}", null);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
     }
 
@@ -59,8 +61,9 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"like/{Guid.NewGuid()}", null);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
     }
 
@@ -76,8 +79,9 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.PutAsync($"like/{user2.Id.Value}", null);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var isLikedByOtherUser = await response.Content.ReadFromJsonAsync<IsLikedByOtherUserDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(isLikedByOtherUser.IsLikedByOtherUser);
     }
 

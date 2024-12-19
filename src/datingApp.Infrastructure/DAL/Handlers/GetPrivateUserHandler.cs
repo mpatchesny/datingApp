@@ -20,7 +20,6 @@ internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, Priv
     public async Task<PrivateUserDto> HandleAsync(GetPrivateUser query)
     {
         var user = await _dbContext.Users
-            .AsNoTracking()
             .Include(user => user.Settings)
             .Include(user => user.Photos)
             .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));

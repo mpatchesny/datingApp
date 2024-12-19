@@ -49,7 +49,6 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             select pair;
 
         var match = await dbQuery
-            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (match == null) 

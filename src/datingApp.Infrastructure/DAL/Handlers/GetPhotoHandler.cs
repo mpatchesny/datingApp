@@ -21,7 +21,6 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
     public async Task<PhotoDto> HandleAsync(GetPhoto query)
     {
         var user = await _dbContext.Users
-            .AsNoTracking()
             .Include(user => user.Photos
                 .Where(photo => photo.Id.Equals(query.PhotoId)))
             .FirstOrDefaultAsync();

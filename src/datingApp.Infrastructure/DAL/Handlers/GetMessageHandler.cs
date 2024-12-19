@@ -26,7 +26,6 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
     {
         var match = await _dbContext.Matches
             .Include(match => match.Messages.Where(message => message.Id.Equals(query.MessageId)))
-            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (match == null || !match.Messages.Any())

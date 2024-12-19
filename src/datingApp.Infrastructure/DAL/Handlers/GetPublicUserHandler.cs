@@ -29,7 +29,6 @@ internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, Public
     public async Task<PublicUserDto> HandleAsync(GetPublicUser query)
     {
         var users = await _dbContext.Users
-            .AsNoTracking()
             .Include(user => user.Settings)
             .Include(user => user.Photos)
             .Include(user => user.Matches

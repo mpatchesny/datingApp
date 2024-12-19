@@ -45,7 +45,6 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             select match;
 
         var matches = await dbQuery
-            .AsNoTracking()
             .OrderByDescending(match => match.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)

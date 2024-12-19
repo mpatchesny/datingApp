@@ -44,7 +44,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 .Any(user => user.Id.Equals(query.UserId)))
             select match;
 
-        var matches = await dbQuery.AsNoTracking().ToListAsync();
+        var matches = await dbQuery.ToListAsync();
 
         List<MatchDto> dataDto = new List<MatchDto>();
         foreach (var match in matches)

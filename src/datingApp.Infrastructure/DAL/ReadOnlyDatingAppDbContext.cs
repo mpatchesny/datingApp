@@ -32,4 +32,24 @@ internal sealed class ReadOnlyDatingAppDbContext : DbContext
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.LogTo(Console.WriteLine);
     }
+
+    public override int SaveChanges()
+    {
+        return 0;
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        return 0;
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(0);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(0);
+    }
 }

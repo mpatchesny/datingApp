@@ -22,6 +22,7 @@ namespace datingApp.Tests.Integration.Controllers;
 [Collection("Controller tests")]
 public class UsersControllerTests : ControllerTestBase, IDisposable
 {
+    #region SignUp
     [Fact]
     public async Task given_valid_sign_up_post_request_returns_201_created_and_private_user_dto()
     {
@@ -63,7 +64,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+    #endregion
 
+    #region Auth
     [Fact]
     public async Task given_email_exists_auth_post_request_returns_200_ok()
     {
@@ -87,7 +90,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+    #endregion
 
+    #region SignIn
     [Fact]
     public async Task given_valid_access_code_sign_in_post_request_returns_200_ok_and_token()
     {
@@ -137,46 +142,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+    #endregion
 
-    [Fact]
-    public async Task given_missing_token_get_users_returns_401_unauthorized()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-
-        var response = await Client.GetAsync($"users/{user.Id.Value}");
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task given_invalid_token_get_users_returns_401_unauthorized()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-        var token = Authorize(user.Id);
-        var badToken = token.AccessToken.Token + "x";
-
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
-        var response = await Client.GetAsync($"users/{user.Id.Value}");
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task given_valid_refresh_token_used_to_authorize_get_me_returns_401_unauthorized()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-        var tokens = Authorize(user.Id);
-        var refreshToken = tokens.RefreshToken.Token;
-
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
-        var response = await Client.GetAsync($"users/me");
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
+    #region AuthRefresh
     [Fact]
     public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
     {
@@ -252,7 +220,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+    #endregion
 
+    #region GetUsers
     [Fact]
     public async Task given_two_users_have_match_get_users_returns_200_ok_and_public_user()
     {
@@ -316,6 +286,47 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_missing_token_get_users_returns_401_unauthorized()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var response = await Client.GetAsync($"users/{user.Id.Value}");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_invalid_token_get_users_returns_401_unauthorized()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+        var token = Authorize(user.Id);
+        var badToken = token.AccessToken.Token + "x";
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
+        var response = await Client.GetAsync($"users/{user.Id.Value}");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+    #endregion
+
+    #region GetUsersMe
+    [Fact]
+    public async Task given_valid_refresh_token_used_to_authorize_get_me_returns_401_unauthorized()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+        var tokens = Authorize(user.Id);
+        var refreshToken = tokens.RefreshToken.Token;
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+        var response = await Client.GetAsync($"users/me");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task get_users_me_returns_200_ok_and_private_user()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -329,7 +340,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotNull(response);
         Assert.Equal(user.Id.Value, response.Id);
     }
+    #endregion
 
+    #region DeleteUsers
     [Fact]
     public async Task given_user_exists_delete_users_returns_204_no_content()
     {
@@ -378,7 +391,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
         Assert.Equal($"User {user.Id.Value} is deleted permanently.", error.Reason);
     }
+    #endregion
 
+    #region GetMeRecommendations
     [Fact]
     public async Task get_recommendations_returns_200_and_list_of_public_user_dto()
     {
@@ -409,7 +424,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotNull(response);
         Assert.Equal(10, response.Count);
     }
+    #endregion
 
+    #region GetMeUpdates
     [Fact]
     public async Task get_updates_returns_200_and_list_of_matches_dto()
     {
@@ -482,7 +499,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotNull(response);
         Assert.Equal(5, response.Count);
     }
+    #endregion
 
+    #region PatchUsers
     [Fact]
     public async Task patch_users_with_no_changes_returns_204_no_content()
     {
@@ -501,9 +520,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
-        [Fact]
-        public async Task patch_users_with_changes_returns_204_no_content()
-        {
+    [Fact]
+    public async Task patch_users_with_changes_returns_204_no_content()
+    {
         var email = "test@test.com";
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, email: email);
         _dbContext.ChangeTracker.Clear();
@@ -535,6 +554,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+    #endregion
 
     private static async Task<AccessCodeDto> CreateAccessCode(DatingAppDbContext dbContext, string email, string accessCode = "123456", TimeSpan? expirationTime = null)
     {

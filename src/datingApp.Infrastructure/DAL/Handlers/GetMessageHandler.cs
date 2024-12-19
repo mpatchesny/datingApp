@@ -13,10 +13,10 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetMessageHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
+    public GetMessageHandler(ReadOnlyDatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
     {
         _dbContext = dbContext;
         _authorizationService = authorizationService;

@@ -53,7 +53,7 @@ public class GetPhotoHandlerTests : IDisposable
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _handler = new GetPhotoHandler(_testDb.DbContext);
+        _handler = new GetPhotoHandler(_testDb.ReadOnlyDbContext);
     }
 
     // Teardown

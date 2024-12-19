@@ -243,7 +243,7 @@ public class GetMatchesHandlerTests : IDisposable
         _dbContext = _testDb.DbContext;
         _mockedSpatial = new Mock<ISpatial>();
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
-        _handler = new GetMatchesHandler(_testDb.DbContext, _mockedSpatial.Object);
+        _handler = new GetMatchesHandler(_testDb.ReadOnlyDbContext, _mockedSpatial.Object);
     }
 
     // Teardown

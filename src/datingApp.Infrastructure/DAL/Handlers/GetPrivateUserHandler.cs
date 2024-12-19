@@ -12,8 +12,8 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, PrivateUserDto>
 {
-    private readonly DatingAppDbContext _dbContext;
-    public GetPrivateUserHandler(DatingAppDbContext dbContext)
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
+    public GetPrivateUserHandler(ReadOnlyDatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

@@ -20,7 +20,9 @@ internal static class Extensions
     {
         services.Configure<DatabaseOptions>(configuration.GetRequiredSection(DbOptionsSectionName));
         var connStringOptions = configuration.GetOptions<ConnectionStringsOptions>(ConnectionStringsOptionsSectionName);
-        services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.datingApp));
+        services.AddDbContext<DatingAppDbContext>(x => x.UseNpgsql(connStringOptions.ReadWriteDatingApp));
+        services.AddDbContext<ReadOnlyDatingAppDbContext>(x => x.UseNpgsql(connStringOptions.ReadOnlyDatingApp)
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.DAL.Repositories"))

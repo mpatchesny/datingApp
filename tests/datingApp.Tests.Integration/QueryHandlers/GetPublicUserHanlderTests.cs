@@ -109,7 +109,7 @@ public class GetPublicUserHanlderTests : IDisposable
         _dbContext = _testDb.DbContext;
         _mockedSpatial = new Mock<ISpatial>();
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetPublicUserHandler(_testDb.DbContext, _mockedSpatial.Object, _authService.Object);
+        _handler = new GetPublicUserHandler(_testDb.ReadOnlyDbContext, _mockedSpatial.Object, _authService.Object);
     }
 
     // Teardown

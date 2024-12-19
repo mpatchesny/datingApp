@@ -21,9 +21,9 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
-    public GetSwipeCandidatesHandler(DatingAppDbContext dbContext, ISpatial spatial)
+    public GetSwipeCandidatesHandler(ReadOnlyDatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
         _spatial = spatial;

@@ -15,11 +15,11 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetPublicUserHandler : IQueryHandler<GetPublicUser, PublicUserDto>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetPublicUserHandler(DatingAppDbContext dbContext, ISpatial spatial, IDatingAppAuthorizationService authorizationService)
+    public GetPublicUserHandler(ReadOnlyDatingAppDbContext dbContext, ISpatial spatial, IDatingAppAuthorizationService authorizationService)
     {
         _dbContext = dbContext;
         _spatial = spatial;

@@ -174,7 +174,7 @@ public class GetMatchHandlerTests : IDisposable
         _mockedSpatial = new Mock<ISpatial>();
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetMatchHandler(_testDb.DbContext, _authService.Object, _mockedSpatial.Object);
+        _handler = new GetMatchHandler(_testDb.ReadOnlyDbContext, _authService.Object, _mockedSpatial.Object);
     }
 
     // Teardown

@@ -16,9 +16,9 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDataDto>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
-    public GetMatchesHandler(DatingAppDbContext dbContext, ISpatial spatial)
+    public GetMatchesHandler(ReadOnlyDatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
         _spatial = spatial;

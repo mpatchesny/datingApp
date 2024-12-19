@@ -13,10 +13,10 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<MatchDto>>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
 
-    public GetUpdatesHandler(DatingAppDbContext dbContext, ISpatial spatial)
+    public GetUpdatesHandler(ReadOnlyDatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
         _spatial = spatial;

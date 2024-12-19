@@ -16,11 +16,13 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetMatchHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService, ISpatial spatial)
+    public GetMatchHandler(ReadOnlyDatingAppDbContext dbContext,
+                        IDatingAppAuthorizationService authorizationService,
+                        ISpatial spatial)
     {
         _dbContext = dbContext;
         _authorizationService = authorizationService;

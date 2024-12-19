@@ -135,6 +135,26 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_user_not_owns_photo_patch_photo_returns_403_forbidden_with_proper_error_reason()
+    {
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user2.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var command = new ChangePhotoOridinal(photos[0].Id, 0);
+        var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"/photos/{photos[0].Id}", payload);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal($"You don't have permission to perform this action.", error.Reason);
+    }
+
+    [Fact]
     public async Task given_photo_exists_delete_photo_returns_204_no_content()
     {
         var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
@@ -184,6 +204,24 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
         Assert.Equal($"Photo {photo.Id.Value} is deleted permanently.", error.Reason);
+    }
+
+    [Fact]
+    public async Task given_user_not_owns_photo_delete_photo_returns_403_forbidden_with_proper_error_reason()
+    {
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user2.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var response = await Client.DeleteAsync($"/photos/{photos[0].Id.Value}");
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal($"You don't have permission to perform this action.", error.Reason);
     }
 
     private readonly TestDatabase _testDb;

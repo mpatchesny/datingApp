@@ -42,6 +42,43 @@ public class UserController : ApiControllerBase
         _photoService = photoService;
     }
 
+    [HttpGet("{userId:guid}")]
+    public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
+    {
+        var query = Authenticate(new GetPublicUser { RequestByUserId = AuthenticatedUserId, RequestWhoUserId = userId });
+        var user = await _queryDispatcher.DispatchAsync<GetPublicUser, PublicUserDto>(query);
+        return user;
+    }
+
+    [HttpPatch("{userId:guid}")]
+    public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
+    {
+        command = Authenticate(command);
+        command = command with {UserId = userId};
+        await _commandDispatcher.DispatchAsync(command);
+        return NoContent();
+    }
+
+    [HttpDelete("{userId:guid}")]
+    public async Task<ActionResult> Delete(Guid userId)
+    {
+        var command = Authenticate(new DeleteUser(userId));
+        await _commandDispatcher.DispatchAsync(command);
+        return NoContent();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<ActionResult> Post(SignUp command)
+    {
+        command = command with {UserId = Guid.NewGuid()};
+        await _commandDispatcher.DispatchAsync(command);
+
+        var query = new GetPrivateUser { UserId = command.UserId };
+        var user = await _queryDispatcher.DispatchAsync<GetPrivateUser, PrivateUserDto>(query);
+        return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
+    }
+
     [HttpGet("me")]
     public async Task<ActionResult<PrivateUserDto>> GetPrivateUser()
     {
@@ -86,43 +123,6 @@ public class UserController : ApiControllerBase
             controllerName: "Photos",
             routeValues: new { command.PhotoId },
             value: photo);
-    }
-
-    [HttpGet("{userId:guid}")]
-    public async Task<ActionResult<PublicUserDto>> GetPublicUser(Guid userId)
-    {
-        var query = Authenticate(new GetPublicUser { RequestByUserId = AuthenticatedUserId, RequestWhoUserId = userId });
-        var user = await _queryDispatcher.DispatchAsync<GetPublicUser, PublicUserDto>(query);
-        return user;
-    }
-
-    [HttpPatch("{userId:guid}")]
-    public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
-    {
-        command = Authenticate(command);
-        command = command with {UserId = userId};
-        await _commandDispatcher.DispatchAsync(command);
-        return NoContent();
-    }
-
-    [HttpDelete("{userId:guid}")]
-    public async Task<ActionResult> Delete(Guid userId)
-    {
-        var command = Authenticate(new DeleteUser(userId));
-        await _commandDispatcher.DispatchAsync(command);
-        return NoContent();
-    }
-
-    [AllowAnonymous]
-    [HttpPost]
-    public async Task<ActionResult> Post(SignUp command)
-    {
-        command = command with {UserId = Guid.NewGuid()};
-        await _commandDispatcher.DispatchAsync(command);
-
-        var query = new GetPrivateUser { UserId = command.UserId };
-        var user = await _queryDispatcher.DispatchAsync<GetPrivateUser, PrivateUserDto>(query);
-        return CreatedAtAction(nameof(GetPrivateUser), new {}, user);
     }
 
     [AllowAnonymous]

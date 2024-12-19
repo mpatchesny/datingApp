@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.ValueObjects;
+using Imageflow.Fluent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,5 +34,6 @@ internal sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
             .HasForeignKey(x => x.SendFromId);
 
         builder.HasIndex(x => x.CreatedAt);
+        builder.ToTable("Messages");
     }
 }

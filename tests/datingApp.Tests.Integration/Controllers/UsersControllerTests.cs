@@ -584,7 +584,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var error = await response.Content.ReadFromJsonAsync<Error>();
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        Assert.Equal($"User with id {notExistingUserId} doest not exist.", error.Reason);
+        Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
     }
 
     [Fact]

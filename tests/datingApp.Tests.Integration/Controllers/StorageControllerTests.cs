@@ -23,6 +23,7 @@ public class StorageControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
+        var photoStreamLength = IntegrationTestHelper.SamplePhotoStream().Length;
         var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
         fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
 
@@ -35,7 +36,10 @@ public class StorageControllerTests : ControllerTestBase, IDisposable
         Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
         // remove ~ from the beginning, otherwise it won't work
         var response = await Client.GetAsync(photoDto.Url.Trim('~'));
+        var content = await response.Content.ReadAsByteArrayAsync();
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.InRange(content.Length, 1, photoStreamLength);
     }
 
     [Fact]
@@ -50,7 +54,7 @@ public class StorageControllerTests : ControllerTestBase, IDisposable
         var notExistingPhotoFilename = Guid.NewGuid().ToString() + ".jpg";
         var response = await Client.GetAsync($"/storage/{notExistingPhotoFilename}");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); ;
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     private readonly TestDatabase _testDb;

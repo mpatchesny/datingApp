@@ -13,10 +13,9 @@ namespace datingApp.Tests.Integration.Services;
 public class DeletedEntityServiceTests : IDisposable
 {
     [Fact]
-    public async void add_adds_entity_to_database()
+    public async void add_adds_entity_id_to_database()
     {
         var deletedEntity = Guid.NewGuid();
-
         await _service.AddAsync(deletedEntity);
         _dbContext.ChangeTracker.Clear();
 
@@ -25,7 +24,7 @@ public class DeletedEntityServiceTests : IDisposable
     }
 
     [Fact]
-    public async void given_entity_already_is_in_database_add_throws_exception()
+    public async void given_entity_id_is_already_in_database_add_throws_exception()
     {
         var deletedEntity = Guid.NewGuid();
         await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity} );
@@ -37,10 +36,10 @@ public class DeletedEntityServiceTests : IDisposable
     }
 
     [Fact]
-    public async void given_entity_is_in_database_exists_returns_true()
+    public async void given_entity_id_is_in_database_exists_returns_true()
     {
         var deletedEntity = Guid.NewGuid();
-        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity} );
+        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity });
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
@@ -49,7 +48,7 @@ public class DeletedEntityServiceTests : IDisposable
     }
 
     [Fact]
-    public async void given_entity_is_not_in_database_exists_returns_false()
+    public async void given_entity_id_is_not_in_database_exists_returns_false()
     {
         var deletedEntity = Guid.NewGuid();
         await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity} );

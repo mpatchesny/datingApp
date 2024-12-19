@@ -72,7 +72,7 @@ public class AccessCodeVerificatorTests
     [InlineData("ABcDe", "abcde")]
     [InlineData("aaBBccDD", "AABBCCDD")]
     [InlineData("abcde", "ABCDE")]
-    public void given_valid_code_code_should_be_verified_positive_with_case_insensitive_verification(string accessCode, string differentCaseAccessCode)
+    public void given_valid_code_in_different_case_code_should_be_verified_positive(string accessCode, string differentCaseAccessCode)
     {
         var code = new AccessCodeDto
         {
@@ -90,7 +90,7 @@ public class AccessCodeVerificatorTests
     [InlineData("123456", "12346")]
     [InlineData("ABCDE", "ABCD")]
     [InlineData("ABCDE", "abcd")]
-    public void given_invalid_code_code_should_be_verified_negative_with_case_insensitive_verification(string goodCode, string badCode)
+    public void given_invalid_code_in_different_case_code_should_be_verified_negative(string goodCode, string badCode)
     {
         var code = new AccessCodeDto
         {

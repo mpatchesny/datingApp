@@ -22,6 +22,7 @@ namespace datingApp.Tests.Integration.Controllers;
 [Collection("Controller tests")]
 public class UsersControllerTests : ControllerTestBase, IDisposable
 {
+    #region SignUp
     [Fact]
     public async Task given_valid_sign_up_post_request_returns_201_created_and_private_user_dto()
     {
@@ -33,6 +34,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Assert.NotNull(response.Headers);
 
         var dto = await response.Content.ReadFromJsonAsync<PrivateUserDto>();
+
         Assert.NotNull(dto);
         Assert.Equal(dto.Email, email);
     }
@@ -46,7 +48,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignUp(Guid.Empty, "123456789", email, "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal($"Email {email} is already in use.", error.Reason);
     }
 
     [Fact]
@@ -58,9 +63,14 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignUp(Guid.Empty, phone, "test@test.com", "Janusz", "2000-01-01", 1, 1);
         var response = await Client.PostAsJsonAsync("users", command);
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
+        var error = await response.Content.ReadFromJsonAsync<Error>();
 
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal($"Phone {phone} is already in use.", error.Reason);
+    }
+    #endregion
+
+    #region Auth
     [Fact]
     public async Task given_email_exists_auth_post_request_returns_200_ok()
     {
@@ -70,6 +80,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RequestEmailAccessCode(email);
         var response = await Client.PostAsJsonAsync("users/auth", command);
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -80,9 +91,12 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RequestEmailAccessCode(email);
         var response = await Client.PostAsJsonAsync("users/auth", command);
+
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+    #endregion
 
+    #region SignIn
     [Fact]
     public async Task given_valid_access_code_sign_in_post_request_returns_200_ok_and_token()
     {
@@ -94,8 +108,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignInByEmail(email, accessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var token = await response.Content.ReadFromJsonAsync<JwtDto>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(token);
         Assert.False(string.IsNullOrWhiteSpace(token.AccessToken.Token));
     }
@@ -112,7 +127,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var invalidAccessCode = "67890";
         var command = new SignInByEmail(email, invalidAccessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("Provided credentials are invalid.", error.Reason);
     }
 
     [Fact]
@@ -127,45 +145,14 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new SignInByEmail(email, expiredAccessCode);
         var response = await Client.PostAsJsonAsync("users/sign-in", command);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("Provided credentials are invalid.", error.Reason);
     }
+    #endregion
 
-    [Fact]
-    public async Task given_missing_token_get_users_returns_401_unauthorized()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-
-        var response = await Client.GetAsync($"users/{user.Id.Value}");
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task given_invalid_token_get_users_returns_401_unauthorized()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-        var token = Authorize(user.Id);
-        var badToken = token.AccessToken.Token + "x";
-
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
-        var response = await Client.GetAsync($"users/{user.Id.Value}");
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task given_valid_refresh_token_used_to_authorize_get_me_returns_401_unauthorized()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-        var tokens = Authorize(user.Id);
-        var refreshToken = tokens.RefreshToken.Token;
-
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
-        var response = await Client.GetAsync($"users/me");
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
+    #region AuthRefresh
     [Fact]
     public async Task given_invalid_refresh_token_auth_refresh_returns_401_unauthorized()
     {
@@ -175,6 +162,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(badToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -193,10 +181,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        var responseJson = await response.Content.ReadFromJsonAsync<JwtDto>();
+
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    
-        var responseJson = await response.Content.ReadFromJsonAsync<JwtDto>();
         Assert.NotNull(responseJson.AccessToken);
         Assert.NotNull(responseJson.RefreshToken);
         Assert.NotEqual(responseJson.AccessToken.Token, accessToken);
@@ -213,10 +201,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+        var secondResponse = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        var secondResponse = await Client.PostAsJsonAsync($"users/auth/refresh", command);
         Assert.NotNull(secondResponse);
         Assert.Equal(HttpStatusCode.Unauthorized, secondResponse.StatusCode);
     }
@@ -236,10 +224,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new RefreshJWT(refreshToken);
         var response = await Client.PostAsJsonAsync($"users/auth/refresh", command);
+
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+    #endregion
 
+    #region GetUsers
     [Fact]
     public async Task given_two_users_have_match_get_users_returns_200_ok_and_public_user()
     {
@@ -252,12 +243,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PublicUserDto>($"users/{user2.Id.Value}");
+
         Assert.NotNull(response);
         Assert.Equal(user2.Id.Value, response.Id);
     }
 
     [Fact]
-    public async Task given_two_users_dont_have_match_get_users_returns_403_forbidden()
+    public async Task given_two_users_dont_have_match_get_users_returns_403_forbidden_with_proper_error_reason()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -267,11 +259,14 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response =  await Client.GetAsync($"users/{user2.Id.Value}");
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal("You don't have permission to perform this action.", error.Reason);
     }
 
     [Fact]
-    public async Task given_user_get_himself_get_users_returns_403_forbidden()
+    public async Task given_user_get_himself_get_users_returns_403_forbidden_with_proper_error_reason()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
@@ -280,7 +275,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetAsync($"users/{user1.Id.Value}");
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal("You don't have permission to perform this action.", error.Reason);
     }
 
     [Fact]
@@ -294,7 +292,50 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.GetAsync($"users/{notExistingUserId}");
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task given_missing_token_get_users_returns_401_unauthorized()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var response = await Client.GetAsync($"users/{user.Id.Value}");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task given_invalid_token_get_users_returns_401_unauthorized()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+        var token = Authorize(user.Id);
+        var badToken = token.AccessToken.Token + "x";
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {badToken}");
+        var response = await Client.GetAsync($"users/{user.Id.Value}");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+    #endregion
+
+    #region GetUsersMe
+    [Fact]
+    public async Task given_valid_refresh_token_used_to_authorize_get_me_returns_401_unauthorized()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+        var tokens = Authorize(user.Id);
+        var refreshToken = tokens.RefreshToken.Token;
+
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken}");
+        var response = await Client.GetAsync($"users/me");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
@@ -307,10 +348,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PrivateUserDto>($"users/me");
+
         Assert.NotNull(response);
         Assert.Equal(user.Id.Value, response.Id);
     }
+    #endregion
 
+    #region DeleteUsers
     [Fact]
     public async Task given_user_exists_delete_users_returns_204_no_content()
     {
@@ -321,7 +365,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"users/{user.Id.Value}");
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -335,9 +381,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.DeleteAsync($"users/{notExistingUserId}");
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
     }
 
@@ -352,12 +398,31 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         
         var response = await Client.DeleteAsync($"users/{user.Id.Value}");
-        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
         Assert.Equal($"User {user.Id.Value} is deleted permanently.", error.Reason);
     }
 
+    [Fact]
+    public async Task given_user_deletes_other_user_delete_users_returns_403_forbidden_with_proper_error_reason()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+        
+        var response = await Client.DeleteAsync($"users/{user2.Id.Value}");
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal("You don't have permission to perform this action.", error.Reason);
+    }
+    #endregion
+
+    #region GetMeRecommendations
     [Fact]
     public async Task get_recommendations_returns_200_and_list_of_public_user_dto()
     {
@@ -367,6 +432,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
+
         Assert.NotNull(response);
     }
 
@@ -383,10 +449,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<PublicUserDto>>($"users/me/recommendations");
+
         Assert.NotNull(response);
         Assert.Equal(10, response.Count);
     }
+    #endregion
 
+    #region GetMeUpdates
     [Fact]
     public async Task get_updates_returns_200_and_list_of_matches_dto()
     {
@@ -396,6 +465,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+
         Assert.NotNull(response);
     }
 
@@ -424,6 +494,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
         var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+
         Assert.NotNull(response);
         Assert.Equal(100, response.Count);
     }
@@ -453,10 +524,13 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var lastActivityTime = (time - TimeSpan.FromHours(1)).ToIso8601DateString();
         var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
+
         Assert.NotNull(response);
         Assert.Equal(5, response.Count);
     }
+    #endregion
 
+    #region PatchUsers
     [Fact]
     public async Task patch_users_with_no_changes_returns_204_no_content()
     {
@@ -470,7 +544,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var command = new ChangeUser(user.Id);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{user.Id.Value}", payload);
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -486,7 +562,9 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"users/{user.Id.Value}", content);
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -501,10 +579,33 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var command = new ChangeUser(user.Id, "2001-01-01");
         var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
-        var response = await Client.PatchAsync($"users/{Guid.NewGuid()}", content);
-        Debug.Print($"users/{Guid.NewGuid()}");
+        var notExistingUserId = Guid.NewGuid();
+        var response = await Client.PatchAsync($"users/{notExistingUserId}", content);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal($"User with id {notExistingUserId} doest not exist.", error.Reason);
     }
+
+    [Fact]
+    public async Task given_user_patches_other_user_patch_users_returns_403_forbidden_with_proper_error_reason()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var command = new ChangeUser(user2.Id, "2001-01-01");
+        var content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"users/{user2.Id}", content);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal("You don't have permission to perform this action.", error.Reason);
+    }
+    #endregion
 
     private static async Task<AccessCodeDto> CreateAccessCode(DatingAppDbContext dbContext, string email, string accessCode = "123456", TimeSpan? expirationTime = null)
     {

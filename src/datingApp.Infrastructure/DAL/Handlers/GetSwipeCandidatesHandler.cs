@@ -72,6 +72,10 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var limit = howMany * 2;
         var offset = 0;
 
+        // logic: take only as much candidates as limit count, filter out those who 
+        // are not within range, if no potential candidates left then break,
+        // if not enough candidates take another batch, do until there are enough 
+        // candidates
         var finalCandidates = new List<PublicUserDto>();
         while (finalCandidates.Count < howMany)
         {
@@ -80,11 +84,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
             var pontentialCandidatesWithinRange =
                 from candidate in pontentialCandidates
-                let distance = _spatial.CalculateDistanceInKms(
-                    requestedBy.Settings.Location.Lat,
-                    requestedBy.Settings.Location.Lon,
-                    candidate.Settings.Location.Lat,
-                    candidate.Settings.Location.Lon)
+                let distance = _spatial.CalculateDistanceInKms(requestedBy, candidate)
                 where distance <= requestedBy.Settings.PreferredMaxDistance
                 select candidate.AsPublicDto(distance);
 

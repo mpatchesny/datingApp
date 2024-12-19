@@ -18,6 +18,7 @@ internal sealed class PlainSmtpEmailSender : INotificationSender<Email>
     private readonly int _port;
     private readonly string _username;
     private readonly string _password;
+    private readonly string _senderDisplayName;
     private readonly ILogger<INotificationSender<Email>> _logger;
     public PlainSmtpEmailSender(IOptions<EmailSenderOptions> options,
                             ILogger<INotificationSender<Email>> logger)
@@ -26,13 +27,14 @@ internal sealed class PlainSmtpEmailSender : INotificationSender<Email>
         _port = options.Value.ServerPort;
         _username = options.Value.Username;
         _password = options.Value.Password;
+        _senderDisplayName = options.Value.SenderDisplayName;
         _logger = logger;
     }
 
     public async Task SendAsync(Email email)
     {
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Dating App Notifications", email.Sender));
+        message.From.Add(new MailboxAddress(_senderDisplayName, email.Sender));
         message.To.Add(new MailboxAddress(email.Recipient, email.Recipient));
         message.Subject = email.Subject;
         message.Body = new TextPart(TextFormat.Html)

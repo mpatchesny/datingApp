@@ -95,7 +95,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void add_match_with_existing_user_id_throws_exception()
+    public async void add_match_with_existing_user_ids_throws_exception()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

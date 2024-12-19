@@ -17,6 +17,7 @@ using datingApp.Infrastructure.DAL.Repositories;
 using datingApp.Infrastructure.Exceptions;
 using datingApp.Infrastructure.Notifications;
 using datingApp.Infrastructure.Notifications.Generators;
+using datingApp.Infrastructure.Notifications.Services;
 using datingApp.Infrastructure.Security;
 using datingApp.Infrastructure.Services;
 using datingApp.Infrastructure.Spatial;
@@ -28,7 +29,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
-using RazorHtmlEmails.RazorClassLib.Services;
 using Scrutor;
 
 namespace datingApp.Infrastructure;
@@ -73,8 +73,7 @@ public static class Extensions
 
         services.AddScoped<IRevokedRefreshTokensService, RevokedRefreshTokensService>(); 
         services.AddScoped<IDeletedEntityService, DeletedEntityService>(); 
-        services.AddScoped<IPhotoValidator<IFormFile>, FormFilePhotoValidator>(); 
-        services.AddScoped<IPhotoValidator<Stream>, StreamPhotoValidator>(); 
+        services.AddScoped<IPhotoValidator, PhotoValidator>(); 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
                 .Where(c => !c.Name.EndsWith("Options"))

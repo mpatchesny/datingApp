@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace datingApp.Tests.Unit.Services;
 
-public static class ImageHelper
+public static class ImageTestsHelper
 {
     public static MemoryStream Base64ToMemoryStream(string base64)
     {

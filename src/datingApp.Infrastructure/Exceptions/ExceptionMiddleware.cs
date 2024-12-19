@@ -36,7 +36,6 @@ internal sealed class ExceptionMiddleware : IMiddleware
         }
         catch (Exception exception)
         {
-            await HandleExceptionAsync(exception, context);
             string error = exception.ToString();
             if (exception is CustomException) 
             {
@@ -46,19 +45,20 @@ internal sealed class ExceptionMiddleware : IMiddleware
             {
                 _logger.LogError(error);
             };
+
+            await HandleExceptionAsync(exception, context);
         }
     }
 
     private async Task HandleExceptionAsync(Exception exception, HttpContext context)
     {
-        var statusCode = _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType(), 
-            _exceptionToHttpStatusCode.GetValueOrDefault(exception.GetType().BaseType, StatusCodes.Status500InternalServerError));
+        var exceptionType = exception.GetType();
+        var statusCode = _exceptionToHttpStatusCode.GetValueOrDefault(exceptionType, 
+            _exceptionToHttpStatusCode.GetValueOrDefault(exceptionType.BaseType, StatusCodes.Status500InternalServerError));
 
-        var error = new Error("error", "Something went wrong.");
-        if (statusCode != StatusCodes.Status500InternalServerError)
-        {
-            error = new Error(GetPrettyExeptionName(exception.GetType().Name), exception.Message);
-        }
+        var error = statusCode == StatusCodes.Status500InternalServerError
+            ? new Error("error", "Something went wrong.")
+            : new Error(GetPrettyExeptionName(exceptionType.Name), exception.Message);
 
         context.Response.StatusCode = statusCode;
         await context.Response.WriteAsJsonAsync(error);
@@ -68,8 +68,8 @@ internal sealed class ExceptionMiddleware : IMiddleware
 
     private static string GetPrettyExeptionName(string exceptionName)
     {
-        var re = new Regex("([A-Z])");
         var ex = exceptionName.Replace("Exception", "");
+        var re = new Regex("([A-Z])");
         ex = re.Replace(ex, "_$1").ToLowerInvariant();
         return ex.StartsWith("_") ? ex.Substring(1) : ex;
     }

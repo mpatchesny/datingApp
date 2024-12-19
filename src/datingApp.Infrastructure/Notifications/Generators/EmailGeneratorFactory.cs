@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Notifications;
+using datingApp.Infrastructure.Notifications.Services;
 using Microsoft.Extensions.Options;
-using RazorHtmlEmails.RazorClassLib.Services;
 
 namespace datingApp.Infrastructure.Notifications.Generators;
 

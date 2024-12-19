@@ -13,11 +13,11 @@ namespace datingApp.Infrastructure.DAL.BackgroundServices;
 internal sealed class ExpiredDataRemover : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly int _loopDelayInMilliseconds;
+    private readonly TimeSpan _loopDelay;
     public ExpiredDataRemover(IServiceProvider serviceProvider, IOptions<ExpiredAccessCodesRemoverOptions> options)
     {
         _serviceProvider = serviceProvider;
-        _loopDelayInMilliseconds = (int) options.Value.LoopDelay.TotalMilliseconds;
+        _loopDelay = options.Value.LoopDelay;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -31,7 +31,7 @@ internal sealed class ExpiredDataRemover : BackgroundService
             dbContext.AccessCodes.RemoveRange(dbContext.AccessCodes.Where(x => x.ExpirationTime < DateTime.UtcNow));
             dbContext.RevokedRefreshTokens.RemoveRange(dbContext.RevokedRefreshTokens.Where(x => x.ExpirationTime < DateTime.UtcNow));
             _ = await dbContext.SaveChangesAsync(stoppingToken);
-            await Task.Delay(_loopDelayInMilliseconds, stoppingToken);
+            await Task.Delay(_loopDelay, stoppingToken);
         }
     }
 }

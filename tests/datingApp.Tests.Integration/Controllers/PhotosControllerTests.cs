@@ -31,6 +31,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.GetFromJsonAsync<PhotoDto>($"/photos/{photos[0].Id.Value}");
+
         Assert.NotNull(response);
         Assert.True(photos[0].Id.Equals(response.Id));
     }
@@ -46,9 +47,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         var notExistingPhotoId = Guid.NewGuid();
         var response = await Client.GetAsync($"/photos/{notExistingPhotoId}");
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
@@ -68,9 +69,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         formData.Add(fileContent, "fileContent", "file.jpg");
 
         var response = await Client.PostAsync("/users/me/photos", formData);
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-
         var dto = await response.Content.ReadFromJsonAsync<PhotoDto>();
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.NotNull(dto);
         Assert.IsType<PhotoDto>(dto);
         Assert.Equal(user.Id.Value, dto.UserId);
@@ -92,6 +93,7 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         formData.Add(fileContent, "fileContent", "file.jpg");
 
         var response = await Client.PostAsync("/users/me/photos", formData);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -108,7 +110,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var command = new ChangePhotoOridinal(photos[0].Id, 1);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"/photos/{photos[0].Id.Value}", payload);
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -124,10 +128,30 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         var command = new ChangePhotoOridinal(notExistingPhotoId, 0);
         var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
         var response = await Client.PatchAsync($"/photos/{notExistingPhotoId}", payload);
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
+    }
+
+    [Fact]
+    public async Task given_user_not_owns_photo_patch_photo_returns_403_forbidden_with_proper_error_reason()
+    {
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user2.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var command = new ChangePhotoOridinal(photos[0].Id, 0);
+        var payload = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
+        var response = await Client.PatchAsync($"/photos/{photos[0].Id}", payload);
+        var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal($"You don't have permission to perform this action.", error.Reason);
     }
 
     [Fact]
@@ -141,7 +165,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"/photos/{photos[0].Id.Value}");
+
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
     }
 
     [Fact]
@@ -155,9 +181,9 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
         var notExistingPhotoId = Guid.NewGuid();
         var response = await Client.DeleteAsync($"/photos/{notExistingPhotoId}");
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal($"Photo with id {notExistingPhotoId} does not exist.", error.Reason);
     }
 
@@ -174,49 +200,28 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var response = await Client.DeleteAsync($"/photos/{photo.Id.Value}");
-        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
-
         var error = await response.Content.ReadFromJsonAsync<Error>();
+
+        Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
         Assert.Equal($"Photo {photo.Id.Value} is deleted permanently.", error.Reason);
     }
 
     [Fact]
-    public async Task get_storage_returns_200_OK_and_photo_binary()
+    public async Task given_user_not_owns_photo_delete_photo_returns_403_forbidden_with_proper_error_reason()
     {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto() };
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        var token = Authorize(user.Id);
+        var token = Authorize(user2.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var fileContent = new StreamContent(IntegrationTestHelper.SamplePhotoStream());
-        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        var response = await Client.DeleteAsync($"/photos/{photos[0].Id.Value}");
+        var error = await response.Content.ReadFromJsonAsync<Error>();
 
-        var formData = new MultipartFormDataContent();
-        formData.Add(fileContent, "fileContent", "file.png");
-
-        var postResponse = await Client.PostAsync("/users/me/photos", formData);
-        Assert.Equal(HttpStatusCode.Created, postResponse.StatusCode);
-
-        var photoDto = await postResponse.Content.ReadFromJsonAsync<PhotoDto>();
-
-        // remove ~ from the beginning, otherwise it won't work
-        var response = await Client.GetAsync(photoDto.Url.Trim('~'));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task given_physical_file_not_exists_get_storage_returns_404_not_found()
-    {
-        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _dbContext.ChangeTracker.Clear();
-
-        var token = Authorize(user.Id);
-        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
-
-        var notExistingPhotoFilename = Guid.NewGuid().ToString() + ".jpg";
-        var response = await Client.GetAsync($"/storage/{notExistingPhotoFilename}");
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode); ;
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal($"You don't have permission to perform this action.", error.Reason);
     }
 
     private readonly TestDatabase _testDb;
@@ -230,8 +235,6 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
     public void Dispose()
     {
-        var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");
-        System.IO.Directory.Delete(tempFolder, true);
         _testDb?.Dispose();
     }
 }

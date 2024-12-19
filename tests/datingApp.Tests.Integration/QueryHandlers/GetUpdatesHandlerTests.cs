@@ -19,7 +19,7 @@ namespace datingApp.Tests.Integration.QueryHandlers;
 public class GetUpdatesHandlerTests : IDisposable
 {
     [Fact]
-    public async Task get_updates_returns_matches_for_given_user()
+    public async Task GetUpdatesHandler_returns_matches_for_given_user()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -35,12 +35,13 @@ public class GetUpdatesHandlerTests : IDisposable
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
+
         Assert.NotEmpty(result);
         Assert.Equal(2, result.Count());
     }
 
     [Fact]
-    public async Task get_updates_returns_matches_after_last_activity_time()
+    public async Task GetUpdatesHandler_returns_matches_after_last_activity_time()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -54,12 +55,13 @@ public class GetUpdatesHandlerTests : IDisposable
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
+
         Assert.NotEmpty(result);
         Assert.Single(result);
     }
 
     [Fact]
-    public async Task get_updates_returns_matches_that_have_messages_send_after_last_activity_time()
+    public async Task GetUpdatesHandler_returns_matches_that_have_messages_send_after_last_activity_time()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -69,19 +71,20 @@ public class GetUpdatesHandlerTests : IDisposable
         var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromHours(1);
         var messages1 = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id, createdAt: timeAfterLastActivityTime) };
         var messages2 = new List<Message>() { IntegrationTestHelper.CreateMessage(user3.Id, createdAt: timeAfterLastActivityTime) };
-        var match1 = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1, createdAt: timeBeforeLastActivityTime);
-        var match2 = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, messages: messages2, createdAt: timeBeforeLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1, createdAt: timeBeforeLastActivityTime);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, messages: messages2, createdAt: timeBeforeLastActivityTime);
 
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow };
         var result = await _handler.HandleAsync(query);
+
         Assert.NotEmpty(result);
         Assert.Equal(2, result.Count());
     }
 
     [Fact]
-    public async Task given_no_matches_match_criteria_get_updates_returns_empty_collection()
+    public async Task given_no_matches_match_criteria_GetUpdatesHandler_returns_empty_collection()
     {
         var userWithoutMatch = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -97,14 +100,16 @@ public class GetUpdatesHandlerTests : IDisposable
 
         var query = new GetUpdates{ UserId = userWithoutMatch.Id, LastActivityTime = DateTime.UtcNow};
         var result = await _handler.HandleAsync(query);
+
         Assert.Empty(result);
     }
 
     [Fact]
-    public async Task given_user_not_exists_get_updates_returns_UserNotExistsException()
+    public async Task given_user_not_exists_GetUpdatesHandler_returns_UserNotExistsException()
     {
         var query = new GetUpdates{ UserId = Guid.NewGuid(), LastActivityTime = DateTime.UtcNow};
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }

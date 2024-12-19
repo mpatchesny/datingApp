@@ -24,7 +24,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(PreferredSex.Female, UserSex.Female)]
     [InlineData(PreferredSex.Male | PreferredSex.Female, UserSex.Female)]
     [InlineData(PreferredSex.Male | PreferredSex.Female, UserSex.Male)]
-    public async Task when_candidates_with_proper_sex_exist_returns_nonempty_list(PreferredSex userLookingForSex, UserSex candidateSex)
+    public async Task when_candidates_with_proper_sex_exist_GetSwipeCandidates_returns_nonempty_list(PreferredSex userLookingForSex, UserSex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
@@ -33,19 +33,20 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
     [Theory]
     [InlineData(PreferredSex.Male, UserSex.Female)]
     [InlineData(PreferredSex.Female, UserSex.Male)]
-    public async Task when_no_candidates_with_proper_sex_returns_empty_list(PreferredSex userLookingForSex, UserSex candidateSex)
+    public async Task when_no_candidates_with_proper_sex_GetSwipeCandidates_returns_empty_list(PreferredSex userLookingForSex, UserSex candidateSex)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
@@ -54,12 +55,13 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Empty(candidates);
     }
 
@@ -69,23 +71,23 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(18, 25, 18)]
     [InlineData(18, 25, 25)]
     [InlineData(18, 100, 45)]
-    public async Task when_candidates_with_proper_age_exists_returns_nonempty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
+    public async Task when_candidates_with_proper_age_GetSwipeCandidates_exists_returns_nonempty_list(int prefferedAgeFrom, int prefferedAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(queryAgeFrom, queryAgeTo), 100, new Location(0.0, 0.0));
+        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(prefferedAgeFrom, prefferedAgeTo), 100, new Location(0.0, 0.0));
         var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Female, settings1);
 
-        int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
-        var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
+        var candidateDateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-candidateAge));
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, settings2);
         
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
@@ -95,28 +97,28 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     [InlineData(20, 25, 19)]
     [InlineData(20, 25, 26)]
     [InlineData(50, 60, 70)]
-    public async Task when_no_candidates_with_proper_age_get_swipe_candidates_returns_empty_list(int queryAgeFrom, int queryAgeTo, int candidateAge)
+    public async Task when_no_candidates_with_proper_age_GetSwipeCandidates_returns_empty_list(int prefferedAgeFrom, int prefferedAgeTo, int candidateAge)
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
-        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(queryAgeFrom, queryAgeTo), 100, new Location(0.0, 0.0));
+        var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(prefferedAgeFrom, prefferedAgeTo), 100, new Location(0.0, 0.0));
         var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), UserSex.Male, settings1);
 
-        int nowYear = DateTime.UtcNow.Year, nowMonth = DateTime.UtcNow.Month, nowDay= DateTime.UtcNow.Day;
-        var candidateDateOfBirth = new DateOnly(nowYear - candidateAge, nowMonth, nowDay);
+        var candidateDateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-candidateAge));
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
         var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, settings2);
 
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user1);
-        await IntegrationTestHelper.CreateUserAsync(_testDb.CreateNewDbContext(), user2);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
+        await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Empty(candidates);
     }
 
     [Fact]
-    public async Task when_candidates_within_range_exist_get_swipe_candidates_returns_nonempty_list()
+    public async Task when_candidates_within_range_exist_GetSwipeCandidates_returns_nonempty_list()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -125,13 +127,15 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
     [Fact]
-    public async Task when_no_candidates_within_range_get_swipe_candidates_returns_empty_list()
+    public async Task when_no_candidates_within_range_GetSwipeCandidates_returns_empty_list()
     {
         _spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(999);
+        _spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<User>(), It.IsAny<User>())).Returns(999);
         var mockedCoordsResult = new Coords(northLat: 100.0d, southLat: -100.0d, eastLon: 100.0d, westLon: -100.0d);
         _spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
             .Returns((double x, double y, int z) => mockedCoordsResult);
@@ -141,11 +145,12 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Empty(candidates);
     }
 
     [Fact]
-    public async Task get_swipe_candidates_returns_candidates_sorted_by_number_of_likes_descending()
+    public async Task GetSwipeCandidates_returns_candidates_sorted_by_number_of_likes_descending()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -154,16 +159,17 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user5 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user3.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user4.Id, user5.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user4.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user3.Id, user4.Id, Like.Like);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user2.Id, user3.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user3.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user4.Id, user5.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user4.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user3.Id, user4.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user2.Id, user3.Id, Like.Like);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 999 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.NotEmpty(candidates);
         Assert.Equal(candidates.ToList()[0].Id, user5.Id.Value);
         Assert.Equal(candidates.ToList()[1].Id, user4.Id.Value);
@@ -171,22 +177,23 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task get_swipe_candidates_not_returns_users_already_swiped()
+    public async Task GetSwipeCandidates_not_returns_users_already_swiped()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        _ = await IntegrationTestHelper.CreateSwipeAsync(_testDb.CreateNewDbContext(), user1.Id, user2.Id, Like.Like);
+        _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, user1.Id, user2.Id, Like.Like);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Single(candidates);
     }
 
     [Fact]
-    public async Task get_swipe_candidates_returns_candidates_count_equals_to_how_many()
+    public async Task given_enough_candidates_GetSwipeCandidates_returns_candidates_count_equals_to_how_many()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -196,17 +203,37 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
-        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2};
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 2 };
         var candidates = await _handler.HandleAsync(query);
+
         Assert.Equal(query.HowMany, candidates.Count());
     }
 
     [Fact]
-    public async Task given_user_who_requested_not_exists_get_swipe_candidates_returns_UserNotExistsExceptionn()
+    public async Task given_not_enough_candidates_GetSwipeCandidates_returns_candidates_count_less_than_how_many()
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetSwipeCandidates() { UserId = user1.Id, HowMany = 10 };
+        var candidates = await _handler.HandleAsync(query);
+
+        Assert.Equal(4, candidates.Count());
+    }
+
+    [Fact]
+    public async Task given_user_who_requested_not_exists_GetSwipeCandidates_returns_UserNotExistsException()
+    {
+        SetMockedSpatialDefaultReturnValues(_spatial);
+
         var query = new GetSwipeCandidates() { UserId = Guid.NewGuid(), HowMany = 2 };
         var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
+
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
     }
@@ -233,6 +260,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     private void SetMockedSpatialDefaultReturnValues(Mock<ISpatial> spatial)
     {
         spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
+        spatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<User>(), It.IsAny<User>())).Returns(0);
         var mockedCoordsResult = new Coords(northLat: 100.0d, southLat: -100.0d, eastLon: 100.0d, westLon: -100.0d);
         spatial.Setup(m => m.GetApproxSquareAroundPoint(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>()))
             .Returns((double x, double y, int z) => mockedCoordsResult);

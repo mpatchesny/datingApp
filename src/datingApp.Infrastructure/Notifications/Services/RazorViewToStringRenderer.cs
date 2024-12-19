@@ -12,10 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RazorHtmlEmails.RazorClassLib.Services;
+namespace datingApp.Infrastructure.Notifications.Services;
 
 // Code from: https://github.com/aspnet/Entropy/blob/master/samples/Mvc.RenderViewToString/RazorViewToStringRenderer.cs
-internal interface IRazorViewToStringRenderer
+public interface IRazorViewToStringRenderer
 {
     Task<Tuple<ViewDataDictionary, string>> RenderViewToStringAsync<TModel>(string viewName, TModel model);
 }

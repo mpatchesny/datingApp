@@ -12,13 +12,13 @@ using datingApp.Application.Services;
 
 namespace datingApp.Application.Commands.Handlers;
 
-public sealed class RefreshJWTHandler : ICommandHandler<RefreshJWT>
+public sealed class RefreshTokenHandler : ICommandHandler<RefreshJWT>
 {
     private readonly IAuthenticator _authenticator;
     private readonly ITokenStorage _tokenStorage;
     private readonly IRevokedRefreshTokensService _revokedRefreshTokensService;
 
-    public RefreshJWTHandler(IAuthenticator authenticator,
+    public RefreshTokenHandler(IAuthenticator authenticator,
                             ITokenStorage tokenStorage,
                             IRevokedRefreshTokensService revokedRefreshTokensRepository)
     {

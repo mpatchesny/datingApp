@@ -11,13 +11,13 @@ using Xunit;
 
 namespace datingApp.Tests.Unit.Services;
 
-public class StreamPhotoValidatorTests
+public class PhotoValidatorStreamTests
 {
     [Fact]
     public void given_valid_file_which_is_not_image_ValidateExtension_throws_InvalidPhotoException()
     {
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64DocxSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64DocxSample);
 
         var exception = Record.Exception(() => validator.Validate(imageStream, out var extension));
         Assert.NotNull(exception);
@@ -27,8 +27,8 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_unsupported_image_file_ValidateExtension_throws_InvalidPhotoException()
     {
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64GifSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64GifSample);
 
         var exception = Record.Exception(() => validator.Validate(imageStream, out var extension));
         Assert.NotNull(exception);
@@ -38,8 +38,8 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_bmp_file_ValidateExtension_throws_InvalidPhotoException()
     {
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64BmpSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64BmpSample);
 
         var exception = Record.Exception(() => validator.Validate(imageStream, out var extension));
         Assert.NotNull(exception);
@@ -49,8 +49,8 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_jpg_file_ValidateExtension_return_jpg_extension()
     {
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64JpgSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64JpgSample);
 
         validator.Validate(imageStream, out var extension);
         Assert.Equal("jpg", extension);
@@ -59,8 +59,8 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_png_file_ValidateExtension_return_png_extension()
     {
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
 
         validator.Validate(imageStream, out var extension);
         Assert.Equal("png", extension);
@@ -69,8 +69,8 @@ public class StreamPhotoValidatorTests
     [Fact]
     public void given_valid_webp_file_ValidateExtension_return_webp_extension()
     {
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64WebpSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64WebpSample);
 
         validator.Validate(imageStream, out var extension);
         Assert.Equal("webp", extension);
@@ -81,8 +81,8 @@ public class StreamPhotoValidatorTests
     {
         _options.Value.MinPhotoSizeBytes = 380;
         _options.Value.MaxPhotoSizeBytes = 390;
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
 
         var exception = Record.Exception(() => validator.Validate(imageStream, out var extension));
         Assert.NotNull(exception);
@@ -94,8 +94,8 @@ public class StreamPhotoValidatorTests
     {
         _options.Value.MinPhotoSizeBytes = 1;
         _options.Value.MaxPhotoSizeBytes = 378;
-        var validator = new StreamPhotoValidator(_options);
-        var imageStream = ImageHelper.Base64ToMemoryStream(ImageHelper.Base64PngSample);
+        var validator = new PhotoValidator(_options);
+        var imageStream = ImageTestsHelper.Base64ToMemoryStream(ImageTestsHelper.Base64PngSample);
 
         var exception = Record.Exception(() => validator.Validate(imageStream, out var extension));
         Assert.NotNull(exception);
@@ -103,7 +103,7 @@ public class StreamPhotoValidatorTests
     }
    
     private readonly IOptions<PhotoServiceOptions> _options;
-    public StreamPhotoValidatorTests()
+    public PhotoValidatorStreamTests()
     {
         _options = Options.Create<PhotoServiceOptions>(new PhotoServiceOptions());
         _options.Value.MinPhotoSizeBytes = 1;

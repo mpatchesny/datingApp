@@ -13,10 +13,6 @@ internal sealed class ReadOnlyDatingAppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Match> Matches { get; set; }
     public DbSet<Swipe> Swipes { get; set; }
-    public DbSet<Photo> Photos { get; set; }
-    public DbSet<AccessCodeDto> AccessCodes { get; set; }
-    public DbSet<DeletedEntityDto> DeletedEntities { get; set; }
-    public DbSet<TokenDto> RevokedRefreshTokens { get; set; }
 
     public ReadOnlyDatingAppDbContext(DbContextOptions<ReadOnlyDatingAppDbContext> options) : base(options)
     {

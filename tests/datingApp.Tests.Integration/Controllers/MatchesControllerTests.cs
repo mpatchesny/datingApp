@@ -82,11 +82,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>($"matches");
-        var matchDto = JsonConvert.DeserializeObject<MatchDto>(response.Data[0].ToString());
+        var response = await Client.GetAsync("matches");
+        var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MatchDto>>();
 
-        Assert.Single(response.Data);
-        Assert.Equal(match.Id.Value, matchDto.Id);
+        Assert.Single(parsedResponse.Data);
+        Assert.Equal(match.Id.Value, parsedResponse.Data.ElementAt(0).Id);
     }
 
     [Fact]
@@ -103,9 +103,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>($"matches?pageSize={5}");
+        var response = await Client.GetAsync($"matches?pageSize={5}");
+        var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MatchDto>>();
 
-        Assert.Equal(5, response.Data.Count);
+        Assert.Equal(5, parsedResponse.Data.Count);
     }
 
     [Fact]
@@ -127,10 +128,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var allMatchesDtoIds = new List<Guid>();
         for (int i=1; i<=3; i++)
         {
-            var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>($"matches?page={i}");
-            foreach (var item in response.Data)
+            var response = await Client.GetAsync($"matches?page={i}");
+            var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MatchDto>>();
+            foreach (var matchDto in parsedResponse.Data)
             {
-                var matchDto = JsonConvert.DeserializeObject<MatchDto>(item.ToString());
                 allMatchesDtoIds.Add(matchDto.Id);
             }
         }
@@ -210,11 +211,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MessageDto>>($"matches/{match.Id.Value}/messages");
-        var messageDto = JsonConvert.DeserializeObject<MessageDto>(response.Data[0].ToString());
+        var response = await Client.GetAsync($"matches/{match.Id.Value}/messages");
+        var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MessageDto>>();
 
-        Assert.Single(response.Data);
-        Assert.Equal(messages[0].Id.Value, messageDto.Id);
+        Assert.Single(parsedResponse.Data);
+        Assert.Equal(messages[0].Id.Value, parsedResponse.Data.ElementAt(0).Id);
     }
 
     [Fact]
@@ -233,9 +234,11 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var token = Authorize(user1.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
-        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MessageDto>>($"matches/{match.Id.Value}/messages?pageSize=5");
+        var response = await Client.GetAsync($"matches/{match.Id.Value}/messages?pageSize=5");
+        var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MessageDto>>();
 
-        Assert.Equal(5, response.Data.Count);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(5, parsedResponse.Data.Count);
     }
 
     [Fact]
@@ -257,10 +260,10 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
         var allMessagesDtoIds = new List<Guid>();
         for (int i=1; i<=3; i++)
         {
-            var response = await Client.GetFromJsonAsync<PaginatedDataDto<MessageDto>>($"matches/{match.Id.Value}/messages?page={i}");
-            foreach (var item in response.Data)
+            var response = await Client.GetAsync($"matches/{match.Id.Value}/messages?page={i}");
+            var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MessageDto>>();
+            foreach (var messageDto in parsedResponse.Data)
             {
-                var messageDto = JsonConvert.DeserializeObject<MessageDto>(item.ToString());
                 allMessagesDtoIds.Add(messageDto.Id);
             }
         }

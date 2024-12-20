@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDataDto>
+internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDataDto<MatchDto>>
 {
     private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
@@ -24,7 +24,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         _spatial = spatial;
     }
 
-    public async Task<PaginatedDataDto> HandleAsync(GetMatches query)
+    public async Task<PaginatedDataDto<MatchDto>> HandleAsync(GetMatches query)
     {
         if (!await _dbContext.Users.AnyAsync(user => user.Id.Equals(query.UserId)))
         {
@@ -59,12 +59,12 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             dataDto.Add(match.AsDto(query.UserId, distanceInKms));
         }
 
-        return new PaginatedDataDto
+        return new PaginatedDataDto<MatchDto>
         {
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(dataDto)
+            Data = new List<MatchDto>(dataDto)
         };
     }
 }

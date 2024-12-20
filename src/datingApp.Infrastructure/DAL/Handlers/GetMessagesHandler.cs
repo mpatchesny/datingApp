@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedDataDto>
+internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedDataDto<MessageDto>>
 {
     private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly IDatingAppAuthorizationService _authorizationService;
@@ -24,7 +24,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
         _authorizationService = authorizationService;
     }
 
-    public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
+    public async Task<PaginatedDataDto<MessageDto>> HandleAsync(GetMessages query)
     {
         var match = 
             await _dbContext.Matches
@@ -53,12 +53,12 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
         var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto
+        return new PaginatedDataDto<MessageDto>
         {
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(match.MessagesAsDto())
+            Data = new List<MessageDto>(match.MessagesAsDto())
         };
     }
 }

@@ -50,8 +50,8 @@ public class GetMatchesHandlerTests : IDisposable
             Assert.NotNull(matchDto);
             Assert.IsType<MatchDto>(matchDto);
             Assert.Equal(matches[i].Id.Value, matchDto.Id);
-            Assert.InRange(matchDto.Messages.Count, 0, 1);
-            Assert.Equal(RoundToMillisecond(createdTime), RoundToMillisecond(matchDto.Messages[0].CreatedAt));
+            Assert.InRange(matchDto.Messages.Count(), 0, 1);
+            Assert.Equal(RoundToMillisecond(createdTime), RoundToMillisecond(matchDto.Messages.ElementAt(0).CreatedAt));
         }
     }
 

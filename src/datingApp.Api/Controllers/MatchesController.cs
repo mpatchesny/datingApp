@@ -37,12 +37,12 @@ public class MatchesController : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedDataDto>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
+    public async Task<ActionResult<PaginatedDataDto<MatchDto>>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
     {
         var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
         query.SetPage(page);
         query.SetPageSize(pageSize);
-        var result = await _queryDispatcher.DispatchAsync<GetMatches, PaginatedDataDto>(query);
+        var result = await _queryDispatcher.DispatchAsync<GetMatches, PaginatedDataDto<MatchDto>>(query);
         return Ok(result);
     }
 
@@ -55,12 +55,12 @@ public class MatchesController : ApiControllerBase
     }
 
     [HttpGet("{matchId:guid}/messages")]
-    public async Task<ActionResult<PaginatedDataDto>> GetMessages(Guid matchId, [FromQuery] int? page, [FromQuery] int? pageSize)
+    public async Task<ActionResult<PaginatedDataDto<MessageDto>>> GetMessages(Guid matchId, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
         var query = Authenticate(new GetMessages { MatchId = matchId });
         query.SetPage(page);
         query.SetPageSize(pageSize);
-        var result = await _queryDispatcher.DispatchAsync<GetMessages, PaginatedDataDto>(query);
+        var result = await _queryDispatcher.DispatchAsync<GetMessages, PaginatedDataDto<MessageDto>>(query);
         return Ok(result);
     }
 

@@ -66,7 +66,7 @@ internal static class Extensions
             user2.AsPublicDto(distanceInKms) :
             user1.AsPublicDto(distanceInKms);
 
-        return new MatchDto()
+        return new ()
         {
             Id = entity.Id,
             User = userDto,

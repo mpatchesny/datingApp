@@ -46,27 +46,11 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
 
         var matches = await dbQuery.ToListAsync();
 
-        List<MatchDto> dataDto = new List<MatchDto>();
+        var dataDto = new List<MatchDto>();
         foreach (var match in matches)
         {
-            var user1 = match.Users.ElementAt(0);
-            var user2 = match.Users.ElementAt(1);
-
-            var distanceInKms = _spatial.CalculateDistanceInKms(user1, user2);
-
-            var userDto = user1.Id.Equals(query.UserId) ? 
-                user2.AsPublicDto(distanceInKms) :
-                user1.AsPublicDto(distanceInKms);
-
-            dataDto.Add(
-                new MatchDto()
-                {
-                    Id = match.Id,
-                    User = userDto,
-                    IsDisplayed = match.IsDisplayedByUser(query.UserId),
-                    Messages =  match.MessagesAsDto().OrderBy(m => m.CreatedAt),
-                    CreatedAt = match.CreatedAt
-                });
+            var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
+            dataDto.Add(match.AsDto(query.UserId, distanceInKms));
         }
 
         return dataDto;

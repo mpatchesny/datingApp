@@ -22,5 +22,6 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
         builder.Property(x => x.CreatedAt)
             .IsRequired();
         builder.Navigation(x => x.MatchDetails).AutoInclude();
+        builder.ToTable("Matches");
     }
 }

@@ -17,5 +17,6 @@ internal sealed class RevokedRefreshTokenConfiguration : IEntityTypeConfiguratio
         builder.Property(x => x.ExpirationTime)
             .IsRequired();
         builder.HasKey(x => x.Token);
+        builder.ToTable("RevokedRefreshTokens");
     }
 }

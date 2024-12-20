@@ -59,12 +59,6 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             dataDto.Add(match.AsDto(query.UserId, distanceInKms));
         }
 
-        return new PaginatedDataDto<MatchDto>
-        {
-            Page = query.Page,
-            PageSize = query.PageSize,
-            PageCount = pageCount,
-            Data = new List<MatchDto>(dataDto)
-        };
+        return dataDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

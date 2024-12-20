@@ -53,12 +53,6 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
         var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto<MessageDto>
-        {
-            Page = query.Page,
-            PageSize = query.PageSize,
-            PageCount = pageCount,
-            Data = new List<MessageDto>(match.MessagesAsDto())
-        };
+        return match.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

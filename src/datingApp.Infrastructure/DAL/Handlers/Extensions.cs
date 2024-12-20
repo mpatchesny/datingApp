@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
+using Org.BouncyCastle.Crypto.Engines;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
@@ -108,5 +109,27 @@ internal static class Extensions
             });
         }
         return photos;
+    }
+
+    public static PaginatedDataDto<MatchDto> AsPaginatedDataDto(this List<MatchDto> matches, int page, int pageSize, int pageCount)
+    {
+        return new PaginatedDataDto<MatchDto>
+        {
+            Page = page,
+            PageSize = pageSize,
+            PageCount = pageCount,
+            Data = matches
+        };
+    }
+
+    public static PaginatedDataDto<MessageDto> AsPaginatedDataDto(this Match match, int page, int pageSize, int pageCount)
+    {
+        return new PaginatedDataDto<MessageDto>
+        {
+            Page = page,
+            PageSize = pageSize,
+            PageCount = pageCount,
+            Data = match.MessagesAsDto()
+        };
     }
 }

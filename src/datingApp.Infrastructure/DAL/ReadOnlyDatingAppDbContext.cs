@@ -31,21 +31,21 @@ internal sealed class ReadOnlyDatingAppDbContext : DbContext
 
     public override int SaveChanges()
     {
-        return 0;
+        throw new InvalidOperationException("Cannot save changes in read-only db context.");
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
-        return 0;
+        throw new InvalidOperationException("Cannot save changes in read-only db context.");
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(0);
+        throw new InvalidOperationException("Cannot save changes in read-only db context.");
     }
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(0);
+        throw new InvalidOperationException("Cannot save changes in read-only db context.");
     }
 }

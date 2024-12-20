@@ -13,10 +13,10 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetMessageHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
+    public GetMessageHandler(ReadOnlyDatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
     {
         _dbContext = dbContext;
         _authorizationService = authorizationService;
@@ -26,7 +26,6 @@ internal sealed class GetMessageHandler : IQueryHandler<GetMessage, MessageDto>
     {
         var match = await _dbContext.Matches
             .Include(match => match.Messages.Where(message => message.Id.Equals(query.MessageId)))
-            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (match == null || !match.Messages.Any())

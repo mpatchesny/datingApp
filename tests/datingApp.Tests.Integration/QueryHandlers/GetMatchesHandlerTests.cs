@@ -50,8 +50,8 @@ public class GetMatchesHandlerTests : IDisposable
             Assert.NotNull(matchDto);
             Assert.IsType<MatchDto>(matchDto);
             Assert.Equal(matches[i].Id.Value, matchDto.Id);
-            Assert.InRange(matchDto.Messages.Count, 0, 1);
-            Assert.Equal(RoundToMillisecond(createdTime), RoundToMillisecond(matchDto.Messages[0].CreatedAt));
+            Assert.InRange(matchDto.Messages.Count(), 0, 1);
+            Assert.Equal(RoundToMillisecond(createdTime), RoundToMillisecond(matchDto.Messages.ElementAt(0).CreatedAt));
         }
     }
 
@@ -149,7 +149,7 @@ public class GetMatchesHandlerTests : IDisposable
         var query = new GetMatches() { UserId = user1.Id };
         var matches = await _handler.HandleAsync(query);
 
-        Assert.Equal(matches.Data.First().IsDisplayed, true);
+        Assert.Equal(true, matches.Data.First().IsDisplayed);
     }
     
     [Fact]
@@ -243,7 +243,7 @@ public class GetMatchesHandlerTests : IDisposable
         _dbContext = _testDb.DbContext;
         _mockedSpatial = new Mock<ISpatial>();
         _mockedSpatial.Setup(m => m.CalculateDistanceInKms(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>())).Returns(0);
-        _handler = new GetMatchesHandler(_testDb.DbContext, _mockedSpatial.Object);
+        _handler = new GetMatchesHandler(_testDb.ReadOnlyDbContext, _mockedSpatial.Object);
     }
 
     // Teardown

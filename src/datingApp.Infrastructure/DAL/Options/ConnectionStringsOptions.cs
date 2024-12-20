@@ -7,5 +7,6 @@ namespace datingApp.Infrastructure.DAL.Options;
 
 internal sealed class ConnectionStringsOptions
 {
-    public string datingApp { get; set; }
+    public string ReadWriteDatingApp { get; set; }
+    public string ReadOnlyDatingApp { get; set; }
 }

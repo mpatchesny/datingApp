@@ -49,7 +49,7 @@ public class GetPrivateUserHandlerTests : IDisposable
     {
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
-        _handler = new GetPrivateUserHandler(_testDb.DbContext);
+        _handler = new GetPrivateUserHandler(_testDb.ReadOnlyDbContext);
     }
 
     // Teardown

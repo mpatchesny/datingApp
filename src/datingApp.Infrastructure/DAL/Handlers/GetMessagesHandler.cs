@@ -13,22 +13,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedDataDto>
+internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedDataDto<MessageDto>>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetMessagesHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
+    public GetMessagesHandler(ReadOnlyDatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService)
     {
         _dbContext = dbContext;
         _authorizationService = authorizationService;
     }
 
-    public async Task<PaginatedDataDto> HandleAsync(GetMessages query)
+    public async Task<PaginatedDataDto<MessageDto>> HandleAsync(GetMessages query)
     {
         var match = 
             await _dbContext.Matches
-            .AsNoTracking()
             .Where(match => match.Id.Equals(query.MatchId))
             .Include(match => match.Messages
                 .OrderByDescending(message => message.CreatedAt)
@@ -49,18 +48,17 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
         var recordsCount = await _dbContext.Matches
             .Where(match => match.Id.Equals(query.MatchId))
-            .AsNoTracking()
             .SelectMany(match => match.Messages)
             .CountAsync();
 
         var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto
+        return new PaginatedDataDto<MessageDto>
         {
             Page = query.Page,
             PageSize = query.PageSize,
             PageCount = pageCount,
-            Data = new List<dynamic>(match.MessagesAsDto())
+            Data = new List<MessageDto>(match.MessagesAsDto())
         };
     }
 }

@@ -23,5 +23,6 @@ internal sealed class AccessCodeConfiguration : IEntityTypeConfiguration<AccessC
             .IsRequired();
         builder.HasKey(x => x.EmailOrPhone);
         builder.IsUnlogged();
+        builder.ToTable("AccessCodes");
     }
 }

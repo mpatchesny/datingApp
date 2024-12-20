@@ -21,9 +21,9 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidates, IEnumerable<PublicUserDto>>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
-    public GetSwipeCandidatesHandler(DatingAppDbContext dbContext, ISpatial spatial)
+    public GetSwipeCandidatesHandler(ReadOnlyDatingAppDbContext dbContext, ISpatial spatial)
     {
         _dbContext = dbContext;
         _spatial = spatial;
@@ -48,7 +48,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
             .Select(swipe => swipe.SwipedWhoId);
 
         return _dbContext.Users
-            .AsNoTracking()
             .Where(candidate => !candidate.Id.Equals(requestedById))
             .Where(candidate => !alreadySwiped.Contains(candidate.Id))
             .Where(candidate => ((int)candidate.Sex & preferredSex) != 0)
@@ -100,7 +99,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
     public async Task<IEnumerable<PublicUserDto>> HandleAsync(GetSwipeCandidates query)
     {
         var requestedBy = await _dbContext.Users
-            .AsNoTracking()
             .Include(user => user.Settings)
             .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));
 

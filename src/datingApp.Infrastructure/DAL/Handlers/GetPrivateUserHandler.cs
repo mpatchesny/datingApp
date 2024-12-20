@@ -12,15 +12,14 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetPrivateUserHandler : IQueryHandler<GetPrivateUser, PrivateUserDto>
 {
-    private readonly DatingAppDbContext _dbContext;
-    public GetPrivateUserHandler(DatingAppDbContext dbContext)
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
+    public GetPrivateUserHandler(ReadOnlyDatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
     public async Task<PrivateUserDto> HandleAsync(GetPrivateUser query)
     {
         var user = await _dbContext.Users
-            .AsNoTracking()
             .Include(user => user.Settings)
             .Include(user => user.Photos)
             .FirstOrDefaultAsync(user => user.Id.Equals(query.UserId));

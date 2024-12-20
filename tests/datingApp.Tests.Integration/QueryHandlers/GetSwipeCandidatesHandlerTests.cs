@@ -248,7 +248,7 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
         _spatial = new Mock<ISpatial>();
-        _handler = new GetSwipeCandidatesHandler(_testDb.DbContext, _spatial.Object);
+        _handler = new GetSwipeCandidatesHandler(_testDb.ReadOnlyDbContext, _spatial.Object);
     }
 
     // Teardown

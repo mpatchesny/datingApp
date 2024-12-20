@@ -8,7 +8,7 @@ using datingApp.Application.Exceptions;
 
 namespace datingApp.Application.Queries;
 
-public class AuthenticatedPaginatedQuery : AuthenticatedQueryBase<PaginatedDataDto>
+public class AuthenticatedPaginatedQuery<T> : AuthenticatedQueryBase<PaginatedDataDto<T>>
 {
     public int Page { get; private set; } = 1;
     public int PageSize { get; private set; } = 15;

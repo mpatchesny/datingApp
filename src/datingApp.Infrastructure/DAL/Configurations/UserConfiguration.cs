@@ -46,5 +46,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .ToTable("MatchDetails");
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => new {x.Sex, x.DateOfBirth});
+        builder.ToTable("Users");
     }
 }

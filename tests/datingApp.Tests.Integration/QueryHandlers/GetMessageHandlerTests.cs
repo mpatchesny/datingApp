@@ -86,7 +86,7 @@ public class GetMessageHandlerTests : IDisposable
         _testDb = new TestDatabase();
         _dbContext = _testDb.DbContext;
         _authService = new Mock<IDatingAppAuthorizationService>();
-        _handler = new GetMessageHandler(_testDb.DbContext, _authService.Object);
+        _handler = new GetMessageHandler(_testDb.ReadOnlyDbContext, _authService.Object);
     }
 
     // Teardown

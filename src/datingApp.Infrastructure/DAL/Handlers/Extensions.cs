@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.DTO;
+using datingApp.Application.Spatial;
 using datingApp.Core.Entities;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal static class Extensions
 {
-    public static PublicUserDto AsPublicDto(this User entity, int distance)
+    public static PublicUserDto AsPublicDto(this User entity, int distanceInKms)
     {
         return new()
         {
             Id = entity.Id,
             Age = entity.GetAge(),
-            DistanceInKms = distance,
+            DistanceInKms = distanceInKms,
             Bio = entity.Bio,
             Job = entity.Job,
             Name = entity.Name,
@@ -53,6 +54,25 @@ internal static class Extensions
             PreferredMaxDistance = entity.PreferredMaxDistance,
             Lat = entity.Location.Lat,
             Lon = entity.Location.Lon
+        };
+    }
+
+    public static MatchDto AsDto(this Match entity, Guid asSeenByUserId, int distanceInKms)
+    {
+        var user1 = entity.Users.ElementAt(0);
+        var user2 = entity.Users.ElementAt(1);
+
+        var userDto = user1.Id.Equals(asSeenByUserId) ? 
+            user2.AsPublicDto(distanceInKms) :
+            user1.AsPublicDto(distanceInKms);
+
+        return new ()
+        {
+            Id = entity.Id,
+            User = userDto,
+            IsDisplayed = entity.IsDisplayedByUser(asSeenByUserId),
+            Messages =  entity.MessagesAsDto(),
+            CreatedAt = entity.CreatedAt
         };
     }
 

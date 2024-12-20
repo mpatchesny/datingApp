@@ -16,11 +16,13 @@ namespace datingApp.Infrastructure.DAL.Handlers;
 
 internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
 {
-    private readonly DatingAppDbContext _dbContext;
+    private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
-    public GetMatchHandler(DatingAppDbContext dbContext, IDatingAppAuthorizationService authorizationService, ISpatial spatial)
+    public GetMatchHandler(ReadOnlyDatingAppDbContext dbContext,
+                        IDatingAppAuthorizationService authorizationService,
+                        ISpatial spatial)
     {
         _dbContext = dbContext;
         _authorizationService = authorizationService;
@@ -47,7 +49,6 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             select pair;
 
         var match = await dbQuery
-            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (match == null) 
@@ -61,22 +62,8 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             throw new UnauthorizedException();
         }
 
-        var user1 = match.Users.ElementAt(0);
-        var user2 = match.Users.ElementAt(1);
+        var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(user1, user2);
-
-        var userDto = user1.Id.Equals(query.UserId) ? 
-            user2.AsPublicDto(distanceInKms) :
-            user1.AsPublicDto(distanceInKms);
-
-        return new MatchDto()
-        {
-            Id = match.Id,
-            User = userDto,
-            IsDisplayed = match.IsDisplayedByUser(query.UserId),
-            Messages =  match.MessagesAsDto(),
-            CreatedAt = match.CreatedAt
-        };
+        return match.AsDto(query.UserId, distanceInKms);
     }
 }

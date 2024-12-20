@@ -11,13 +11,17 @@ namespace datingApp.Tests.Integration;
 internal sealed class TestDatabase : IDisposable
 {
     public DatingAppDbContext DbContext { get; }
+    public ReadOnlyDatingAppDbContext ReadOnlyDbContext { get; }
     private readonly string _connectionString;
     public TestDatabase(bool randomDbName = true)
     {
         var options = new OptionsProvider().Get<ConnectionStringsOptions>("ConnectionStrings");
-        _connectionString = options.datingApp;
+        _connectionString = options.ReadWriteDatingApp;
         if (randomDbName) _connectionString = string.Format(_connectionString, Guid.NewGuid().ToString());
-        DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>().UseNpgsql(_connectionString).Options);
+        DbContext = new DatingAppDbContext(new DbContextOptionsBuilder<DatingAppDbContext>()
+            .UseNpgsql(_connectionString).Options);
+        ReadOnlyDbContext = new ReadOnlyDatingAppDbContext(new DbContextOptionsBuilder<ReadOnlyDatingAppDbContext>()
+            .UseNpgsql(_connectionString).Options);
         DbContext.Database.EnsureDeleted();
         DbContext.Database.EnsureCreated();
     }

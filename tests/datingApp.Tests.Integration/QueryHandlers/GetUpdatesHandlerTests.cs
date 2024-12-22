@@ -36,8 +36,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(result);
-        Assert.Equal(2, result.Count());
+        Assert.NotEmpty(result.Data);
+        Assert.Equal(2, result.Data.Count);
     }
 
     [Fact]
@@ -56,8 +56,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(result);
-        Assert.Single(result);
+        Assert.NotEmpty(result.Data);
+        Assert.Single(result.Data);
     }
 
     [Fact]
@@ -79,8 +79,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow };
         var result = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(result);
-        Assert.Equal(2, result.Count());
+        Assert.NotEmpty(result.Data);
+        Assert.Equal(2, result.Data.Count);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = userWithoutMatch.Id, LastActivityTime = DateTime.UtcNow};
         var result = await _handler.HandleAsync(query);
 
-        Assert.Empty(result);
+        Assert.Empty(result.Data);
     }
 
     [Fact]

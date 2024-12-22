@@ -26,8 +26,7 @@ internal sealed class GetMessagesHandler : IQueryHandler<GetMessages, PaginatedD
 
     public async Task<PaginatedDataDto<MessageDto>> HandleAsync(GetMessages query)
     {
-        var match = 
-            await _dbContext.Matches
+        var match = await _dbContext.Matches
             .Where(match => match.Id.Equals(query.MatchId))
             .Include(match => match.Messages
                 .OrderByDescending(message => message.CreatedAt)

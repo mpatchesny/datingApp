@@ -29,8 +29,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery = 
-            from match in _dbContext.Matches
+        var matches = await _dbContext.Matches
             .Include(match => match.Messages
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
             .Where(match => 
@@ -42,17 +41,10 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 .ThenInclude(user => user.Settings)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            select match;
+            .Select(match => match.AsDto(query.UserId, 
+                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
+            .ToListAsync();
 
-        var matches = await dbQuery.ToListAsync();
-
-        var dataDto = new List<MatchDto>();
-        foreach (var match in matches)
-        {
-            var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
-            dataDto.Add(match.AsDto(query.UserId, distanceInKms));
-        }
-
-        return dataDto;
+        return matches;
     }
 }

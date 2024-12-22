@@ -44,6 +44,8 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             .OrderByDescending(match => match.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
+            .Select(match => match.AsDto(query.UserId, 
+                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
             .ToListAsync();
 
         var recordsCount = await _dbContext.Matches
@@ -53,13 +55,6 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
 
         var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
-        var dataDto = new List<MatchDto>();
-        foreach (var match in matches)
-        {
-            var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
-            dataDto.Add(match.AsDto(query.UserId, distanceInKms));
-        }
-
-        return dataDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
+        return matches.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

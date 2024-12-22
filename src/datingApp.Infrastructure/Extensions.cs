@@ -61,10 +61,8 @@ public static class Extensions
         services.AddScoped<IEmailGeneratorFactory, EmailGeneratorFactory>();
         services.AddScoped<INotificationSender<Email>, DummyEmailSender>();
 
-        services.AddScoped<IQueryHandler<GetUpdates, IEnumerable<MatchDto>>, GetUpdatesHandler>(); 
         services.Scan(s => s.FromCallingAssembly()
-            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>))
-                .Where(t => !t.Name.Equals("GetUpdatesHandler")))
+            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 

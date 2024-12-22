@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<MatchDto>>
+internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDataDto<MatchDto>>
 {
     private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
@@ -22,7 +22,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         _spatial = spatial;
     }
 
-    public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
+    public async Task<PaginatedDataDto<MatchDto>> HandleAsync(GetUpdates query)
     {
         if (!await _dbContext.Users.AnyAsync(user => user.Id.Equals(query.UserId)))
         {
@@ -48,6 +48,16 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
             .ToList();
 
-        return matchesDto;
+        var recordsCount = await _dbContext.Matches
+            .Where(match => 
+                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
+                    match.CreatedAt >= query.LastActivityTime)
+            .Where(match => match.Users
+                .Any(user => user.Id.Equals(query.UserId)))
+            .CountAsync();
+
+        var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
+
+        return matchesDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

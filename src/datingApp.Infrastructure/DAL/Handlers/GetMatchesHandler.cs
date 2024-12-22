@@ -31,6 +31,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
+
         var dbQuery = 
             from match in _dbContext.Matches
             .Include(match => match.Messages
@@ -50,7 +51,12 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             .Take(query.PageSize)
             .ToListAsync();
 
-        var pageCount = (await dbQuery.CountAsync() + query.PageSize - 1) / query.PageSize;
+        var recordsCount = await _dbContext.Matches
+            .Where(match => match.Users
+                .Any(user => user.Id.Equals(query.UserId)))
+            .CountAsync();
+
+        var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
         var dataDto = new List<MatchDto>();
         foreach (var match in matches)

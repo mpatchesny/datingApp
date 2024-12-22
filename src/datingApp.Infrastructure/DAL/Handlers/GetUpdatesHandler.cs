@@ -41,10 +41,13 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
                 .ThenInclude(user => user.Settings)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            .Select(match => match.AsDto(query.UserId, 
-                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
             .ToListAsync();
 
-        return matches;
+        var matchesDto = matches
+            .Select(match => match.AsDto(query.UserId, 
+                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
+            .ToList();
+
+        return matchesDto;
     }
 }

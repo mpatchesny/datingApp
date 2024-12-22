@@ -32,15 +32,18 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
         var matches = await _dbContext.Matches
             .Include(match => match.Messages
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
-            .Where(match => 
-                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
-                    match.CreatedAt >= query.LastActivityTime)
+                .OrderByDescending(message => message.CreatedAt)
             .Include(match => match.Users)
                 .ThenInclude(user => user.Photos)
             .Include(match => match.Users)
                 .ThenInclude(user => user.Settings)
+            .Where(match => 
+                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
+                    match.CreatedAt >= query.LastActivityTime)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .ToListAsync();
 
         var matchesDto = matches

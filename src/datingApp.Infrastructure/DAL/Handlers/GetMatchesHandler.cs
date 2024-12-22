@@ -31,9 +31,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
-
-        var dbQuery = 
-            from match in _dbContext.Matches
+        var matches = await _dbContext.Matches
             .Include(match => match.Messages
                 .OrderByDescending(message => message.CreatedAt)
                 .Take(1))
@@ -43,9 +41,6 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 .ThenInclude(user => user.Settings)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            select match;
-
-        var matches = await dbQuery
             .OrderByDescending(match => match.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)

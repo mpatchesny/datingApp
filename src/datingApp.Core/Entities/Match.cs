@@ -17,6 +17,7 @@ public class Match
     public IEnumerable<Message> Messages => _messages;
     public IEnumerable<MatchDetail> MatchDetails => _matchDetails;
     public DateTime CreatedAt { get; private set; }
+    public DateTime LastActivityTime { get; private set; }
 
     private readonly List<Message> _messages = new();
     private readonly List<MatchDetail> _matchDetails = new();
@@ -26,13 +27,14 @@ public class Match
         // EF
     }
 
-    public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
+    public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, DateTime lastActivityTime, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
     {
         Id = id;
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();
         CreatedAt = createdAt;
+        LastActivityTime = lastActivityTime;
     }
 
     public bool IsDisplayedByUser(UserId userId)
@@ -62,6 +64,7 @@ public class Match
         var detail = _matchDetails.FirstOrDefault(md => md.UserId == message.SendFromId);
         if (detail != null) detail.AddMessage(message);
         _messages.Add(message);
+        LastActivityTime = message.CreatedAt;
     }
 
     public void RemoveMessage(MessageId messageId)

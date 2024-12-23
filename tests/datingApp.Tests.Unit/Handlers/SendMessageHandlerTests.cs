@@ -39,7 +39,7 @@ public class SendMessageHandlerTests
     [Fact]
     public async Task given_match_exists_and_authorization_failed_SendMessageHandler_throws_UnauthorizedException()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, false, false);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, false, false);
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(match));
 
@@ -58,7 +58,7 @@ public class SendMessageHandlerTests
     [Fact]
     public async Task given_match_exists_and_authorization_succeed_SendMessageHandler_should_succeed()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, false, false);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, false, false);
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(match));
         repository.Setup(x => x.UpdateAsync(It.IsAny<Match>()));

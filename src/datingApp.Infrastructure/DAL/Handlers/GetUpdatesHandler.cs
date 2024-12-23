@@ -42,6 +42,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
                     match.CreatedAt >= query.LastActivityTime)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
+            .OrderByDescending(match => match.LastActivityTime)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();

@@ -12,6 +12,7 @@ using datingApp.Infrastructure.DAL.Handlers;
 using MailKit;
 using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
@@ -192,6 +193,41 @@ public class GetUpdatesHandlerTests : IDisposable
         var matches = await _handler.HandleAsync(query);
 
         Assert.Empty(matches.Data);
+    }
+
+    [Fact (Skip = "matches/messages are not sorted in any way")]
+    public async Task GetUpdatesHandler_returns_newest_updates_first()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+
+        var createdAt = DateTime.UtcNow;
+        var matchesToCreate = 10;
+        var matches = new List<Match>();
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, createdAt: createdAt.AddSeconds(i));
+            matches.Add(match);
+        }
+        
+        var messagesToCreate = 5;
+        var messages = new List<Message>();
+        for (int i = 0; i < messagesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var message = new Message(Guid.NewGuid(), tempUser.Id, "hello", false, createdAt: createdAt.AddSeconds(i));
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: new List<Message>() { message });
+            messages.Add(message);
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(1);
+        query.SetPage(2);
+        var items = await _handler.HandleAsync(query);
+
+        Assert.Equal(matches.OrderByDescending(m => m.CreatedAt).Select(m => m.Id.Value), items.Data.Select(m => m.Id));
     }
 
     // Arrange

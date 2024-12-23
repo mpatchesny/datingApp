@@ -231,7 +231,28 @@ public class GetMatchesHandlerTests : IDisposable
 
         Assert.Empty(matches.Data);
     }
-    
+
+    [Fact]
+    public async Task GetMatches_returns_newest_matches_first()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 15;
+        var createdAt = DateTime.UtcNow;
+        var matches = new List<Match>();
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, createdAt: createdAt.AddSeconds(i));
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatches() { UserId = user1.Id };
+        var retrievedMatches = await _handler.HandleAsync(query);
+
+        Assert.Equal(matches.OrderByDescending(m => m.CreatedAt).Select(m => m.Id.Value), retrievedMatches.Data.Select(m => m.Id));
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;

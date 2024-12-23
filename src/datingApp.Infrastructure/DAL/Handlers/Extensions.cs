@@ -44,7 +44,7 @@ internal static class Extensions
         };
     }
 
-    public static UserSettingsDto AsDto(this UserSettings entity)
+    private static UserSettingsDto AsDto(this UserSettings entity)
     {
         return new()
         {
@@ -111,25 +111,14 @@ internal static class Extensions
         return photos;
     }
 
-    public static PaginatedDataDto<MatchDto> AsPaginatedDataDto(this List<MatchDto> matches, int page, int pageSize, int pageCount)
+    public static PaginatedDataDto<T> AsPaginatedDataDto<T>(this List<T> data, int page, int pageSize, int pageCount)
     {
-        return new PaginatedDataDto<MatchDto>
+        return new PaginatedDataDto<T>
         {
             Page = page,
             PageSize = pageSize,
             PageCount = pageCount,
-            Data = matches
-        };
-    }
-
-    public static PaginatedDataDto<MessageDto> AsPaginatedDataDto(this Match match, int page, int pageSize, int pageCount)
-    {
-        return new PaginatedDataDto<MessageDto>
-        {
-            Page = page,
-            PageSize = pageSize,
-            PageCount = pageCount,
-            Data = match.MessagesAsDto()
+            Data = data
         };
     }
 }

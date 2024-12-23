@@ -40,7 +40,7 @@ public class SetMessagesAsDisplayedHandlerTests
     [Fact]
     public async Task given_match_exists_and_authorization_failed_SendMessageHandler_throws_MatchNotExistsException()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
+        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>())).Returns(Task.FromResult<Match>(match));
 
@@ -68,7 +68,7 @@ public class SetMessagesAsDisplayedHandlerTests
             new Message(Guid.NewGuid(), userId1, "hello", false, DateTime.UtcNow.AddSeconds(-2)),
             new Message(Guid.NewGuid(), userId1, "hello", false, DateTime.UtcNow.AddSeconds(-3))
         };
-        var match = new Match(Guid.NewGuid(), userId1, userId2, DateTime.UtcNow, DateTime.UtcNow, messages: messages);
+        var match = new Match(Guid.NewGuid(), userId1, userId2, DateTime.UtcNow, messages: messages);
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>())).Returns(Task.FromResult<Match>(match));
         repository.Setup(x => x.UpdateAsync(It.IsAny<Match>()));

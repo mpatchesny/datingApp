@@ -67,7 +67,7 @@ public class DeleteMatchHandlerTests
     [Fact]
     public async Task given_authorization_fail_DeleteMatchHandler_returns_UnauthorizedException()
     {
-        var match = new Core.Entities.Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
+        var match = new Core.Entities.Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Core.Entities.Match>(match));
 
@@ -90,7 +90,7 @@ public class DeleteMatchHandlerTests
     [Fact]
     public async Task given_match_exists_and_authorization_succeed_and_match_id_not_in_deleted_entities_DeleteMatchHandler_succeed()
     {
-        var match = new Core.Entities.Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
+        var match = new Core.Entities.Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var repository = new Mock<IMatchRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Core.Entities.Match>(match));
         repository.Setup(x => x.DeleteAsync(It.IsAny<Match>()));

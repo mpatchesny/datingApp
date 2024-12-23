@@ -27,14 +27,14 @@ public class Match
         // EF
     }
 
-    public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, DateTime lastActivityTime, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
+    public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
     {
         Id = id;
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();
         CreatedAt = createdAt;
-        LastActivityTime = lastActivityTime;
+        LastActivityTime = _messages.Any() ? _messages.Max(msg => msg.CreatedAt) : CreatedAt;
     }
 
     public bool IsDisplayedByUser(UserId userId)
@@ -76,6 +76,9 @@ public class Match
 
         var message = _messages.FirstOrDefault(m => m.Id == messageId);
         if (message != null) _messages.Remove(message);
+
+        LastActivityTime = CreatedAt;
+        if (_messages.Any()) LastActivityTime = _messages.Max(msg => msg.CreatedAt);
     }
 
     public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId displayedByUserId)

@@ -223,8 +223,6 @@ public class GetUpdatesHandlerTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetUpdates() { UserId = user1.Id };
-        query.SetPageSize(1);
-        query.SetPage(2);
         var items = await _handler.HandleAsync(query);
 
         Assert.Equal(matches.OrderByDescending(m => m.CreatedAt).Select(m => m.Id.Value), items.Data.Select(m => m.Id));

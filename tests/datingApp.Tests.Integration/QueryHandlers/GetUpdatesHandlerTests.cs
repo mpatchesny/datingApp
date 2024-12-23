@@ -195,7 +195,7 @@ public class GetUpdatesHandlerTests : IDisposable
         Assert.Empty(matches.Data);
     }
 
-    [Fact (Skip = "matches/messages are not sorted in any way")]
+    [Fact]
     public async Task GetUpdatesHandler_returns_newest_updates_first()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -209,23 +209,23 @@ public class GetUpdatesHandlerTests : IDisposable
             var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, createdAt: createdAt.AddSeconds(i));
             matches.Add(match);
         }
-        
+
+        createdAt = matches.Max(m => m.CreatedAt).AddSeconds(1);
         var messagesToCreate = 5;
-        var messages = new List<Message>();
         for (int i = 0; i < messagesToCreate; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
             var message = new Message(Guid.NewGuid(), tempUser.Id, "hello", false, createdAt: createdAt.AddSeconds(i));
             var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: new List<Message>() { message });
-            messages.Add(message);
             matches.Add(match);
         }
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(15);
         var items = await _handler.HandleAsync(query);
 
-        Assert.Equal(matches.OrderByDescending(m => m.CreatedAt).Select(m => m.Id.Value), items.Data.Select(m => m.Id));
+        Assert.Equal(matches.OrderByDescending(m => m.LastActivityTime).Select(m => m.Id.Value), items.Data.Select(m => m.Id));
     }
 
     // Arrange

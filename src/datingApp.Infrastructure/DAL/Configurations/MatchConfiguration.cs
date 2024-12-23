@@ -21,6 +21,8 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
         builder.Ignore(x => x.UserId2);
         builder.Property(x => x.CreatedAt)
             .IsRequired();
+        builder.Property(x => x.LastActivityTime)
+            .IsRequired();
         builder.Navigation(x => x.MatchDetails).AutoInclude();
         builder.ToTable("Matches");
     }

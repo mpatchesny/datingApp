@@ -218,6 +218,29 @@ public class GetMessagesHandlerTests : IDisposable
         Assert.Empty(matches.Data);
     }
 
+    [Fact]
+    public async Task GetMessagesHandler_returns_newest_messages_first()
+    {
+        _authService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
+            .Returns(Task.FromResult(AuthorizationResult.Success()));
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var createdAt = DateTime.UtcNow;
+        var messages = new List<Message>();
+        for (int i = 0; i < 15; i++)
+        {
+            var message = IntegrationTestHelper.CreateMessage(user1.Id, createdAt: createdAt.AddSeconds(i));
+            messages.Add(message);
+        }
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMessages() { MatchId = match.Id };
+        var retrievedMessages = await _handler.HandleAsync(query);
+
+        Assert.Equal(messages.OrderByDescending(m => m.CreatedAt).Select(m => m.Id.Value), retrievedMessages.Data.Select(m => m.Id));
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;

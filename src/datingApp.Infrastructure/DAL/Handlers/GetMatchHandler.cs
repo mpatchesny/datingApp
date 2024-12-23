@@ -36,8 +36,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery = 
-            from pair in _dbContext.Matches
+        var match = await _dbContext.Matches
             .Include(match => match.Messages
                 .OrderByDescending(message => message.CreatedAt)
                 .Take(query.HowManyMessages))
@@ -46,9 +45,6 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             .Include(match => match.Users)
                 .ThenInclude(user => user.Settings)
             .Where(match => match.Id.Equals(query.MatchId))
-            select pair;
-
-        var match = await dbQuery
             .FirstOrDefaultAsync();
 
         if (match == null) 

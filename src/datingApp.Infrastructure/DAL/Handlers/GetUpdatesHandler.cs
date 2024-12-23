@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<MatchDto>>
+internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDataDto<MatchDto>>
 {
     private readonly ReadOnlyDatingAppDbContext _dbContext;
     private readonly ISpatial _spatial;
@@ -22,37 +22,46 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, IEnumerable<
         _spatial = spatial;
     }
 
-    public async Task<IEnumerable<MatchDto>> HandleAsync(GetUpdates query)
+    public async Task<PaginatedDataDto<MatchDto>> HandleAsync(GetUpdates query)
     {
         if (!await _dbContext.Users.AnyAsync(user => user.Id.Equals(query.UserId)))
         {
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery = 
-            from match in _dbContext.Matches
+        var matches = await _dbContext.Matches
             .Include(match => match.Messages
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
-            .Where(match => 
-                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
-                    match.CreatedAt >= query.LastActivityTime)
+                .OrderByDescending(message => message.CreatedAt)
             .Include(match => match.Users)
                 .ThenInclude(user => user.Photos)
             .Include(match => match.Users)
                 .ThenInclude(user => user.Settings)
+            .Where(match => 
+                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
+                    match.CreatedAt >= query.LastActivityTime)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            select match;
+            .OrderByDescending(match => match.LastActivityTime)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
 
-        var matches = await dbQuery.ToListAsync();
+        var matchesDto = matches
+            .Select(match => match.AsDto(query.UserId, 
+                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
+            .ToList();
 
-        var dataDto = new List<MatchDto>();
-        foreach (var match in matches)
-        {
-            var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
-            dataDto.Add(match.AsDto(query.UserId, distanceInKms));
-        }
+        var recordsCount = await _dbContext.Matches
+            .Where(match => 
+                match.Messages.Any(message => message.CreatedAt >= query.LastActivityTime) ||
+                    match.CreatedAt >= query.LastActivityTime)
+            .Where(match => match.Users
+                .Any(user => user.Id.Equals(query.UserId)))
+            .CountAsync();
 
-        return dataDto;
+        var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
+
+        return matchesDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

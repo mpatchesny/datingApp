@@ -17,6 +17,7 @@ public class Match
     public IEnumerable<Message> Messages => _messages;
     public IEnumerable<MatchDetail> MatchDetails => _matchDetails;
     public DateTime CreatedAt { get; private set; }
+    public DateTime LastActivityTime { get; private set; }
 
     private readonly List<Message> _messages = new();
     private readonly List<MatchDetail> _matchDetails = new();
@@ -33,6 +34,7 @@ public class Match
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();
         CreatedAt = createdAt;
+        LastActivityTime = _messages.Any() ? _messages.Max(msg => msg.CreatedAt) : CreatedAt;
     }
 
     public bool IsDisplayedByUser(UserId userId)
@@ -62,6 +64,7 @@ public class Match
         var detail = _matchDetails.FirstOrDefault(md => md.UserId == message.SendFromId);
         if (detail != null) detail.AddMessage(message);
         _messages.Add(message);
+        LastActivityTime = message.CreatedAt;
     }
 
     public void RemoveMessage(MessageId messageId)
@@ -73,6 +76,9 @@ public class Match
 
         var message = _messages.FirstOrDefault(m => m.Id == messageId);
         if (message != null) _messages.Remove(message);
+
+        LastActivityTime = CreatedAt;
+        if (_messages.Any()) LastActivityTime = _messages.Max(msg => msg.CreatedAt);
     }
 
     public void SetPreviousMessagesAsDisplayed(MessageId lastMessageId, UserId displayedByUserId)

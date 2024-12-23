@@ -7,7 +7,7 @@ using datingApp.Application.DTO;
 
 namespace datingApp.Application.Queries;
 
-public class GetUpdates : AuthenticatedQueryBase<IEnumerable<MatchDto>>
+public class GetUpdates : AuthenticatedPaginatedQuery<MatchDto>
 {
     public Guid UserId { get; set; }
     public DateTime LastActivityTime { get; set; }

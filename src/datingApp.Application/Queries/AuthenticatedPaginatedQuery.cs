@@ -17,7 +17,7 @@ public class AuthenticatedPaginatedQuery<T> : AuthenticatedQueryBase<PaginatedDa
     public void SetPage(int? page)
     {
         if (page == null) return;
-        if (page < 0)
+        if (page <= 0)
         {
             throw new InvalidPageNumberException();
         }

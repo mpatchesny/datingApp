@@ -31,8 +31,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
-        var dbQuery = 
-            from match in _dbContext.Matches
+        var matches = await _dbContext.Matches
             .Include(match => match.Messages
                 .OrderByDescending(message => message.CreatedAt)
                 .Take(1))
@@ -42,29 +41,23 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 .ThenInclude(user => user.Settings)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            select match;
-
-        var matches = await dbQuery
             .OrderByDescending(match => match.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();
+        
+        var matchesDto = matches
+            .Select(match => match.AsDto(query.UserId, 
+                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
+            .ToList();
 
-        var pageCount = (await dbQuery.CountAsync() + query.PageSize - 1) / query.PageSize;
+        var recordsCount = await _dbContext.Matches
+            .Where(match => match.Users
+                .Any(user => user.Id.Equals(query.UserId)))
+            .CountAsync();
 
-        var dataDto = new List<MatchDto>();
-        foreach (var match in matches)
-        {
-            var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
-            dataDto.Add(match.AsDto(query.UserId, distanceInKms));
-        }
+        var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
-        return new PaginatedDataDto<MatchDto>
-        {
-            Page = query.Page,
-            PageSize = query.PageSize,
-            PageCount = pageCount,
-            Data = new List<MatchDto>(dataDto)
-        };
+        return matchesDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

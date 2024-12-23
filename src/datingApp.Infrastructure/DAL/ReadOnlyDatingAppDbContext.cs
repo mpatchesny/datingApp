@@ -27,6 +27,7 @@ internal sealed class ReadOnlyDatingAppDbContext : DbContext
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.LogTo(Console.WriteLine);
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     }
 
     public override int SaveChanges()

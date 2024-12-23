@@ -59,26 +59,30 @@ public class MatchTests
     }
 
     [Fact]
-    public void given_message_not_in_Match_AddMessage_adds_message()
+    public void given_message_not_in_Match_AddMessage_adds_message_and_sets_LastActivityTime_to_added_message_CreatedAt()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
-        var message = new Message(Guid.NewGuid(), match.UserId1, "abc", false, DateTime.UtcNow);
-        
+        var messageCreateTime = DateTime.UtcNow.AddSeconds(10);
+        var message = new Message(Guid.NewGuid(), match.UserId1, "abc", false, messageCreateTime);
+
         Assert.Empty(match.Messages);
         match.AddMessage(message);
         Assert.Single(match.Messages);
+        Assert.Equal(messageCreateTime, match.LastActivityTime);
     }
 
     [Fact]
     public void given_message_in_Match_AddMessage_do_nothing()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
-        var message = new Message(Guid.NewGuid(), match.UserId1, "abc", false, DateTime.UtcNow);
+        var messageCreateTime = DateTime.UtcNow.AddSeconds(10);
+        var message = new Message(Guid.NewGuid(), match.UserId1, "abc", false, messageCreateTime);
 
         match.AddMessage(message);
         Assert.Single(match.Messages);
         match.AddMessage(message);
         Assert.Single(match.Messages);
+        Assert.Equal(messageCreateTime, match.LastActivityTime);
     }
 
     [Fact]
@@ -113,6 +117,31 @@ public class MatchTests
         Assert.Single(match.Messages);
         match.RemoveMessage(message.Id);
         Assert.Empty(match.Messages);
+    }
+
+    [Fact]
+    public void given_message_in_Match_Messages_RemoveMessage_changes_LastActivityTime_to_max_CreatedAt_of_remaining_messages_if_any()
+    {
+        var message1 = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow.AddSeconds(10));
+        var message2 = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow);
+        var messages = new List<Message>() { message1, message2 };
+        var match = new Match(Guid.NewGuid(), message1.SendFromId, message2.SendFromId, DateTime.UtcNow, messages: messages);
+        
+        match.RemoveMessage(message1.Id);
+        Assert.Single(match.Messages);
+        Assert.Equal(message2.CreatedAt, match.LastActivityTime);
+    }
+
+    [Fact]
+    public void given_message_in_Match_Messages_RemoveMessage_changes_LastActivityTime_to_match_CreatedAt_if_no_remaining_messages()
+    {
+        var message = new Message(Guid.NewGuid(), Guid.NewGuid(), "abc", false, DateTime.UtcNow.AddSeconds(10));
+        var messages = new List<Message> { message };
+        var match = new Match(Guid.NewGuid(), message.SendFromId, Guid.NewGuid(), DateTime.UtcNow, messages: messages);
+        
+        Assert.Single(match.Messages);
+        match.RemoveMessage(message.Id);
+        Assert.Equal(match.CreatedAt, match.LastActivityTime);
     }
 
     [Fact]

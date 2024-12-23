@@ -96,13 +96,15 @@ public class UserController : ApiControllerBase
     }
 
     [HttpGet("me/updates")]
-    public async Task<ActionResult<IEnumerable<MatchDto>>> GetUpdates([FromQuery(Name = "lastActivityTime")] DateTime lastActivityTime)
+    public async Task<ActionResult<PaginatedDataDto<MatchDto>>> GetUpdates([FromQuery(Name = "lastActivityTime")] DateTime lastActivityTime, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
         var query = new GetUpdates();
         query.LastActivityTime = lastActivityTime;
+        query.SetPage(page);
+        query.SetPageSize(pageSize);
         query = Authenticate(query);
         query.UserId = AuthenticatedUserId;
-        var result = await _queryDispatcher.DispatchAsync<GetUpdates, IEnumerable<MatchDto>>(query);
+        var result = await _queryDispatcher.DispatchAsync<GetUpdates, PaginatedDataDto<MatchDto>>(query);
         return Ok(result);
     }
 

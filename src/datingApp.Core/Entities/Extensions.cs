@@ -55,14 +55,8 @@ public static class Extensions
         (match.UserId2 == entity.UserId1 || match.UserId2 == entity.UserId2) &&
         match.IsDisplayedByUser(match.UserId1) == entity.IsDisplayedByUser(match.UserId1) &&
         match.IsDisplayedByUser(match.UserId2) == entity.IsDisplayedByUser(match.UserId2) &&
-        match.CreatedAt.Year == entity.CreatedAt.Year &&
-        match.CreatedAt.Month == entity.CreatedAt.Month &&
-        match.CreatedAt.Day == entity.CreatedAt.Day &&
-        match.CreatedAt.Hour == entity.CreatedAt.Hour &&
-        match.CreatedAt.Minute == entity.CreatedAt.Minute &&
-        match.CreatedAt.Second == entity.CreatedAt.Second &&
-        match.CreatedAt.Millisecond == entity.CreatedAt.Millisecond &&
-        match.Messages.Count() == entity.Messages.Count();
+        match.CreatedAt.IsEqualTo(entity.CreatedAt) &&
+        match.LastActivityTime.IsEqualTo(entity.LastActivityTime);
 
         if (equals)
         {
@@ -96,13 +90,7 @@ public static class Extensions
             message.SendFromId == entity.SendFromId &&
             message.IsDisplayed == entity.IsDisplayed &&
             message.Text == entity.Text &&
-            message.CreatedAt.Year == entity.CreatedAt.Year &&
-            message.CreatedAt.Month == entity.CreatedAt.Month &&
-            message.CreatedAt.Day == entity.CreatedAt.Day &&
-            message.CreatedAt.Hour == entity.CreatedAt.Hour &&
-            message.CreatedAt.Minute == entity.CreatedAt.Minute &&
-            message.CreatedAt.Second == entity.CreatedAt.Second &&
-            message.CreatedAt.Millisecond == entity.CreatedAt.Millisecond;
+            message.CreatedAt.IsEqualTo(entity.CreatedAt);
     }
 
     public static bool IsEqualTo(this Photo entity, object obj)
@@ -121,12 +109,17 @@ public static class Extensions
         return swipe.SwipedById == entity.SwipedById && 
             swipe.SwipedWhoId == entity.SwipedWhoId &&
             swipe.Like == entity.Like &&
-            swipe.CreatedAt.Year == entity.CreatedAt.Year &&
-            swipe.CreatedAt.Month == entity.CreatedAt.Month &&
-            swipe.CreatedAt.Day == entity.CreatedAt.Day &&
-            swipe.CreatedAt.Hour == entity.CreatedAt.Hour &&
-            swipe.CreatedAt.Minute == entity.CreatedAt.Minute &&
-            swipe.CreatedAt.Second == entity.CreatedAt.Second &&
-            swipe.CreatedAt.Millisecond == entity.CreatedAt.Millisecond;
+            swipe.CreatedAt.IsEqualTo(entity.CreatedAt);
+    }
+
+    private static bool IsEqualTo(this DateTime dateTime, DateTime otherDatetime)
+    {
+        return dateTime.Year == otherDatetime.Year &&
+            dateTime.Month == otherDatetime.Month &&
+            dateTime.Day == otherDatetime.Day &&
+            dateTime.Hour == otherDatetime.Hour &&
+            dateTime.Minute == otherDatetime.Minute &&
+            dateTime.Second == otherDatetime.Second &&
+            dateTime.Millisecond == otherDatetime.Millisecond;
     }
 }

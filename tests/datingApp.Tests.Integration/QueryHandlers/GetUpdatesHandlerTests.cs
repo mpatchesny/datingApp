@@ -12,6 +12,7 @@ using datingApp.Infrastructure.DAL.Handlers;
 using MailKit;
 using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Integration.QueryHandlers;
 
@@ -36,8 +37,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(result);
-        Assert.Equal(2, result.Count());
+        Assert.NotEmpty(result.Data);
+        Assert.Equal(2, result.Data.Count);
     }
 
     [Fact]
@@ -56,8 +57,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1)};
         var result = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(result);
-        Assert.Single(result);
+        Assert.NotEmpty(result.Data);
+        Assert.Single(result.Data);
     }
 
     [Fact]
@@ -79,8 +80,8 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = user1.Id, LastActivityTime = DateTime.UtcNow };
         var result = await _handler.HandleAsync(query);
 
-        Assert.NotEmpty(result);
-        Assert.Equal(2, result.Count());
+        Assert.NotEmpty(result.Data);
+        Assert.Equal(2, result.Data.Count);
     }
 
     [Fact]
@@ -101,7 +102,7 @@ public class GetUpdatesHandlerTests : IDisposable
         var query = new GetUpdates{ UserId = userWithoutMatch.Id, LastActivityTime = DateTime.UtcNow};
         var result = await _handler.HandleAsync(query);
 
-        Assert.Empty(result);
+        Assert.Empty(result.Data);
     }
 
     [Fact]
@@ -112,6 +113,119 @@ public class GetUpdatesHandlerTests : IDisposable
 
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
+    }
+
+    [Fact]
+    public async Task GetUpdatesHandler_returns_proper_page_count()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 9;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(1);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Equal(9, matches.PageCount);
+    }
+
+    [Fact]
+    public async Task GetUpdatesHandler_returns_proper_page_size()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 15;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(9);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Equal(9, matches.PageSize);
+    }
+
+    [Fact]
+    public async Task GetUpdatesHandler_returns_proper_page()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(1);
+        query.SetPage(2);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Equal(2, matches.Page);
+    }
+
+    [Fact]
+    public async Task given_page_exceeds_matches_count_GetUpdatesHandler_returns_empty_list()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(5);
+        query.SetPage(3);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Empty(matches.Data);
+    }
+
+    [Fact]
+    public async Task GetUpdatesHandler_returns_newest_updates_first()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+
+        var createdAt = DateTime.UtcNow;
+        var matchesToCreate = 10;
+        var matches = new List<Match>();
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, createdAt: createdAt.AddSeconds(i));
+            matches.Add(match);
+        }
+
+        createdAt = matches.Max(m => m.CreatedAt).AddSeconds(1);
+        var messagesToCreate = 5;
+        for (int i = 0; i < messagesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var message = new Message(Guid.NewGuid(), tempUser.Id, "hello", false, createdAt: createdAt.AddSeconds(i));
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: new List<Message>() { message });
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(15);
+        var items = await _handler.HandleAsync(query);
+
+        Assert.Equal(matches.OrderByDescending(m => m.LastActivityTime).Select(m => m.Id.Value), items.Data.Select(m => m.Id));
     }
 
     // Arrange

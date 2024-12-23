@@ -150,7 +150,7 @@ public class MatchRepositoryTests : IDisposable
         };
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
 
-        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, text: "test2", createdAt: DateTime.UtcNow);
+        var newMessage = IntegrationTestHelper.CreateMessage(user1.Id, text: "test2", createdAt: DateTime.UtcNow.AddSeconds(10));
         match.AddMessage(newMessage);
         await _repository.UpdateAsync(match);
         
@@ -165,7 +165,7 @@ public class MatchRepositoryTests : IDisposable
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var messages = new List<Message>() {
-            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow.AddSeconds(10)),
             IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
         };
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);

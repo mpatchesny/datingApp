@@ -114,6 +114,86 @@ public class GetUpdatesHandlerTests : IDisposable
         Assert.IsType<UserNotExistsException>(exception);
     }
 
+    [Fact]
+    public async Task GetUpdatesHandler_returns_proper_page_count()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 9;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(1);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Equal(9, matches.PageCount);
+    }
+
+    [Fact]
+    public async Task GetUpdatesHandler_returns_proper_page_size()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 15;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(9);
+        query.SetPage(1);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Equal(9, matches.PageSize);
+    }
+
+    [Fact]
+    public async Task GetUpdatesHandler_returns_proper_page()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(1);
+        query.SetPage(2);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Equal(2, matches.Page);
+    }
+
+    [Fact]
+    public async Task given_page_exceeds_matches_count_GetUpdatesHandler_returns_empty_list()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 10;
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetUpdates() { UserId = user1.Id };
+        query.SetPageSize(5);
+        query.SetPage(3);
+        var matches = await _handler.HandleAsync(query);
+
+        Assert.Empty(matches.Data);
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;

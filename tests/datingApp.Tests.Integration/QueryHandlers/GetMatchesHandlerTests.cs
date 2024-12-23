@@ -151,7 +151,7 @@ public class GetMatchesHandlerTests : IDisposable
 
         Assert.Equal(true, matches.Data.First().IsDisplayed);
     }
-    
+
     [Fact]
     public async Task GetMatches_returns_proper_page_count()
     {

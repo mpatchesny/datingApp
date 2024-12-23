@@ -15,6 +15,7 @@ using datingApp.Infrastructure;
 using FluentStorage.Utils.Extensions;
 using MailKit;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Crypto.Prng;
 using Xunit;
 
 namespace datingApp.Tests.Integration.Controllers;
@@ -464,13 +465,45 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
-        var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
+        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>("users/me/updates");
 
         Assert.NotNull(response);
     }
 
     [Fact]
-    public async Task get_updates_without_lastActivityTime_specified_returns_list_of_all_not_displayed_messages_and_matches_as_matches_dto()
+    public async Task get_updates_without_lastActivityTime_specified_returns_not_displayed_messages_and_matches_as_matches_dto()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var users = new List<User>();
+        for (int i=0; i<100; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            users.Add(tempUser);
+        }
+
+        var random = new Random();
+        var matches = new List<Match>();
+        for (int i=0; i<100; i++)
+        {
+            var message = IntegrationTestHelper.CreateMessage(users[i].Id, createdAt: DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            var messages = new List<Message>() { message };
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, users[i].Id, messages: messages, createdAt : DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var defaultPageSize = 15;
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>("users/me/updates");
+
+        Assert.NotNull(response);
+        Assert.Equal(defaultPageSize, response.Data.Count);
+    }
+
+    [Fact]
+    public async Task get_updates_respects_provided_page()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var users = new List<User>();
@@ -493,10 +526,53 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var token = Authorize(user.Id);
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
-        var response = await Client.GetFromJsonAsync<List<MatchDto>>("users/me/updates");
 
-        Assert.NotNull(response);
-        Assert.Equal(100, response.Count);
+        var allMatchesDtoIds = new List<Guid>();
+        var page = 1;
+        while (true)
+        {
+            var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>($"users/me/updates?page={page}");
+
+            if (response.Data.Count == 0) break;
+
+            foreach (var matchDto in response.Data)
+            {
+                allMatchesDtoIds.Add(matchDto.Id);
+            }
+
+            page++;
+        }
+
+        Assert.Equal(matches.Select(m => m.Id.Value).OrderBy(id => id), allMatchesDtoIds.OrderBy(id => id));
+    }
+
+    [Fact]
+    public async Task get_updates_respects_provided_page_size()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var users = new List<User>();
+        for (int i=0; i<100; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            users.Add(tempUser);
+        }
+
+        var random = new Random();
+        var matches = new List<Match>();
+        for (int i=0; i<100; i++)
+        {
+            var message = IntegrationTestHelper.CreateMessage(users[i].Id, createdAt: DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            var messages = new List<Message>() { message };
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, users[i].Id, messages: messages, createdAt : DateTime.UtcNow - TimeSpan.FromMinutes(random.Next(1, 1000001)));
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>("users/me/updates?pageSize=5");
+
+        Assert.Equal(5, response.Data.Count);
     }
 
     [Fact]
@@ -523,10 +599,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
 
         var lastActivityTime = (time - TimeSpan.FromHours(1)).ToIso8601DateString();
-        var response = await Client.GetFromJsonAsync<List<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
+        var response = await Client.GetFromJsonAsync<PaginatedDataDto<MatchDto>>($"users/me/updates?lastActivityTime={lastActivityTime}");
 
         Assert.NotNull(response);
-        Assert.Equal(5, response.Count);
+        Assert.Equal(5, response.Data.Count);
     }
     #endregion
 

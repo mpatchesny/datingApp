@@ -8,7 +8,7 @@ using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Repositories;
 
-public interface IMatchRepository
+public interface IMatchRepository : IRepository
 {
     Task<Match> GetByIdAsync(MatchId matchId);
     Task<Match> GetByMessageIdAsync(MessageId messageId);

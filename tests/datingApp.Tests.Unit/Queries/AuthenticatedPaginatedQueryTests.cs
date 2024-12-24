@@ -24,7 +24,7 @@ public class AuthenticatedPaginatedQueryTests
     [Theory]
     [InlineData(-1)]
     [InlineData(101)]
-    public void given_PageSize_is_lower_than_0_or_greater_than_MaxPageSize_AuthenticatedPaginatedQueryTests_throws_InvalidPageSizeException(int pageSize)
+    public void given_PageSize_is_lower_than_0_or_greater_than_100_AuthenticatedPaginatedQueryTests_throws_InvalidPageSizeException(int pageSize)
     {
         var query = new AuthenticatedPaginatedQuery<GetMatches>();
         var exception = Record.Exception(() => query.SetPageSize(pageSize));
@@ -33,7 +33,7 @@ public class AuthenticatedPaginatedQueryTests
     }
 
     [Fact]
-    public void given_passed_PageSize_is_null_PageSize_doesnt_change()
+    public void given_passed_PageSize_is_null_PageSize_not_changes()
     {
         var query = new AuthenticatedPaginatedQuery<GetMatches>();
         int orgPageSize = query.PageSize;
@@ -42,7 +42,7 @@ public class AuthenticatedPaginatedQueryTests
     }
 
     [Fact]
-    public void given_passed_Page_is_null_Page_doesnt_change()
+    public void given_passed_Page_is_null_Page_not_changes()
     {
         var query = new AuthenticatedPaginatedQuery<GetMatches>();
         int orgPage = query.Page;

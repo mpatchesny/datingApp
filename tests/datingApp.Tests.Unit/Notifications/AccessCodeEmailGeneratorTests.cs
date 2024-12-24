@@ -17,7 +17,7 @@ namespace datingApp.Tests.Unit.Notifications;
 public class AccessCodeEmailGeneratorTests
 {
     [Fact]
-    public void generate_generates_valid_email_with_access_code()
+    public void AccessCodeEmailGenerator_generates_valid_email_with_access_code()
     {
         var recipient = "test@test.com";
         var accessCode = "FOOBAR";

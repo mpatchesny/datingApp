@@ -53,8 +53,7 @@ public class UserController : ApiControllerBase
     [HttpPatch("{userId:guid}")]
     public async Task<ActionResult> Patch([FromRoute] Guid userId, ChangeUser command)
     {
-        command = Authenticate(command);
-        command = command with {UserId = userId};
+        command = Authenticate(command with {UserId = userId});
         await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
@@ -98,8 +97,7 @@ public class UserController : ApiControllerBase
     [HttpGet("me/updates")]
     public async Task<ActionResult<PaginatedDataDto<MatchDto>>> GetUpdates([FromQuery(Name = "lastActivityTime")] DateTime lastActivityTime, [FromQuery] int? page, [FromQuery] int? pageSize)
     {
-        var query = Authenticate(new GetUpdates { UserId = AuthenticatedUserId });
-        query.LastActivityTime = lastActivityTime;
+        var query = Authenticate(new GetUpdates { UserId = AuthenticatedUserId, LastActivityTime = lastActivityTime });
         query.SetPage(page);
         query.SetPageSize(pageSize);
         var result = await _queryDispatcher.DispatchAsync<GetUpdates, PaginatedDataDto<MatchDto>>(query);
@@ -117,7 +115,7 @@ public class UserController : ApiControllerBase
         var command = Authenticate(new AddPhoto(Guid.NewGuid(), AuthenticatedUserId, stream));
         await _commandDispatcher.DispatchAsync(command);
 
-        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId});
+        var query = Authenticate(new GetPhoto { PhotoId = command.PhotoId });
         var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
         return CreatedAtAction(actionName: nameof(PhotosController.GetPhoto),
             controllerName: "Photos",

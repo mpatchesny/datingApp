@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
@@ -29,9 +30,7 @@ public class MatchesController : ApiControllerBase
     [HttpGet("{matchId:guid}")]
     public async Task<ActionResult<MatchDto>> GetMatch(Guid matchId)
     {
-        var query = new GetMatch { MatchId = matchId };
-        query = Authenticate(query);
-        query.UserId = AuthenticatedUserId;
+        var query = Authenticate(new GetMatch { MatchId = matchId, UserId = AuthenticatedUserId });
         var match = await _queryDispatcher.DispatchAsync<GetMatch, MatchDto>(query);
         return Ok(match);
     }
@@ -79,8 +78,7 @@ public class MatchesController : ApiControllerBase
     [HttpPatch("{matchId:guid}/messages/{messageId:guid}")]
     public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromRoute] Guid messageId, [FromBody] SetMessagesAsDisplayed command)
     {
-        command = Authenticate(command);
-        command = command with {LastMessageId = messageId};
+        command = Authenticate(command with {LastMessageId = messageId});
         await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }
@@ -88,8 +86,7 @@ public class MatchesController : ApiControllerBase
     [HttpPatch("{matchId:guid}")]
     public async Task<ActionResult> ChangeMatch([FromRoute] Guid matchId, [FromBody] SetMatchAsDisplayed command)
     {
-        command = Authenticate(command);
-        command = command with {MatchId = matchId};
+        command = Authenticate(command with {MatchId = matchId});
         await _commandDispatcher.DispatchAsync(command);
         return NoContent();
     }

@@ -28,7 +28,7 @@ public class PhotosController : ApiControllerBase
     [HttpGet("{photoId:guid}")]
     public async Task<ActionResult<PhotoDto>> GetPhoto(Guid photoId)
     {
-        var query = Authenticate(new GetPhoto { PhotoId = photoId});
+        var query = Authenticate(new GetPhoto {PhotoId = photoId});
         var photo = await _queryDispatcher.DispatchAsync<GetPhoto, PhotoDto>(query);
         return photo;
     }

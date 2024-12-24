@@ -29,9 +29,7 @@ public class LikeController : ApiControllerBase
     [HttpPut("like/{userId:guid}")]
     public async Task<ActionResult<IsLikedByOtherUserDto>> LikeUser(Guid userId)
     {
-        var swipedById = AuthenticatedUserId;
-        var swipedWhoId = userId;
-        var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 2));
+        var command = Authenticate(new SwipeUser(SwipedById: AuthenticatedUserId, SwipedWhoId: userId, 2));
         await _commandDispatcher.DispatchAsync(command);
 
         var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();
@@ -41,9 +39,7 @@ public class LikeController : ApiControllerBase
     [HttpPut("pass/{userId:guid}")]
     public async Task<ActionResult<IsLikedByOtherUserDto>> PassUser(Guid userId)
     {
-        var swipedById = AuthenticatedUserId;
-        var swipedWhoId = userId;
-        var command = Authenticate(new SwipeUser(swipedById, swipedWhoId, 1));
+        var command = Authenticate(new SwipeUser(SwipedById: AuthenticatedUserId, SwipedWhoId: userId, 1));
         await _commandDispatcher.DispatchAsync(command);
 
         var isLikedByOtherUser = _isLikedByOtherUserStorage.Get();

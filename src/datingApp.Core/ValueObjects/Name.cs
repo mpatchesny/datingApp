@@ -9,9 +9,6 @@ namespace datingApp.Core.ValueObjects;
 
 public sealed record Name
 {
-    private static readonly Regex BadNameRegex = new Regex(@"[^a-zA-Z\s]",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
     public string Value { get; }
 
     public Name(string value)
@@ -26,7 +23,9 @@ public sealed record Name
             throw new InvalidUsernameException("user name too long");
         }
 
-        if (BadNameRegex.IsMatch(value))
+        // https://www.techiedelight.com/check-if-string-contains-only-letters-in-csharp/
+        // Only letters, spaces and hypens are allowed
+        if (!value.All(c => Char.IsLetter(c) || c == ' ' || c == '-'))
         {
             throw new InvalidUsernameException($"contains forbidden characters {value}");
         }

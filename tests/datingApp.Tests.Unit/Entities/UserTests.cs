@@ -113,17 +113,34 @@ public class UserTests
         Assert.IsType<InvalidUsernameException>(exception);
     }
 
+
+    public static TheoryData<string[]> ForbiddenUsernameCharaters => new()
+    {
+        {new[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}},
+        {new[] {"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "=", "{", "}", "[", "]", ";", "\\", "|", "\"", ":", ",", ".", ">", "<", "?", "/", "`", "~" }}
+    };
+
     [Theory]
-    [InlineData("@")]
-    [InlineData("123")]
-    [InlineData(".")]
-    [InlineData(",")]
-    [InlineData("#")]
-    public void user_name_with_invalid_chars_throws_InvalidUsernameException(string username)
+    [MemberData(nameof(ForbiddenUsernameCharaters))]
+    public void user_name_with_invalid_chars_throws_InvalidUsernameException(string[] forbiddenCharacters)
+    {
+        foreach (var c in forbiddenCharacters)
+        {
+            var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", c, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
+            Assert.NotNull(exception);
+            Assert.IsType<InvalidUsernameException>(exception);
+        }
+    }
+
+    [InlineData("zażółć")]
+    [InlineData("gęślą")]
+    [InlineData("jaźń")]
+    public void user_name_accepts_non_latin_characters(string username)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
         Assert.NotNull(exception);
         Assert.IsType<InvalidUsernameException>(exception);
+        Assert.Null(exception);
     }
 
     [Fact]

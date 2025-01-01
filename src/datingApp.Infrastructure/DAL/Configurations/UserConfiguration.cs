@@ -29,6 +29,9 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion(x => x.Value, x => new Name(x))
             .IsRequired()
             .HasMaxLength(15);
+        builder.Property(x => x.LikesCount)
+            .HasConversion(x => x.Value, x => new LikesCount(x))
+            .IsRequired();
         builder.Property(x => x.Bio)
             .HasConversion(x => x.Value, x => new Bio(x))
             .HasMaxLength(400);
@@ -46,6 +49,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .ToTable("MatchDetails");
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => new {x.Sex, x.DateOfBirth});
+        builder.HasIndex(x => new {x.LikesCount});
         builder.ToTable("Users");
     }
 }

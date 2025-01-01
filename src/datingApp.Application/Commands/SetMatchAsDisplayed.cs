@@ -6,4 +6,4 @@ using datingApp.Application.Abstractions;
 
 namespace datingApp.Application.Commands;
 
-public sealed record SetMatchAsDisplayed(Guid MatchId, Guid UserId) : AuthenticatedCommandBase;
+public sealed record SetMatchAsDisplayed(Guid MatchId, Guid DisplayedByUserId) : AuthenticatedCommandBase;

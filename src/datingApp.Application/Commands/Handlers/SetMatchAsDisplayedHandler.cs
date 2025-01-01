@@ -34,7 +34,7 @@ public sealed class SetMatchAsDisplayedHandler : ICommandHandler<SetMatchAsDispl
             throw new UnauthorizedException();
         }
 
-        match.SetDisplayed(command.UserId);
+        match.SetDisplayed(command.DisplayedByUserId);
         await _matchRepository.UpdateAsync(match);
     }
 }

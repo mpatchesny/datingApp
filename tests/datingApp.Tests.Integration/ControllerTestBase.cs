@@ -33,7 +33,6 @@ namespace datingApp.Tests.Integration
             return token;
         }
 
-        protected record Error(string Code, string Reason);
         private readonly AuthOptions _authOptions;
         private IAuthenticator _authenticator;
         protected HttpClient Client { get; }

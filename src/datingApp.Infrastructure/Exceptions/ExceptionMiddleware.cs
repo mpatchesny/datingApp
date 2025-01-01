@@ -64,8 +64,6 @@ internal sealed class ExceptionMiddleware : IMiddleware
         await context.Response.WriteAsJsonAsync(error);
     }
 
-    private record Error(string Code, string Reason);
-
     private static string GetPrettyExeptionName(string exceptionName)
     {
         var ex = exceptionName.Replace("Exception", "");

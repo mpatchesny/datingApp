@@ -12,6 +12,7 @@ using datingApp.Application.DTO;
 using datingApp.Application.Queries;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
+using datingApp.Infrastructure.Exceptions;
 using FluentStorage.Utils.Extensions;
 using MailKit;
 using Newtonsoft.Json;
@@ -283,7 +284,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
-    public async Task given_requested_user_not_exists_get_users_returns_no_content()
+    public async Task given_requested_user_not_exists_get_users_returns_404_with_proper_error_reason()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
@@ -293,9 +294,10 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         var notExistingUserId = Guid.NewGuid();
         var response = await Client.GetAsync($"users/{notExistingUserId}");
+        var error = await response.Content.ReadFromJsonAsync<Error>();
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        Assert.Empty(await response.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal($"User with id {notExistingUserId} does not exist.", error.Reason);
     }
 
     [Fact]

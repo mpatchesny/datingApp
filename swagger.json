@@ -1,0 +1,2264 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "DatingApp API",
+    "description": "DatingApp Application API",
+    "version": "v1"
+  },
+  "paths": {
+    "/like/{userId}": {
+      "put": {
+        "tags": [
+          "Like"
+        ],
+        "summary": "Like user by given Id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of a user to be liked.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Other user is liked. Returns true if other user liked this user, false if other user not liked or swiped this user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IsLikedByOtherUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/pass/{userId}": {
+      "put": {
+        "tags": [
+          "Like"
+        ],
+        "summary": "Pass (dislike) user by given Id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of a user to be passed (not liked).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Other user is passed (disliked). Returns true if other user liked this user, false if other user not liked or swiped this user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IsLikedByOtherUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/matches/{matchId}": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get match by Id.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match to be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns match.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Set match as displayed by given Id.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match to be changed.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetMatchAsDisplayed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Delete match by given Id.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match with given Id not exists and never existed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Match with given Id is already deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/matches": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get matches by authenticated user id.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (must be positive value; default is 1).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items in page (must be positive value; default is 15, maximum is 100).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns paginated list of matches, sorted by CreatedAt descending.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchDtoPaginatedDataDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameter value (eg. page number equal or less than 0, page size is a string, not an integer).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Authenticated user not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/matches/{matchId}/messages/{messageId}": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get message by Id.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match which contains message to be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "Id of message to be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Message with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Set message and all previous messages as displayed by given last message Id.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match which contains message to be changed.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "Id of message to be changed.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetMessagesAsDisplayed"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Message with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/matches/{matchId}/messages": {
+      "get": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Get messages by match Id.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match from which messages will be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (must be positive value; default is 1).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items in page (must be positive value; default is 15, maximum is 100).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns paginated list of messages, sorted by CreatedAt descending.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDtoPaginatedDataDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameter value (eg. page number equal or less than 0, page size is a string, not an integer).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Matches"
+        ],
+        "summary": "Send message within given match.",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Id of match for which message will be send.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success. Returns sent message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Message text is empty or is too long.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/photos/{photoId}": {
+      "get": {
+        "tags": [
+          "Photos"
+        ],
+        "summary": "Get photo by Id.",
+        "description": "Returns photo object for given photo Id. This operation does not return photo file. Photos' files are served as static files under photo object's Url address.",
+        "parameters": [
+          {
+            "name": "photoId",
+            "in": "path",
+            "description": "Id of photo to be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns photo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Photo with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Photos"
+        ],
+        "summary": "Change photo oridinal.",
+        "parameters": [
+          {
+            "name": "photoId",
+            "in": "path",
+            "description": "Id of photo to be changed.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePhotoOridinal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Photo with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Photos"
+        ],
+        "summary": "Delete photo by Id.",
+        "parameters": [
+          {
+            "name": "photoId",
+            "in": "path",
+            "description": "Id of photo to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Photo with given Id not exists and never existed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Photo with given Id is already deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get public user by given Id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of user to be retrieved.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns public user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user must be in match with other user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User with given Id not exists or authenticated user who made request not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update user by given Id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of user to be changed.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Missing or invalid field value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User with given Id not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete user by given Id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "Id of user to be deleted.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User is not authorized to perform operation - user can change only objects owned by him.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User with given Id not exists and never existed.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "User with given Id is already deleted.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Create new user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUp"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success. Returns created user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivateUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid field value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Display full user info for authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Success. Returns private user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivateUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Authenticated user not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/users/me/recommendations": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get recommendations (users to swipe) for authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Success. Returns list of candidates to swipe, max 10.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUserDtoPaginatedDataDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Authenticated user not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/users/me/updates": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get updates (new matches and messages since given last activity time) for authenticated user.",
+        "parameters": [
+          {
+            "name": "lastActivityTime",
+            "in": "query",
+            "description": "Last activity time - show matches and matches with messages created after that time; ISO8601 formatted string).",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (must be positive value; default is 1).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of items in page (must be positive value; default is 15, maximum is 100).",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success. Returns list of paginated matches, sorted by match or message CreatedAt (whichever is newest) descending.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchDtoPaginatedDataDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameter value (eg. page number equal or less than 0, page size is a string, not an integer).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Authenticated user not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/users/me/photos": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Add photo for authenticated user.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fileContent": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "fileContent": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success. Returns created photo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Photo is not in accepted format (jpg, png, webp), photo is too small or too large (min. 10240 bytes, max 2621440 bytes).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (token is missing, invalid or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Authenticated user not exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/users/auth": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Request access code to sign-in by email.",
+        "description": "Application uses access code to authenticate instead of login and password. Use this API call to request access code, which will be send to a given email.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestEmailAccessCode"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success. Returns email to which access code was sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No email provided or provided email is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/auth/refresh": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Obtain new access token using refresh token.",
+        "description": "Obtain new access token using valid refresh token to extend session without need for normal authentication flow (request access code and sign-in).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshJWT"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success. Returns JWT token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Client is not authenticated (refresh token is invalid, missing or expired).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/sign-in": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Sign-in by user email and access code.",
+        "description": "Use this API call after obtaining access code to finish authentication and obtain access token.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInByEmail"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success. Returns JWT token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email is missing or invalid, no user with given email found, provided access code is missing, invalid or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChangePhotoOridinal": {
+        "required": [
+          "newOridinal",
+          "photoId"
+        ],
+        "type": "object",
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "description": "The unique identifier of the photo.",
+            "format": "uuid"
+          },
+          "newOridinal": {
+            "type": "integer",
+            "description": "New photo's oridinal.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to change photo oridinal."
+      },
+      "ChangeUser": {
+        "required": [
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The unique identifier of the user.",
+            "format": "uuid"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "User's date of birth, as ISO8601 string. User's age (difference in years between user's date of birth and todays date) must be between 18 and 100.",
+            "nullable": true
+          },
+          "bio": {
+            "maxLength": 400,
+            "type": "string",
+            "description": "User's description. Maximum length is 400 characters.",
+            "nullable": true
+          },
+          "job": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "User's job. Maximum length is 50 characters.",
+            "nullable": true
+          },
+          "preferredAgeFrom": {
+            "maximum": 100,
+            "minimum": 18,
+            "type": "integer",
+            "description": "Preferred age of user's swipe candidates. Allowed values are between 18 and 100.",
+            "format": "int32",
+            "nullable": true
+          },
+          "preferredAgeTo": {
+            "maximum": 100,
+            "minimum": 18,
+            "type": "integer",
+            "description": "Preferred age of user's swipe candidates. Allowed values are between 18 and 100. Musn't be lower than PreferredAgeFrom.",
+            "format": "int32",
+            "nullable": true
+          },
+          "preferredMaxDistance": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "description": "The preferred max distance is specified in kilometers and determines the maximum radius within which potential swipe candidates will be searched. Valid values range from 1 to 100 kilometers..",
+            "format": "int32",
+            "nullable": true
+          },
+          "preferredSex": {
+            "type": "integer",
+            "description": "The preferred sex of user's swipe candidates. Allowed values are 1 (Male), 2 (Female), 3 (Male and Female).",
+            "format": "int32",
+            "nullable": true
+          },
+          "lat": {
+            "type": "number",
+            "description": "User's current location latitude.",
+            "format": "double",
+            "nullable": true
+          },
+          "lon": {
+            "type": "number",
+            "description": "User's current location longitude.",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to change user data."
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Error code - eg. 'user_not_exists'",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "description": "Error message - eg. 'User with id <UserId> does not exist.'",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing error. This object is returned as a response for all unsucessfull API calls (4xx and 5xx)."
+      },
+      "IsLikedByOtherUserDto": {
+        "title": "IsLikedByOtherUser",
+        "type": "object",
+        "properties": {
+          "isLikedByOtherUser": {
+            "type": "boolean",
+            "description": "True when other user liked this user, false when did not like or did not swipe this user."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing if user is liked by other user."
+      },
+      "JwtDto": {
+        "title": "AccessRefreshToken",
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "$ref": "#/components/schemas/TokenDto"
+          },
+          "refreshToken": {
+            "$ref": "#/components/schemas/TokenDto"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing access and refresh JWT tokens."
+      },
+      "MatchDto": {
+        "title": "Match",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the match.",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/PublicUserDto"
+          },
+          "isDisplayed": {
+            "type": "boolean",
+            "description": "Is match displayed by this user."
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            },
+            "description": "List of messages for a given match, order by CratedAt time descending (newest first).",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date, time when match was created.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing match."
+      },
+      "MatchDtoPaginatedDataDto": {
+        "title": "PaginatedData",
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Current page size.",
+            "format": "int32"
+          },
+          "pageCount": {
+            "type": "integer",
+            "description": "Current page count.",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchDto"
+            },
+            "description": "List of items.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing paginated data."
+      },
+      "MessageDto": {
+        "title": "Message",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the message.",
+            "format": "uuid"
+          },
+          "matchId": {
+            "type": "string",
+            "description": "The unique identifier of the match.",
+            "format": "uuid"
+          },
+          "sendFromId": {
+            "type": "string",
+            "description": "Id of a user who sent message.",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string",
+            "description": "Message text.",
+            "nullable": true
+          },
+          "isDisplayed": {
+            "type": "boolean",
+            "description": "Is message displayed by this user."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date, time when message was sent.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing message."
+      },
+      "MessageDtoPaginatedDataDto": {
+        "title": "PaginatedData",
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Current page size.",
+            "format": "int32"
+          },
+          "pageCount": {
+            "type": "integer",
+            "description": "Current page count.",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            },
+            "description": "List of items.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing paginated data."
+      },
+      "PhotoDto": {
+        "title": "Photo",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the photo.",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Id of a user who owns photo.",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string",
+            "description": "Photo's url - url address (suffix) at which photo file is being served.\r\n        Add this to server's url address to get full photo file url (eg. server address is 'https://foo.bar', photo url is '~/storage/photo.jpg', full url is 'https://foo.bar/~/storage/photo.jpg')",
+            "nullable": true
+          },
+          "oridinal": {
+            "type": "integer",
+            "description": "Photo's oridinal. Possible values: 1 - 6.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing photo."
+      },
+      "PrivateUserDto": {
+        "title": "PrivateUser",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the user.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name.",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email address.",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone number.",
+            "nullable": true
+          },
+          "age": {
+            "type": "integer",
+            "description": "User's age.",
+            "format": "int32"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "User's date of birth.",
+            "format": "date"
+          },
+          "sex": {
+            "type": "integer",
+            "description": "User's sex. Possible values: 1 (Male), 2 (Female).",
+            "format": "int32"
+          },
+          "job": {
+            "type": "string",
+            "description": "User's job.",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "description": "User's bio.",
+            "nullable": true
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoDto"
+            },
+            "description": "List of user's photos, sorted by photo's Oridinal number.",
+            "nullable": true
+          },
+          "settings": {
+            "$ref": "#/components/schemas/UserSettingsDto"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing user as seen by user himself."
+      },
+      "PublicUserDto": {
+        "title": "PublicUser",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the user.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name.",
+            "nullable": true
+          },
+          "age": {
+            "type": "integer",
+            "description": "User's age.",
+            "format": "int32"
+          },
+          "sex": {
+            "type": "integer",
+            "description": "User's sex. Possible values: 1 (Male), 2 (Female).",
+            "format": "int32"
+          },
+          "distanceInKms": {
+            "type": "integer",
+            "description": "Distance between this user and other user, in kilometers.",
+            "format": "int32"
+          },
+          "job": {
+            "type": "string",
+            "description": "User's job.",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "description": "User's bio.",
+            "nullable": true
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoDto"
+            },
+            "description": "List of user's photos, sorted by photo's Oridinal number.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing user as seen by other user."
+      },
+      "PublicUserDtoPaginatedDataDto": {
+        "title": "PaginatedData",
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number.",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Current page size.",
+            "format": "int32"
+          },
+          "pageCount": {
+            "type": "integer",
+            "description": "Current page count.",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicUserDto"
+            },
+            "description": "List of items.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing paginated data."
+      },
+      "RefreshJWT": {
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Refresh JWT token."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to refresh access token."
+      },
+      "RequestEmailAccessCode": {
+        "required": [
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "description": "User's email address. Mail with access code will be send to this email.",
+            "format": "email"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to request access code to be send to given email address."
+      },
+      "SendMessage": {
+        "required": [
+          "matchId",
+          "sendFromId",
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "matchId": {
+            "type": "string",
+            "description": "The unique identifier of the match.",
+            "format": "uuid"
+          },
+          "sendFromId": {
+            "type": "string",
+            "description": "The unique identifier of the user who sends the message.",
+            "format": "uuid"
+          },
+          "text": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string",
+            "description": "Message text."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to send message to other user within a match."
+      },
+      "SetMatchAsDisplayed": {
+        "required": [
+          "displayedByUserId",
+          "matchId"
+        ],
+        "type": "object",
+        "properties": {
+          "matchId": {
+            "type": "string",
+            "description": "The unique identifier of the match.",
+            "format": "uuid"
+          },
+          "displayedByUserId": {
+            "type": "string",
+            "description": "The unique identifier of the user who displays match.",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to set match as displayed."
+      },
+      "SetMessagesAsDisplayed": {
+        "required": [
+          "displayedByUserId",
+          "lastMessageId"
+        ],
+        "type": "object",
+        "properties": {
+          "lastMessageId": {
+            "type": "string",
+            "description": "The unique identifier of the message.",
+            "format": "uuid"
+          },
+          "displayedByUserId": {
+            "type": "string",
+            "description": "The unique identifier of the user who displays message.",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to set message and all previous messages for given match as displayed."
+      },
+      "SignInByEmail": {
+        "required": [
+          "accessCode",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "description": "User's email address.",
+            "format": "email"
+          },
+          "accessCode": {
+            "maxLength": 6,
+            "minLength": 6,
+            "type": "string",
+            "description": "Access code that was sent to above email."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to sign-in by email."
+      },
+      "SignUp": {
+        "required": [
+          "dateOfBirth",
+          "email",
+          "name",
+          "phone",
+          "preferredSex",
+          "sex"
+        ],
+        "type": "object",
+        "properties": {
+          "phone": {
+            "maxLength": 9,
+            "minLength": 1,
+            "type": "string",
+            "description": "User's phone number. Only digits are allowed."
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "description": "User's email address.",
+            "format": "email"
+          },
+          "name": {
+            "maxLength": 15,
+            "minLength": 1,
+            "type": "string",
+            "description": "User's name. Allowed values are: letters, spaces, hypens."
+          },
+          "dateOfBirth": {
+            "maxLength": 15,
+            "minLength": 1,
+            "type": "string",
+            "description": "User's date of birth as ISO8601 string. User's age (difference in years between user's date of birth and todays date) must be between 18 and 100."
+          },
+          "sex": {
+            "type": "integer",
+            "description": "User's sex. Allowed values are 1 (Male), 2 (Female).",
+            "format": "int32"
+          },
+          "preferredSex": {
+            "type": "integer",
+            "description": "The preferred sex of user's swipe candidates. Allowed values are 1 (Male), 2 (Female), 3 (Male and Female).",
+            "format": "int32"
+          },
+          "job": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "User's job. Maximum length is 50 characters.",
+            "nullable": true
+          },
+          "bio": {
+            "maxLength": 400,
+            "type": "string",
+            "description": "User's description. Maximum length is 400 characters.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Command to create new user."
+      },
+      "TokenDto": {
+        "title": "JwtToken",
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token value.",
+            "nullable": true
+          },
+          "expirationTime": {
+            "type": "string",
+            "description": "Token expiration time.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing a single JWT token."
+      },
+      "UserSettingsDto": {
+        "title": "UserSettings",
+        "type": "object",
+        "properties": {
+          "preferredAgeFrom": {
+            "type": "integer",
+            "description": "Preferred minimum age of user's swipe candidates.",
+            "format": "int32"
+          },
+          "preferredAgeTo": {
+            "type": "integer",
+            "description": "Preferred maximum age of user's swipe candidates.",
+            "format": "int32"
+          },
+          "preferredMaxDistance": {
+            "type": "integer",
+            "description": "Preferred maximum distance is specified in kilometers and determines the maximum radius within which potential swipe candidates will be searched.",
+            "format": "int32"
+          },
+          "preferredSex": {
+            "type": "integer",
+            "description": "Preferred sex of user's swipe candidates. Possible values are 1 (Male), 2 (Female), 3 (Male and Female).",
+            "format": "int32"
+          },
+          "lat": {
+            "type": "number",
+            "description": "User's current location latitude.",
+            "format": "double"
+          },
+          "lon": {
+            "type": "number",
+            "description": "User's current location longitude.",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Object representing user's settings."
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

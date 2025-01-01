@@ -139,8 +139,6 @@ public class UserTests
     public void user_name_accepts_non_latin_characters(string username)
     {
         var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
-        Assert.NotNull(exception);
-        Assert.IsType<InvalidUsernameException>(exception);
         Assert.Null(exception);
     }
 

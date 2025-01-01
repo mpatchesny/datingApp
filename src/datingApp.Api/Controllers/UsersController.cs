@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace datingApp.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("users")]
 public class UserController : ApiControllerBase
 {

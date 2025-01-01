@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace datingApp.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("/")]
 public class LikeController : ApiControllerBase
 {

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace datingApp.Api.Controllers;
 
 [Route("[controller]")]
+[Authorize]
 public abstract class ApiControllerBase : ControllerBase
 {
     protected Guid AuthenticatedUserId => 

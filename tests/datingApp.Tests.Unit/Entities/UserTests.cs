@@ -482,6 +482,29 @@ public class UserTests
         );
     }
 
+    [Fact]
+    public void AddLike_increment_LikesCount_by_1()
+    {
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, likesCount: 0);
+        Assert.Equal(0, user.LikesCount.Value);
+        user.AddLike();
+        Assert.Equal(1, user.LikesCount.Value);
+    }
+
+    [Fact]
+    public void LikeCount_is_0_by_default()
+    {
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings);
+        Assert.Equal(0, user.LikesCount.Value);
+    }
+
+    [Fact]
+    public void if_negative_LikesCount_passed_to_constructor_LikesCount_is_set_to_0()
+    {
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, likesCount: -1);
+        Assert.Equal(0, user.LikesCount.Value);
+    }
+
     private readonly UserSettings _properUserSettings;
     public UserTests()
     {

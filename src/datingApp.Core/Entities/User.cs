@@ -23,6 +23,7 @@ public class User
     public UserSex Sex { get; private set; }
     public Job Job { get; private set; }
     public Bio Bio { get; private set; }
+    public LikesCount LikesCount { get; private set; }
     public UserSettings Settings { get; private set; }
     public ICollection<Photo> Photos { get; private set; } = new List<Photo>();
     public IEnumerable<Match> Matches { get; private set; } = new List<Match>();
@@ -34,7 +35,7 @@ public class User
     }
 
     public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
-                UserSettings settings, ICollection<Photo> photos=null, Job job=null, Bio bio=null)
+                UserSettings settings, LikesCount likesCount = null, ICollection<Photo> photos=null, Job job=null, Bio bio=null)
     {
         if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
         if (settings == null) throw new UserSettingsIsNullException();
@@ -45,8 +46,9 @@ public class User
         Name = name;
         Sex = sex;
         DateOfBirth = dateOfBirth;
-        Photos = photos ?? new List<Photo>();
         Settings = settings;
+        Photos = photos ?? new List<Photo>();
+        LikesCount = likesCount ?? new LikesCount(0);
         Job = job ?? new Job("");
         Bio = bio ?? new Bio("");
     }
@@ -117,5 +119,10 @@ public class User
         }
 
         photoToChange.ChangeOridinal(newOridinal);
+    }
+
+    public void AddLike()
+    {
+        LikesCount += 1;
     }
 }

@@ -132,6 +132,7 @@ public class UserTests
         }
     }
 
+    [Theory]
     [InlineData("zażółć")]
     [InlineData("gęślą")]
     [InlineData("jaźń")]

@@ -12,12 +12,11 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCore();
@@ -31,7 +30,7 @@ builder.Host.UseSerilog(
 
 var app = builder.Build();
 
-// Enforce HTTPS connection for  non-test, non-development environments
+// Enforce HTTPS connection for non-test, non-development environments
 if (!app.Environment.IsEnvironment("test") && !app.Environment.IsEnvironment("development"))
 {
     app.Use(

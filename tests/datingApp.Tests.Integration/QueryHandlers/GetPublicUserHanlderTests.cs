@@ -60,9 +60,10 @@ public class GetPublicUserHanlderTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetPublicUser() { RequestByUserId = user.Id, RequestWhoUserId = Guid.NewGuid() };
-        var userDto = await _handler.HandleAsync(query);
+        var exception = await Record.ExceptionAsync(async () => await _handler.HandleAsync(query));
 
-        Assert.Null(userDto);
+        Assert.NotNull(exception);
+        Assert.IsType<UserNotExistsException>(exception);
     }
 
     [Fact]

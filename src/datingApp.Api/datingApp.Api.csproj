@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../datingApp.Infrastructure/datingApp.Infrastructure.csproj" />
+    <None Include="../../swagger.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="datingApp.Tests.Integration" />

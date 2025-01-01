@@ -40,7 +40,9 @@ Next, execute the following command in terminal to run application:\
 
 ## How to use
 
-Please see [REST.http](REST.http) for examples of API calls. You must have [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) VS Code extension installed in order to run API calls from this file.
+Run application and navigate to `<server address>/swagger` to see Swagger UI documentation.
+
+See [REST.http](REST.http) for examples of API calls. You must have [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) VS Code extension installed in order to run API calls from this file.
 
 ## What's interesting in this project?
 

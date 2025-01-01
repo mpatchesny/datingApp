@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Authorization;
 using Serilog;
 using datingApp.Infrastructure.Storage;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCore();
@@ -30,14 +30,7 @@ builder.Host.UseSerilog(
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-// enforce HTTPS connection for  non-test, non-development environments
+// Enforce HTTPS connection for non-test, non-development environments
 if (!app.Environment.IsEnvironment("test") && !app.Environment.IsEnvironment("development"))
 {
     app.Use(
@@ -57,12 +50,10 @@ if (!app.Environment.IsEnvironment("test") && !app.Environment.IsEnvironment("de
 }
 
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-
-// https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-ubuntu#http-redirection-to-https-causes-err_invalid_redirect-on-the-cors-preflight-request
-// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Static files configuration
 var storagePath = builder.Environment.StorageFullPath(builder.Configuration);
 
 app.UseStaticFiles(
@@ -74,9 +65,24 @@ app.UseStaticFiles(
 );
 
 app.UseMiddleware<ExceptionMiddleware>();
-
 app.MapControllers();
-
 app.MapGet("api", (IOptions<AppOptions> options) => Results.Ok(options.Value.Name));
+
+// Swagger configuration
+app.Map("swagger/swagger.json", async context =>
+{
+    var documentationPath = Path.Combine(
+        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "swagger.json");
+    var jsonContent = await File.ReadAllTextAsync(documentationPath);
+    context.Response.ContentType = "application/json";
+    await context.Response.WriteAsync(jsonContent);
+});
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("swagger.json", "API Documentation");
+});
+
 
 app.Run();

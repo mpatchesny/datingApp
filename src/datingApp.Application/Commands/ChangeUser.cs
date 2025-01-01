@@ -12,7 +12,7 @@ public sealed record ChangeUser(Guid UserId,
                                 string Job=null,
                                 int? PreferredAgeFrom=null,
                                 int? PreferredAgeTo=null,
-                                int? PreferredRange=null,
+                                int? PreferredMaxDistance=null,
                                 int? PreferredSex=null,
                                 double? Lat=null,
                                 double? Lon=null) : AuthenticatedCommandBase;

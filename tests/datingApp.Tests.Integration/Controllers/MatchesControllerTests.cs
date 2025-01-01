@@ -9,6 +9,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
+using datingApp.Infrastructure.Exceptions;
 using Newtonsoft.Json;
 using Xunit;
 

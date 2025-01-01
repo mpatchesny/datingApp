@@ -11,6 +11,7 @@ using datingApp.Application.Commands;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using datingApp.Infrastructure;
+using datingApp.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Xunit;

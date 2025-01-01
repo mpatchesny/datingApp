@@ -188,7 +188,7 @@ public class ChangeUserHandlerTests
         Assert.Equal(command.Lon, user.Settings.Location.Lon);
         Assert.Equal(command.PreferredAgeFrom, user.Settings.PreferredAge.From);
         Assert.Equal(command.PreferredAgeTo, user.Settings.PreferredAge.To);
-        Assert.Equal(command.PreferredRange, user.Settings.PreferredMaxDistance.Value);
+        Assert.Equal(command.PreferredMaxDistance, user.Settings.PreferredMaxDistance.Value);
         Assert.Equal(command.PreferredSex, (int) user.Settings.PreferredSex);
     }
 }

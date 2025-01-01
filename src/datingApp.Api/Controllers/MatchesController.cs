@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace datingApp.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("matches")]
 public class MatchesController : ApiControllerBase
 {

@@ -94,7 +94,7 @@ Content-Type: application/json
     "bio": "Some another bio",
     "dateOfBirth": "1990-01-02",
     "preferredSex": 2,
-    "preferredRange": 40,
+    "preferredMaxDistance": 40,
     "preferredAgeFrom": 18,
     "preferredAgeTo": 45,
     "lat": 50.3719424,

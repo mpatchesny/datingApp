@@ -53,9 +53,9 @@ public sealed class ChangeUserHandler : ICommandHandler<ChangeUser>
             var newPreferredAge = new PreferredAge((int) command.PreferredAgeFrom,(int) command.PreferredAgeTo);
             user.Settings.ChangePreferredAge(newPreferredAge);
         }
-        if (command.PreferredRange != null) 
+        if (command.PreferredMaxDistance != null) 
         {
-            user.Settings.ChangePreferredMaxDistance((int) command.PreferredRange);
+            user.Settings.ChangePreferredMaxDistance((int) command.PreferredMaxDistance);
         }
         if (command.PreferredSex != null) 
         {

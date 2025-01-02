@@ -25,6 +25,8 @@ public class SwipeUserHandlerTests
         var matchRepository = new Mock<IMatchRepository>();
         matchRepository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(null));
         matchRepository.Setup(x => x.AddAsync(It.IsAny<Match>()));
+
+        var userRepository = new Mock<IUserRepository>();
         
         var swipeRepository = new Mock<ISwipeRepository>();
         swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>()));
@@ -39,7 +41,7 @@ public class SwipeUserHandlerTests
 
         var like = 1;
         var command = new SwipeUser(Guid.NewGuid(), Guid.NewGuid(), like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         swipeRepository.Verify(x => x.AddAsync(addedSwipe), Times.Once());
@@ -57,6 +59,8 @@ public class SwipeUserHandlerTests
        
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
         swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe }));
@@ -71,7 +75,7 @@ public class SwipeUserHandlerTests
 
         var like = (int) Like.Like;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         swipeRepository.Verify(x => x.AddAsync(addedSwipe), Times.Never());
@@ -86,6 +90,8 @@ public class SwipeUserHandlerTests
 
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
         swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe }));
@@ -97,7 +103,7 @@ public class SwipeUserHandlerTests
 
         var like = 1;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
@@ -112,6 +118,8 @@ public class SwipeUserHandlerTests
 
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Pass, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
@@ -124,7 +132,7 @@ public class SwipeUserHandlerTests
 
         var like = (int) Like.Like;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         Assert.False(isLikedByOtherUser.IsLikedByOtherUser);
@@ -139,6 +147,8 @@ public class SwipeUserHandlerTests
 
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
@@ -151,7 +161,7 @@ public class SwipeUserHandlerTests
 
         var like = (int) Like.Like;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         Assert.True(isLikedByOtherUser.IsLikedByOtherUser);
@@ -166,6 +176,8 @@ public class SwipeUserHandlerTests
 
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
@@ -178,7 +190,7 @@ public class SwipeUserHandlerTests
 
         var like = (int) Like.Like;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         Assert.True(isLikedByOtherUser.IsLikedByOtherUser);
@@ -195,6 +207,8 @@ public class SwipeUserHandlerTests
 
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
         swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ otherUserSwipe }));
@@ -206,7 +220,7 @@ public class SwipeUserHandlerTests
 
         var like = (int) Like.Like;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         matchRepository.Verify(x => x.AddAsync(match), Times.Once());
@@ -225,6 +239,8 @@ public class SwipeUserHandlerTests
 
         var userId1 = Guid.NewGuid();
         var userId2 = Guid.NewGuid();
+        var userRepository = new Mock<IUserRepository>();
+
         var swipe =new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
@@ -238,7 +254,7 @@ public class SwipeUserHandlerTests
 
         var like = (int) Like.Like;
         var command = new SwipeUser(userId1, userId2, like);
-        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, isLikedByOtherUserStorage.Object);
+        var handler = new SwipeUserHandler(swipeRepository.Object, matchRepository.Object, userRepository.Object,  isLikedByOtherUserStorage.Object);
         await handler.HandleAsync(command);
 
         matchRepository.Verify(x => x.AddAsync(match), Times.Once());

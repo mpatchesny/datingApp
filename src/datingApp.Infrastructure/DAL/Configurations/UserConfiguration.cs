@@ -31,7 +31,8 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(15);
         builder.Property(x => x.LikesCount)
             .HasConversion(x => x.Value, x => new LikesCount(x))
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValue(new LikesCount(0));
         builder.Property(x => x.Bio)
             .HasConversion(x => x.Value, x => new Bio(x))
             .HasMaxLength(400);

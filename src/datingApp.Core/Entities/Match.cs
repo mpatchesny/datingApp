@@ -35,6 +35,8 @@ public class Match
             (userId1, userId2) = (userId2, userId1);
             (isDisplayedByUser1, isDisplayedByUser2) = (isDisplayedByUser2, isDisplayedByUser1);
         }
+        UserId1 = userId1;
+        UserId2 = userId2;
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();

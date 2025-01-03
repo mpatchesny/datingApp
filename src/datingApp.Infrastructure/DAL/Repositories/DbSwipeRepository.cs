@@ -31,6 +31,14 @@ internal sealed class DbSwipeRepository : ISwipeRepository
                     s => s.SwipedById.Equals(swipedById) && s.SwipedWhoId.Equals(swipedWhoId) ||
                     s.SwipedById.Equals(swipedWhoId) && s.SwipedWhoId.Equals(swipedById)
                    )
+            .Join(_dbContext.Users,
+                  swipe => swipe.SwipedById,
+                  user => user.Id,
+                  (swipe, user) => swipe)
+            .Join(_dbContext.Users,
+                  swipe => swipe.SwipedWhoId,
+                  user => user.Id,
+                  (swipe, user) => swipe)
             .ToListAsync();
         return swipes;
     }

@@ -26,10 +26,11 @@ public class GetMessageHandlerTests : IDisposable
             .Returns(Task.FromResult(AuthorizationResult.Success()));
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var messages1 = new List<Message>() { IntegrationTestHelper.CreateMessage(user2.Id), IntegrationTestHelper.CreateMessage(user2.Id), IntegrationTestHelper.CreateMessage(user2.Id) };
         var messages2 = new List<Message>() { IntegrationTestHelper.CreateMessage(user1.Id), IntegrationTestHelper.CreateMessage(user1.Id), IntegrationTestHelper.CreateMessage(user1.Id) };
         var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages1);
-        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages2);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id, messages: messages2);
         _dbContext.ChangeTracker.Clear();
 
         var query = new GetMessage() { MessageId = messages1[2].Id };

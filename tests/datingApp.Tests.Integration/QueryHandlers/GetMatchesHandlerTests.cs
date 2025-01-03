@@ -25,17 +25,17 @@ public class GetMatchesHandlerTests : IDisposable
     public async Task given_user_exists_GetMatchesHandler_should_return_nonempty_collection_of_matches_dto_ordered_by_created_date_desc_with_one_last_message()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var createdTime = DateTime.UtcNow;
         var matches = new List<Match>();
         for (int i = 0; i < 10; i++)
         {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
             var messages = new List<Message>();
             for (int j = 0; j < 10; j++)
             {
-                messages.Add(new Message(Guid.NewGuid(), user2.Id, "hello", false, createdTime.AddSeconds(-j)));
+                messages.Add(new Message(Guid.NewGuid(), tempUser.Id, "hello", false, createdTime.AddSeconds(-j)));
             }
-            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages, createdAt: createdTime.AddSeconds(-i));
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: messages, createdAt: createdTime.AddSeconds(-i));
             matches.Add(match);
         }
         _dbContext.ChangeTracker.Clear();

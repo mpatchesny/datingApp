@@ -90,7 +90,7 @@ public class MatchRepositoryTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var match2 = new Match(match.Id, user1.Id, user3.Id, DateTime.UtcNow);
-        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
+        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match2));
         Assert.NotNull(exception);
     }
 
@@ -103,8 +103,12 @@ public class MatchRepositoryTests : IDisposable
         _dbContext.ChangeTracker.Clear();
 
         var match2 = new Match(Guid.NewGuid(), user1.Id, user2.Id, DateTime.UtcNow);
-        var exception = await Record.ExceptionAsync(async () => await _repository.AddAsync(match));
-        Assert.NotNull(exception);
+        var exception1 = await Record.ExceptionAsync(async () => await _repository.AddAsync(match2));
+        Assert.NotNull(exception1);
+
+        var match3 = new Match(Guid.NewGuid(), user2.Id, user1.Id, DateTime.UtcNow);
+        var exception2 = await Record.ExceptionAsync(async () => await _repository.AddAsync(match2));
+        Assert.NotNull(exception2);
     }
 
     [Fact]

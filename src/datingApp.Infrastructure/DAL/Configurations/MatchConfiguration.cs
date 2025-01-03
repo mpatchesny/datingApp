@@ -14,8 +14,11 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
     public void Configure(EntityTypeBuilder<Match> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.HasAlternateKey(x => x.SurrogateId);
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, x => new MatchId(x))
+            .IsRequired();
+        builder.Property(x => x.SurrogateId)
             .IsRequired();
         builder.Ignore(x => x.UserId1);
         builder.Ignore(x => x.UserId2);

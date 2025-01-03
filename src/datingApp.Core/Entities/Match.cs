@@ -32,9 +32,9 @@ public class Match
     {
         Id = id;
 
-        SurrogateId =  new[] { userId1, userId2 }
+        SurrogateId =  new[] { userId1.Value, userId2.Value }
             .OrderBy(id => id)
-            .Aggregate("", (acc, guid) => acc + guid.Value.ToString("N"));
+            .Aggregate("", (acc, guid) => acc + guid.ToString("N"));
 
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));

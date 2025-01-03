@@ -32,9 +32,9 @@ public class Match
     {
         Id = id;
 
-        var guids = new List<Guid>() { userId1, userId2 };
-        guids.Sort();
-        SurrogateId = guids[0].ToString().Replace("-", "") + guids[1].ToString().Replace("-", "") ;
+        SurrogateId =  new[] { userId1, userId2 }
+            .OrderBy(id => id)
+            .Aggregate("", (acc, guid) => acc + guid.Value.ToString("N"));
 
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));

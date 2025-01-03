@@ -70,6 +70,6 @@ public class StorageControllerTests : ControllerTestBase, IDisposable
     {
         var tempFolder = System.IO.Path.Combine(Path.GetTempPath(), "datingapptest");
         System.IO.Directory.Delete(tempFolder, true);
-        _testDb?.Dispose();
+        _testDb.Dispose();
     }
 }

@@ -95,6 +95,6 @@ public class PassControllerTests : ControllerTestBase, IDisposable
 
     public void Dispose()
     {
-        _testDb?.Dispose();
+        _testDb.Dispose();
     }
 }

@@ -236,6 +236,6 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
 
     public void Dispose()
     {
-        _testDb?.Dispose();
+        _testDb.Dispose();
     }
 }

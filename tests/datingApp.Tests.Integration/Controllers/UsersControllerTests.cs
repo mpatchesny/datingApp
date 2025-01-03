@@ -710,6 +710,6 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
     public void Dispose()
     {
-        _testDb?.Dispose();
+        _testDb.Dispose();
     }
 }

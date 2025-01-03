@@ -96,6 +96,6 @@ public class LikeControllerTests : ControllerTestBase, IDisposable
 
     public void Dispose()
     {
-        _testDb?.Dispose();
+        _testDb.Dispose();
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Application.Abstractions;
 using datingApp.Application.DTO;
 using datingApp.Application.Exceptions;
+using datingApp.Application.Services;
 using datingApp.Application.Storage;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
@@ -16,11 +17,16 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
 {
     private readonly ISwipeRepository _swipeRepository;
     private readonly IMatchRepository _matchRepository;
+    private readonly IDeletedEntityService _deletedEntityService;
     private readonly IIsLikedByOtherUserStorage _isLikedByOtherUserStorage;
-    public SwipeUserHandler(ISwipeRepository swipeRepository, IMatchRepository matchRepository, IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
+    public SwipeUserHandler(ISwipeRepository swipeRepository,
+                            IMatchRepository matchRepository,
+                            IDeletedEntityService deletedEntityService,
+                            IIsLikedByOtherUserStorage isLikedByOtherUserStorage)
     {
         _swipeRepository = swipeRepository;
         _matchRepository = matchRepository;
+        _deletedEntityService = deletedEntityService;
         _isLikedByOtherUserStorage = isLikedByOtherUserStorage;
     }
 
@@ -38,8 +44,11 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
 
         if (otherUserSwipe?.Like == Like.Like && swipe.Like == Like.Like)
         {
-            var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, DateTime.UtcNow);
-            await _matchRepository.AddAsync(match);
+            if (!await _deletedEntityService.ExistsAsync(command.SwipedWhoId))
+            {
+                var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, DateTime.UtcNow);
+                await _matchRepository.AddAsync(match);
+            }
         }
 
         var isLikedByOtherUser = new IsLikedByOtherUserDto() { IsLikedByOtherUser = otherUserSwipe?.Like == Like.Like };

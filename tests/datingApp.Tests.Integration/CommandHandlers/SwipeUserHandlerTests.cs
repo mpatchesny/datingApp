@@ -14,7 +14,7 @@ using Xunit;
 
 namespace datingApp.Tests.Integration.CommandHandlers;
 
-public class SwipeUserHandlerTests
+public class SwipeUserHandlerTests : IDisposable
 {
     [Fact]
     public async void given_liked_user_deleted_his_account_Like_user_not_throws_exception()

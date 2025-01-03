@@ -30,8 +30,11 @@ public class Match
     public Match(MatchId id, UserId userId1, UserId userId2, DateTime createdAt, bool isDisplayedByUser1=false, bool isDisplayedByUser2=false, List<Message> messages=null)
     {
         Id = id;
-        UserId1 = userId1;
-        UserId2 = userId2;
+        if (userId1.Value.CompareTo(userId2.Value) > 0)
+        {
+            (userId1, userId2) = (userId2, userId1);
+            (isDisplayedByUser1, isDisplayedByUser2) = (isDisplayedByUser2, isDisplayedByUser1);
+        }
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId1, isDisplayedByUser1, messages));
         _matchDetails.Add(new MatchDetail(Guid.NewGuid(), id, userId2, isDisplayedByUser2, messages));
         _messages = messages ?? new List<Message>();

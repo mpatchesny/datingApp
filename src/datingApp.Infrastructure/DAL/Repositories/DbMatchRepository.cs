@@ -52,6 +52,4 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext.Matches.Remove(match);
         await _dbContext.SaveChangesAsync();
     }
-
-
 }

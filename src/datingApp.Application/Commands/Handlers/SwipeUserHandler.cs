@@ -35,6 +35,7 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
         var swipes = await _swipeRepository.GetBySwipedBy(command.SwipedById, command.SwipedWhoId);
         var swipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedById));
         var otherUserSwipe = swipes.FirstOrDefault(s => s.SwipedById.Equals(command.SwipedWhoId));
+        var isLikedByOtherUser = false;
 
         if (swipe == null)
         {
@@ -48,10 +49,11 @@ public sealed class SwipeUserHandler : ICommandHandler<SwipeUser>
             {
                 var match = new Match(Guid.NewGuid(), command.SwipedById, command.SwipedWhoId, DateTime.UtcNow);
                 await _matchRepository.AddAsync(match);
+                isLikedByOtherUser = true;
             }
         }
 
-        var isLikedByOtherUser = new IsLikedByOtherUserDto() { IsLikedByOtherUser = otherUserSwipe?.Like == Like.Like };
-        _isLikedByOtherUserStorage.Set(isLikedByOtherUser);
+        var result = new IsLikedByOtherUserDto() { IsLikedByOtherUser = isLikedByOtherUser };
+        _isLikedByOtherUserStorage.Set(result);
     }
 }

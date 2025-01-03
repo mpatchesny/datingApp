@@ -17,12 +17,18 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
         builder.Property(x => x.Id)
             .HasConversion(x => x.Value, x => new MatchId(x))
             .IsRequired();
-        builder.Ignore(x => x.UserId1);
-        builder.Ignore(x => x.UserId2);
+        builder.Property(x => x.UserId1)
+            .HasConversion(x => x.Value, x => new UserId(x))
+            .IsRequired();
+        builder.Property(x => x.UserId2)
+            .HasConversion(x => x.Value, x => new UserId(x))
+            .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
         builder.Property(x => x.LastActivityTime)
             .IsRequired();
+        builder.HasIndex(x => new { x.UserId1, x.UserId2 })
+            .IsUnique();
         builder.Navigation(x => x.MatchDetails).AutoInclude();
         builder.ToTable("Matches");
     }

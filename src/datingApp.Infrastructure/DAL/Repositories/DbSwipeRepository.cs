@@ -23,7 +23,7 @@ internal sealed class DbSwipeRepository : ISwipeRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<Swipe>> GetBySwipedBy(UserId swipedById, UserId swipedWhoId)
+    public async Task<List<Swipe>> GetBySwipedBySwipedWho(UserId swipedById, UserId swipedWhoId)
     {
         var swipes = await _dbContext
             .Swipes

@@ -27,7 +27,7 @@ public class SwipeUserHandlerTests
         matchRepository.Setup(x => x.AddAsync(It.IsAny<Match>()));
         
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>()));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>()));
         var addedSwipe = (Swipe) null;
         swipeRepository.Setup(x => x.AddAsync(It.IsAny<Swipe>()))
             .Callback<Swipe>(s => addedSwipe = s);
@@ -59,7 +59,7 @@ public class SwipeUserHandlerTests
         var userId2 = Guid.NewGuid();
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe }));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe }));
         var addedSwipe = (Swipe) null;
         swipeRepository.Setup(x => x.AddAsync(It.IsAny<Swipe>()))
             .Callback<Swipe>(s => addedSwipe = s);
@@ -88,7 +88,7 @@ public class SwipeUserHandlerTests
         var userId2 = Guid.NewGuid();
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe }));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe }));
 
         var isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();
         var isLikedByOtherUser = (IsLikedByOtherUserDto) null;
@@ -115,7 +115,7 @@ public class SwipeUserHandlerTests
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Pass, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
 
         var isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();
         var isLikedByOtherUser = (IsLikedByOtherUserDto) null;
@@ -142,7 +142,7 @@ public class SwipeUserHandlerTests
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
 
         var isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();
         var isLikedByOtherUser = (IsLikedByOtherUserDto) null;
@@ -169,7 +169,7 @@ public class SwipeUserHandlerTests
         var swipe = new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
 
         var isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();
         var isLikedByOtherUser = (IsLikedByOtherUserDto) null;
@@ -197,7 +197,7 @@ public class SwipeUserHandlerTests
         var userId2 = Guid.NewGuid();
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ otherUserSwipe }));
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>())).Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ otherUserSwipe }));
 
         var isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();
         var isLikedByOtherUser = (IsLikedByOtherUserDto) null;
@@ -228,7 +228,7 @@ public class SwipeUserHandlerTests
         var swipe =new Swipe(userId1, userId2, Like.Like, DateTime.UtcNow);
         var otherUserSwipe = new Swipe(userId2, userId1, Like.Like, DateTime.UtcNow);
         var swipeRepository = new Mock<ISwipeRepository>();
-        swipeRepository.Setup(x => x.GetBySwipedBy(It.IsAny<UserId>(), It.IsAny<UserId>()))
+        swipeRepository.Setup(x => x.GetBySwipedBySwipedWho(It.IsAny<UserId>(), It.IsAny<UserId>()))
             .Returns(Task.FromResult<List<Swipe>>(new List<Swipe>(){ swipe, otherUserSwipe }));
 
         var isLikedByOtherUserStorage = new Mock<IIsLikedByOtherUserStorage>();

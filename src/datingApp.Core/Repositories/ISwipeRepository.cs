@@ -10,5 +10,5 @@ namespace datingApp.Core.Repositories;
 public interface ISwipeRepository : IRepository
 {
     Task AddAsync(Swipe swipe);
-    Task<List<Swipe>> GetBySwipedBy(UserId swipedById, UserId swipedWhoId);
+    Task<List<Swipe>> GetBySwipedBySwipedWho(UserId swipedById, UserId swipedWhoId);
 }

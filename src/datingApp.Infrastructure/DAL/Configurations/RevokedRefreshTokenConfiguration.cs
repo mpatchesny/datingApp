@@ -12,11 +12,11 @@ internal sealed class RevokedRefreshTokenConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<TokenDto> builder)
     {
+        builder.HasKey(x => x.Token);
         builder.Property(x => x.Token)
             .IsRequired();
         builder.Property(x => x.ExpirationTime)
             .IsRequired();
-        builder.HasKey(x => x.Token);
         builder.ToTable("RevokedRefreshTokens");
     }
 }

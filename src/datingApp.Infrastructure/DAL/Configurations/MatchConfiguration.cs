@@ -26,6 +26,9 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
             .IsRequired();
         builder.Property(x => x.LastActivityTime)
             .IsRequired();
+
+        builder.HasIndex(x => x.CreatedAt);
+        builder.HasIndex(x => x.LastActivityTime);
         builder.Navigation(x => x.MatchDetails).AutoInclude();
         builder.ToTable("Matches");
     }

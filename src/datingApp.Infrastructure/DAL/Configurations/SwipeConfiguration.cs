@@ -13,6 +13,7 @@ internal sealed class SwipeConfiguration : IEntityTypeConfiguration<Swipe>
 {
     public void Configure(EntityTypeBuilder<Swipe> builder)
     {
+        builder.HasKey(x => new {x.SwipedById, x.SwipedWhoId});
         builder.Property(x => x.SwipedById)
             .HasConversion(x => x.Value, x => new UserId(x))
             .IsRequired();
@@ -23,9 +24,7 @@ internal sealed class SwipeConfiguration : IEntityTypeConfiguration<Swipe>
             .IsRequired();
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-        builder.HasKey(x => new {x.SwipedById, x.SwipedWhoId});
-        builder.HasIndex(x => new {x.SwipedById, x.SwipedWhoId, x.Like})
-            .IsUnique();
+
         builder.ToTable("Swipes");
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,24 @@ public class SwipeRepositoryTests : IDisposable
         Assert.Empty(swipes);
         swipes = await _repository.GetBySwipedBySwipedWho(swipe1.SwipedById, Guid.NewGuid());
         Assert.Empty(swipes);
+    }
+
+    [Fact]
+    public async Task Delete_deletes_all_swipes_made_by_user()
+    {
+        var userId = Guid.NewGuid();
+        for (int i = 0; i < 10; i++)
+        {
+            _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, userId, Guid.NewGuid(), Like.Like);
+            _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), userId, Like.Like);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        await _repository.DeleteUserSwipes(userId);
+
+        var remainingSwipes = await _dbContext.Swipes.ToListAsync();
+        Assert.Equal(10, remainingSwipes.Count);
+        Assert.DoesNotContain(remainingSwipes, s => s.SwipedById.Equals(userId));
     }
 
     // Arrange

@@ -24,12 +24,14 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
     public DeleteUserHandler(IUserRepository userRepository,
                             IBlobStorage fileStorageService,
                             IDeletedEntityService deletedEntityRepository,
-                            IDatingAppAuthorizationService authorizationService)
+                            IDatingAppAuthorizationService authorizationService,
+                            ISwipeRepository swipeRepository)
     {
         _userRepository = userRepository;
         _fileStorage = fileStorageService;
         _deletedEntityService = deletedEntityRepository;
         _authorizationService = authorizationService;
+        _swipeRepository = swipeRepository;
     }
 
     public async Task HandleAsync(DeleteUser command)

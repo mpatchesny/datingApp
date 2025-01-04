@@ -17,18 +17,21 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
     private readonly IBlobStorage _fileStorage;
+    private readonly ISwipeRepository _swipeRepository;
     private readonly IDeletedEntityService _deletedEntityService;
     private readonly IDatingAppAuthorizationService _authorizationService;
 
     public DeleteUserHandler(IUserRepository userRepository,
                             IBlobStorage fileStorageService,
                             IDeletedEntityService deletedEntityRepository,
-                            IDatingAppAuthorizationService authorizationService)
+                            IDatingAppAuthorizationService authorizationService,
+                            ISwipeRepository swipeRepository)
     {
         _userRepository = userRepository;
         _fileStorage = fileStorageService;
         _deletedEntityService = deletedEntityRepository;
         _authorizationService = authorizationService;
+        _swipeRepository = swipeRepository;
     }
 
     public async Task HandleAsync(DeleteUser command)
@@ -60,6 +63,7 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
             _userRepository.DeleteAsync(user),
         };
         await Task.WhenAll(tasks);
+        await _swipeRepository.DeleteUserSwipes(user.Id);
         await _deletedEntityService.AddAsync(user.Id);
     }
 }

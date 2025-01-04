@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Consts;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
+using datingApp.Core.ValueObjects;
 using datingApp.Infrastructure;
 using datingApp.Infrastructure.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,7 @@ public class SwipeRepositoryTests : IDisposable
         _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), swipe1.SwipedById, Like.Pass);
         _dbContext.ChangeTracker.Clear();
 
-        var swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
+        var swipes = await _repository.GetBySwipedBySwipedWho(swipe1.SwipedById, swipe1.SwipedWhoId);
         Assert.Equal(2, swipes.Count());
     }
 
@@ -58,7 +59,7 @@ public class SwipeRepositoryTests : IDisposable
         _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), swipe1.SwipedById, Like.Pass);
         _dbContext.ChangeTracker.Clear();
 
-        var swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedWhoId);
+        var swipes = await _repository.GetBySwipedBySwipedWho(swipe1.SwipedById, swipe1.SwipedWhoId);
         Assert.Single(swipes);
     }
 
@@ -69,16 +70,34 @@ public class SwipeRepositoryTests : IDisposable
         var swipe2 = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), Guid.NewGuid(), Like.Pass);
         _dbContext.ChangeTracker.Clear();
 
-        var swipes = await _repository.GetBySwipedBy(swipe2.SwipedById, swipe2.SwipedById);
+        var swipes = await _repository.GetBySwipedBySwipedWho(swipe2.SwipedById, swipe2.SwipedById);
         Assert.Empty(swipes);
-        swipes = await _repository.GetBySwipedBy(swipe2.SwipedWhoId, swipe2.SwipedWhoId);
+        swipes = await _repository.GetBySwipedBySwipedWho(swipe2.SwipedWhoId, swipe2.SwipedWhoId);
         Assert.Empty(swipes);
-        swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, swipe1.SwipedById);
+        swipes = await _repository.GetBySwipedBySwipedWho(swipe1.SwipedById, swipe1.SwipedById);
         Assert.Empty(swipes);
-        swipes = await _repository.GetBySwipedBy(swipe1.SwipedWhoId, swipe1.SwipedWhoId);
+        swipes = await _repository.GetBySwipedBySwipedWho(swipe1.SwipedWhoId, swipe1.SwipedWhoId);
         Assert.Empty(swipes);
-        swipes = await _repository.GetBySwipedBy(swipe1.SwipedById, Guid.NewGuid());
+        swipes = await _repository.GetBySwipedBySwipedWho(swipe1.SwipedById, Guid.NewGuid());
         Assert.Empty(swipes);
+    }
+
+    [Fact]
+    public async Task Delete_deletes_all_swipes_made_by_user()
+    {
+        var userId = Guid.NewGuid();
+        for (int i = 0; i < 10; i++)
+        {
+            _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, userId, Guid.NewGuid(), Like.Like);
+            _ = await IntegrationTestHelper.CreateSwipeAsync(_dbContext, Guid.NewGuid(), userId, Like.Like);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        await _repository.DeleteUserSwipes(userId);
+
+        var remainingSwipes = await _dbContext.Swipes.ToListAsync();
+        Assert.Equal(10, remainingSwipes.Count);
+        Assert.DoesNotContain(remainingSwipes, s => s.SwipedById.Equals(userId));
     }
 
     // Arrange

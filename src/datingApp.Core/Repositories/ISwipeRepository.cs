@@ -11,4 +11,5 @@ public interface ISwipeRepository : IRepository
 {
     Task AddAsync(Swipe swipe);
     Task<List<Swipe>> GetBySwipedBySwipedWho(UserId swipedById, UserId swipedWhoId);
+    Task DeleteUserSwipes(UserId swipedById);
 }

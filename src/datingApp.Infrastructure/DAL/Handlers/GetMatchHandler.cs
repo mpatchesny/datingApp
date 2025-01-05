@@ -58,7 +58,7 @@ internal sealed class GetMatchHandler : IQueryHandler<GetMatch, MatchDto>
             throw new UnauthorizedException();
         }
 
-        var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1));
+        var distanceInKms = _spatial.CalculateDistanceInKms(match.Users.First(), match.Users.Last());
 
         return match.AsDto(query.UserId, distanceInKms);
     }

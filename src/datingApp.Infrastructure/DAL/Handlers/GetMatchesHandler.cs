@@ -48,7 +48,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
         
         var matchesDto = matches
             .Select(match => match.AsDto(query.UserId, 
-                _spatial.CalculateDistanceInKms(match.Users.ElementAt(0), match.Users.ElementAt(1))))
+                _spatial.CalculateDistanceInKms(match.Users.First(), match.Users.Last())))
             .ToList();
 
         var recordsCount = await _dbContext.Matches

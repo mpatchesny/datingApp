@@ -22,7 +22,10 @@ public sealed class SetMessagesAsDisplayedHandler : ICommandHandler<SetMessagesA
 
     public async Task HandleAsync(SetMessagesAsDisplayed command)
     {
-        var match = await _matchRepository.GetByMessageIdAsync(command.LastMessageId);
+        var match = await _matchRepository.GetByMessageIdAsync(command.LastMessageId, 
+            match => match.Messages.Where(msg => msg.IsDisplayed == false &&
+                !msg.SendFromId.Equals(command.DisplayedByUserId)));
+
         if (match == null)
         {
             throw new MessageNotExistsException(command.LastMessageId);

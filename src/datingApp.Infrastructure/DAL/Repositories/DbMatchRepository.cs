@@ -20,18 +20,28 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Match> GetByIdAsync(MatchId matchId)
+    public async Task<Match> GetByIdAsync(MatchId matchId, Expression<Func<Match, IEnumerable<Message>>> includeMessage = null)
     {
+        if (includeMessage == null)
+        {
+            includeMessage = match => match.Messages.Take(0);
+        }
+
         return await _dbContext.Matches
-            .Include(match => match.Messages)
+            .Include(includeMessage)
             .FirstOrDefaultAsync(match => match.Id == matchId);
     }
 
-    public async Task<Match> GetByMessageIdAsync(MessageId messageId)
+    public async Task<Match> GetByMessageIdAsync(MessageId messageId, Expression<Func<Match, IEnumerable<Message>>> includeMessage = null)
     {
+        if (includeMessage == null)
+        {
+            includeMessage = match => match.Messages.Take(0);
+        }
+
         return await _dbContext.Matches
             .Where(match => match.Messages.Any(message => message.Id.Equals(messageId)))
-            .Include(match => match.Messages)
+            .Include(includeMessage)
             .FirstOrDefaultAsync();
     }
 

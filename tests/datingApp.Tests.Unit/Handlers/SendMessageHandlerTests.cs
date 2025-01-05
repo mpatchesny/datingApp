@@ -22,7 +22,8 @@ public class SendMessageHandlerTests
     public async Task given_match_not_exists_SendMessageHandler_throws_MatchNotExistsException()
     {
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(null));
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), null))
+            .Returns(Task.FromResult<Match>(null));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
@@ -41,7 +42,8 @@ public class SendMessageHandlerTests
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, false, false);
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(match));
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), null))
+            .Returns(Task.FromResult<Match>(match));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
@@ -60,7 +62,8 @@ public class SendMessageHandlerTests
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, false, false);
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(match));
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), null))
+            .Returns(Task.FromResult<Match>(match));
         repository.Setup(x => x.UpdateAsync(It.IsAny<Match>()));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -73,7 +76,7 @@ public class SendMessageHandlerTests
         var handler = new SendMessageHandler(repository.Object, authorizationService.Object);
 
         await handler.HandleAsync(command);
-        repository.Verify(x => x.GetByIdAsync(command.MatchId), Times.Once());
+        repository.Verify(x => x.GetByIdAsync(command.MatchId, null), Times.Once());
         repository.Verify(x => x.UpdateAsync(match), Times.Once());
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, match, "OwnerPolicy"), Times.Once());
         Assert.Single(match.Messages);

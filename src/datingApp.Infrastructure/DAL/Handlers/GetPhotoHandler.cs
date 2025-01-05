@@ -25,7 +25,7 @@ internal sealed class GetPhotoHandler : IQueryHandler<GetPhoto, PhotoDto>
                 .Where(photo => photo.Id.Equals(query.PhotoId)))
             .FirstOrDefaultAsync();
 
-        if (user == null || !user.Photos.Any())
+        if (user == null || user.Photos.Count == 0)
         {
             throw new PhotoNotExistsException(query.PhotoId);
         }

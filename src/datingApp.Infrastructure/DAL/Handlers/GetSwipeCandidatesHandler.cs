@@ -38,7 +38,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         var minDob = new DateOnly(now.Year - settings.PreferredAge.To, now.Month, now.Day);
         var maxDob = new DateOnly(now.Year - settings.PreferredAge.From, now.Month, now.Day);
 
-        int preferredSex = (int)settings.PreferredSex;
+        int preferredSex = (int) settings.PreferredSex;
 
         var spatialSquare = _spatial.GetApproxSquareAroundPoint(settings.Location.Lat, settings.Location.Lon,
             settings.PreferredMaxDistance + 5);
@@ -50,7 +50,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         return _dbContext.Users
             .Where(candidate => !candidate.Id.Equals(requestedById))
             .Where(candidate => !alreadySwiped.Contains(candidate.Id))
-            .Where(candidate => ((int)candidate.Sex & preferredSex) != 0)
+            .Where(candidate => ((int) candidate.Sex & preferredSex) != 0)
             .Where(candidate => candidate.DateOfBirth >= minDob)
             .Where(candidate => candidate.DateOfBirth <= maxDob)
             .Where(candidate => candidate.Settings.Location.Lat <= spatialSquare.NorthLat)
@@ -66,8 +66,6 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
 
     private async Task<List<PublicUserDto>> GetCandidatesAsync(User requestedBy, int howMany)
     {
-        var candidatesQuery = GetCandidatesToSwipeQuery(requestedBy.Settings, requestedBy.Id);
-
         var limit = howMany * 2;
         var offset = 0;
 
@@ -75,7 +73,10 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
         // are not within range, if no potential candidates left then break,
         // if not enough candidates take another batch, do until there are enough 
         // candidates
+
+        var candidatesQuery = GetCandidatesToSwipeQuery(requestedBy.Settings, requestedBy.Id);
         var finalCandidates = new List<PublicUserDto>();
+
         while (finalCandidates.Count < howMany)
         {
             var pontentialCandidates =
@@ -87,7 +88,7 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
                 where distance <= requestedBy.Settings.PreferredMaxDistance
                 select candidate.AsPublicDto(distance);
 
-            if (!pontentialCandidates.Any()) break;
+            if (pontentialCandidates.Count == 0) break;
 
             finalCandidates.AddRange(pontentialCandidatesWithinRange);
             offset += limit;

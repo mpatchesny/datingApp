@@ -53,7 +53,7 @@ public sealed class SignInByEmailHandler : ICommandHandler<SignInByEmail>
         {
             throw new InvalidCredentialsException();
         }
-        
+
         if (!_verificator.Verify(accessCode, command.AccessCode, command.Email))
         {
             throw new InvalidCredentialsException();

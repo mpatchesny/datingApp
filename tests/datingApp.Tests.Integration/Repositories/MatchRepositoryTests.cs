@@ -145,6 +145,59 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async void given_no_includeMessage_specification_provided_get_match_by_id_returns_match_without_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id);
+        Assert.Empty(retrievedMatch.Messages);
+    }
+
+    [Fact]
+    public async void given_no_includeMessage_specification_provided_get_match_by_message_id_returns_match_without_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user2.Id, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, createdAt: DateTime.UtcNow),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var retrievedMatch = await _repository.GetByMessageIdAsync(messages[0].Id);
+        Assert.Empty(retrievedMatch.Messages);
+    }
+
+    [Fact]
+    public async void given_includeMessage_specification_provided_get_match_by_id_returns_match_with_specified_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var messages = new List<Message>() {
+            IntegrationTestHelper.CreateMessage(user2.Id, isDisplayed: false, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user2.Id, isDisplayed: false, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user2.Id, isDisplayed: true, createdAt: DateTime.UtcNow),
+            IntegrationTestHelper.CreateMessage(user1.Id, isDisplayed: false, createdAt: DateTime.UtcNow),
+        };
+        var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, messages: messages);
+        _dbContext.ChangeTracker.Clear();
+
+        var retrievedMatch = await _repository.GetByIdAsync(match.Id, match => 
+            match.Messages.Where(msg => msg.IsDisplayed == false && !msg.SendFromId.Equals(user1.Id)));
+        Assert.Equal(2, retrievedMatch.Messages.Count());
+    }
+
+    [Fact]
     public async Task given_match_message_is_added_update_match_should_update_messages()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

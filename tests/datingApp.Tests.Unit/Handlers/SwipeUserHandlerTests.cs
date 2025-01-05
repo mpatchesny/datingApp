@@ -23,7 +23,6 @@ public class SwipeUserHandlerTests
     public async void given_swipe_not_exists_SwipeUserHanlde_adds_new_swipe()
     {
         var matchRepository = new Mock<IMatchRepository>();
-        matchRepository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>())).Returns(Task.FromResult<Match>(null));
         matchRepository.Setup(x => x.AddAsync(It.IsAny<Match>()));
         
         var swipeRepository = new Mock<ISwipeRepository>();

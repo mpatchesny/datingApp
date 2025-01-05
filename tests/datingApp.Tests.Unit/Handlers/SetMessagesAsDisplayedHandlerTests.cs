@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
@@ -22,8 +23,10 @@ public class SetMessagesAsDisplayedHandlerTests
     [Fact]
     public async Task given_match_or_message_not_exists_SendMessageHandler_throws_MessageNotExistsException()
     {
+        
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>())).Returns(Task.FromResult<Match>(null));
+        repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>(), It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()))
+            .Returns(Task.FromResult<Match>(null));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
@@ -42,7 +45,8 @@ public class SetMessagesAsDisplayedHandlerTests
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>())).Returns(Task.FromResult<Match>(match));
+        repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>(), It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()))
+            .Returns(Task.FromResult<Match>(match));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<Match>(), "OwnerPolicy"))
@@ -70,7 +74,8 @@ public class SetMessagesAsDisplayedHandlerTests
         };
         var match = new Match(Guid.NewGuid(), userId1, userId2, DateTime.UtcNow, messages: messages);
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>())).Returns(Task.FromResult<Match>(match));
+        repository.Setup(x => x.GetByMessageIdAsync(It.IsAny<MessageId>(), It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()))
+            .Returns(Task.FromResult<Match>(match));
         repository.Setup(x => x.UpdateAsync(It.IsAny<Match>()));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -81,7 +86,7 @@ public class SetMessagesAsDisplayedHandlerTests
         var handler = new SetMessagesAsDisplayedHandler(repository.Object, authorizationService.Object);
 
         await handler.HandleAsync(command);
-        repository.Verify(x => x.GetByMessageIdAsync(command.LastMessageId), Times.Once());
+        repository.Verify(x => x.GetByMessageIdAsync(command.LastMessageId, It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()), Times.Once());
         repository.Verify(x => x.UpdateAsync(match), Times.Once());
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, match, "OwnerPolicy"), Times.Once());
         Assert.True(match.Messages.All(x => x.IsDisplayed == true));

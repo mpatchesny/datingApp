@@ -52,7 +52,9 @@ public class MatchDetail
 
         foreach (var message in Messages)
         {
-            if (message.CreatedAt <= lastMessage.CreatedAt && message.SendFromId != displayedByUserId)
+            if (message.CreatedAt <= lastMessage.CreatedAt && 
+                message.SendFromId != displayedByUserId &&
+                !message.IsDisplayed)
             {
                 message.SetDisplayed();
             }

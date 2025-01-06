@@ -38,6 +38,7 @@ internal sealed class DbSwipeRepository : ISwipeRepository
                     s => s.SwipedById.Equals(swipedById) && s.SwipedWhoId.Equals(swipedWhoId) ||
                     s.SwipedById.Equals(swipedWhoId) && s.SwipedWhoId.Equals(swipedById)
                    )
+            .AsNoTracking()
             .ToListAsync();
         return swipes;
     }

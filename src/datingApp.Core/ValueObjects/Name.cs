@@ -24,10 +24,24 @@ public sealed record Name
         }
 
         // https://www.techiedelight.com/check-if-string-contains-only-letters-in-csharp/
-        // Only letters, spaces and hypens are allowed
-        if (!value.All(c => Char.IsLetter(c) || c == ' ' || c == '-'))
+        // Allowed chars: letters, spaces, hypens/ dashes, apostrophes
+        // two consecutive special characters are not allowed
+        char[] specialChars = ['-', ' ', '\''];
+
+        for (int i = 1; i < value.Length; i++)
         {
-            throw new InvalidUsernameException($"contains forbidden characters {value}");
+            char c = value[i];
+            char previousC = value[i-1];
+            if (specialChars.Any(sc => sc == c) && c == previousC)
+            {
+                throw new InvalidUsernameException($"two special characters one after the other: {value}.");
+            }
+        }
+
+        var invalidChars = !value.All(c => Char.IsLetter(c) || specialChars.Any(sc => sc == c));
+        if (invalidChars)
+        {
+            throw new InvalidUsernameException($"contains forbidden characters {value}.");
         }
 
         Value = value;

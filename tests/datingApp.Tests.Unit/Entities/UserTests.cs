@@ -142,6 +142,17 @@ public class UserTests
         Assert.Null(exception);
     }
 
+    [Theory]
+    [InlineData("--")]
+    [InlineData("''")]
+    [InlineData("  ")]
+    public void given_two_special_allowed_characters_one_after_the_other_throws_InvalidUsernameException(string username)
+    {
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", username, new System.DateOnly(1999,1,1), UserSex.Male, _properUserSettings));
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidUsernameException>(exception);
+    }
+
     [Fact]
     public void user_name_above_15_chars_throws_InvalidUsernameException()
     {

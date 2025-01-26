@@ -24,7 +24,7 @@ public sealed class SetMatchAsDisplayedHandler : ICommandHandler<SetMatchAsDispl
     {
         var match = await _matchRepository.GetByIdAsync(command.MatchId, match => 
             match.Messages.Where(msg => msg.IsDisplayed == false &&
-                msg.SendFromId.Value != command.DisplayedByUserId));
+                !msg.SendFromId.Equals(command.DisplayedByUserId)));
 
         if (match == null)
         {

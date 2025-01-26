@@ -55,9 +55,12 @@ public class Match
         if (detail != null)
         {
             detail.SetDisplayed();
-            foreach (var message in detail.Messages)
+            foreach (var message in _messages)
             {
-                message.SetDisplayed();
+                if (message.SendFromId != userId)
+                {
+                    message.SetDisplayed();
+                }
             }
         }
     }

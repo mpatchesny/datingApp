@@ -55,6 +55,10 @@ public class Match
         if (detail != null)
         {
             detail.SetDisplayed();
+            foreach (var message in detail.Messages)
+            {
+                message.SetDisplayed();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using datingApp.Application.Commands;
 using datingApp.Application.Commands.Handlers;
@@ -19,10 +20,10 @@ namespace datingApp.Tests.Unit.Handlers;
 public class SetMatchAsDisplayedHandlerTests
 {
     [Fact]
-    public async Task given_match_not_exists_SendMessageHandler_throws_MatchNotExistsException()
+    public async Task given_match_not_exists_SetMatchAsDisplayed_throws_MatchNotExistsException()
     {
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), null))
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()))
             .Returns(Task.FromResult<Match>(null));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -38,11 +39,11 @@ public class SetMatchAsDisplayedHandlerTests
     }
 
     [Fact]
-    public async Task given_match_exists_and_authorization_failed_SendMessageHandler_throws_MatchNotExistsException()
+    public async Task given_match_exists_and_authorization_failed_SetMatchAsDisplayed_throws_MatchNotExistsException()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), null))
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()))
             .Returns(Task.FromResult<Match>(match));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -58,11 +59,11 @@ public class SetMatchAsDisplayedHandlerTests
     }
 
     [Fact]
-    public async Task given_match_exists_and_authorization_succeed_SendMessageHandler_should_succeed()
+    public async Task given_match_exists_and_authorization_succeed_SetMatchAsDisplayed_should_succeed()
     {
         var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
         var repository = new Mock<IMatchRepository>();
-        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), null))
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<MatchId>(), It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()))
             .Returns(Task.FromResult<Match>(match));
         repository.Setup(x => x.UpdateAsync(It.IsAny<Match>()));
 
@@ -74,7 +75,7 @@ public class SetMatchAsDisplayedHandlerTests
         var handler = new SetMatchAsDisplayedHandler(repository.Object, authorizationService.Object);
 
         await handler.HandleAsync(command);
-        repository.Verify(x => x.GetByIdAsync(command.MatchId, null), Times.Once());
+        repository.Verify(x => x.GetByIdAsync(command.MatchId, It.IsAny<Expression<Func<Match, IEnumerable<Message>>>>()), Times.Once());
         repository.Verify(x => x.UpdateAsync(match), Times.Once());
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, match, "OwnerPolicy"), Times.Once());
         Assert.True(match.IsDisplayedByUser(match.UserId1));

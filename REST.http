@@ -173,17 +173,6 @@ Content-Type: application/json
 }
 ###
 
-### Mark message as displayed
-### As a result all messages older than given message will be marked as displayed
-PATCH {{url}}/matches/{{matchId}}/messages/{{messageId}}
-Authorization: Bearer {{accessToken}}
-Content-Type: application/json
-
-{
-    "DisplayedByUserId": "{{myUserId}}"
-}
-###
-
 ### Delete match
 ### As a result all messages within match will be deleted
 DELETE {{url}}/matches/{{matchId}}

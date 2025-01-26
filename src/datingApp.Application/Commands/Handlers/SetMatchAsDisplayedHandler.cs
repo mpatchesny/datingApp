@@ -22,7 +22,10 @@ public sealed class SetMatchAsDisplayedHandler : ICommandHandler<SetMatchAsDispl
 
     public async Task HandleAsync(SetMatchAsDisplayed command)
     {
-        var match = await _matchRepository.GetByIdAsync(command.MatchId);
+        var match = await _matchRepository.GetByIdAsync(command.MatchId, match => 
+            match.Messages.Where(msg => msg.IsDisplayed == false &&
+                !msg.SendFromId.Equals(command.DisplayedByUserId)));
+
         if (match == null)
         {
             throw new MatchNotExistsException(command.MatchId);

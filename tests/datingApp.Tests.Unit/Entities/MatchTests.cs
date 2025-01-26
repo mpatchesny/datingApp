@@ -29,12 +29,44 @@ public class MatchTests
     }
 
     [Fact]
+    public void set_is_displayed_changes_sets_all_messages_send_by_other_user_as_displayed()
+    {
+        var userId1 = Guid.NewGuid();
+        var userId2 = Guid.NewGuid();
+        var messages = new List<Message>() {
+            new Message(Guid.NewGuid(), userId1, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId1, "text", true, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId2, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId2, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId2, "text", true, DateTime.UtcNow),
+        };
+        var match = new Match(Guid.NewGuid(), userId1, userId2, DateTime.UtcNow, messages: messages);
+        match.SetDisplayed(match.UserId1);
+
+        Assert.Empty(match.Messages.Where(msg => msg.SendFromId.Value == userId2 && msg.IsDisplayed == false));
+        Assert.NotEmpty(match.Messages.Where(msg => msg.SendFromId.Value == userId1 && msg.IsDisplayed == false));
+        Assert.NotEmpty(match.Messages.Where(msg => msg.SendFromId.Value == userId1 && msg.IsDisplayed == true));
+    }
+
+    [Fact]
     public void set_is_displayed_by_wrong_user_id_does_not_change_entity_state()
     {
-        var match = new Match(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow);
+        var userId1 = Guid.NewGuid();
+        var userId2 = Guid.NewGuid();
+        var messages = new List<Message>() {
+            new Message(Guid.NewGuid(), userId1, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId1, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId2, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId2, "text", false, DateTime.UtcNow),
+            new Message(Guid.NewGuid(), userId2, "text", false, DateTime.UtcNow),
+        };
+        var match = new Match(Guid.NewGuid(), userId1, userId2, DateTime.UtcNow, messages: messages);
+
         match.SetDisplayed(Guid.NewGuid());
+
         Assert.False(match.IsDisplayedByUser(match.UserId1));
         Assert.False(match.IsDisplayedByUser(match.UserId2));
+        Assert.Empty(match.Messages.Where(msg => msg.IsDisplayed == true));
     }
 
     [Theory]

@@ -74,14 +74,6 @@ public class MatchesController : ApiControllerBase
         return CreatedAtAction(nameof(GetMessage), new { command.MatchId, command.MessageId }, message);
     }
 
-    [HttpPatch("{matchId:guid}/messages/{messageId:guid}")]
-    public async Task<ActionResult> ChangeMessage([FromRoute] Guid matchId, [FromRoute] Guid messageId, [FromBody] SetMessagesAsDisplayed command)
-    {
-        command = Authenticate(command with {LastMessageId = messageId});
-        await _commandDispatcher.DispatchAsync(command);
-        return NoContent();
-    }
-
     [HttpPatch("{matchId:guid}")]
     public async Task<ActionResult> ChangeMatch([FromRoute] Guid matchId, [FromBody] SetMatchAsDisplayed command)
     {

@@ -16,6 +16,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IUserRepository _userRepository;
     private readonly IPhotoValidator _photoValidator;
     private readonly IPhotoConverter _jpegPhotoConverter;
+    private readonly IPhotoDuplicateChecker _duplicateChecker;
     private readonly IBlobStorage _fileStorage;
     private readonly IPhotoUrlProvider _photoStorageUrlProvider;
 
@@ -40,6 +41,11 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         if (user == null)
         {
             throw new UserNotExistsException(command.UserId);
+        }
+
+        if (await _duplicateChecker.IsDuplicate(command.PhotoStream))
+        {
+            throw new PhotoAlreadyExistsException();
         }
 
         var convertedPhotoStream = await _jpegPhotoConverter.ConvertAsync(command.PhotoStream);

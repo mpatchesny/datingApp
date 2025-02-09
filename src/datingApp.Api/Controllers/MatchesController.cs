@@ -35,9 +35,9 @@ public class MatchesController : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedDataDto<MatchDto>>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize)
+    public async Task<ActionResult<PaginatedDataDto<MatchDto>>> GetMatches([FromQuery] int? page, [FromQuery] int? pageSize, [FromQuery] bool? hasConversation)
     {
-        var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId });
+        var query = Authenticate(new GetMatches { UserId = AuthenticatedUserId, HasConversation = hasConversation });
         query.SetPage(page);
         query.SetPageSize(pageSize);
         var result = await _queryDispatcher.DispatchAsync<GetMatches, PaginatedDataDto<MatchDto>>(query);

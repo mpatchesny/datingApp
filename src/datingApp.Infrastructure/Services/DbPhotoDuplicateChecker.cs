@@ -19,6 +19,7 @@ internal sealed class DbPhotoDuplicateChecker : IPhotoDuplicateChecker
     {
         using (var md5 = System.Security.Cryptography.MD5.Create())
         {
+            photo.Position = 0;
             var hashBytes = await md5.ComputeHashAsync(photo);
             var checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
             var query = _dbContext

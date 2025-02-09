@@ -23,6 +23,7 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         _dbContext.ChangeTracker.Clear();
 
+        stream.Position = 0;
         var service = new DbPhotoDuplicateChecker(_dbContext);
         var isDuplicate = await service.IsDuplicate(user.Id, stream);
 
@@ -39,6 +40,7 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
 
+        stream.Position = 0;
         var service = new DbPhotoDuplicateChecker(_dbContext);
         var isDuplicate = await service.IsDuplicate(user.Id, stream);
 
@@ -56,6 +58,7 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         _dbContext.ChangeTracker.Clear();
 
+        stream.Position = 0;
         var service = new DbPhotoDuplicateChecker(_dbContext);
         var isDuplicate = await service.IsDuplicate(user.Id, stream);
 
@@ -81,6 +84,8 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
 
         _dbContext.ChangeTracker.Clear();
 
+        stream1.Position = 0;
+        stream2.Position = 0;
         var service = new DbPhotoDuplicateChecker(_dbContext);
         var isDuplicate = await service.IsDuplicate(user1.Id, stream2);
 

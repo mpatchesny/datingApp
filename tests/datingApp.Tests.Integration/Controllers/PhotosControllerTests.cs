@@ -79,6 +79,37 @@ public class PhotosControllerTests : ControllerTestBase, IDisposable
     }
 
     [Fact]
+    public async Task given_photo_already_exists_post_photo_returns_400_bad_request()
+    {
+        var stream = IntegrationTestHelper.SamplePhotoStream();
+
+        stream.Position = 0;
+        var checksum = "";
+        using (var md5 = System.Security.Cryptography.MD5.Create())
+        {
+            var hashBytes = await md5.ComputeHashAsync(stream);
+            checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+        }
+
+        var photos = new List<Photo>() { IntegrationTestHelper.CreatePhoto(checksum: checksum) };
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var fileContent = new StreamContent(stream);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+        var formData = new MultipartFormDataContent();
+        formData.Add(fileContent, "fileContent", "file.jpg");
+
+        var response = await Client.PostAsync("/users/me/photos", formData);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task given_empty_formfile_photo_post_photo_returns_400_bad_request()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);

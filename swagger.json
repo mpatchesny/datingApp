@@ -488,6 +488,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "hasConversation",
+            "in": "query",
+            "description": "Filter to return matches that have at least one message. If not provided, all matches are returned.",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {

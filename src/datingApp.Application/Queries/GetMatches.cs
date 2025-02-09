@@ -10,4 +10,5 @@ namespace datingApp.Application.Queries;
 public class GetMatches : AuthenticatedPaginatedQuery<MatchDto>
 {
     public Guid UserId { get; set; }
+    public Boolean? HasConversation { get; set; }
 }

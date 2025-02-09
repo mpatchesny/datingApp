@@ -84,7 +84,7 @@ public class AddPhotoHandlerTests
 
         var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), new MemoryStream());
         var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, _fileStorage.Object,
-            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, _duplicateChecker.Object);
+            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, duplicateChecker.Object);
 
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);

@@ -103,8 +103,8 @@ public class DeleteUserHandlerTests
     {
         var photos = new List<Photo>()
         {
-            new Photo(Guid.NewGuid(), "abcde", 0),
-            new Photo(Guid.NewGuid(), "abcde", 1),
+            new Photo(Guid.NewGuid(), "url", "checksum", 0),
+            new Photo(Guid.NewGuid(), "url", "checksum", 1),
         };
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
         var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, photos: photos);

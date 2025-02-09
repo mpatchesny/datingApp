@@ -13,6 +13,7 @@ public class Photo
 {
     public PhotoId Id { get; }
     public PhotoUrl Url { get; private set; }
+    public Checksum Checksum { get; private set; }
     public Oridinal Oridinal { get; private set; }
     public string Extension { get { return Url.Extension; } }
 
@@ -21,10 +22,11 @@ public class Photo
         // EF
     }
 
-    public Photo(PhotoId id, PhotoUrl url, Oridinal oridinal)
+    public Photo(PhotoId id, PhotoUrl url, Checksum checksum, Oridinal oridinal)
     {
         Id = id;
         Url = url;
+        Checksum = checksum;
         Oridinal = oridinal;
     }
 

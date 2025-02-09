@@ -16,6 +16,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
     private readonly IUserRepository _userRepository;
     private readonly IPhotoValidator _photoValidator;
     private readonly IPhotoConverter _jpegPhotoConverter;
+    private readonly IPhotoDuplicateChecker _duplicateChecker;
     private readonly IBlobStorage _fileStorage;
     private readonly IPhotoUrlProvider _photoStorageUrlProvider;
 
@@ -23,13 +24,15 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
                             IPhotoValidator photoValidator,
                             IBlobStorage fileStorage,
                             IPhotoConverter jpegPhotoConverter,
-                            IPhotoUrlProvider photoStorageUrlProvider)
+                            IPhotoUrlProvider photoStorageUrlProvider,
+                            IPhotoDuplicateChecker duplicateChecker)
     {
         _userRepository = userRepository;
         _photoValidator = photoValidator;
         _fileStorage = fileStorage;
         _jpegPhotoConverter = jpegPhotoConverter;
         _photoStorageUrlProvider = photoStorageUrlProvider;
+        _duplicateChecker = duplicateChecker;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -42,10 +45,15 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
+        if (await _duplicateChecker.IsDuplicate(command.UserId, command.PhotoStream))
+        {
+            throw new PhotoAlreadyExistsException();
+        }
+
         var convertedPhotoStream = await _jpegPhotoConverter.ConvertAsync(command.PhotoStream);
         var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
-        var photo = new Photo(command.PhotoId, photoUrl, 0);
+        var photo = new Photo(command.PhotoId, photoUrl, await ComputeHashAsync(command.PhotoStream), 0);
         user.AddPhoto(photo);
 
         var path = $"{photo.Id}.{extension}";
@@ -54,5 +62,13 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
+    }
+
+    private static async Task<string> ComputeHashAsync(Stream stream)
+    {
+        stream.Position = 0;
+        var hashBytes = await System.Security.Cryptography.MD5.Create()
+            .ComputeHashAsync(stream);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
     }
 }

@@ -23,6 +23,9 @@ internal sealed class PhotoConfiguration : IEntityTypeConfiguration<Photo>
         builder.Property(x => x.Url)
             .HasConversion(x => x.Value, x => new PhotoUrl(x))
             .IsRequired();
+        builder.Property(x => x.Checksum)
+            .HasConversion(x => x.Value, x => new Checksum(x))
+            .IsRequired();
         builder.ToTable("Photos");
     }
 }

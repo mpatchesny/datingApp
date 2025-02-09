@@ -29,9 +29,9 @@ public class AddPhotoHandlerTests
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(null));
 
         var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), new MemoryStream());
-        var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, 
-            _fileStorage.Object, _jpegPhotoConverter.Object, _photoStorageUrlProvider.Object);
-        
+        var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, _fileStorage.Object,
+            _jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, _duplicateChecker.Object);
+
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -51,7 +51,7 @@ public class AddPhotoHandlerTests
 
         var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), new MemoryStream());
         var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, _fileStorage.Object,
-            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object);
+            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, _duplicateChecker.Object);
 
         await handler.HandleAsync(command);
 
@@ -67,8 +67,33 @@ public class AddPhotoHandlerTests
         repository.Verify(x => x.UpdateAsync(user), Times.Once());
     }
 
+    [Fact]
+    public async Task given_photo_already_exists_AddPhotoHandler_should_return_PhotoAlreadyExistsException()
+    {
+        var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var repository = new Mock<IUserRepository>();
+        repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
+
+        var duplicateChecker = new Mock<IPhotoDuplicateChecker>();
+        duplicateChecker.Setup(x => x.IsDuplicate(It.IsAny<Guid>(), It.IsAny<Stream>())).Returns(Task.FromResult<Boolean>(true));
+
+        var convertedOutputSream = new MemoryStream();
+        var jpegPhotoConverter = new Mock<IPhotoConverter>();
+        jpegPhotoConverter.Setup(x => x.ConvertAsync(It.IsAny<Stream>())).Returns(Task.FromResult<Stream>(convertedOutputSream));
+
+        var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), new MemoryStream());
+        var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, _fileStorage.Object,
+            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, duplicateChecker.Object);
+
+        var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
+        Assert.NotNull(exception);
+        Assert.IsType<PhotoAlreadyExistsException>(exception);
+    }
+
     private readonly Mock<IPhotoValidator> _photoValidator;
     private Mock<IBlobStorage> _fileStorage;
+    private Mock<IPhotoDuplicateChecker> _duplicateChecker;
     private readonly Mock<IPhotoConverter> _jpegPhotoConverter;
     private Mock<IPhotoUrlProvider> _photoStorageUrlProvider;
     public AddPhotoHandlerTests()
@@ -76,6 +101,9 @@ public class AddPhotoHandlerTests
         var extension = "jpg";
         _photoValidator = new Mock<IPhotoValidator>();
         _photoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension));
+
+        _duplicateChecker = new Mock<IPhotoDuplicateChecker>();
+        _duplicateChecker.Setup(x => x.IsDuplicate(It.IsAny<Guid>(), It.IsAny<Stream>())).Returns(Task.FromResult<Boolean>(false));
 
         _fileStorage = new Mock<IBlobStorage>();
         _fileStorage.Setup(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<Stream>(), false, It.IsAny<CancellationToken>()));

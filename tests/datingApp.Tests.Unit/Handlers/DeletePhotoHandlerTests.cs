@@ -102,7 +102,7 @@ public class DeletePhotoHandlerTests
     [Fact]
     public async Task given_user_exists_and_photo_id_not_in_deleted_entities_and_authorization_succeed_DeletePhotoHandler_should_succeed()
     {
-        var photo = new Photo(Guid.NewGuid(), "abcdef", 0);
+        var photo = new Photo(Guid.NewGuid(), "url", "checksum", 0);
         var photos = new List<Photo>(){ photo };
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
         var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, photos: photos);

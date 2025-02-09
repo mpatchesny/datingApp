@@ -29,9 +29,9 @@ public class AddPhotoHandlerTests
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(null));
 
         var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), new MemoryStream());
-        var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, 
-            _fileStorage.Object, _jpegPhotoConverter.Object, _photoStorageUrlProvider.Object);
-        
+        var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, _fileStorage.Object,
+            _jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, _duplicateChecker.Object);
+
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
         Assert.IsType<UserNotExistsException>(exception);
@@ -51,7 +51,7 @@ public class AddPhotoHandlerTests
 
         var command = new AddPhoto(Guid.NewGuid(), Guid.NewGuid(), new MemoryStream());
         var handler = new AddPhotoHandler(repository.Object, _photoValidator.Object, _fileStorage.Object,
-            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object);
+            jpegPhotoConverter.Object, _photoStorageUrlProvider.Object, _duplicateChecker.Object);
 
         await handler.HandleAsync(command);
 
@@ -69,6 +69,7 @@ public class AddPhotoHandlerTests
 
     private readonly Mock<IPhotoValidator> _photoValidator;
     private Mock<IBlobStorage> _fileStorage;
+    private Mock<IPhotoDuplicateChecker> _duplicateChecker;
     private readonly Mock<IPhotoConverter> _jpegPhotoConverter;
     private Mock<IPhotoUrlProvider> _photoStorageUrlProvider;
     public AddPhotoHandlerTests()
@@ -76,6 +77,9 @@ public class AddPhotoHandlerTests
         var extension = "jpg";
         _photoValidator = new Mock<IPhotoValidator>();
         _photoValidator.Setup(x => x.Validate(It.IsAny<Stream>(), out extension));
+
+        _duplicateChecker = new Mock<IPhotoDuplicateChecker>();
+        _duplicateChecker.Setup(x => x.IsDuplicate(It.IsAny<Guid>(), It.IsAny<Stream>())).Returns(Task.FromResult<Boolean>(false));
 
         _fileStorage = new Mock<IBlobStorage>();
         _fileStorage.Setup(x => x.WriteAsync(It.IsAny<string>(), It.IsAny<Stream>(), false, It.IsAny<CancellationToken>()));

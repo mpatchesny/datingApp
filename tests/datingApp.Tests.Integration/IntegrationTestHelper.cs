@@ -49,9 +49,9 @@ internal static class IntegrationTestHelper
         await dbContext.SaveChangesAsync();
     }
 
-    internal static Photo CreatePhoto(int oridinal = 0)
+    internal static Photo CreatePhoto(int oridinal = 0, string checksum = "checksum")
     {
-        var photo = new Photo(Guid.NewGuid(), "url", "checksum", oridinal);
+        var photo = new Photo(Guid.NewGuid(), "url", checksum, oridinal);
         return photo;
     }
 

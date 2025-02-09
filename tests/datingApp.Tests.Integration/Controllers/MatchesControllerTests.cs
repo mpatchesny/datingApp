@@ -139,6 +139,60 @@ public class MatchesControllerTests : ControllerTestBase, IDisposable
 
         Assert.Equal(allMatchesGuid.OrderBy(id => id), allMatchesDtoIds.OrderBy(id => id));
     }
+
+    [Fact]
+    public async void get_matches_respects_provided_true_hasConversation()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var allMatchesGuid = new List<Guid>();
+        for (int i=0; i<11; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var messages = new List<Message>();
+            if (i % 2 == 0)
+            {
+                messages.Add(IntegrationTestHelper.CreateMessage(tempUser.Id));
+            }
+            var tempMatch = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: messages);
+            allMatchesGuid.Add(tempMatch.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var response = await Client.GetAsync($"matches?hasConversation=true");
+        var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MatchDto>>();
+
+        Assert.Equal(6, parsedResponse.Data.Count);
+    }
+
+    [Fact]
+    public async void get_matches_respects_provided_false_hasConversation()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var allMatchesGuid = new List<Guid>();
+        for (int i=0; i<11; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var messages = new List<Message>();
+            if (i % 2 == 0)
+            {
+                messages.Add(IntegrationTestHelper.CreateMessage(tempUser.Id));
+            }
+            var tempMatch = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: messages);
+            allMatchesGuid.Add(tempMatch.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user1.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+
+        var response = await Client.GetAsync($"matches?hasConversation=false");
+        var parsedResponse = await response.Content.ReadFromJsonAsync<PaginatedDataDto<MatchDto>>();
+
+        Assert.Equal(5, parsedResponse.Data.Count);
+    }
     #endregion
 
     #region GetMessage

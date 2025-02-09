@@ -13,7 +13,7 @@ public class Photo
 {
     public PhotoId Id { get; }
     public PhotoUrl Url { get; private set; }
-    public string Checksum { get; private set; }
+    public Checksum Checksum { get; private set; }
     public Oridinal Oridinal { get; private set; }
     public string Extension { get { return Url.Extension; } }
 

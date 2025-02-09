@@ -31,6 +31,22 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
+        System.Linq.Expressions.Expression<Func<Match, bool>> conversationPredicate = 
+            match => true;
+        if (query.HasConversation.HasValue) 
+        {
+            if (query.HasConversation.Value)
+            {
+                // has conversation
+                conversationPredicate = match => match.Messages.Any();
+            }
+            else 
+            {
+                // no conversation
+                conversationPredicate = match => !match.Messages.Any();
+            }
+        }
+
         var matches = await _dbContext.Matches
             .Include(match => match.Messages
                 .OrderByDescending(message => message.CreatedAt)
@@ -41,6 +57,7 @@ internal sealed class GetMatchesHandler : IQueryHandler<GetMatches, PaginatedDat
                 .ThenInclude(user => user.Settings)
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
+            .Where(conversationPredicate)
             .OrderByDescending(match => match.CreatedAt)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)

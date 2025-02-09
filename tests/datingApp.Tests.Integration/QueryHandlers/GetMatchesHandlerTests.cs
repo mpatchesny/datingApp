@@ -253,6 +253,81 @@ public class GetMatchesHandlerTests : IDisposable
         Assert.Equal(matches.OrderByDescending(m => m.CreatedAt).Select(m => m.Id.Value), retrievedMatches.Data.Select(m => m.Id));
     }
 
+    [Fact]
+    public async Task given_hasConversation_is_true_GetMatches_returns_only_matches_with_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 15;
+        var matches = new List<Match>();
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var messages = new List<Message>();
+            if (i % 2 == 0) 
+            {
+                messages.Add(IntegrationTestHelper.CreateMessage(tempUser.Id));
+            }
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: messages);
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatches() { UserId = user1.Id, HasConversation = true };
+        var retrievedMatches = await _handler.HandleAsync(query);
+
+        Assert.Equal(8, retrievedMatches.Data.Count);
+    }
+
+    [Fact]
+    public async Task given_hasConversation_is_false_GetMatches_returns_only_matches_with_no_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 15;
+        var matches = new List<Match>();
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var messages = new List<Message>();
+            if (i % 2 == 0) 
+            {
+                messages.Add(IntegrationTestHelper.CreateMessage(tempUser.Id));
+            }
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: messages);
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatches() { UserId = user1.Id, HasConversation = false };
+        var retrievedMatches = await _handler.HandleAsync(query);
+
+        Assert.Equal(7, retrievedMatches.Data.Count);
+    }
+
+    [Fact]
+    public async Task given_hasConversation_is_not_set_GetMatches_returns_matches_with_and_without_messages()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var matchesToCreate = 15;
+        var matches = new List<Match>();
+        for (int i = 0; i < matchesToCreate; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var messages = new List<Message>();
+            if (i % 2 == 0) 
+            {
+                messages.Add(IntegrationTestHelper.CreateMessage(tempUser.Id));
+            }
+            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: messages);
+            matches.Add(match);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var query = new GetMatches() { UserId = user1.Id };
+        var retrievedMatches = await _handler.HandleAsync(query);
+
+        Assert.Equal(matchesToCreate, retrievedMatches.Data.Count);
+    }
+
     // Arrange
     private readonly TestDatabase _testDb;
     private readonly DatingAppDbContext _dbContext;

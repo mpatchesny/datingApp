@@ -72,13 +72,15 @@ public static class Extensions
         services.AddScoped<IRevokedRefreshTokensService, RevokedRefreshTokensService>(); 
         services.AddScoped<IDeletedEntityService, DeletedEntityService>(); 
         services.AddScoped<IPhotoValidator, PhotoValidator>(); 
+        services.AddScoped<IPhotoDuplicateChecker, DbPhotoDuplicateChecker>(); 
         services.Scan(s => s.FromCallingAssembly()
             .AddClasses(c => c.InNamespaces("datingApp.Infrastructure.Services")
                 .Where(c => !c.Name.EndsWith("Options"))
                 .Where(c => !c.Name.Equals("RevokedRefreshTokensService"))
                 .Where(c => !c.Name.Equals("DeletedEntityService"))
                 .Where(c => !c.Name.Equals("FormFilePhotoValidator"))
-                .Where(c => !c.Name.Equals("StreamPhotoValidator")))
+                .Where(c => !c.Name.Equals("StreamPhotoValidator"))
+                .Where(c => !c.Name.Equals("DbPhotoDuplicateChecker")))
             .AsImplementedInterfaces()
             .WithSingletonLifetime());
 

@@ -24,13 +24,15 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
                             IPhotoValidator photoValidator,
                             IBlobStorage fileStorage,
                             IPhotoConverter jpegPhotoConverter,
-                            IPhotoUrlProvider photoStorageUrlProvider)
+                            IPhotoUrlProvider photoStorageUrlProvider,
+                            IPhotoDuplicateChecker duplicateChecker)
     {
         _userRepository = userRepository;
         _photoValidator = photoValidator;
         _fileStorage = fileStorage;
         _jpegPhotoConverter = jpegPhotoConverter;
         _photoStorageUrlProvider = photoStorageUrlProvider;
+        _duplicateChecker = duplicateChecker;
     }
 
     public async Task HandleAsync(AddPhoto command)
@@ -43,7 +45,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             throw new UserNotExistsException(command.UserId);
         }
 
-        if (await _duplicateChecker.IsDuplicate(command.PhotoStream))
+        if (await _duplicateChecker.IsDuplicate(command.UserId, command.PhotoStream))
         {
             throw new PhotoAlreadyExistsException();
         }

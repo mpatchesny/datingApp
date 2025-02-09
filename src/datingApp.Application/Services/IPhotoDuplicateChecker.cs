@@ -7,6 +7,6 @@ namespace datingApp.Application.Services
 {
     public interface IPhotoDuplicateChecker
     {
-        public Task<bool> IsDuplicate(Stream photo);
+        public Task<bool> IsDuplicate(Guid userId, Stream photo);
     }
 }

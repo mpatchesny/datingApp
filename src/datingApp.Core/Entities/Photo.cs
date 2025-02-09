@@ -22,10 +22,11 @@ public class Photo
         // EF
     }
 
-    public Photo(PhotoId id, PhotoUrl url, Oridinal oridinal)
+    public Photo(PhotoId id, PhotoUrl url, Checksum checksum, Oridinal oridinal)
     {
         Id = id;
         Url = url;
+        Checksum = checksum;
         Oridinal = oridinal;
     }
 

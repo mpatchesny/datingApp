@@ -51,7 +51,7 @@ internal static class IntegrationTestHelper
 
     internal static Photo CreatePhoto(int oridinal = 0)
     {
-        var photo = new Photo(Guid.NewGuid(), "abc", oridinal);
+        var photo = new Photo(Guid.NewGuid(), "url", "checksum", oridinal);
         return photo;
     }
 

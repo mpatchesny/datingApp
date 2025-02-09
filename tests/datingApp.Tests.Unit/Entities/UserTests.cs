@@ -269,7 +269,7 @@ public class UserTests
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings);
 
         Assert.Empty(user.Photos);
-        user.AddPhoto(new Photo(Guid.NewGuid(),  "abcde", 5));
+        user.AddPhoto(new Photo(Guid.NewGuid(),  "url", "checksum", 5));
         Assert.Single(user.Photos);
         Assert.Equal(0, user.Photos.First().Oridinal.Value);
     }
@@ -277,7 +277,7 @@ public class UserTests
     [Fact]
     public void given_photo_already_in_Photos_add_photo_do_nothing()
     {
-        var photo = new Photo(Guid.NewGuid(),  "abcde", 0);
+        var photo = new Photo(Guid.NewGuid(),  "url", "checksum", 0);
         var photos = new List<Photo>{ photo };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -289,7 +289,7 @@ public class UserTests
     [Fact]
     public void remove_photo_removes_photo_from_user_Photo()
     {
-        var photo = new Photo(Guid.NewGuid(),  "abcde", 0); 
+        var photo = new Photo(Guid.NewGuid(),  "url", "checksum", 0); 
         var photos = new List<Photo>{ photo };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -301,9 +301,9 @@ public class UserTests
     [Fact]
     public void remove_photo_from_middle_changes_remain_Photos_oridinal()
     {
-        var photo1 = new Photo(Guid.NewGuid(),  "abcde", 0);
-        var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
-        var photo3 = new Photo(Guid.NewGuid(),  "abcde", 2);
+        var photo1 = new Photo(Guid.NewGuid(),  "url", "checksum", 0);
+        var photo2 = new Photo(Guid.NewGuid(),  "url", "checksum", 1);
+        var photo3 = new Photo(Guid.NewGuid(),  "url", "checksum", 2);
         var photos = new List<Photo>{ photo1, photo2, photo3 };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -321,9 +321,9 @@ public class UserTests
     [Fact]
     public void remove_photo_from_beginning_changes_remain_Photos_oridinal()
     {
-        var photo1 = new Photo(Guid.NewGuid(),  "abcde", 0);
-        var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
-        var photo3 = new Photo(Guid.NewGuid(),  "abcde", 2);
+        var photo1 = new Photo(Guid.NewGuid(),  "url", "checksum", 0);
+        var photo2 = new Photo(Guid.NewGuid(),  "url", "checksum", 1);
+        var photo3 = new Photo(Guid.NewGuid(),  "url", "checksum", 2);
         var photos = new List<Photo>{ photo1, photo2, photo3 };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -341,9 +341,9 @@ public class UserTests
     [Fact]
     public void remove_photo_from_end_not_change_remain_Photos_oridinal()
     {
-        var photo1 = new Photo(Guid.NewGuid(),  "abcde", 0);
-        var photo2 = new Photo(Guid.NewGuid(),  "abcde", 1);
-        var photo3 = new Photo(Guid.NewGuid(),  "abcde", 2);
+        var photo1 = new Photo(Guid.NewGuid(),  "url", "checksum", 0);
+        var photo2 = new Photo(Guid.NewGuid(),  "url", "checksum", 1);
+        var photo3 = new Photo(Guid.NewGuid(),  "url", "checksum", 2);
         var photos = new List<Photo>{ photo1, photo2, photo3 };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -361,7 +361,7 @@ public class UserTests
     [Fact]
     public void given_photo_not_in_Photos_remove_photo_do_nothing()
     {
-        var photo = new Photo(Guid.NewGuid(),  "abcde", 0); 
+        var photo = new Photo(Guid.NewGuid(),  "url", "checksum", 0); 
         var photos = new List<Photo>();
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -376,11 +376,11 @@ public class UserTests
         var photos = new List<Photo>();
         for (int i = 0; i < 6; i++)
         {
-            photos.Add(new Photo(Guid.NewGuid(),  "abcde", i));
+            photos.Add(new Photo(Guid.NewGuid(),  "url", "checksum", i));
         }
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
-        var newPhoto = new Photo(Guid.NewGuid(),  "abcde", 6);
+        var newPhoto = new Photo(Guid.NewGuid(),  "url", "checksum", 6);
         var exception = Record.Exception(() => user.AddPhoto(newPhoto));
         Assert.NotNull(exception);
         Assert.IsType<UserPhotoLimitException>(exception);
@@ -390,12 +390,12 @@ public class UserTests
     public void given_photo_not_in_Photos_change_oridinal_do_nothing()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(),  "abcde", 0),
-            new Photo(Guid.NewGuid(),  "abcde", 1),
-            new Photo(Guid.NewGuid(),  "abcde", 2),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 0),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 1),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 2),
         };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
-        var photo = new Photo(Guid.NewGuid(),  "abcde", 4);
+        var photo = new Photo(Guid.NewGuid(),  "url", "checksum", 4);
 
         user.ChangeOridinal(photo.Id, 1);
         Assert.Collection(user.Photos,
@@ -414,9 +414,9 @@ public class UserTests
     public void given_new_oridinal_is_the_same_as_old_change_oridinal_do_nothing()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(),  "abcde", 0),
-            new Photo(Guid.NewGuid(),  "abcde", 1),
-            new Photo(Guid.NewGuid(),  "abcde", 2),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 0),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 1),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 2),
         };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -437,9 +437,9 @@ public class UserTests
     public void passed_ordinal_in_change_oridinal_is_modified_not_to_be_greater_than_photos_count_minus_one()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(),  "abcde", 0),
-            new Photo(Guid.NewGuid(),  "abcde", 1),
-            new Photo(Guid.NewGuid(),  "abcde", 2),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 0),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 1),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 2),
         };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -451,9 +451,9 @@ public class UserTests
     public void given_photo_in_Photos_change_oridinal_shift_photos_with_greater_or_equal_oridinal_one_oridnal_up()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(),  "abcde", 0),
-            new Photo(Guid.NewGuid(),  "abcde", 1),
-            new Photo(Guid.NewGuid(),  "abcde", 2),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 0),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 1),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 2),
         };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 
@@ -474,9 +474,9 @@ public class UserTests
     public void given_photo_in_Photos_change_oridinal_shift_photos_with_less_oridinal_one_oridnal_down()
     {
         var photos = new List<Photo>{
-            new Photo(Guid.NewGuid(),  "abcde", 0),
-            new Photo(Guid.NewGuid(),  "abcde", 1),
-            new Photo(Guid.NewGuid(),  "abcde", 2),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 0),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 1),
+            new Photo(Guid.NewGuid(),  "url", "checksum", 2),
         };
         var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Female, _properUserSettings, photos: photos);
 

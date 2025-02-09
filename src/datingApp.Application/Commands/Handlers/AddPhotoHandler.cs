@@ -53,7 +53,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         var convertedPhotoStream = await _jpegPhotoConverter.ConvertAsync(command.PhotoStream);
         var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
-        var photo = new Photo(command.PhotoId, photoUrl, 0);
+        var photo = new Photo(command.PhotoId, photoUrl, "TODO", 0);
         user.AddPhoto(photo);
 
         var path = $"{photo.Id}.{extension}";

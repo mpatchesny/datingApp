@@ -31,7 +31,7 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_photo_with_given_checksum_notexsits_for_other_user_IsDuplicate_returns_false_1()
+    public async Task given_user_has_no_photos_IsDuplicate_returns_false()
     {
         var stream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
         var hashBytes = await _md5.ComputeHashAsync(stream);
@@ -48,9 +48,9 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
     }
 
     [Fact]
-    public async Task given_photo_with_given_checksum_notexsits_for_other_user_IsDuplicate_returns_false_2()
+    public async Task given_photo_with_given_checksum_notexsits_for_other_user_IsDuplicate_returns_false()
     {
-        var stream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
+        var stream = new MemoryStream(new byte[] { 1, 2, 3 });
         var hashBytes = await _md5.ComputeHashAsync(stream);
         var checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
 
@@ -58,9 +58,9 @@ public class DbPhotoDuplicateCheckerTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext, photos: photos);
         _dbContext.ChangeTracker.Clear();
 
-        stream.Position = 0;
+        var stream2 = new MemoryStream(new byte[] { 1, 2, 3, 4 });
         var service = new DbPhotoDuplicateChecker(_dbContext);
-        var isDuplicate = await service.IsDuplicate(user.Id, stream);
+        var isDuplicate = await service.IsDuplicate(user.Id, stream2);
 
         Assert.False(isDuplicate);
     }

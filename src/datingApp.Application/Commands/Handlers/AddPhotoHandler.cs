@@ -53,7 +53,7 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
         var convertedPhotoStream = await _jpegPhotoConverter.ConvertAsync(command.PhotoStream);
         var photoUrl = _photoStorageUrlProvider.GetPhotoUrl(command.PhotoId.ToString(), extension);
 
-        var photo = new Photo(command.PhotoId, photoUrl, "TODO", 0);
+        var photo = new Photo(command.PhotoId, photoUrl, await ComputeHashAsync(command.PhotoStream), 0);
         user.AddPhoto(photo);
 
         var path = $"{photo.Id}.{extension}";
@@ -62,5 +62,13 @@ public sealed class AddPhotoHandler : ICommandHandler<AddPhoto>
             _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
+    }
+
+    private static async Task<string> ComputeHashAsync(Stream stream)
+    {
+        stream.Position = 0;
+        var hashBytes = await System.Security.Cryptography.MD5.Create()
+            .ComputeHashAsync(stream);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
     }
 }

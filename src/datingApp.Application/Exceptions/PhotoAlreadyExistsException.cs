@@ -8,7 +8,7 @@ namespace datingApp.Application.Exceptions;
 
 public class PhotoAlreadyExistsException : CustomException
 {
-    public PhotoAlreadyExistsException() : base("A photo already exists for this user.")
+    public PhotoAlreadyExistsException() : base("Photo already exists for this user.")
     {
     }
 }

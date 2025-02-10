@@ -1337,7 +1337,7 @@
             }
           },
           "400": {
-            "description": "Photo is not in accepted format (jpg, png, webp), photo is too small or too large (min. 10240 bytes, max 2621440 bytes).",
+            "description": "Photo is not in accepted format (jpg, png, webp), photo is too small or too large (min. 10240 bytes, max 2621440 bytes), photo already exists for the user (user cannot have two identical photos at the same time).",
             "content": {
               "application/json": {
                 "schema": {

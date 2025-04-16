@@ -64,6 +64,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         };
         await Task.WhenAll(tasks);
         await _swipeRepository.DeleteUserSwipes(user.Id);
-        await _deletedEntityService.AddAsync(user.Id);
+        await _deletedEntityService.AddAsync(user.Id, "user", DateTime.UtcNow);
     }
 }

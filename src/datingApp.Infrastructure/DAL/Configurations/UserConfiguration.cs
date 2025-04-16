@@ -40,7 +40,7 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         builder.Property(x => x.Sex)
             .IsRequired();
-        builder.Property(x => x.LastUpdatedAt)
+        builder.Property(x => x.UpdatedAt)
             .IsRequired();
         builder.HasMany(u => u.Matches)
             .WithMany(m => m.Users)

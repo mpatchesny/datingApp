@@ -111,8 +111,6 @@ public class DeleteUserHandlerTests
     [Fact]
     public async Task given_user_exists_and_authorization_succeed_DeleteUserHandler_deletes_user()
     {
-        
-
         var photos = new List<Photo>()
         {
             new Photo(Guid.NewGuid(), "url", "checksum", 0),

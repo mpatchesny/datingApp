@@ -9,4 +9,5 @@ public interface IDeletedEntityService
 {
     public Task<bool> ExistsAsync(Guid id);
     public Task AddAsync(Guid id);
+    public Task AddRangeAsync(List<Guid> ids);
 }

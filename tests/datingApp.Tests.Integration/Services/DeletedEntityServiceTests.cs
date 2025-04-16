@@ -24,6 +24,18 @@ public class DeletedEntityServiceTests : IDisposable
     }
 
     [Fact]
+    public async void add_range_adds_entity_ids_to_database()
+    {
+        var deletedEntities = new List<Guid> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+        await _service.AddRangeAsync(deletedEntities);
+        _dbContext.ChangeTracker.Clear();
+
+        var retrievedDeletedEntity = await _dbContext.DeletedEntities.ToListAsync();
+        Assert.Equal(deletedEntities.Count, retrievedDeletedEntity.Count);
+        Assert.All(retrievedDeletedEntity, x => Assert.Contains(x.Id, deletedEntities));
+    }
+
+    [Fact]
     public async void given_entity_id_is_already_in_database_add_throws_exception()
     {
         var deletedEntity = Guid.NewGuid();

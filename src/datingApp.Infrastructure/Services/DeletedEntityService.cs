@@ -25,6 +25,13 @@ internal sealed class DeletedEntityService : IDeletedEntityService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task AddRangeAsync(List<Guid> ids)
+    {
+        var deletedEntities = ids.Select(id => new DeletedEntityDto { Id = id }).ToList();
+        await _dbContext.AddRangeAsync(deletedEntities);
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task<bool> ExistsAsync(Guid id)
     {
         return await _dbContext.DeletedEntities.AnyAsync(x => x.Id == id);

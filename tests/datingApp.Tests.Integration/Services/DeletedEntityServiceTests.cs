@@ -15,43 +15,45 @@ public class DeletedEntityServiceTests : IDisposable
     [Fact]
     public async void add_adds_entity_id_to_database()
     {
-        var deletedEntity = Guid.NewGuid();
-        await _service.AddAsync(deletedEntity);
+        var deletedEntityId = Guid.NewGuid();
+        await _service.AddAsync(deletedEntityId, "foo", DateTime.UtcNow);
         _dbContext.ChangeTracker.Clear();
 
-        var retrievedDeletedEntity = await _dbContext.DeletedEntities.FirstOrDefaultAsync(x => x.Id == deletedEntity);
-        Assert.Equal(deletedEntity, retrievedDeletedEntity.Id);
+        var retrievedDeletedEntity = await _dbContext.DeletedEntities.FirstOrDefaultAsync(x => x.Id == deletedEntityId);
+        Assert.Equal(deletedEntityId, retrievedDeletedEntity.Id);
     }
 
     [Fact]
     public async void given_entity_id_is_already_in_database_add_throws_exception()
     {
-        var deletedEntity = Guid.NewGuid();
-        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity} );
+        var deletedEntityId = Guid.NewGuid();
+        var entityType = "foo";
+        var deletedAt = DateTime.UtcNow;
+        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntityId, EntityType = entityType, DeletedAt = deletedAt } );
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
-        var exception = await Record.ExceptionAsync(async () => await _service.AddAsync(deletedEntity));
+        var exception = await Record.ExceptionAsync(async () => await _service.AddAsync(deletedEntityId, entityType, deletedAt));
         Assert.NotNull(exception);
     }
 
     [Fact]
     public async void given_entity_id_is_in_database_exists_returns_true()
     {
-        var deletedEntity = Guid.NewGuid();
-        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity });
+        var deletedEntityId = Guid.NewGuid();
+        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntityId, EntityType = "foo", DeletedAt = DateTime.UtcNow });
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 
-        var exists = await _service.ExistsAsync(deletedEntity);
+        var exists = await _service.ExistsAsync(deletedEntityId);
         Assert.True(exists);
     }
 
     [Fact]
     public async void given_entity_id_is_not_in_database_exists_returns_false()
     {
-        var deletedEntity = Guid.NewGuid();
-        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntity} );
+        var deletedEntityId = Guid.NewGuid();
+        await _dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = deletedEntityId, EntityType = "foo", DeletedAt = DateTime.UtcNow });
         await _dbContext.SaveChangesAsync();
         _dbContext.ChangeTracker.Clear();
 

@@ -112,9 +112,8 @@ public class DeletePhotoHandlerTests
         var fileStorageService = new MockFileStorageService();
 
         var deletedEntityService = new Mock<IDeletedEntityService>();
-        var deletionTime = DateTime.UtcNow;
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
-        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>(), "photo", deletionTime));
+        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<DateTime>()));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
         authorizationService.Setup(m => m.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<User>(), "OwnerPolicy"))
@@ -127,7 +126,7 @@ public class DeletePhotoHandlerTests
         repository.Verify(x => x.GetByPhotoIdAsync(photo.Id), Times.Once());
         repository.Verify(x => x.UpdateAsync(user), Times.Once());
         deletedEntityService.Verify(x => x.ExistsAsync(command.PhotoId), Times.Never());
-        deletedEntityService.Verify(x => x.AddAsync(photo.Id, "photo", deletionTime), Times.Once());
+        deletedEntityService.Verify(x => x.AddAsync(photo.Id, "photo", It.IsAny<DateTime>()), Times.Once());
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy"), Times.Once());
         Assert.Single(fileStorageService.DeletedItems);
         Assert.Null(user.Photos.FirstOrDefault(x => x.Id == photo.Id));

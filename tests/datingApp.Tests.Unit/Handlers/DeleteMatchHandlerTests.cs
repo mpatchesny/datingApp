@@ -101,8 +101,7 @@ public class DeleteMatchHandlerTests
         repository.Setup(x => x.DeleteAsync(It.IsAny<Match>()));
 
         var deletedEntityService = new Mock<IDeletedEntityService>();
-        var deletionTime = DateTime.UtcNow;
-        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>(), "match", deletionTime));
+        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<DateTime>()));
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
 
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -117,6 +116,6 @@ public class DeleteMatchHandlerTests
         repository.Verify(x => x.GetByIdAsync(command.MatchId, null), Times.Once());
         repository.Verify(x => x.DeleteAsync(match), Times.Once());
         deletedEntityService.Verify(x => x.ExistsAsync(match.Id), Times.Never());
-        deletedEntityService.Verify(x => x.AddAsync(match.Id, "match", deletionTime), Times.Once());
+        deletedEntityService.Verify(x => x.AddAsync(match.Id, "match", It.IsAny<DateTime>()), Times.Once());
     }
 }

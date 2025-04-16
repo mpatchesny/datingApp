@@ -190,7 +190,7 @@ public class UserTests
     public void user_bio_longer_than_400_chars_throws_BioTooLongException()
     {
         string bio = new string('a', 401);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: "", bio: bio));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, DateTime.UtcNow, job: "", bio: bio));
         Assert.NotNull(exception);
         Assert.IsType<BioTooLongException>(exception);
     }
@@ -199,7 +199,7 @@ public class UserTests
     public void user_job_longer_than_50_chars_throws_JobTooLongException()
     {
         string job = new string('a', 51);
-        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, job: job));
+        var exception = Record.Exception(() =>new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, DateTime.UtcNow, job: job));
         Assert.NotNull(exception);
         Assert.IsType<JobTooLongException>(exception);
     }

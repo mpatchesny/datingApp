@@ -57,7 +57,9 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
         var updates = changedUsers.Union(newMatchesAndMessages);
 
         var updatesMaterialized = await updates
-            .OrderByDescending(match => match.LastActivityTime)
+            // FIXME: order by match.LastActivityTime if new match/message
+            // or user.UpdatedAt if user changed
+            .OrderByDescending(match => match.LastActivityTime) 
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();

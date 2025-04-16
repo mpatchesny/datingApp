@@ -22,6 +22,14 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
         _spatial = spatial;
     }
 
+    public class UpdatesDto
+    {
+            public string EntityType { get; set; }
+            public string Event { get; set; }
+            public object Entity { get; set; }
+            public DateTime ChangedAt { get; set; }
+    };
+
     public async Task<PaginatedDataDto<MatchDto>> HandleAsync(GetUpdates query)
     {
         if (!await _dbContext.Users.AnyAsync(user => user.Id.Equals(query.UserId)))
@@ -31,10 +39,22 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
 
         // TODO: deleted matches
 
+        // UpdateDto:
+        // entity type: user, match, message
+        // event: new/ updated/ deleted
+        // object: user, match, message
+        // changedTime
+
+        var changedUsersProper = _dbContext.Users
+            .Include(user => user.Photos)
+            .Include(user => user.Settings)
+            .Include(user => user.Matches
+                .Where(match => match.Users.Any(user => user.Id.Equals(query.UserId)))
+            )
+            .Where(user => user.UpdatedAt >= query.LastActivityTime)
+            .Where(user => !user.Id.Equals(query.UserId));
+
         var changedUsers = _dbContext.Matches
-            .Include(match => match.Messages
-                .OrderByDescending(message => message.CreatedAt)
-                .Take(1))
             .Include(match => match.Users)
                 .ThenInclude(user => user.Photos)
             .Include(match => match.Users)

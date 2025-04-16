@@ -29,7 +29,10 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
-        var matches = await _dbContext.Matches
+        // TODO: changed users
+        // TODO: deleted matches
+
+        var newMatchesAndMessages = await _dbContext.Matches
             .Include(match => match.Messages
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
                 .OrderByDescending(message => message.CreatedAt)
@@ -44,7 +47,7 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
             .Take(query.PageSize)
             .ToListAsync();
 
-        var matchesDto = matches
+        var updatesDto = newMatchesAndMessages
             .Select(match => match.AsDto(query.UserId, 
                 _spatial.CalculateDistanceInKms(match.Users.First(), match.Users.Last())))
             .ToList();
@@ -57,6 +60,6 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
 
         var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 
-        return matchesDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
+        return updatesDto.AsPaginatedDataDto(query.Page, query.PageSize, pageCount);
     }
 }

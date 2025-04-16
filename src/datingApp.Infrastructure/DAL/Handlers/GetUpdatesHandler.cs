@@ -37,13 +37,12 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
-        // TODO: deleted matches
-
         // UpdateDto:
-        // entity type: user, match, message
-        // event: new/ updated/ deleted
+        // event: new/ updated/ deleted user/match/message
         // object: user, match, message
         // changedTime
+
+        // TODO: deleted matches
 
         var changedUsersProper = _dbContext.Users
             .Include(user => user.Photos)

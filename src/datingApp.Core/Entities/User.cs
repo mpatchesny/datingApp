@@ -26,6 +26,7 @@ public class User
     public UserSettings Settings { get; private set; }
     public ICollection<Photo> Photos { get; private set; } = new List<Photo>();
     public IEnumerable<Match> Matches { get; private set; } = new List<Match>();
+    public DateTime LastUpdatedAt { get; private set; }
     private const int PhotoCountLimit = 6;
 
     private User()
@@ -34,7 +35,7 @@ public class User
     }
 
     public User(UserId id, Phone phone, Email email, Name name, DateOfBirth dateOfBirth, UserSex sex,
-                UserSettings settings, ICollection<Photo> photos=null, Job job=null, Bio bio=null)
+                UserSettings settings, DateTime lastUpdatedAt, ICollection<Photo> photos=null, Job job=null, Bio bio=null)
     {
         if (!Enum.IsDefined(typeof(UserSex), sex)) throw new InvalidUserSexException();
         if (settings == null) throw new UserSettingsIsNullException();
@@ -45,6 +46,7 @@ public class User
         Name = name;
         Sex = sex;
         DateOfBirth = dateOfBirth;
+        LastUpdatedAt = lastUpdatedAt;
         Photos = photos ?? new List<Photo>();
         Settings = settings;
         Job = job ?? new Job("");
@@ -58,17 +60,29 @@ public class User
 
     public void ChangeDateOfBirth(DateOfBirth dateOfBirth)
     {
-        DateOfBirth = dateOfBirth;
+        if (!this.DateOfBirth.Equals(dateOfBirth))
+        {
+            DateOfBirth = dateOfBirth;
+            LastUpdatedAt = DateTime.UtcNow;
+        }
     }
 
     public void ChangeBio(Bio bio)
     {
-        Bio = bio;
+        if (!this.Bio.Equals(bio))
+        {
+            Bio = bio;
+            LastUpdatedAt = DateTime.UtcNow;
+        }
     }
 
     public void ChangeJob(Job job)
     {
-        Job = job;
+        if (!this.Job.Equals(job)) 
+        {
+            Job = job;
+            LastUpdatedAt = DateTime.UtcNow;
+        }
     }
 
     public void AddPhoto(Photo photo)

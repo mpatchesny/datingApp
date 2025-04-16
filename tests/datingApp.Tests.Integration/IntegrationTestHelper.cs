@@ -17,19 +17,19 @@ namespace datingApp.Tests.Integration;
 internal static class IntegrationTestHelper
 {
     #region User
-    internal static User CreateUser(ICollection<Photo> photos = null, string email = null, string phone = null)
+    internal static User CreateUser(ICollection<Photo> photos = null, string email = null, string phone = null, DateTime? updatedAt = null)
     {
         Random random = new Random();
         if (email == null) email = "test_" + Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, new PreferredAge(18, 100), 100, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow, photos: photos);
+        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings, updatedAt ?? DateTime.UtcNow, photos: photos);
         return user;
     }
 
-    internal static async Task<User> CreateUserAsync(DatingAppDbContext dbContext, ICollection<Photo> photos = null, string email = null, string phone = null)
+    internal static async Task<User> CreateUserAsync(DatingAppDbContext dbContext, ICollection<Photo> photos = null, string email = null, string phone = null, DateTime? updatedAt = null)
     {
-        var user = CreateUser(photos, email, phone);
+        var user = CreateUser(photos, email, phone, updatedAt);
         await dbContext.Users.AddAsync(user);
         await dbContext.SaveChangesAsync();
         return user;

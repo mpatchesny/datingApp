@@ -82,13 +82,13 @@ internal sealed class GetSwipeCandidatesHandler : IQueryHandler<GetSwipeCandidat
             var pontentialCandidates =
                 await candidatesQuery.Skip(offset).Take(limit).ToListAsync();
 
+            if (pontentialCandidates.Count == 0) break;
+
             var pontentialCandidatesWithinRange =
                 from candidate in pontentialCandidates
                 let distance = _spatial.CalculateDistanceInKms(requestedBy, candidate)
                 where distance <= requestedBy.Settings.PreferredMaxDistance
                 select candidate.AsPublicDto(distance);
-
-            if (pontentialCandidates.Count == 0) break;
 
             finalCandidates.AddRange(pontentialCandidatesWithinRange);
             offset += limit;

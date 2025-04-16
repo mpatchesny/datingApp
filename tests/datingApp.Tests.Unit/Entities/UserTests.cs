@@ -238,6 +238,15 @@ public class UserTests
     }
 
     [Fact]
+    public void given_date_of_birth_same_as_old_date_of_birth_UpdatedAt_should_not_change()
+    {
+        var UpdatedAtBefore = DateTime.MinValue;
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, UpdatedAtBefore);
+        user.ChangeDateOfBirth(user.DateOfBirth);
+        Assert.Equal(user.UpdatedAt, UpdatedAtBefore);
+    }
+
+    [Fact]
     public void user_ChangeBio_should_change_bio_and_UpdatedAt()
     {
         var UpdatedAtBefore = DateTime.MinValue;
@@ -251,6 +260,15 @@ public class UserTests
     }
 
     [Fact]
+    public void given_bio_same_as_old_bio_UpdatedAt_should_not_change()
+    {
+        var UpdatedAtBefore = DateTime.MinValue;
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, UpdatedAtBefore);
+        user.ChangeBio(user.Bio);
+        Assert.Equal(user.UpdatedAt, UpdatedAtBefore);
+    }
+
+    [Fact]
     public void user_ChangeJob_should_change_job()
     {
         var UpdatedAtBefore = DateTime.MinValue;
@@ -261,6 +279,15 @@ public class UserTests
 
         Assert.Equal("new job", user.Job);
         Assert.True(user.UpdatedAt >= UpdatedAt);
+    }
+
+    [Fact]
+    public void given_job_same_as_old_job_UpdatedAt_should_not_change()
+    {
+        var UpdatedAtBefore = DateTime.MinValue;
+        var user = new User(Guid.NewGuid(), "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, _properUserSettings, UpdatedAtBefore);
+        user.ChangeJob(user.Job);
+        Assert.Equal(user.UpdatedAt, UpdatedAtBefore);
     }
 
     [Fact]

@@ -44,9 +44,9 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task GetUpdatesHandler_returns_matches_after_last_activity_time()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
 
         _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id, createdAt: DateTime.UtcNow);
         var timeAfterLastActivityTime = DateTime.UtcNow - TimeSpan.FromHours(1);
@@ -64,9 +64,9 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task GetUpdatesHandler_returns_matches_that_have_messages_send_after_last_activity_time()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
 
         var timeBeforeLastActivityTime = DateTime.UtcNow - TimeSpan.FromHours(1);
         var timeAfterLastActivityTime = DateTime.UtcNow + TimeSpan.FromHours(1);
@@ -87,10 +87,10 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task given_no_matches_match_criteria_GetUpdatesHandler_returns_empty_collection()
     {
-        var userWithoutMatch = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var userWithoutMatch = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
 
         var timeBeforeLastActivityTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
         _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user2.Id, user3.Id, createdAt: timeBeforeLastActivityTime);
@@ -118,11 +118,11 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task GetUpdatesHandler_returns_proper_page_count()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
         var matchesToCreate = 9;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
             _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
         _dbContext.ChangeTracker.Clear();
@@ -138,11 +138,11 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task GetUpdatesHandler_returns_proper_page_size()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
         var matchesToCreate = 15;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
             _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
         _dbContext.ChangeTracker.Clear();
@@ -158,11 +158,11 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task GetUpdatesHandler_returns_proper_page()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
         var matchesToCreate = 10;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
             _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
         _dbContext.ChangeTracker.Clear();
@@ -178,11 +178,11 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task given_page_exceeds_matches_count_GetUpdatesHandler_returns_empty_list()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
         var matchesToCreate = 10;
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
             _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
         }
         _dbContext.ChangeTracker.Clear();
@@ -198,14 +198,14 @@ public class GetUpdatesHandlerTests : IDisposable
     [Fact]
     public async Task GetUpdatesHandler_returns_newest_updates_first()
     {
-        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
 
         var createdAt = DateTime.UtcNow;
         var matchesToCreate = 10;
         var matches = new List<Match>();
         for (int i = 0; i < matchesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
             var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, createdAt: createdAt.AddSeconds(i));
             matches.Add(match);
         }
@@ -214,7 +214,7 @@ public class GetUpdatesHandlerTests : IDisposable
         var messagesToCreate = 5;
         for (int i = 0; i < messagesToCreate; i++)
         {
-            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext, updatedAt: DateTime.MinValue);
             var message = new Message(Guid.NewGuid(), tempUser.Id, "hello", false, createdAt: createdAt.AddSeconds(i));
             var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id, messages: new List<Message>() { message });
             matches.Add(match);

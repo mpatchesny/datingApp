@@ -16,6 +16,7 @@ using FluentStorage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Moq;
 using Xunit;
+using Match = datingApp.Core.Entities.Match;
 
 namespace datingApp.Tests.Unit.Handlers;
 
@@ -30,6 +31,9 @@ public class DeleteUserHandlerTests
         var deletedEntityService = new Mock<IDeletedEntityService>();
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
 
+        var matchRepository = new Mock<IMatchRepository>();
+        matchRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<UserId>()));
+
         var swipeRepository = new Mock<ISwipeRepository>();
 
         var fileStorageService = new Mock<IBlobStorage>();
@@ -39,7 +43,7 @@ public class DeleteUserHandlerTests
             .Returns(Task.FromResult(AuthorizationResult.Success()));
 
         var command = new DeleteUser(Guid.NewGuid());
-        var handler = new DeleteUserHandler(repository.Object, fileStorageService.Object, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object);
+        var handler = new DeleteUserHandler(repository.Object, fileStorageService.Object, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object, matchRepository.Object);
 
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -55,6 +59,9 @@ public class DeleteUserHandlerTests
         var deletedEntityService = new Mock<IDeletedEntityService>();
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(true));
 
+        var matchRepository = new Mock<IMatchRepository>();
+        matchRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<UserId>()));
+
         var swipeRepository = new Mock<ISwipeRepository>();
 
         var fileStorageService = new Mock<IBlobStorage>();
@@ -64,7 +71,7 @@ public class DeleteUserHandlerTests
             .Returns(Task.FromResult(AuthorizationResult.Success()));
 
         var command = new DeleteUser(Guid.NewGuid());
-        var handler = new DeleteUserHandler(repository.Object, fileStorageService.Object, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object);
+        var handler = new DeleteUserHandler(repository.Object, fileStorageService.Object, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object, matchRepository.Object);
 
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -82,6 +89,9 @@ public class DeleteUserHandlerTests
         var deletedEntityService = new Mock<IDeletedEntityService>();
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
 
+        var matchRepository = new Mock<IMatchRepository>();
+        matchRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<UserId>()));
+
         var swipeRepository = new Mock<ISwipeRepository>();
 
         var fileStorageService = new Mock<IBlobStorage>();
@@ -91,7 +101,7 @@ public class DeleteUserHandlerTests
             .Returns(Task.FromResult(AuthorizationResult.Failed()));
 
         var command = new DeleteUser(Guid.NewGuid());
-        var handler = new DeleteUserHandler(repository.Object, fileStorageService.Object, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object);
+        var handler = new DeleteUserHandler(repository.Object, fileStorageService.Object, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object, matchRepository.Object);
 
         var exception = await Record.ExceptionAsync(async () => await handler.HandleAsync(command));
         Assert.NotNull(exception);
@@ -116,6 +126,15 @@ public class DeleteUserHandlerTests
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
         deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>()));
 
+        var matches = new List<Match>()
+        {
+            new Match(Guid.NewGuid(), user.Id, Guid.NewGuid(), DateTime.UtcNow, false, false),
+            new Match(Guid.NewGuid(), user.Id, Guid.NewGuid(), DateTime.UtcNow, false, false)
+        };
+
+        var matchRepository = new Mock<IMatchRepository>();
+        matchRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult(matches));
+
         var swipeRepository = new Mock<ISwipeRepository>();
         swipeRepository.Setup(x => x.DeleteUserSwipes(It.IsAny<UserId>()));
 
@@ -126,14 +145,18 @@ public class DeleteUserHandlerTests
             .Returns(Task.FromResult(AuthorizationResult.Success()));
 
         var command = new DeleteUser(Guid.NewGuid());
-        var handler = new DeleteUserHandler(repository.Object, fileStorageService, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object);
+        var handler = new DeleteUserHandler(repository.Object, fileStorageService, deletedEntityService.Object, authorizationService.Object, swipeRepository.Object, matchRepository.Object);
 
         await handler.HandleAsync(command);
         repository.Verify(x => x.GetByIdAsync(command.UserId), Times.Once());
         repository.Verify(x => x.DeleteAsync(user), Times.Once());
         swipeRepository.Verify(x => x.DeleteUserSwipes(user.Id), Times.Once());
         deletedEntityService.Verify(x => x.ExistsAsync(command.UserId), Times.Never());
-        deletedEntityService.Verify(x => x.AddAsync(user.Id), Times.Once());
+        deletedEntityService.Verify(x => x.AddAsync(It.IsAny<Guid>()), Times.Never());
+        var deletedEntitiesIds = new List<Guid>(user.Photos.Select(photo => photo.Id.Value).ToList());
+        deletedEntitiesIds.Add(user.Id.Value);
+        deletedEntitiesIds.AddRange(matches.Select(match => match.Id.Value));
+        deletedEntityService.Verify(x => x.AddRangeAsync(deletedEntitiesIds), Times.Once());
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy"), Times.Once());
         Assert.Equal(2, fileStorageService.DeletedItems.Count);
     }

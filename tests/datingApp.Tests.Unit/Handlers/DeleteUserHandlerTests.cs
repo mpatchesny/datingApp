@@ -113,8 +113,9 @@ public class DeleteUserHandlerTests
         repository.Setup(x => x.DeleteAsync(It.IsAny<User>()));
 
         var deletedEntityService = new Mock<IDeletedEntityService>();
+        var deletionTime = DateTime.UtcNow;
         deletedEntityService.Setup(x => x.ExistsAsync(It.IsAny<Guid>())).Returns(Task.FromResult<bool>(false));
-        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>()));
+        deletedEntityService.Setup(x => x.AddAsync(It.IsAny<Guid>(), "user", deletionTime));
 
         var swipeRepository = new Mock<ISwipeRepository>();
         swipeRepository.Setup(x => x.DeleteUserSwipes(It.IsAny<UserId>()));
@@ -133,7 +134,7 @@ public class DeleteUserHandlerTests
         repository.Verify(x => x.DeleteAsync(user), Times.Once());
         swipeRepository.Verify(x => x.DeleteUserSwipes(user.Id), Times.Once());
         deletedEntityService.Verify(x => x.ExistsAsync(command.UserId), Times.Never());
-        deletedEntityService.Verify(x => x.AddAsync(user.Id), Times.Once());
+        deletedEntityService.Verify(x => x.AddAsync(user.Id, "user", deletionTime), Times.Once());
         authorizationService.Verify(x => x.AuthorizeAsync(command.AuthenticatedUserId, user, "OwnerPolicy"), Times.Once());
         Assert.Equal(2, fileStorageService.DeletedItems.Count);
     }

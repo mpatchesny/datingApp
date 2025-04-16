@@ -80,7 +80,7 @@ internal static class IntegrationTestHelper
     internal static async Task DeleteMatchAsync(DatingAppDbContext dbContext, Match match)
     {
         dbContext.Matches.Remove(match);
-        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id, EntityType = "match", DeletedAt = DateTime.Now });
+        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id, EntityType = "match", DeletedAt = DateTime.UtcNow });
         await dbContext.SaveChangesAsync();
     }
     #endregion

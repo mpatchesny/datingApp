@@ -124,6 +124,52 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async void get_match_by_user_id_returns_list_of_matches()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+
+        for (int i = 0; i < 5; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+
+        for (int i = 0; i < 7; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            await IntegrationTestHelper.CreateMatchAsync(_dbContext, user2.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var matches = await _repository.GetByUserIdAsync(user1.Id);
+        Assert.Equal(5, matches.Count);
+    }
+
+    [Fact]
+    public async void get_match_by_nonexisting_user_id_returns_empty_list()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+
+        for (int i = 0; i < 5; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, tempUser.Id);
+        }
+
+        for (int i = 0; i < 7; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            await IntegrationTestHelper.CreateMatchAsync(_dbContext, user2.Id, tempUser.Id);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var matches = await _repository.GetByUserIdAsync(Guid.NewGuid());
+        Assert.Empty(matches);
+    }
+
+    [Fact]
     public async void get_match_by_existing_message_id_returns_match()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);

@@ -8,4 +8,6 @@ namespace datingApp.Application.DTO;
 public class DeletedEntityDto
 {
     public Guid Id { get; set; }
+    public string EntityType { get; set; }
+    public DateTime DeletedAt { get; set; }
 }

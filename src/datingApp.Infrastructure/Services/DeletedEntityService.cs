@@ -16,10 +16,12 @@ internal sealed class DeletedEntityService : IDeletedEntityService
         _dbContext = dbContext;
     }
 
-    public async Task AddAsync(Guid id)
+    public async Task AddAsync(Guid id, string entityType, DateTime deletedAt)
     {
         var deletedEntity = new DeletedEntityDto {
             Id = id,
+            EntityType = entityType,
+            DeletedAt = deletedAt
         };
         await _dbContext.AddAsync(deletedEntity);
         await _dbContext.SaveChangesAsync();

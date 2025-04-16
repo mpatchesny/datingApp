@@ -29,10 +29,21 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
             throw new UserNotExistsException(query.UserId);
         }
 
-        // TODO: changed users
         // TODO: deleted matches
 
-        var newMatchesAndMessages = await _dbContext.Matches
+        var changedUsers = _dbContext.Matches
+            .Include(match => match.Messages
+                .OrderByDescending(message => message.CreatedAt)
+                .Take(1))
+            .Include(match => match.Users)
+                .ThenInclude(user => user.Photos)
+            .Include(match => match.Users)
+                .ThenInclude(user => user.Settings)
+            .Where(match => match.Users.Any(user => user.UpdatedAt >= query.LastActivityTime
+                && !user.Id.Equals(query.UserId)))
+            .Where(match => match.Users.Any(user => user.Id.Equals(query.UserId)));
+
+        var newMatchesAndMessages = _dbContext.Matches
             .Include(match => match.Messages
                 .Where(message => message.CreatedAt >= query.LastActivityTime))
                 .OrderByDescending(message => message.CreatedAt)
@@ -41,22 +52,22 @@ internal sealed class GetUpdatesHandler : IQueryHandler<GetUpdates, PaginatedDat
             .Include(match => match.Users)
                 .ThenInclude(user => user.Settings)
             .Where(match => match.LastActivityTime >= query.LastActivityTime)
-            .Where(match => match.Users.Any(user => user.Id.Equals(query.UserId)))
+            .Where(match => match.Users.Any(user => user.Id.Equals(query.UserId)));
+
+        var updates = changedUsers.Union(newMatchesAndMessages);
+
+        var updatesMaterialized = await updates
             .OrderByDescending(match => match.LastActivityTime)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToListAsync();
 
-        var updatesDto = newMatchesAndMessages
+        var updatesDto = updatesMaterialized
             .Select(match => match.AsDto(query.UserId, 
                 _spatial.CalculateDistanceInKms(match.Users.First(), match.Users.Last())))
             .ToList();
 
-        var recordsCount = await _dbContext.Matches
-            .Where(match => match.LastActivityTime >= query.LastActivityTime)
-            .Where(match => match.Users
-                .Any(user => user.Id.Equals(query.UserId)))
-            .CountAsync();
+        var recordsCount = await updates.CountAsync();
 
         var pageCount = (recordsCount + query.PageSize - 1) / query.PageSize;
 

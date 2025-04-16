@@ -75,7 +75,7 @@ public class DeleteUserHandlerTests
     public async Task given_authorization_fail_DeleteUserHandler_returns_UnauthorizedException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
 
@@ -107,7 +107,7 @@ public class DeleteUserHandlerTests
             new Photo(Guid.NewGuid(), "url", "checksum", 1),
         };
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, photos: photos);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow, photos: photos);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         repository.Setup(x => x.DeleteAsync(It.IsAny<User>()));

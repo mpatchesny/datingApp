@@ -102,7 +102,7 @@ public class SignUpByEmailHandlerTests
     public async Task given_access_code_not_in_storage_SignInByEmailHandlerl_throws_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings);
+        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var userRepository = new Mock<IUserRepository>();
         userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
         
@@ -130,7 +130,7 @@ public class SignUpByEmailHandlerTests
     public async Task given_negative_access_code_verification_SignInByEmailHandler_throws_InvalidCredentialsException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user = new User(settings.UserId, "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var userRepository = new Mock<IUserRepository>();
         userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
 
@@ -159,7 +159,7 @@ public class SignUpByEmailHandlerTests
     public async Task given_valid_email_and_code_SignInByEmailHandler_should_succeed()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings);
+        var user = new User(Guid.NewGuid(), "12345", "test@test.com", "Nazwa", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var userRepository = new Mock<IUserRepository>();
         userRepository.Setup(m => m.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
 

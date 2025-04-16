@@ -28,10 +28,10 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings1);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings1, DateTime.UtcNow);
 
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2, DateTime.UtcNow);
 
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
@@ -50,10 +50,10 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), userLookingForSex, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings1);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings1, DateTime.UtcNow);
 
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", new DateOnly(2000,1,1), candidateSex, settings2, DateTime.UtcNow);
 
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
@@ -75,11 +75,11 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(prefferedAgeFrom, prefferedAgeTo), 100, new Location(0.0, 0.0));
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Female, settings1);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000,1,1), UserSex.Female, settings1, DateTime.UtcNow);
 
         var candidateDateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-candidateAge));
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, settings2);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Female, settings2, DateTime.UtcNow);
         
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);
@@ -101,11 +101,11 @@ public class GetSwipeCandidatesHandlerTests : IDisposable
     {
         SetMockedSpatialDefaultReturnValues(_spatial);
         var settings1 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(prefferedAgeFrom, prefferedAgeTo), 100, new Location(0.0, 0.0));
-        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), UserSex.Male, settings1);
+        var user1 = new User(settings1.UserId, "111111111", "test@test.com", "Janusz", new DateOnly(2000, 1, 1), UserSex.Male, settings1, DateTime.UtcNow);
 
         var candidateDateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-candidateAge));
         var settings2 = new UserSettings(Guid.NewGuid(), PreferredSex.Male, new PreferredAge(18, 100), 100, new Location(0.0, 0.0));
-        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, settings2);
+        var user2 = new User(settings2.UserId, "222222222", "test2@test.com", "Janusz", candidateDateOfBirth, UserSex.Male, settings2, DateTime.UtcNow);
 
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user1);
         await IntegrationTestHelper.CreateUserAsync(_dbContext, user2);

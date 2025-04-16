@@ -39,7 +39,7 @@ public class ChangeUserHandlerTests
     public async Task given_authorization_fails_ChangeUserHandler_returns_UnauthorizedException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -58,7 +58,7 @@ public class ChangeUserHandlerTests
     public async Task given_date_of_birth_not_in_ISO8601_format_ChangeUserHandler_throws_InvalidDateOfBirthException()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -77,7 +77,7 @@ public class ChangeUserHandlerTests
     public async Task given_no_changes_ChangeUserHandler_should_succeed()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -95,7 +95,7 @@ public class ChangeUserHandlerTests
     public async Task given_Lat_and_Lon_not_changed_ChangeUserHandler_changes_nothing()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -113,7 +113,7 @@ public class ChangeUserHandlerTests
     public async Task given_Lon_and_Lat_not_changed_ChangeUserHandler_changes_nothing()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -131,7 +131,7 @@ public class ChangeUserHandlerTests
     public async Task given_PreferredAgeFrom_changed_and_PreferredAgeTo_not_ChangeUserHandler_changes_nothing()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -149,7 +149,7 @@ public class ChangeUserHandlerTests
     public async Task given_PreferredAgeTo_changed_and_PreferredAgeFrom_not_ChangeUserHandler_changes_nothing()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow);
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();
@@ -167,7 +167,7 @@ public class ChangeUserHandlerTests
     public async Task given_user_exists_and_authorization_succeed_ChangeUserHandler_should_change_User()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 20, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, job: "some job", bio: "some bio");
+        var user = new User(settings.UserId, "012345678", "test@test.com", "janusz", new DateOnly(1999,1,1), UserSex.Male, settings, DateTime.UtcNow, job: "some job", bio: "some bio");
         var repository = new Mock<IUserRepository>();
         repository.Setup(x => x.GetByIdAsync(It.IsAny<UserId>())).Returns(Task.FromResult<User>(user));
         var authorizationService = new Mock<IDatingAppAuthorizationService>();

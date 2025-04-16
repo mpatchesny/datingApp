@@ -23,7 +23,7 @@ internal static class IntegrationTestHelper
         if (email == null) email = "test_" + Guid.NewGuid().ToString().Replace("-", "") + "@test.com";
         if (phone == null) phone = random.Next(100000000, 999999999).ToString();
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.MaleAndFemale, new PreferredAge(18, 100), 100, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings, photos: photos);
+        var user = new User(settings.UserId, phone, email, "Janusz", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow, photos: photos);
         return user;
     }
 

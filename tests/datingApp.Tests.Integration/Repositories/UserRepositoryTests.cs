@@ -167,7 +167,7 @@ public class UserRepositoryTests : IDisposable
     public async Task delete_nonexisting_user_throws_exception()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
-        var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, settings);
+        var user = new User(settings.UserId, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.DeleteAsync(user));
         Assert.NotNull(exception);
@@ -193,7 +193,7 @@ public class UserRepositoryTests : IDisposable
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         _dbContext.ChangeTracker.Clear();
         var settings = new UserSettings(user.Id, PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));
-        var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, settings);
+        var badUser = new User(user.Id, "000000000", "test2@test.com", "Klaudiusz", new DateOnly(2000,1,1), UserSex.Male, settings, DateTime.UtcNow);
 
         var exception = await Record.ExceptionAsync(async () => await _userRepository.AddAsync(badUser));
         Assert.NotNull(exception);

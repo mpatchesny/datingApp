@@ -20,6 +20,13 @@ internal sealed class DbMatchRepository : IMatchRepository
         _dbContext = dbContext;
     }
 
+    public async Task<List<Match>> GetByUserIdAsync(UserId userId)
+    {
+        return await _dbContext.Matches
+            .Where(match => match.Users.Any(user => user.Id.Equals(userId)))
+            .ToListAsync();
+    }
+
     public async Task<Match> GetByIdAsync(MatchId matchId, Expression<Func<Match, IEnumerable<Message>>> includeMessage = null)
     {
         if (includeMessage == null)

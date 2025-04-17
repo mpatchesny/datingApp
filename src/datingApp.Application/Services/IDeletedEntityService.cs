@@ -8,5 +8,6 @@ namespace datingApp.Application.Services;
 public interface IDeletedEntityService
 {
     public Task<bool> ExistsAsync(Guid id);
-    public Task AddAsync(Guid id, string entityType, DateTime deletedAt);
+    public Task AddAsync(Guid id);
+    public Task AddRangeAsync(List<Guid> ids);
 }

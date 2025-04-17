@@ -10,6 +10,7 @@ namespace datingApp.Core.Repositories;
 
 public interface IMatchRepository : IRepository
 {
+    Task<List<Match>> GetByUserIdAsync(UserId userId);
     Task<Match> GetByIdAsync(MatchId matchId, Expression<Func<Match, IEnumerable<Message>>> includeMessage = null);
     Task<Match> GetByMessageIdAsync(MessageId messageId, Expression<Func<Match, IEnumerable<Message>>> includeMessage = null);
     Task AddAsync(Match match);

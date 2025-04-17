@@ -45,7 +45,7 @@ internal static class IntegrationTestHelper
     internal static async Task DeleteUserAsync(DatingAppDbContext dbContext, User user)
     {
         dbContext.Users.Remove(user);
-        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = user.Id, EntityType = "user", DeletedAt = DateTime.UtcNow });
+        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = user.Id });
         await dbContext.SaveChangesAsync();
     }
 
@@ -58,7 +58,7 @@ internal static class IntegrationTestHelper
     internal static async Task DeletePhotoAsync(DatingAppDbContext dbContext, Photo photo)
     {
         dbContext.Photos.Remove(photo);
-        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id, EntityType = "photo", DeletedAt = DateTime.UtcNow });
+        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = photo.Id });
         await dbContext.SaveChangesAsync();
     }
     #endregion
@@ -80,7 +80,7 @@ internal static class IntegrationTestHelper
     internal static async Task DeleteMatchAsync(DatingAppDbContext dbContext, Match match)
     {
         dbContext.Matches.Remove(match);
-        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id, EntityType = "match", DeletedAt = DateTime.UtcNow });
+        await dbContext.DeletedEntities.AddAsync(new DeletedEntityDto() { Id = match.Id });
         await dbContext.SaveChangesAsync();
     }
     #endregion

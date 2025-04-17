@@ -45,6 +45,6 @@ public sealed class DeleteMatchHandler : ICommandHandler<DeleteMatch>
         }
 
         await _matchRepository.DeleteAsync(match);
-        await _deletedEntityService.AddAsync(match.Id, "match", DateTime.UtcNow);
+        await _deletedEntityService.AddAsync(match.Id);
     }
 }

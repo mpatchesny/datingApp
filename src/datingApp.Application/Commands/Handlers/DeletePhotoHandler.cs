@@ -61,6 +61,6 @@ public sealed class DeletePhotoHandler : ICommandHandler<DeletePhoto>
             _userRepository.UpdateAsync(user)
         };
         await Task.WhenAll(tasks);
-        await _deletedEntityService.AddAsync(photo.Id, "photo", DateTime.UtcNow);
+        await _deletedEntityService.AddAsync(photo.Id);
     }
 }

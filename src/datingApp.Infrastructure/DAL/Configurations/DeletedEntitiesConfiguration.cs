@@ -14,10 +14,6 @@ internal sealed class DeletedEntitiesConfiguration : IEntityTypeConfiguration<De
     {
         builder.Property(x => x.Id)
             .IsRequired();
-        builder.Property(x => x.EntityType)
-            .IsRequired();
-        builder.Property(x => x.DeletedAt)
-            .IsRequired();
         builder.HasIndex(x => x.Id);
         builder.ToTable("DeletedEntities");
     }

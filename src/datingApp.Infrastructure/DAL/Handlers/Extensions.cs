@@ -121,4 +121,20 @@ internal static class Extensions
             Data = data
         };
     }
+
+    public static List<UpdatesDto> AsUpdatesDto(this List<object> data)
+    {
+        var updates = new List<UpdatesDto>();
+        foreach (var item in data)
+        {
+            updates.Add(new UpdatesDto
+            {
+                Event = "",
+                EntityType = item.GetType().ToString().ToLowerInvariant().Replace("dto", ""),
+                Entity = item,
+                ChangedAt = DateTime.UtcNow
+            });
+        }
+        return updates;
+    }
 }

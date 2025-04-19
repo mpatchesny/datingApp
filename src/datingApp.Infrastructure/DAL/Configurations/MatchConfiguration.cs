@@ -26,10 +26,15 @@ internal sealed class MatchConfiguration : IEntityTypeConfiguration<Match>
             .IsRequired();
         builder.Property(x => x.LastActivityTime)
             .IsRequired();
+        builder.Property(x => x.IsDeleted)
+            .IsRequired()
+            .HasDefaultValue(false);
+        builder.Property(x => x.DeletedAt);
 
         builder.HasIndex(x => x.CreatedAt);
         builder.HasIndex(x => x.LastActivityTime);
         builder.Navigation(x => x.MatchDetails).AutoInclude();
+        builder.HasQueryFilter(x => !x.IsDeleted);
         builder.ToTable("Matches");
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using datingApp.Core.Entities;
 using datingApp.Core.Repositories;
 using datingApp.Core.ValueObjects;
+using FluentStorage.Utils.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -66,8 +67,9 @@ internal sealed class DbMatchRepository : IMatchRepository
 
     public async Task DeleteAsync(Match match)
     {
-        _dbContext.Matches.Remove(match);
-        await _dbContext.SaveChangesAsync();
+        match.Delete();
+        match.MatchDetails.ForEach(matchDetail => matchDetail.Delete());
+        await UpdateAsync(match);
     }
 
 

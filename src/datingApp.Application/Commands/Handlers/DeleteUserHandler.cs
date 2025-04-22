@@ -16,7 +16,6 @@ namespace datingApp.Application.Commands.Handlers;
 public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IMatchRepository _matchRepository;
     private readonly IBlobStorage _fileStorage;
     private readonly ISwipeRepository _swipeRepository;
     private readonly IDeletedEntityService _deletedEntityService;
@@ -26,15 +25,13 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
                             IBlobStorage fileStorageService,
                             IDeletedEntityService deletedEntityRepository,
                             IDatingAppAuthorizationService authorizationService,
-                            ISwipeRepository swipeRepository,
-                            IMatchRepository matchRepository)
+                            ISwipeRepository swipeRepository)
     {
         _userRepository = userRepository;
         _fileStorage = fileStorageService;
         _deletedEntityService = deletedEntityRepository;
         _authorizationService = authorizationService;
         _swipeRepository = swipeRepository;
-        _matchRepository = matchRepository;
     }
 
     public async Task HandleAsync(DeleteUser command)
@@ -58,12 +55,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
             throw new UnauthorizedException();
         }
 
-        var deletedEntitiesIds = user.Photos.Select(photo => photo.Id.Value).ToList();
-        deletedEntitiesIds.Add(user.Id.Value);
-
-        var matches = await _matchRepository.GetByUserIdAsync(user.Id);
-        deletedEntitiesIds.AddRange(matches.Select(match => match.Id.Value));
-
         var paths = user.Photos.Select(photo => $"{photo.Id}.{photo.Extension}").ToList();
 
         var tasks = new List<Task>()
@@ -73,6 +64,6 @@ public sealed class DeleteUserHandler : ICommandHandler<DeleteUser>
         };
         await Task.WhenAll(tasks);
         await _swipeRepository.DeleteUserSwipes(user.Id);
-        await _deletedEntityService.AddRangeAsync(deletedEntitiesIds);
+        await _deletedEntityService.AddAsync(user.Id);
     }
 }

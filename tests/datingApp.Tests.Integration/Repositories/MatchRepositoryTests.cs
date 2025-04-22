@@ -38,7 +38,7 @@ public class MatchRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async void delete_existing_match_by_id_should_succeed()
+    public async void delete_existing_match_by_id_should_mark_match_as_deleted()
     {
         var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
         var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
@@ -47,8 +47,13 @@ public class MatchRepositoryTests : IDisposable
         var exception = await Record.ExceptionAsync(async () => await _repository.DeleteAsync(match));
         Assert.Null(exception);
         _dbContext.ChangeTracker.Clear();
-        var deletedMatch = await _testDb.DbContext.Matches.FirstOrDefaultAsync(x => x.Id == match.Id);
-        Assert.Null(deletedMatch);
+
+        var deletedMatch = await _testDb.DbContext.Matches
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.Id == match.Id);
+        Assert.NotNull(deletedMatch);
+        Assert.True(deletedMatch.IsDeleted);
+        Assert.InRange(deletedMatch.DeletedAt.Value, DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow);
     }
 
     [Fact]

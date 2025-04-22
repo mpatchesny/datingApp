@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using datingApp.Core.Common;
 using datingApp.Core.ValueObjects;
 
 namespace datingApp.Core.Entities;
 
-public class MatchDetail
+public class MatchDetail : SoftDelete
 {
     public MatchDetailId Id { get; }
     public MatchId MatchId { get; private set; }

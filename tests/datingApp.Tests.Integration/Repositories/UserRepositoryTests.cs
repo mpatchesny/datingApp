@@ -164,6 +164,23 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task delete_existing_user_not_delete_user_matches()
+    {
+        var user1 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user2 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user3 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        var user4 = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user2.Id);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user3.Id);
+        _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user1.Id, user4.Id);
+
+        await _userRepository.DeleteAsync(user1);
+        _dbContext.ChangeTracker.Clear();
+
+        Assert.Equal(3, await _dbContext.Matches.CountAsync());
+    }
+
+    [Fact]
     public async Task delete_nonexisting_user_throws_exception()
     {
         var settings = new UserSettings(Guid.NewGuid(), PreferredSex.Female, new PreferredAge(18, 20), 50, new Location(45.5, 45.5));

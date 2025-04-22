@@ -5,10 +5,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using datingApp.Core.Exceptions;
 using datingApp.Core.ValueObjects;
+using datingApp.Core.Common;
 
 namespace datingApp.Core.Entities;
 
-public class Match
+public class Match : SoftDelete
 {
     public MatchId Id { get; }
     public string SurrogateId { get; }

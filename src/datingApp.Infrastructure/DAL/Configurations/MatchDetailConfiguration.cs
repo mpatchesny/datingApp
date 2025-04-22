@@ -25,6 +25,10 @@ internal sealed class MatchDetailConfiguration : IEntityTypeConfiguration<MatchD
             .IsRequired();
         builder.Property(x => x.IsDisplayed)
             .IsRequired();
+        builder.Property(x => x.IsDeleted)
+            .IsRequired()
+            .HasDefaultValue(false);
+        builder.Property(x => x.DeletedAt);
         builder.ToTable("MatchDetails");
     }
 }

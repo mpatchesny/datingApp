@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using datingApp.Application.DTO;
 using datingApp.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using datingApp.Infrastructure.DAL.Interceptors;
 
 namespace datingApp.Infrastructure;
 
@@ -31,7 +30,6 @@ internal sealed class DatingAppDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.AddInterceptors(new SoftDeleteInterceptor());
         optionsBuilder.LogTo(Console.WriteLine);
     }
 }

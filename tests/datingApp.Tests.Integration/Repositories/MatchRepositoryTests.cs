@@ -53,7 +53,7 @@ public class MatchRepositoryTests : IDisposable
             .FirstOrDefaultAsync(x => x.Id == match.Id);
         Assert.NotNull(deletedMatch);
         Assert.True(deletedMatch.IsDeleted);
-        Assert.InRange(deletedMatch.DeletedAt.Value,  DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow);
+        Assert.InRange(deletedMatch.DeletedAt.Value, DateTime.UtcNow.AddSeconds(-1), DateTime.UtcNow);
     }
 
     [Fact]

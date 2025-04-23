@@ -19,11 +19,11 @@ public class SoftDeleteTests
     }
 
     [Fact]
-    public void after_delete_softdelete_IsDeleted_is_true_and_DeletedAt_is_set_to_utc_now()
+    public void after_SetAsDeleted_IsDeleted_is_true_and_DeletedAt_is_set_to_utc_now()
     {
         var softDelete = new SoftDelete();
 
-        softDelete.Delete();
+        softDelete.SetAsDeleted();
         Assert.True(softDelete.IsDeleted);
         Assert.NotNull(softDelete.DeletedAt);
         Assert.True(softDelete.DeletedAt.Value < DateTimeOffset.UtcNow);

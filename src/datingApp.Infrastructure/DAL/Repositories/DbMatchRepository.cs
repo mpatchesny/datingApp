@@ -67,8 +67,8 @@ internal sealed class DbMatchRepository : IMatchRepository
 
     public async Task DeleteAsync(Match match)
     {
-        match.Delete();
-        match.MatchDetails.ForEach(matchDetail => matchDetail.Delete());
+        match.SetAsDeleted();
+        match.MatchDetails.ForEach(matchDetail => matchDetail.SetAsDeleted());
         await UpdateAsync(match);
     }
 

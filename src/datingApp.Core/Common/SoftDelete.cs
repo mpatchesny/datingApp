@@ -9,7 +9,7 @@ public class SoftDelete
 {
     public bool IsDeleted { get; private set; }
     public DateTimeOffset? DeletedAt { get; private set; }
-    public void Delete()
+    public void SetAsDeleted()
     {
         IsDeleted = true;
         DeletedAt = DateTimeOffset.UtcNow;

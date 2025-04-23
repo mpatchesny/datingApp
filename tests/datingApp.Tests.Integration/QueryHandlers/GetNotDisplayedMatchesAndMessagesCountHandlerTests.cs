@@ -34,7 +34,7 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
     }
 
     [Fact]
-    public async void given_this_then_that()
+    public async void given_user_has_matches_or_messages_GetNotDisplayedMatchesAndMessagesCountHandler_returns_proper_number_of_not_displayed_matches_and_messages()
     {
         var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
 
@@ -44,10 +44,10 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
             var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id);
         }
 
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 5; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-            var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(tempUser.Id) };
+            var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(user.Id) };
             var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id, isDisplayedByUser1: true, isDisplayedByUser2: true, messages: messages);
         }
         _dbContext.ChangeTracker.Clear();
@@ -57,7 +57,7 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
 
         Assert.NotNull(result);
         Assert.Equal(5, result.Item1);
-        Assert.Equal(7, result.Item2);
+        Assert.Equal(10, result.Item2);
     }
 
     // Arrange

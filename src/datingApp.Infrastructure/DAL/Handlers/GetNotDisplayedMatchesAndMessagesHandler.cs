@@ -8,10 +8,10 @@ using datingApp.Application.Queries;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetNotDisplayedMatchesAndMessagesCount
+internal sealed class GetNotDisplayedMatchesAndMessagesHandler
 {
     private ReadOnlyDatingAppDbContext _dbContext;
-    public GetNotDisplayedMatchesAndMessagesCount(ReadOnlyDatingAppDbContext dbContext)
+    public GetNotDisplayedMatchesAndMessagesHandler(ReadOnlyDatingAppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

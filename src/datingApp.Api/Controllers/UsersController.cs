@@ -103,6 +103,14 @@ public class UserController : ApiControllerBase
         return Ok(result);
     }
 
+    [HttpGet("me/not-displayed-count")]
+    public async Task<ActionResult<Tuple<int, int>>> GetNotDisplayedCount()
+    {
+        var query = Authenticate(new GetNotDisplayedMatchesAndMessages { UserId = AuthenticatedUserId });
+        var result = await _queryDispatcher.DispatchAsync<GetNotDisplayedMatchesAndMessages, Tuple<int, int>>(query);
+        return Ok(result);
+    }
+
     [HttpPost("me/photos/")]
     public async Task<ActionResult> Post(IFormFile fileContent)
     {

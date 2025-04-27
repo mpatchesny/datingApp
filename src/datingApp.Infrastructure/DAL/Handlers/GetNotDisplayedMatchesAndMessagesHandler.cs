@@ -5,10 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using datingApp.Application.Exceptions;
 using datingApp.Application.Queries;
+using datingApp.Application.Abstractions;
 
 namespace datingApp.Infrastructure.DAL.Handlers;
 
-internal sealed class GetNotDisplayedMatchesAndMessagesHandler
+internal sealed class GetNotDisplayedMatchesAndMessagesHandler : IQueryHandler<GetNotDisplayedMatchesAndMessages, Tuple<int, int>>
 {
     private ReadOnlyDatingAppDbContext _dbContext;
     public GetNotDisplayedMatchesAndMessagesHandler(ReadOnlyDatingAppDbContext dbContext)

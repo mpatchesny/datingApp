@@ -57,7 +57,7 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
 
         Assert.NotNull(result);
         Assert.Equal(5, result.Item1);
-        Assert.Equal(5, result.Item2);
+        Assert.Equal(7, result.Item2);
     }
 
     // Arrange

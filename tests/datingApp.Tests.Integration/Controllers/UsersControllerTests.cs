@@ -620,7 +620,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
             _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id);
         }
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 7; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
             var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(user.Id) };
@@ -634,7 +634,7 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
 
         Assert.NotNull(response);
         Assert.Equal(5, response.Item1);
-        Assert.Equal(5, response.Item2);
+        Assert.Equal(7, response.Item2);
     }
     #endregion
 

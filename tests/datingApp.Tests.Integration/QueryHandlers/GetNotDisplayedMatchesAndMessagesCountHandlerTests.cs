@@ -44,7 +44,7 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
             _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id);
         }
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 7; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
             var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(user.Id) };

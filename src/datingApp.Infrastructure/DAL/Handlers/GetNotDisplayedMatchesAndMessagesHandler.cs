@@ -27,9 +27,11 @@ internal sealed class GetNotDisplayedMatchesAndMessagesHandler : IQueryHandler<G
         var notDisplayedMessagesCountQuery = _dbContext.Matches
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            .Where(match => match.Messages.All(message =>
-                !message.IsDisplayed && !message.SendFromId.Equals(query.UserId)))
+            .Where(match => match.Messages.Any(message => !message.IsDisplayed
+                && !message.SendFromId.Equals(query.UserId)))
             .CountAsync();
+
+        var notDisplayedMessagesCount = await notDisplayedMessagesCountQuery;
 
         var notDisplayedMatchesCountQuery = _dbContext.Matches
             .Where(match => match.Users
@@ -38,7 +40,6 @@ internal sealed class GetNotDisplayedMatchesAndMessagesHandler : IQueryHandler<G
                 && !matchDetail.UserId.Equals(query.UserId)))
             .CountAsync();
 
-        var notDisplayedMessagesCount = await notDisplayedMessagesCountQuery;
         var notDisplayedMatchesCount = await notDisplayedMatchesCountQuery;
 
         return new Tuple<int, int>(notDisplayedMatchesCount, notDisplayedMessagesCount);

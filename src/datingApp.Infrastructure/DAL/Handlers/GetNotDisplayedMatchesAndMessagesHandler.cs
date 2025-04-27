@@ -26,8 +26,8 @@ internal sealed class GetNotDisplayedMatchesAndMessagesHandler
         var notDisplayedMessagesCountQuery = _dbContext.Matches
             .Where(match => match.Users
                 .Any(user => user.Id.Equals(query.UserId)))
-            .SelectMany(match => match.Messages)
-            .Where(message => !message.IsDisplayed && !message.SendFromId.Equals(query.UserId))
+            .Where(match => match.Messages.All(message =>
+                !message.IsDisplayed && !message.SendFromId.Equals(query.UserId)))
             .CountAsync();
 
         var notDisplayedMatchesCountQuery = _dbContext.Matches

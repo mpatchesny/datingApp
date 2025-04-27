@@ -608,6 +608,36 @@ public class UsersControllerTests : ControllerTestBase, IDisposable
     }
     #endregion
 
+    #region GetNotDisplayedCount
+    [Fact]
+    public async Task get_not_displayed_count_returns_200_and_list_of_not_displayed_messages_and_matches()
+    {
+        var user = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+
+        for (int i = 0; i < 5; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id);
+        }
+
+        for (int i = 0; i < 5; i++)
+        {
+            var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
+            var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(user.Id) };
+           _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id, isDisplayedByUser1: true, isDisplayedByUser2: true, messages: messages);
+        }
+        _dbContext.ChangeTracker.Clear();
+
+        var token = Authorize(user.Id);
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.AccessToken.Token}");
+        var response = await Client.GetFromJsonAsync<Tuple<int, int>>("users/me/not-displayed-count");
+
+        Assert.NotNull(response);
+        Assert.Equal(5, response.Item1);
+        Assert.Equal(5, response.Item2);
+    }
+    #endregion
+
     #region PatchUsers
     [Fact]
     public async Task patch_users_with_no_changes_returns_204_no_content()

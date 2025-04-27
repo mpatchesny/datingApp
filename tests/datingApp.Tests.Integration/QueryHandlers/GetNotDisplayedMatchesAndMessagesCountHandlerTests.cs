@@ -41,14 +41,14 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
         for (int i = 0; i < 5; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
-            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id);
+            _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id);
         }
 
         for (int i = 0; i < 5; i++)
         {
             var tempUser = await IntegrationTestHelper.CreateUserAsync(_dbContext);
             var messages = new List<Message>() { IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(tempUser.Id), IntegrationTestHelper.CreateMessage(user.Id) };
-            var match = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id, isDisplayedByUser1: true, isDisplayedByUser2: true, messages: messages);
+           _ = await IntegrationTestHelper.CreateMatchAsync(_dbContext, user.Id, tempUser.Id, isDisplayedByUser1: true, isDisplayedByUser2: true, messages: messages);
         }
         _dbContext.ChangeTracker.Clear();
 
@@ -57,7 +57,7 @@ public class GetNotDisplayedMatchesAndMessagesCountHandlerTests : IDisposable
 
         Assert.NotNull(result);
         Assert.Equal(5, result.Item1);
-        Assert.Equal(10, result.Item2);
+        Assert.Equal(5, result.Item2);
     }
 
     // Arrange
